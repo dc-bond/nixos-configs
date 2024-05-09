@@ -25,7 +25,7 @@
 
   tasks:
 
-    - name: load encrypted variables
+    - name: load encrypted variables # requires gpg key on machine running ansible to decrypt secrets file (also requires yubikey to unlock gpg key)
       community.sops.load_vars:
         file: secrets.sops.yml
 
