@@ -43,7 +43,9 @@
 
   environment.systemPackages = with pkgs; [ # search system packages with 'nix search [package]'
     wget
-    vim
+    neovim
+    git
+    #acl
   ];
 
   programs.mtr.enable = true;

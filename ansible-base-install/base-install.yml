@@ -15,6 +15,7 @@
 
     ansible_user: root # user on live ISO system that ansible logs in as for purpose of ansible-orchestrated base system install onto empty drive
     ansible_ssh_pass: root # root user passwd on live ISO system
+    ansible_become_user: chris
     ansible_ssh_common_args: -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null"
     ansible_python_interpreter: /nix/var/nix/profiles/default/bin/python # location of python path after installing into the live ISO system with 'sudo nix-env -iA nixos.python3Minimal'
     # virtual machine
@@ -145,5 +146,38 @@
       args:
         chdir: /mnt
 
-    - name: shutdown
-      shell: /run/current-system/sw/bin/shutdown now
+#    - name: add home manager channel at user level
+#      ansible.builtin.command: "nix-channel --add https://github.com/nix-community/home-manager/archive/release-23.11.tar.gz home-manager"
+#      args:
+#        chdir: /mnt
+#      become: true
+#      become_user: "{{ ansible_become_user }}"
+#
+#    - name: update channel at user level
+#      ansible.builtin.command: "nix-channel --update"
+#      args:
+#        chdir: /mnt
+#      become: true
+#      become_user: "{{ ansible_become_user }}"
+#
+#    - name: install home-manager at user level
+#      ansible.builtin.command: "nix-shell '<home-manager>' -A install"
+#      args:
+#        chdir: /mnt
+#      become: true
+#      become_user: "{{ ansible_become_user }}"
+
+
+    #- name: shutdown
+    #  shell: /run/current-system/sw/bin/shutdown now
+
+# login to new system with chris user
+# change passwd with 'passwd' command
+# add home manager channel with 'nix-channel --add https://github.com/nix-community/home-manager/archive/release-23.11.tar.gz home-manager'
+# update channel with 'nix-channel --update'
+# logout and back in
+# install home manager with 'nix-shell '<home-manager>' -A install'
+# get ssh private key onto machine
+# clone repo
+# replace home.nix
+# update configs
