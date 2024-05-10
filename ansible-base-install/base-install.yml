@@ -1,3 +1,9 @@
+# ensure ansible installed on provisioning machine
+# git clone git@github.com:dc-bond/nixos-configs.git to ansible machine
+# ensure gpg private key installed on provisioning machine (restore .gnupg from git clone)
+# update ansible.cfg file with location of ssh private key (restore .ssh from git clone)
+# update inventory with ip address of target machine
+# boot live ISO on target machine
 # set root password on live ISO system to 'root' by running 'passwd' so ansible can ling via ssh
 # install python into the live ISO with sudo nix-env -iA nixos.python3Minimal before running playbook
 # run with 'ansible-playbook base-install.yml -i inventory.yml' while inside directory
@@ -25,7 +31,7 @@
 
   tasks:
 
-    - name: load encrypted variables # requires gpg key on machine running ansible to decrypt secrets file (also requires yubikey to unlock gpg key)
+    - name: load encrypted variables # sops requires gpg key on machine running ansible to decrypt secrets file (also requires yubikey to unlock gpg key)
       community.sops.load_vars:
         file: secrets.sops.yml
 
@@ -104,35 +110,35 @@
     - name: turn on swap
       ansible.builtin.command: swapon /mnt/.swapfile
 
-    - name: generate configuration files
-      ansible.builtin.command: nixos-generate-config --root /mnt
+#    - name: generate configuration files
+#      ansible.builtin.command: nixos-generate-config --root /mnt
+#
+#    - name: remove default configuration.nix file
+#      ansible.builtin.command: find /mnt/etc/nixos/ -type f -iname 'configuration.nix' -delete
 
-    #- name: remove default configuration.nix file
-    #  ansible.builtin.command: find /mnt/etc/nixos/ -type f -iname 'configuration.nix' -delete
+    - name: create /etc/nixos directory
+      ansible.builtin.file:
+        path: /mnt/etc/nixos
+        group: root
+        owner: root
+        state: directory
+        mode: 0644
+    
+    - name: deploy custom hardware-configuration.nix file
+      ansible.builtin.template:
+        dest: "/mnt/etc/nixos/hardware-configuration.nix"
+        src: hardware-configuration.nix.j2
+        group: root
+        owner: root
+        mode: 0644
 
-    #- name: create /etc/nixos directory
-    #  ansible.builtin.file:
-    #    path: /mnt/etc/nixos
-    #    group: root
-    #    owner: root
-    #    state: directory
-    #    mode: 0644
-    #
-    #- name: deploy custom hardware-configuration.nix file
-    #  ansible.builtin.template:
-    #    dest: "/mnt/etc/nixos/hardware-configuration.nix"
-    #    src: hardware-configuration.nix.j2
-    #    group: root
-    #    owner: root
-    #    mode: 0644
-
-    #- name: deploy custom configuration.nix file
-    #  ansible.builtin.template:
-    #    dest: "/mnt/etc/nixos/configuration.nix"
-    #    src: configuration.nix.j2
-    #    group: root
-    #    owner: root
-    #    mode: 0644
+    - name: deploy custom configuration.nix file
+      ansible.builtin.template:
+        dest: "/mnt/etc/nixos/configuration.nix"
+        src: configuration.nix.j2
+        group: root
+        owner: root
+        mode: 0644
 
     - name: run installation
       ansible.builtin.command: nixos-install --no-root-passwd
