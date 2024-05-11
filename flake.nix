@@ -1,5 +1,5 @@
 {
-  description = "t490 laptop flake";
+  description = "thinkpad laptop flake";
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-23.11";
@@ -14,7 +14,7 @@
       pkgs = nixpkgs.legacyPackages.${system};
     in {
       nixosConfigurations = {
-        t490 = lib.nixosSystem {
+        thinkpad = lib.nixosSystem {
           inherit system;
           modules = [ ./configuration.nix ];
         };

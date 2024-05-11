@@ -6,13 +6,13 @@
       ./hardware-configuration.nix
     ];
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  #nix.settings.experimental-features = [ "nix-command" "flakes" ];
   
   boot.loader.systemd-boot.enable = true; # use systemd-boot EFI boot loader
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernel.sysctl = { "vm.swappiness" = 30;};
 
-  networking.hostName = "t490"; # define hostname
+  networking.hostName = "thinkpad"; # define hostname
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
   # networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
   # networking.proxy.default = "http://user:password@proxy:port/";
@@ -76,7 +76,7 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-  system.copySystemConfiguration = true; # copy configuration.nix from /run/current-system/configuration.nix in case of accidental deletion
+  system.copySystemConfiguration = false; # copy configuration.nix from /run/current-system/configuration.nix in case of accidental deletion, not compatible with flakes so disable
   system.stateVersion = "23.11"; # first install nix version pin for maintaining backward compatibility with application data - do not revise
 
 }
