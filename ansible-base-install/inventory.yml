@@ -1,4 +1,4 @@
 all:
   hosts:
-    t490:
-      ansible_host: 192.168.1.61 
+    thinkpad:
+      ansible_host: 192.168.1.93

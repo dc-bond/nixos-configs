@@ -45,7 +45,6 @@
     wget
     neovim
     git
-    #acl
   ];
 
   programs.mtr.enable = true;
