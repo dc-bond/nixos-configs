@@ -14,7 +14,8 @@
       fsType = "ext4";
     };
 
-  boot.initrd.luks.devices."cryptroot".device = "{{ install_drive }}{{ root_partition_suffix }}";
+  #boot.initrd.luks.devices."cryptroot".device = "{{ install_drive }}{{ root_partition_suffix }}";
+  boot.initrd.luks.devices."cryptroot".device = "/dev/sda2";
 
   fileSystems."/boot" =
     { 
