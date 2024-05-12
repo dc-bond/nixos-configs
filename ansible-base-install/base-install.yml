@@ -107,11 +107,11 @@
     - name: turn on swap
       ansible.builtin.command: swapon /mnt/.swapfile
 
-    - name: generate configuration files
-      ansible.builtin.command: nixos-generate-config --root /mnt
-
-    - name: remove default configuration.nix file
-      ansible.builtin.command: find /mnt/etc/nixos/ -type f -iname 'configuration.nix' -delete
+#    - name: generate configuration files
+#      ansible.builtin.command: nixos-generate-config --root /mnt
+#
+#    - name: remove default configuration.nix file
+#      ansible.builtin.command: find /mnt/etc/nixos/ -type f -iname 'configuration.nix' -delete
 
 #    - name: create /etc/nixos directory
 #      ansible.builtin.file:
@@ -121,38 +121,6 @@
 #        state: directory
 #        mode: 0644
 #
-#    - name: deploy custom hardware-configuration.nix file
-#      ansible.builtin.template:
-#        dest: "/mnt/etc/nixos/hardware-configuration.nix"
-#        src: hardware-configuration.nix.j2
-#        group: root
-#        owner: root
-#        mode: 0644
-#
-#    - name: deploy custom configuration.nix file
-#      ansible.builtin.template:
-#        dest: "/mnt/etc/nixos/configuration.nix"
-#        src: configuration.nix.j2
-#        group: root
-#        owner: root
-#        mode: 0644
-#        
-#    - name: deploy custom home.nix file
-#      ansible.builtin.template:
-#        dest: "/mnt/etc/nixos/home.nix"
-#        src: home.nix.j2
-#        group: root
-#        owner: root
-#        mode: 0644
-#        
-#    - name: deploy custom flake.nix file
-#      ansible.builtin.template:
-#        dest: "/mnt/etc/nixos/flake.nix"
-#        src: flake.nix.j2
-#        group: root
-#        owner: root
-#        mode: 0644
-
     - name: install git
       ansible.builtin.command: nix-env -iA nixos.git
 
