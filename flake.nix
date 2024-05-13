@@ -16,13 +16,17 @@
       nixosConfigurations = {
         thinkpad = lib.nixosSystem {
           inherit system;
-          modules = [ ./nixos/configuration.nix ];
+          modules = [ 
+            ./nixos/configuration.nix 
+          ];
         };
       };
       homeConfigurations = {
         chris = home-manager.lib.homeManagerConfiguration {
           inherit pkgs;
-          modules = [ ./home-manager/home.nix ];
+          modules = [ 
+            ./home-manager/home.nix 
+          ];
         };
       };
     };
