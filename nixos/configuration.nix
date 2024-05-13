@@ -6,37 +6,17 @@
       ./hardware-configuration.nix
     ];
 
-  nixpkgs = {
-      overlays = [
-      ];
-      config = {
-        allowUnfree = false;
-      };
-    };
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
   
-    nix = let
-      flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
-    in {
-      settings = {
-        experimental-features = "nix-command flakes";
-        # disable global registry
-        flake-registry = "";
-        # workaround for https://github.com/NixOS/nix/issues/9574
-        nix-path = config.nix.nixPath;
-      };
-      # disable channels
-      channel.enable = false;
-  
-      # make flake registry and nix path match flake inputs
-      registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs;
-      nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
-    };
-
   boot.loader.systemd-boot.enable = true; # use systemd-boot EFI boot loader
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernel.sysctl = { "vm.swappiness" = 30;};
 
   networking.hostName = "thinkpad"; # define hostname
+  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+  # networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  # networking.proxy.default = "http://user:password@proxy:port/";
+  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   time.timeZone = "America/New_York"; # set timezone
 
@@ -72,6 +52,7 @@
     enable = true;
     enableSSHSupport = true;
   };
+  #programs.hyprland.enable = true;
 
   services.openssh.enable = true; # enable openssh service
   services.openssh.ports = [
@@ -84,6 +65,16 @@
   };
 
   services.xserver.libinput.enable = true; # enable touchpad support
+  # services.printing.enable = true; # enable cups print server
+  # services.xserver.enable = true; # enable X11 window manager
+  # services.xserver.xkb.layout = "us"; # keymap for X11
+  # services.xserver.xkb.options = "eurosign:e,caps:escape"; # keymap for X11
+
+  # Open ports in the firewall.
+  # networking.firewall.allowedTCPPorts = [ ... ];
+  # networking.firewall.allowedUDPPorts = [ ... ];
+  # Or disable the firewall altogether.
+  # networking.firewall.enable = false;
 
   system.copySystemConfiguration = false; # copy configuration.nix from /run/current-system/configuration.nix in case of accidental deletion, not compatible with flakes so disable
   system.stateVersion = "23.11"; # first install nix version pin for maintaining backward compatibility with application data - do not revise
