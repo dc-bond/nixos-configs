@@ -129,19 +129,19 @@
       args:
         chdir: /mnt
 
-#    - name: run installation
-#      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad
-#      args:
-#        chdir: /mnt/nixos-configs
-#
-#    - name: move nixos-configs to home
-#      ansible.builtin.command: mv /mnt/nixos-configs /mnt/home/chris/nixos-configs
-#
-#    - name: change ownership of nixos-configs
-#      ansible.builtin.command: chown -R chris:users /mnt/home/chris/nixos-configs
+    - name: run installation
+      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad
+      args:
+        chdir: /mnt/nixos-configs
 
-#    - name: shutdown
-#      shell: /run/current-system/sw/bin/shutdown now
+    - name: move nixos-configs to home
+      ansible.builtin.command: mv /mnt/nixos-configs /mnt/home/chris/nixos-configs
+
+    - name: change ownership of nixos-configs
+      ansible.builtin.command: chown -R chris:users /mnt/home/chris/nixos-configs
+
+    - name: shutdown
+      shell: /run/current-system/sw/bin/shutdown now
 
 # login to new system with chris user
 # change passwd with 'passwd' command
