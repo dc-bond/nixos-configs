@@ -5,8 +5,6 @@
     nixpkgs.url = "nixpkgs/nixos-23.11";
     home-manager.url = "github:nix-community/home-manager/release-23.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    inputs.sops-nix.url = "github:Mic92/sops-nix";
-    inputs.sops-nix-inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
@@ -20,11 +18,8 @@
   in {
     nixosConfigurations = {
       thinkpad = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux"
-        specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/configuration.nix
-          sops-nix.nixosModules.sops
           ];
       };
     };
