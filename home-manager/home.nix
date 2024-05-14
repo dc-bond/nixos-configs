@@ -27,6 +27,12 @@
     neovim
   ];
 
+  programs.git = {
+    enable = true;
+    userName  = "Chris Bond";
+    userEmail = "chris@dcbond.com";
+  };
+
   programs.home-manager.enable = true;
   programs.git.enable = true;
 
