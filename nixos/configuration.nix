@@ -1,5 +1,6 @@
 {
   inputs,
+  outputs, # if using home-manager as module?
   lib,
   config,
   pkgs,

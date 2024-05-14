@@ -25,7 +25,6 @@
   home.packages = with pkgs; [
     htop
     neovim
-    cowsay
   ];
 
   programs.home-manager.enable = true;
