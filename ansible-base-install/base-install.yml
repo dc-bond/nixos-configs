@@ -107,6 +107,29 @@
     - name: turn on swap
       ansible.builtin.command: swapon /mnt/.swapfile
 
+    - name: install git
+      ansible.builtin.command: nix-env -iA nixos.git
+
+    - name: clone git repo
+      ansible.builtin.command: git clone https://github.com/dc-bond/nixos-configs.git
+      args:
+        chdir: /mnt
+
+#    - name: run installation
+#      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad
+#      args:
+#        chdir: /mnt/nixos-configs
+#
+#    - name: move nixos-configs to home
+#      ansible.builtin.command: mv /mnt/nixos-configs /mnt/home/chris/nixos-configs
+#
+#    - name: change ownership of nixos-configs
+#      ansible.builtin.command: chown -R chris:users /mnt/home/chris/nixos-configs
+#
+#    - name: shutdown
+#      shell: /run/current-system/sw/bin/shutdown now
+
+
 #    - name: generate configuration files
 #      ansible.builtin.command: nixos-generate-config --root /mnt
 #
@@ -120,36 +143,3 @@
 #        owner: root
 #        state: directory
 #        mode: 0644
-#
-    - name: install git
-      ansible.builtin.command: nix-env -iA nixos.git
-
-    - name: clone git repo
-      ansible.builtin.command: git clone https://github.com/dc-bond/nixos-configs.git
-      args:
-        chdir: /mnt
-
-    - name: run installation
-      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad
-      args:
-        chdir: /mnt/nixos-configs
-
-    - name: move nixos-configs to home
-      ansible.builtin.command: mv /mnt/nixos-configs /mnt/home/chris/nixos-configs
-
-    - name: change ownership of nixos-configs
-      ansible.builtin.command: chown -R chris:users /mnt/home/chris/nixos-configs
-
-    - name: shutdown
-      shell: /run/current-system/sw/bin/shutdown now
-
-# login to new system with chris user
-# change passwd with 'passwd' command
-# add home manager channel with 'nix-channel --add https://github.com/nix-community/home-manager/archive/release-23.11.tar.gz home-manager'
-# update channel with 'nix-channel --update'
-# logout and back in
-# install home manager with 'nix-shell '<home-manager>' -A install'
-# get ssh private key onto machine
-# clone repo
-# replace home.nix
-# update configs
