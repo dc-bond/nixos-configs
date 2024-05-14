@@ -28,118 +28,103 @@
 
   tasks:
 
-    - name: load encrypted variables # sops requires gpg key on machine running ansible to decrypt secrets file (also requires yubikey to unlock gpg key)
-      community.sops.load_vars:
-        file: secrets.sops.yml
-
-    - name: abort if the host is not booted from the nixos install media
-      fail:
-        msg: "This host is not booted from the nixos install media!"
-      when: ansible_nodename != 'nixos'
-
-    - name: wipe install drive and all its partitions
-      ansible.builtin.command: find /dev -wholename "{{ install_drive }}*" -exec wipefs --force --all {} \;
-
-    - name: create boot partition
-      parted:
-        device: "{{ install_drive }}"
-        label: gpt
-        number: 1
-        part_end: 1024MB
-        name: boot
-        flags: [boot, esp]
-        state: present
-
-    - name: create root partition
-      parted:
-        device: "{{ install_drive }}"
-        label: gpt
-        number: 2
-        part_start: 1024MB
-        name: root
-        flags: [lvm]
-        state: present
-
-    - name: encrypt root partition
-      community.crypto.luks_device:
-        device: "{{ install_drive }}{{ root_partition_suffix }}"
-        state: "opened"
-        name: cryptroot
-        type: luks2
-        passphrase: "{{ passwd }}"
-
-    - name: create FAT32 filesystem in boot partition
-      filesystem:
-        dev: "{{ install_drive }}{{ boot_partition_suffix }}"
-        fstype: vfat
-        opts: -F 32 -n boot
-        force: yes
-
-    - name: create ext4 filesystem in root volume
-      filesystem:
-        dev: "/dev/mapper/cryptroot"
-        fstype: ext4
-        opts: -L cryptroot
-        force: yes
-        
-    - name: mount cryptroot filesystem
-      ansible.builtin.command: mount /dev/disk/by-label/cryptroot /mnt
-    
-    - name: create mountpoint for boot volume
-      file:
-        path: /mnt/boot
-        state: directory
-
-    - name: mount boot filesystem
-      ansible.builtin.command: mount /dev/disk/by-label/boot /mnt/boot
-
-    - name: create swapfile
-      ansible.builtin.command: dd if=/dev/zero of=/mnt/.swapfile bs=1M count=2k status=progress
-
-    - name: set permissions on swap file
-      ansible.builtin.file:
-        path: /mnt/.swapfile
-        mode: 0600
-
-    - name: format swap file
-      ansible.builtin.command: mkswap /mnt/.swapfile
-
-    - name: turn on swap
-      ansible.builtin.command: swapon /mnt/.swapfile
-
-    - name: install git
-      ansible.builtin.command: nix-env -iA nixos.git
+#    - name: load encrypted variables # sops requires gpg key on machine running ansible to decrypt secrets file (also requires yubikey to unlock gpg key)
+#      community.sops.load_vars:
+#        file: secrets.sops.yml
+#
+#    - name: abort if the host is not booted from the nixos install media
+#      fail:
+#        msg: "This host is not booted from the nixos install media!"
+#      when: ansible_nodename != 'nixos'
+#
+#    - name: wipe install drive and all its partitions
+#      ansible.builtin.command: find /dev -wholename "{{ install_drive }}*" -exec wipefs --force --all {} \;
+#
+#    - name: create boot partition
+#      parted:
+#        device: "{{ install_drive }}"
+#        label: gpt
+#        number: 1
+#        part_end: 1024MB
+#        name: boot
+#        flags: [boot, esp]
+#        state: present
+#
+#    - name: create root partition
+#      parted:
+#        device: "{{ install_drive }}"
+#        label: gpt
+#        number: 2
+#        part_start: 1024MB
+#        name: root
+#        flags: [lvm]
+#        state: present
+#
+#    - name: encrypt root partition
+#      community.crypto.luks_device:
+#        device: "{{ install_drive }}{{ root_partition_suffix }}"
+#        state: "opened"
+#        name: cryptroot
+#        type: luks2
+#        passphrase: "{{ passwd }}"
+#
+#    - name: create FAT32 filesystem in boot partition
+#      filesystem:
+#        dev: "{{ install_drive }}{{ boot_partition_suffix }}"
+#        fstype: vfat
+#        opts: -F 32 -n boot
+#        force: yes
+#
+#    - name: create ext4 filesystem in root volume
+#      filesystem:
+#        dev: "/dev/mapper/cryptroot"
+#        fstype: ext4
+#        opts: -L cryptroot
+#        force: yes
+#        
+#    - name: mount cryptroot filesystem
+#      ansible.builtin.command: mount /dev/disk/by-label/cryptroot /mnt
+#    
+#    - name: create mountpoint for boot volume
+#      file:
+#        path: /mnt/boot
+#        state: directory
+#
+#    - name: mount boot filesystem
+#      ansible.builtin.command: mount /dev/disk/by-label/boot /mnt/boot
+#
+#    - name: create swapfile
+#      ansible.builtin.command: dd if=/dev/zero of=/mnt/.swapfile bs=1M count=2k status=progress
+#
+#    - name: set permissions on swap file
+#      ansible.builtin.file:
+#        path: /mnt/.swapfile
+#        mode: 0600
+#
+#    - name: format swap file
+#      ansible.builtin.command: mkswap /mnt/.swapfile
+#
+#    - name: turn on swap
+#      ansible.builtin.command: swapon /mnt/.swapfile
+#
+#    - name: install git
+#      ansible.builtin.command: nix-env -iA nixos.git
 
     - name: clone git repo
       ansible.builtin.command: git clone https://github.com/dc-bond/nixos-configs.git
       args:
         chdir: /mnt
 
-#    - name: run installation
-#      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad
-#      args:
-#        chdir: /mnt/nixos-configs
-#
-#    - name: move nixos-configs to home
-#      ansible.builtin.command: mv /mnt/nixos-configs /mnt/home/chris/nixos-configs
+    - name: run installation
+      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad
+      args:
+        chdir: /mnt/nixos-configs
+
+    - name: move nixos-configs to home
+      ansible.builtin.command: mv /mnt/nixos-configs /mnt/home/chris/nixos-configs
 #
 #    - name: change ownership of nixos-configs
 #      ansible.builtin.command: chown -R chris:users /mnt/home/chris/nixos-configs
-#
-#    - name: shutdown
-#      shell: /run/current-system/sw/bin/shutdown now
 
-
-#    - name: generate configuration files
-#      ansible.builtin.command: nixos-generate-config --root /mnt
-#
-#    - name: remove default configuration.nix file
-#      ansible.builtin.command: find /mnt/etc/nixos/ -type f -iname 'configuration.nix' -delete
-
-#    - name: create /etc/nixos directory
-#      ansible.builtin.file:
-#        path: /mnt/etc/nixos
-#        group: root
-#        owner: root
-#        state: directory
-#        mode: 0644
+    - name: shutdown
+      shell: /run/current-system/sw/bin/shutdown now

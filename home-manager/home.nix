@@ -1,16 +1,37 @@
-{ pkgs, ... }:
-
 {
+  inputs,
+  lib,
+  config,
+  pkgs,
+  ...
+}: {
+  imports = [
+  ];
 
-  home.username = "chris";
-  home.homeDirectory = "/home/chris";
+  nixpkgs = {
+    overlays = [
+    ];
+    config = {
+      allowUnfree = true;
+      allowUnfreePredicate = _: true;
+    };
+  };
 
-  home.stateVersion = "23.11";
+  home = {
+    username = "chris";
+    homeDirectory = "/home/chris";
+  };
 
   home.packages = with pkgs; [
     htop
-    vim
+    neovim
     cowsay
   ];
 
+  programs.home-manager.enable = true;
+  programs.git.enable = true;
+
+  systemd.user.startServices = "sd-switch";
+
+  home.stateVersion = "23.11";
 }
