@@ -7,6 +7,7 @@
 }: {
   imports = [
     ./hardware-configuration.nix
+    inputs.home-manager.nixosModules.home-manager # import home-manager module
   ];
 
   nixpkgs = {
@@ -49,6 +50,13 @@
       openssh.authorizedKeys.keys = [ 
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOOuXAgAXvwd1oKv7tZAR/jdeyXcfj41xb6hrMdP04G7 chris@dcbond.com" 
         ];
+    };
+  };
+
+  home-manager = {
+    extraSpecialArgs = { inherit inputs outputs; };
+    users = {
+      chris = import ../home-manager/home.nix;
     };
   };
 
