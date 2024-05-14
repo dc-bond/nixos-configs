@@ -123,5 +123,13 @@
     - name: move nixos-configs to home
       ansible.builtin.command: mv /mnt/nixos-configs /mnt/home/chris/nixos-configs
 
+    - name: change nixos-configs directory ownership, group and permissions
+      ansible.builtin.file:
+        path: /mnt/home/chris/nixos-configs
+        state: directory
+        recurse: yes
+        owner: chris
+        group: users
+
     - name: shutdown
       shell: /run/current-system/sw/bin/shutdown now
