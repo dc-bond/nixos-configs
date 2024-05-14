@@ -11,13 +11,13 @@
     self,
     nixpkgs,
     home-manager,
-    sops-nix,
     ...
   } @ inputs: let
     inherit (self) outputs;
   in {
     nixosConfigurations = {
       thinkpad = nixpkgs.lib.nixosSystem {
+        specialArgs = {inherit inputs outputs;};
         modules = [
           ./nixos/configuration.nix
           ];
