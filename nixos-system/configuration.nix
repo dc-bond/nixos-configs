@@ -51,7 +51,6 @@
       extraGroups = ["wheel"];
       isNormalUser = true;
       openssh.authorizedKeys.keys = [ 
-        #"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOOuXAgAXvwd1oKv7tZAR/jdeyXcfj41xb6hrMdP04G7 chris@dcbond.com" 
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDJZBJOhg+DeRoH1UljG6FniW66qtYVmJNYtreg54WL3 chris@dcbond.com"
         ];
     };
@@ -84,6 +83,8 @@
   };
 
   programs.mtr.enable = true;
+
+  programs.ssh.startAgent = true;
 
   system.stateVersion = "23.11"; # first install nix version pin for maintaining backward compatibility with application data - do not revise
 
