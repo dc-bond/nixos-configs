@@ -19,7 +19,7 @@
       thinkpad = nixpkgs.lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         modules = [
-          ./nixos/configuration.nix
+          ./nixos-system/configuration.nix
           ];
       };
     };

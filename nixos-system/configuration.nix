@@ -39,7 +39,7 @@
 
   environment.systemPackages = with pkgs; [ # search system packages with 'nix search [package]'
     wget
-    vim
+    neovim
     git
   ];
 
@@ -81,11 +81,11 @@
   };
 
   programs.mtr.enable = true;
-  programs.gnupg.agent = {
-    enable = true;
-    enableSSHSupport = true;
-  };
 
+  #programs.gnupg.agent = {
+  #  enable = true;
+  #  enableSSHSupport = true;
+  #};
 
   system.stateVersion = "23.11"; # first install nix version pin for maintaining backward compatibility with application data - do not revise
 
