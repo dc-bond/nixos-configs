@@ -8,6 +8,7 @@
 }: {
   imports = [
     ./hardware-configuration.nix
+    ./system-modules/yubikey-gpg.nix
     inputs.home-manager.nixosModules.home-manager # import home-manager module
   ];
 
