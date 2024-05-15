@@ -8,7 +8,7 @@
 }: {
   imports = [
     ./hardware-configuration.nix
-    ./system-modules/yubikey-gpg.nix
+    #./system-modules/yubikey-gpg.nix
     inputs.home-manager.nixosModules.home-manager # import home-manager module
   ];
 
@@ -42,6 +42,7 @@
     wget
     neovim
     git
+    usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
   ];
 
   users.users = {
@@ -82,11 +83,6 @@
   };
 
   programs.mtr.enable = true;
-
-  #programs.gnupg.agent = {
-  #  enable = true;
-  #  enableSSHSupport = true;
-  #};
 
   system.stateVersion = "23.11"; # first install nix version pin for maintaining backward compatibility with application data - do not revise
 

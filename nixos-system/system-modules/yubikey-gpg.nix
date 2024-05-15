@@ -5,11 +5,13 @@
     gnupg
     pcsclite
     yubikey-personalization
+    yubikey-manager
   ];
 
   environment.shellInit = ''
-    gpg-connect-agent /bye
+    export GPG_TTY="$(tty)"
     export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+    gpgconf --launch gpg-agent
   '';
 
   programs.ssh.startAgent = false;
@@ -25,3 +27,5 @@
     yubikey-personalization
   ];
 }
+    #gpg-connect-agent /bye
+    #export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
