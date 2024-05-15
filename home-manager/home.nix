@@ -33,6 +33,10 @@
     userEmail = "chris@dcbond.com";
   };
 
+  # git remote add nixos-configs https://github.com/dc-bond/nixos-configs.git
+  # git remote rm origin
+  # git remote set-url nixos-configs git@github.com:dc-bond/nixos-configs.git 
+
   programs.home-manager.enable = true;
 
   systemd.user.startServices = "sd-switch";
