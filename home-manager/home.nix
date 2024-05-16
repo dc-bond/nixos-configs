@@ -25,7 +25,8 @@
   home.packages = with pkgs; [
     htop
     eza # modern replacement for 'ls'
-    pfetch # system info on shell startup
+    #pfetch # system info displayed on shell startup
+    pfetch-rs # system info displayed on shell startup
     glances
   ];
 
@@ -36,15 +37,16 @@
       ls = "eza -all --long -g -h --color=always --group-directories-first --git";
       vim = "nvim";
 
-      update = "sudo nixos-rebuild switch --flake ~/nixos-configs";
-      #flake-update = "nix flake update ~/nixos-configs/flake.nix";
+      rebuild = "sudo nixos-rebuild switch --flake ~/nixos-configs";
+      flake-update = "nix flake update ~/nixos-configs/flake.nix";
       #upgrade = "sudo nixos-rebuild switch --upgrade --flake ~/nixos-configs#thinkpad";
 
       configsys = "nvim ~/nixos-configs/system/configuration.nix";
       confighome = "nvim ~/nixos-configs/home-manager/home.nix";
 
-      #addconfig = "cd ~/nixos-configs && git add . && cd ~";
-      #pushconfig = "cd ~/nixos-configs && git add -A && git commit && git push --repo https://github.com/dc-bond/nixos-configs.git && cd ~";
+      stageconfig = "cd ~/nixos-configs && git add .";
+      pushconfig = "cd ~/nixos-configs && git add . && git commit && git push --repo git@github.com:dc-bond/nixos-configs.git";
+      pullconfig = "cd ~/nixos-configs && git pull --repo git@github.com:dc-bond/nixos-configs.git";
     };
     initExtra = ''
       pfetch
