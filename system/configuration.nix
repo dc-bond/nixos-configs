@@ -40,6 +40,7 @@
 
   environment.systemPackages = with pkgs; [ # search system packages with 'nix search [package]'
     wget
+    #zsh # z-shell installed system-wide to source necessary files
     neovim
     git
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
@@ -50,6 +51,8 @@
       initialPassword = "changeme";
       extraGroups = ["wheel"];
       isNormalUser = true;
+      #shell = pkgs.zsh # user-specific z-shell configs in home.nix
+      #useDefaultShell = true; ?
       openssh.authorizedKeys.keys = [ 
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDJZBJOhg+DeRoH1UljG6FniW66qtYVmJNYtreg54WL3 chris@dcbond.com"
         ];
@@ -83,6 +86,9 @@
   };
 
   programs.mtr.enable = true;
+
+  #programs.zsh.enable = true; # z-shell enabled system-wide to source necessary files
+  #environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
 
   programs.ssh = {
     startAgent = true;
