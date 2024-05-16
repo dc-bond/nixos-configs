@@ -25,8 +25,7 @@
   home.packages = with pkgs; [
     htop
     eza # modern replacement for 'ls'
-    #pfetch # system info displayed on shell startup
-    pfetch-rs # system info displayed on shell startup
+    pfetch # system info displayed on shell startup
     glances
   ];
 
