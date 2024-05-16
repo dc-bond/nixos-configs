@@ -43,8 +43,8 @@
       configsys = "nvim ~/nixos-configs/system/configuration.nix";
       confighome = "nvim ~/nixos-configs/home-manager/home.nix";
 
-      addconfig = "cd ~/nixos-configs && git add -A && cd ~";
-      pushconfig = "cd ~/nixos-configs && git add -A && git commit && git push --repo https://github.com/dc-bond/nixos-configs.git && cd ~";
+      #addconfig = "cd ~/nixos-configs && git add . && cd ~";
+      #pushconfig = "cd ~/nixos-configs && git add -A && git commit && git push --repo https://github.com/dc-bond/nixos-configs.git && cd ~";
     };
     initExtra = ''
       pfetch
