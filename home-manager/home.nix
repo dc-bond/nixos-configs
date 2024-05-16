@@ -34,8 +34,8 @@
     #autosuggestion.enable = true;
     syntaxHighlighting.enable = true;
     shellAliases = {
-      ls = "ls -alh";
-      #ls = "eza -all --long -g -h --color=always --group-directories-first --git"
+      #ls = "ls -alh";
+      ls = "eza -all --long -g -h --color=always --group-directories-first --git";
       rebuild = "sudo nixos-rebuild switch --flake /home/chris/nixos-configs";
     };
     history.size = 5000;
