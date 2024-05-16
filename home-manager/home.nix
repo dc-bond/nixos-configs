@@ -45,7 +45,7 @@
       confighome = "nvim ~/nixos-configs/home-manager/home.nix";
 
       stageconfig = "cd ~/nixos-configs && git add .";
-      pushconfig = "cd ~/nixos-configs && git add . && git commit && git push --repo git@github.com:dc-bond/nixos-configs.git";
+      pushconfig = "cd ~/nixos-configs && git add . && git commit && git push git@github.com:dc-bond/nixos-configs.git";
       pullconfig = "cd ~/nixos-configs && git pull --repo git@github.com:dc-bond/nixos-configs.git";
     };
     initExtra = ''
