@@ -40,8 +40,7 @@
   networking.hostName = "thinkpad";
 
   environment.systemPackages = with pkgs; [ # search system packages with 'nix search [package]'
-    #wget
-    pcsclite # conflicts with gnupg's built-in scdaemon way of interfacing with smartcards?
+    pcsclite 
     neovim
     git # installed system-wide to allow ansible root user to clone repo on first install
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
@@ -89,17 +88,15 @@
     useXkbConfig = true; # use xkb.options in tty.
   };
 
-  #programs.mtr.enable = true;
-
 # Z-SHELL SYSTEM-WIDE CONFIGS ############################################################################################################
 
   programs.zsh = {
     enable = true; # z-shell enabled system-wide to source necessary files for users
-    #loginShellInit = "" # applied to z-shell login shell (.zprofile)
+    #loginShellInit = ''
     #  export GPG_TTY="$(tty)"
     #  export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
     #  gpgconf --launch gpg-agent
-    #"";
+    #'';
   };
   environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
   

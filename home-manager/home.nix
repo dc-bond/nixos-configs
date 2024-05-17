@@ -33,9 +33,9 @@
 
   programs.zsh = {
     enableCompletion = true;
-    initExtra = "" # applied to interactive z-shells (.zshrc)
+    initExtra = ''
       pfetch
-    "";
+    '';
     shellAliases = {
       ls = "eza -all --long -g -h --color=always --group-directories-first --git";
       vim = "nvim";
