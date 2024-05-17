@@ -45,7 +45,7 @@
 
       stageconfig = "cd ~/nixos-configs && git add .";
       pushconfig = "cd ~/nixos-configs && git add . && git commit && git push git@github.com:dc-bond/nixos-configs.git";
-      pullconfig = "cd ~/nixos-configs && git pull --repo git@github.com:dc-bond/nixos-configs.git";
+      pullconfig = "cd ~/nixos-configs && git pull git@github.com:dc-bond/nixos-configs.git";
     };
     initExtra = ''
       pfetch
@@ -62,9 +62,9 @@
     history.path = "${config.xdg.dataHome}/zsh/history";
   };
 
-  #programs.starship.enable = true;
-  #programs.starship.settings = {
-  #  add_newline = false;
+  programs.starship.enable = true;
+  programs.starship.settings = {
+    add_newline = true;
   #  format = "$shlvl$shell$username$hostname$nix_shell$git_branch$git_commit$git_state$git_status$directory$jobs$cmd_duration$character";
   #  shlvl = {
   #    disabled = false;
@@ -78,10 +78,13 @@
   #    bash_indicator = "[BASH](bright-white) ";
   #    zsh_indicator = "[ZSH](bright-white) ";
   #  };
-  #  username = {
-  #    style_user = "bright-white bold";
-  #    style_root = "bright-red bold";
-  #  };
+    username = {
+      style_user = "bold yellow";
+      style_root = "bold red";
+      format = "[$user](style)@"
+      disabled = false
+      show_always = true
+    };
   #  hostname = {
   #    style = "bright-green bold";
   #    ssh_only = true;
@@ -123,7 +126,7 @@
   #    success_symbol = "[\\$](bright-green bold)";
   #    error_symbol = "[\\$](bright-red bold)";
   #  };
-  #};
+  };
 
   programs.git = {
     enable = true;
