@@ -33,6 +33,9 @@
 
   programs.zsh = {
     enableCompletion = true;
+    initExtra = "" # applied to interactive z-shells (.zshrc)
+      pfetch
+    "";
     shellAliases = {
       ls = "eza -all --long -g -h --color=always --group-directories-first --git";
       vim = "nvim";
@@ -48,10 +51,6 @@
       pushconfig = "cd ~/nixos-configs && git add . && git commit && git push git@github.com:dc-bond/nixos-configs.git";
       pullconfig = "cd ~/nixos-configs && git pull git@github.com:dc-bond/nixos-configs.git";
     };
-    initExtra = ''
-      pfetch
-      # eval "$(starship init zsh)"
-    '';
     zplug = {
       enable = true;
       plugins = [
@@ -115,7 +114,7 @@
     };
   };
 
-  #services.ssh-agent.enable = true; # default is false, comment out if using yubikey-gpg module  
+  services.ssh-agent.enable = true; # default is false, comment out if using yubikey-gpg module  
   programs.ssh = {
     enable = true;
     matchBlocks = {

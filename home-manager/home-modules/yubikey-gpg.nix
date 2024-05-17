@@ -13,14 +13,6 @@
     #pinentry-rofi # use rofi for gpg pinentry interface
   ];
 
-  #programs.zsh = {
-  #  initExtra = ''
-  #    export GPG_TTY="$(tty)"
-  #    export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-  #    gpgconf --launch gpg-agent
-  #  '';
-  #};
-
   programs.gpg = {
     enable = true;
     homedir = "${config.xdg.dataHome}/gnupg";
