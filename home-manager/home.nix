@@ -60,6 +60,7 @@
     history.size = 5000;
     history.path = "${config.xdg.dataHome}/zsh/history";
   };
+  environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
 
   programs.starship.enable = true;
   programs.starship.enableZshIntegration = true;
