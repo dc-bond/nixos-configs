@@ -112,9 +112,9 @@
     };
   };
 
+  services.ssh-agent.enable = true;
   programs.ssh = {
-    startAgent = true;
-    agentTimeout = "2h";
+    enable = true;
     extraConfig = ''
       Host opticon
         HostName opticon
