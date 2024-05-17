@@ -4,7 +4,9 @@
   config,
   pkgs,
   ...
-}: {
+}: 
+
+{
   imports = [
     ./home-modules/yubikey-gpg.nix
   ];

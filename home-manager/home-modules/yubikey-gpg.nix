@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{ 
+  config, 
+  lib, 
+  pkgs, 
+  ... 
+}: 
 
 {
   home.packages = with pkgs; [
@@ -39,7 +44,7 @@
   
   #services.ssh-agent.enable = false;
   #services.pcscd.enable = true;
-  services.udev.packages = with pkgs; [
-    yubikey-personalization
-  ];
+  #services.udev.packages = with pkgs; [ # goes in configuration.nix?
+  #  yubikey-personalization
+  #];
 }

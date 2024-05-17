@@ -5,7 +5,9 @@
   config,
   pkgs,
   ...
-}: {
+}: 
+
+{
   imports = [
     ./hardware-configuration.nix
     #./system-modules/yubikey-gpg.nix
