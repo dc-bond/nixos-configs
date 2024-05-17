@@ -95,8 +95,10 @@
 
   programs.zsh.enable = true; # z-shell enabled system-wide to source necessary files for users
   environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
+  
+# SMARTCARD/YUBIKEY INTERFACE SYSTEM-WIDE ################################################################################################33
 
-  services.pcscd.enable = true;# conflicts with gnupg's built-in scdaemon way of interfacing with smartcards?
+  services.pcscd.enable = true;
   
 # ORIGINAL SYSTEM STATE VERSION ###########################################################################################################
 

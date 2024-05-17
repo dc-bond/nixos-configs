@@ -13,13 +13,13 @@
     #pinentry-rofi # use rofi for gpg pinentry interface
   ];
 
-  programs.zsh = {
-    initExtra = ''
-      export GPG_TTY="$(tty)"
-      export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-      gpgconf --launch gpg-agent
-    '';
-  };
+  #programs.zsh = {
+  #  initExtra = ''
+  #    export GPG_TTY="$(tty)"
+  #    export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+  #    gpgconf --launch gpg-agent
+  #  '';
+  #};
 
   programs.gpg = {
     enable = true;
@@ -51,13 +51,13 @@
 
   services.gpg-agent = {
     enable = true;
-    enableSshSupport = true;
+    #enableSshSupport = true;
     #enableZshIntegration = true;
     #pinentryFlavor = "pinentry-rofi";
     enableScDaemon = true;
   };
   
-  services.ssh-agent.enable = false;
+  #services.ssh-agent.enable = false;
   #services.udev.packages = with pkgs; [ # goes in configuration.nix?
   #  yubikey-personalization
   #];
