@@ -25,7 +25,7 @@
     enable = true;
     homedir = "${config.xdg.dataHome}/gnupg";
     settings = {
-      #use-agent = true; # to enable smartcard/ssh support?
+      use-agent = true; # to enable smartcard/ssh support?
       no-greeting = true;
       armor = true;
       no-emit-version = true;
@@ -49,7 +49,7 @@
     };
   };
   
-  #services.ssh-agent.enable = false;
+  services.ssh-agent.enable = false;
   #services.pcscd.enable = true;# conflicts with gnupg's built-in scdaemon way of interfacing with smartcards?
   #services.udev.packages = with pkgs; [ # goes in configuration.nix?
   #  yubikey-personalization
