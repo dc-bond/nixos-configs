@@ -88,23 +88,23 @@
   programs.zsh.enable = true; # z-shell enabled system-wide to source necessary files for users
   #environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
 
-  programs.ssh = {
-    startAgent = true;
-    extraConfig = ''
-      Host opticon
-        HostName opticon
-	      PreferredAuthentications publickey
-	      User xixor
-	      Port 39800
-	      IdentityFile ~/.ssh/chris@dcbond.com-ssh.key
-      Host github
-        HostName github.com
-	      PreferredAuthentications publickey
-	      User chris@dcbond.com
-	      Port 22
-	      IdentityFile ~/.ssh/chris@dcbond.com-ssh.key
-    '';
-  };
+  #programs.ssh = {
+  #  startAgent = true;
+  #  extraConfig = ''
+  #    Host opticon
+  #      HostName opticon
+	#      PreferredAuthentications publickey
+	#      User xixor
+	#      Port 39800
+	#      IdentityFile ~/.ssh/chris@dcbond.com-ssh.key
+  #    Host github
+  #      HostName github.com
+	#      PreferredAuthentications publickey
+	#      User chris@dcbond.com
+	#      Port 22
+	#      IdentityFile ~/.ssh/chris@dcbond.com-ssh.key
+  #  '';
+  #};
 
   system.stateVersion = "23.11"; # first install nix version pin for maintaining backward compatibility with application data - do not revise
 
