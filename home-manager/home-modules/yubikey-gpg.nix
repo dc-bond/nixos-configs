@@ -21,12 +21,11 @@
     settings = {
       default-key = "A8DD4B51A93E2D9C15B4D27F0419FDA34202A683";
       no-greeting = true;
-      #armor
-      #comment ""
-      #no-emit-version
-      #no-comments
+      armor = true;
+      no-emit-version = true;
+      no-comments = true
       #keyid-format = "0xlong"
-      #with-fingerprint
+      with-fingerprint = true;
       #list-options = "show-uid-validity"
       #verify-options = "show-uid-validity"
       #use-agent
