@@ -7,19 +7,17 @@
 
 {
   home.packages = with pkgs; [
-    #yubikey-personalization
+    #yubikey-personalization # tool required to make changes to yubikeys
     #yubikey-manager
     #yubioath-desktop # desktop tool to setup OTP codes on yubikey
     #pinentry-rofi # use rofi for gpg pinentry interface
   ];
 
-  #environment.shellInit = ''
-  #  export GPG_TTY="$(tty)"
-  #  export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-  #  gpgconf --launch gpg-agent
-    #gpg-connect-agent /bye
-    #export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-  #'';
+  environment.shellInit = ''
+    export GPG_TTY="$(tty)"
+    export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+    gpgconf --launch gpg-agent
+  '';
 
   programs.gpg = {
     enable = true;
@@ -51,14 +49,13 @@
 
   services.gpg-agent = {
     enable = true;
-    #enableBashIntegration = true;
-    #enableSshSupport = true;
+    enableSshSupport = true;
     #enableZshIntegration = true;
     #pinentryFlavor = "pinentry-rofi";
     enableScDaemon = true;
   };
   
-  #services.ssh-agent.enable = false;
+  services.ssh-agent.enable = false;
   #services.udev.packages = with pkgs; [ # goes in configuration.nix?
   #  yubikey-personalization
   #];
