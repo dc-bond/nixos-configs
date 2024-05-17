@@ -92,11 +92,11 @@
 
   programs.zsh = {
     enable = true; # z-shell enabled system-wide to source necessary files for users
-    #loginShellInit = ''
-    #  export GPG_TTY="$(tty)"
-    #  export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-    #  gpgconf --launch gpg-agent
-    #'';
+    loginShellInit = ''
+      export GPG_TTY="$(tty)"
+      export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+      gpgconf --launch gpg-agent
+    '';
   };
   environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
   
