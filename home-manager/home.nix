@@ -22,11 +22,10 @@
     homeDirectory = "/home/chris";
   };
 
-  home.packages = with pkgs; [
+  home.packages = with pkgs; [ # only for installing packages that don't come with a programs.enable module
     eza # modern replacement for 'ls'
     pfetch # system info displayed on shell startup
     glances # system monitor tool
-    #starship # adds prompt customizations to shell
   ];
 
   programs.zsh = {
@@ -37,7 +36,7 @@
       vim = "nvim";
 
       rebuild = "sudo nixos-rebuild switch --flake ~/nixos-configs";
-      flake-update = "nix flake update ~/nixos-configs";
+      #flake-update = "nix flake update ~/nixos-configs";
       #upgrade = "sudo nixos-rebuild switch --upgrade --flake ~/nixos-configs#thinkpad";
 
       configsys = "nvim ~/nixos-configs/system/configuration.nix";
@@ -71,12 +70,6 @@
     package = {
       disabled = false;
     };
-    #shell = {
-    #  disabled = false;
-    #  format = "$indicator";
-    #  bash_indicator = "[BASH](bright-white) ";
-    #  zsh_indicator = "[ZSH](bright-white) ";
-    #};
     username = {
       style_user = "bold yellow";
       style_root = "bold red";
