@@ -117,11 +117,11 @@
     enable = true;
     matchBlocks = {
       "opticon" = {
-        hostname = "opticon";
-        user = "xixor";
-        port = 39800;
-        identityFile = "~/.ssh/chris@dcbond.com-ssh.key";
-        #PreferredAuthentications = publickey;
+        Hostname = "opticon";
+        User = "xixor";
+        Port = 39800;
+        IdentityFile = "~/.ssh/chris@dcbond.com-ssh.key";
+        PreferredAuthentications = "publickey";
       };
     };
   };
