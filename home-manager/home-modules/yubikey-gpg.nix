@@ -7,9 +7,10 @@
 
 {
   home.packages = with pkgs; [
-    pcsclite
+    #pcsclite # conflicts with gnupg's built-in scdaemon way of interfacing with smartcards?
     yubikey-personalization
     #yubikey-manager
+    #yubioath-desktop # desktop tool to setup OTP codes on yubikey
   ];
 
   #environment.shellInit = ''
@@ -24,7 +25,7 @@
     enable = true;
     homedir = "${config.xdg.dataHome}/gnupg";
     settings = {
-      #use-agent = true;
+      #use-agent = true; # to enable ssh support?
       no-greeting = true;
       armor = true;
       no-emit-version = true;
@@ -43,8 +44,13 @@
   };
   
   #services.ssh-agent.enable = false;
-  #services.pcscd.enable = true;
+  #services.pcscd.enable = true;# conflicts with gnupg's built-in scdaemon way of interfacing with smartcards?
   #services.udev.packages = with pkgs; [ # goes in configuration.nix?
   #  yubikey-personalization
   #];
 }
+
+# NOTE IF USING MULTIPLE YUBIKEYS WITH SAME PRIVATE KEYS LOADED USE FOLLOWING TO SWITCH TO NEW YUBIKEY
+# 'killall gpg-agent'
+# 'rm -r ~/.gnupg/private-keys-v1.d/'
+# 'gpg --card-status'
