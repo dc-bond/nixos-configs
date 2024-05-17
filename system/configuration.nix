@@ -41,7 +41,7 @@
 
   environment.systemPackages = with pkgs; [ # search system packages with 'nix search [package]'
     #wget
-    #pcsclite # conflicts with gnupg's built-in scdaemon way of interfacing with smartcards?
+    pcsclite # conflicts with gnupg's built-in scdaemon way of interfacing with smartcards?
     neovim
     git # installed system-wide to allow ansible root user to clone repo on first install
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
@@ -96,7 +96,7 @@
   programs.zsh.enable = true; # z-shell enabled system-wide to source necessary files for users
   environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
 
-  #services.pcscd.enable = true;# conflicts with gnupg's built-in scdaemon way of interfacing with smartcards?
+  services.pcscd.enable = true;# conflicts with gnupg's built-in scdaemon way of interfacing with smartcards?
   
 # ORIGINAL SYSTEM STATE VERSION ###########################################################################################################
 

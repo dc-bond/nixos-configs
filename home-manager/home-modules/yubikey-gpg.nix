@@ -10,6 +10,7 @@
     #yubikey-personalization
     #yubikey-manager
     #yubioath-desktop # desktop tool to setup OTP codes on yubikey
+    #pinentry-rofi # use rofi for gpg pinentry interface
   ];
 
   #environment.shellInit = ''
@@ -24,7 +25,7 @@
     enable = true;
     homedir = "${config.xdg.dataHome}/gnupg";
     settings = {
-      #use-agent = true; # to enable smartcard/ssh support?
+      use-agent = true; # to enable smartcard/ssh support?
       no-greeting = true;
       armor = true;
       no-emit-version = true;
@@ -51,8 +52,9 @@
   services.gpg-agent = {
     enable = true;
     #enableBashIntegration = true;
-    enableSshSupport = true;
-    #pinentryFlavor = "qt";
+    #enableSshSupport = true;
+    #enableZshIntegration = true;
+    #pinentryFlavor = "pinentry-rofi";
     enableScDaemon = true;
   };
   
