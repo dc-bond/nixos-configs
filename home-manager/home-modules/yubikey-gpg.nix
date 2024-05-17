@@ -19,7 +19,7 @@
     enable = true;
     homedir = "${config.xdg.dataHome}/gnupg";
     settings = {
-      default-key = "A8DD4B51A93E2D9C15B4D27F0419FDA34202A683"
+      default-key = "A8DD4B51A93E2D9C15B4D27F0419FDA34202A683";
       #no-greeting
       #armor
       #comment ""
