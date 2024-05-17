@@ -115,20 +115,29 @@
   services.ssh-agent.enable = true;
   programs.ssh = {
     enable = true;
-    extraConfig = ''
-      Host opticon
-        HostName opticon
-	      PreferredAuthentications publickey
-	      User xixor
-	      Port 39800
-	      IdentityFile ~/.ssh/chris@dcbond.com-ssh.key
-      Host github
-        HostName github.com
-	      PreferredAuthentications publickey
-	      User chris@dcbond.com
-	      Port 22
-	      IdentityFile ~/.ssh/chris@dcbond.com-ssh.key
-    '';
+    matchBlocks = {
+      "opticon" = {
+        hostname = "opticon";
+        user = "xixor";
+        port = 39800;
+        identityFile = "~/.ssh/chris@dcbond.com-ssh.key";
+        preferrredAuthentications = "publickey";
+      };
+    }
+    #extraConfig = ''
+    #  #Host opticon
+    #  #  HostName opticon
+	  #  #  PreferredAuthentications publickey
+	  #  #  User xixor
+	  #  #  Port 39800
+	  #  #  IdentityFile ~/.ssh/chris@dcbond.com-ssh.key
+    #  Host github
+    #    HostName github.com
+	  #    PreferredAuthentications publickey
+	  #    User chris@dcbond.com
+	  #    Port 22
+	  #    IdentityFile ~/.ssh/chris@dcbond.com-ssh.key
+    #'';
   };
 
   programs.git = {
