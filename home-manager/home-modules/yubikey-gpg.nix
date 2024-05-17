@@ -54,7 +54,7 @@
     enableSshSupport = true;
     #enableZshIntegration = true;
     #pinentryFlavor = "pinentry-rofi";
-    pinentryFlavor = "pinentry-curses";
+    #pinentryFlavor = "pinentry-curses";
     enableScDaemon = true;
   };
   
