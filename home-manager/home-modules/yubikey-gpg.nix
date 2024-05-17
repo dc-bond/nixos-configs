@@ -24,10 +24,10 @@
       armor = true;
       no-emit-version = true;
       no-comments = true;
-      #keyid-format = "0xlong"
+      keyid-format = "0xlong";
       with-fingerprint = true;
-      #list-options = "show-uid-validity"
-      #verify-options = "show-uid-validity"
+      list-options = "show-uid-validity";
+      verify-options = "show-uid-validity";
       #use-agent
       #keyserver = "hkps://keyserver.ubuntu.com"
       #personal-cipher-preferences = "AES256 TWOFISH AES192 AES"
