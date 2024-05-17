@@ -65,67 +65,58 @@
   programs.starship.enable = true;
   programs.starship.settings = {
     add_newline = true;
-  #  format = "$shlvl$shell$username$hostname$nix_shell$git_branch$git_commit$git_state$git_status$directory$jobs$cmd_duration$character";
-  #  shlvl = {
-  #    disabled = false;
-  #    symbol = "ﰬ";
-  #    style = "bright-red bold";
-  #  };
-  #  shell = {
-  #    disabled = false;
-  #    format = "$indicator";
-  #    fish_indicator = "";
-  #    bash_indicator = "[BASH](bright-white) ";
-  #    zsh_indicator = "[ZSH](bright-white) ";
-  #  };
+    line_break = {
+      disabled = true;
+    };
+    package = {
+      disabled = false;
+    };
+    #shell = {
+    #  disabled = false;
+    #  format = "$indicator";
+    #  bash_indicator = "[BASH](bright-white) ";
+    #  zsh_indicator = "[ZSH](bright-white) ";
+    #};
     username = {
       style_user = "bold yellow";
       style_root = "bold red";
-      format = "[$user](style)@"
-      disabled = false
-      show_always = true
+      format = "[$user](style)@";
+      disabled = false;
+      show_always = true;
     };
-  #  hostname = {
-  #    style = "bright-green bold";
-  #    ssh_only = true;
-  #  };
-  #  nix_shell = {
-  #    symbol = "";
-  #    format = "[$symbol$name]($style) ";
-  #    style = "bright-purple bold";
-  #  };
-  #  git_branch = {
-  #    only_attached = true;
-  #    format = "[$symbol$branch]($style) ";
-  #    symbol = "שׂ";
-  #    style = "bright-yellow bold";
-  #  };
-  #  git_commit = {
-  #    only_detached = true;
-  #    format = "[ﰖ$hash]($style) ";
-  #    style = "bright-yellow bold";
-  #  };
-  #  git_state = {
-  #    style = "bright-purple bold";
-  #  };
-  #  git_status = {
-  #    style = "bright-green bold";
-  #  };
-  #  directory = {
-  #    read_only = " ";
-  #    truncation_length = 0;
-  #  };
-  #  cmd_duration = {
-  #    format = "[$duration]($style) ";
-  #    style = "bright-blue";
-  #  };
-  #  jobs = {
-  #    style = "bright-green bold";
-  #  };
-  #  character = {
-  #    success_symbol = "[\\$](bright-green bold)";
-  #    error_symbol = "[\\$](bright-red bold)";
-  #  };
+    hostname = {
+      disabled = false;
+      ssh_only = false;
+      format = "[$hostname](bold blue): ";
+    };
+    nix_shell = {
+      symbol = " ";
+      style = "bold bright-purple";
+    };
+    docker_context = {
+      symbol = " ";
+      style = "blue bold";
+    };
+    python = {
+      symbol = " ";
+      style = "green bold";
+      pyenv_version_name = false;
+      python_binary = "python3";
+    };
+    directory = {
+      #read_only = "";
+      truncation_length = 10;
+      truncate_to_repo = false;
+      format = "[$path]($style)[$lock_symbol]($lock_style) ";
+    };
+    cmd_duration = {
+      format = "took [$duration]($style) ";
+      min_time = 10000;  # show command duration over 10,000 milliseconds (10 sec)
+    };
+    character = {
+      success_symbol = "[➜](bold green) ";
+      error_symbol = "[✖](bold red) ";
+    };
   };
 
   programs.git = {
