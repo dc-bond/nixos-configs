@@ -133,3 +133,7 @@
 
     - name: shutdown
       shell: /run/current-system/sw/bin/shutdown now
+
+# change password
+# change ownership of nixos-configs
+# ensure yubikey loaded and gpg auth key loaded into gpg-agent 'via ssh-add -l'
