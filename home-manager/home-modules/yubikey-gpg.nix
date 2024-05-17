@@ -32,7 +32,7 @@
       no-comments = true;
       no-symkey-cache = true;
       require-cross-certification = true;
-      throw-keyids;
+      throw-keyids = true;
       with-fingerprint = true;
       default-key = "A8DD4B51A93E2D9C15B4D27F0419FDA34202A683";
       keyid-format = "0xlong";
