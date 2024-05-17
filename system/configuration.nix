@@ -40,7 +40,6 @@
 
   environment.systemPackages = with pkgs; [ # search system packages with 'nix search [package]'
     #wget
-    zsh # z-shell installed system-wide to source necessary files
     neovim
     git # installed system-wide to allow ansible root user to clone repo on first install
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
@@ -86,7 +85,7 @@
 
   programs.mtr.enable = true;
 
-  #programs.zsh.enable = true; # z-shell enabled system-wide to source necessary files
+  programs.zsh.enable = true; # z-shell enabled system-wide to source necessary files for users
   #environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
 
   programs.ssh = {
