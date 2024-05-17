@@ -64,6 +64,8 @@
     };
   };
 
+# SSH SERVER ###########################################################################################################################
+
   services.openssh.enable = true; # enable openssh service
   services.openssh.ports = [
     28764
@@ -74,6 +76,8 @@
     KbdInteractiveAuthentication = false;
   };
 
+# TIMEZONE ###########################################################################################################################
+
   time.timeZone = "America/New_York"; # set timezone
 
   i18n.defaultLocale = "en_US.UTF-8";
@@ -83,10 +87,14 @@
     useXkbConfig = true; # use xkb.options in tty.
   };
 
-  programs.mtr.enable = true;
+  #programs.mtr.enable = true;
+
+# Z-SHELL SYSTEM-WIDE CONFIGS ############################################################################################################
 
   programs.zsh.enable = true; # z-shell enabled system-wide to source necessary files for users
   environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
+
+# ORIGINAL SYSTEM STATE VERSION ###########################################################################################################
 
   system.stateVersion = "23.11"; # first install nix version pin for maintaining backward compatibility with application data - do not revise
 
