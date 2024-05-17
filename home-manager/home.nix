@@ -121,7 +121,12 @@
         user = "xixor";
         port = 39800;
         identityFile = "~/.ssh/chris@dcbond.com-ssh.key";
-        preferredAuthentications = "publickey";
+      };
+      "github" = {
+        hostname = "github.com";
+        user = "dc-bond";
+        port = 22;
+        identityFile = "~/.ssh/chris@dcbond.com-ssh.key";
       };
     };
   };
