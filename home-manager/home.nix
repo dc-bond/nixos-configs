@@ -6,6 +6,7 @@
   ...
 }: {
   imports = [
+    ./home-modules/yubikey-gpg.nix
   ];
 
   nixpkgs = {
