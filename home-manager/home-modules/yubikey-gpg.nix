@@ -15,7 +15,10 @@
 
   programs.gpg = {
     enable = true;
-    homedir = "${config.xdg.dataHome}/gnupg";
+    homedir = "~/chris/.gnupg";
+    #publicKeys = [
+    #  {source = ${gpgKey}; trust = 5;}
+    #];
     settings = {
       use-agent = true; # to enable smartcard/ssh support?
       no-greeting = true;
