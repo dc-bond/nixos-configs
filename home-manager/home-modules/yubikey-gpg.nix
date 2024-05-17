@@ -54,10 +54,10 @@
     enableSshSupport = true;
     #enableZshIntegration = true;
     #pinentryFlavor = "pinentry-rofi";
+    pinentryFlavor = "pinentry-curses";
     enableScDaemon = true;
   };
   
-  #services.ssh-agent.enable = false;
   #services.udev.packages = with pkgs; [ # goes in configuration.nix?
   #  yubikey-personalization
   #];

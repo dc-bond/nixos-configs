@@ -115,7 +115,7 @@
     };
   };
 
-  services.ssh-agent.enable = true; # default is false, comment out if using yubikey-gpg module  
+  #services.ssh-agent.enable = true; # default is false, comment out if using yubikey-gpg module  
   programs.ssh = {
     enable = true;
     matchBlocks = {
