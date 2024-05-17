@@ -32,7 +32,7 @@
   ];
 
   programs.zsh = {
-    enable = true;
+    #enable = true;
     enableCompletion = true;
     shellAliases = {
       ls = "eza -all --long -g -h --color=always --group-directories-first --git";
