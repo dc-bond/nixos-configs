@@ -86,6 +86,7 @@
   programs.mtr.enable = true;
 
   programs.zsh.enable = true; # z-shell enabled system-wide to source necessary files for users
+  environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
 
   system.stateVersion = "23.11"; # first install nix version pin for maintaining backward compatibility with application data - do not revise
 
