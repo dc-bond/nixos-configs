@@ -25,11 +25,14 @@
     enable = true;
     homedir = "${config.xdg.dataHome}/gnupg";
     settings = {
-      #use-agent = true; # to enable ssh support?
+      #use-agent = true; # to enable smartcard/ssh support?
       no-greeting = true;
       armor = true;
       no-emit-version = true;
       no-comments = true;
+      #no-symkey-cache = true;
+      #require-cross-certification = true;
+      #throw-keyids;
       with-fingerprint = true;
       default-key = "A8DD4B51A93E2D9C15B4D27F0419FDA34202A683";
       keyid-format = "0xlong";
@@ -40,6 +43,9 @@
       personal-digest-preferences = "SHA512 SHA384 SHA256 SHA224";
       cert-digest-algo = "SHA512";
       default-preference-list = "SHA512 SHA384 SHA256 SHA224 AES256 AES192 AES CAST5 ZLIB BZIP2 ZIP Uncompressed";
+    };
+    scdaemonSettings = {
+      disable-ccid = true;
     };
   };
   
