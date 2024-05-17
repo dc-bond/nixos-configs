@@ -134,7 +134,7 @@
 
   programs.git = {
     enable = true;
-    userName  = "Chris Bond";
+    userName  = "dc-bond";
     userEmail = "chris@dcbond.com";
   };
 
