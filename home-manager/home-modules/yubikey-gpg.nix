@@ -23,7 +23,7 @@
       no-greeting = true;
       armor = true;
       no-emit-version = true;
-      no-comments = true
+      no-comments = true;
       #keyid-format = "0xlong"
       with-fingerprint = true;
       #list-options = "show-uid-validity"
