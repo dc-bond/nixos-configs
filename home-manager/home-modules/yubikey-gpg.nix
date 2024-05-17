@@ -24,7 +24,7 @@
     enable = true;
     homedir = "${config.xdg.dataHome}/gnupg";
     settings = {
-      use-agent = true; # to enable smartcard/ssh support?
+      #use-agent = true; # to enable smartcard/ssh support?
       no-greeting = true;
       armor = true;
       no-emit-version = true;
@@ -46,6 +46,14 @@
     scdaemonSettings = {
       disable-ccid = true;
     };
+  };
+
+  services.gpg-agent = {
+    enable = true;
+    #enableBashIntegration = true;
+    enableSshSupport = true;
+    #pinentryFlavor = "qt";
+    enableScDaemon = true;
   };
   
   #services.ssh-agent.enable = false;
