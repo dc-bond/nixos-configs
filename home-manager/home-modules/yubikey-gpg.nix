@@ -11,15 +11,15 @@
   #  export GPG_TTY="$(tty)"
   #  export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
   #  gpgconf --launch gpg-agent
+    #gpg-connect-agent /bye
+    #export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
   #'';
-
-  #programs.ssh.startAgent = false;
 
   programs.gpg = {
     enable = true;
     homedir = "${config.xdg.dataHome}/gnupg";
     settings = {
-      #use-agent
+      #use-agent = true;
       no-greeting = true;
       armor = true;
       no-emit-version = true;
@@ -37,11 +37,9 @@
     };
   };
   
+  #services.ssh-agent.enable = false;
   #services.pcscd.enable = true;
-
-  #services.udev.packages = with pkgs; [
-  #  yubikey-personalization
-  #];
+  services.udev.packages = with pkgs; [
+    yubikey-personalization
+  ];
 }
-    #gpg-connect-agent /bye
-    #export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
