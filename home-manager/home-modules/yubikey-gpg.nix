@@ -2,7 +2,6 @@
 
 {
   home.packages = with pkgs; [
-    #gnupg
     pcsclite
     yubikey-personalization
     #yubikey-manager
@@ -16,9 +15,9 @@
 
   #programs.ssh.startAgent = false;
 
-  programs.gnupg.agent = {
+  programs.gpg = {
     enable = true;
-    #enableSSHSupport = true;
+    homedir = "${config.xdg.dataHome}/gnupg";
   };
   
   #services.pcscd.enable = true;
