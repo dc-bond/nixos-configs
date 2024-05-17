@@ -7,7 +7,7 @@
 
 {
   home.packages = with pkgs; [
-    #pcsclite # conflicts with gnupg's built-in scdaemon way of interfacing with smartcards?
+    pcsclite # conflicts with gnupg's built-in scdaemon way of interfacing with smartcards?
     yubikey-personalization
     #yubikey-manager
     #yubioath-desktop # desktop tool to setup OTP codes on yubikey
@@ -50,7 +50,7 @@
   };
   
   services.ssh-agent.enable = false;
-  #services.pcscd.enable = true;# conflicts with gnupg's built-in scdaemon way of interfacing with smartcards?
+  services.pcscd.enable = true;# conflicts with gnupg's built-in scdaemon way of interfacing with smartcards?
   #services.udev.packages = with pkgs; [ # goes in configuration.nix?
   #  yubikey-personalization
   #];
