@@ -142,6 +142,9 @@
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
+    extraConfig = ''
+      colorscheme nord
+    '';
     plugins = with pkgs.vimPlugins; [
       nord-nvim
       #fzf
