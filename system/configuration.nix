@@ -55,8 +55,8 @@
   ];
 
 # sops
-#sops.defaultSopsFile = ./secrets/secrets.sops.yml;
-#sops.defaultSopsFormat = "yaml";
+sops.defaultSopsFile = ./secrets/secrets.sops.yaml;
+sops.defaultSopsFormat = "yaml";
 
 # user setup
   users.users = {
