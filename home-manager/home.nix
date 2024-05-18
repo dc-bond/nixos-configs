@@ -159,7 +159,7 @@
     enable = true;
     homedir = "${config.home.homeDirectory}/.gnupg";
     publicKeys = [ 
-      { source = ../chris-dcbond.com-gpg.pub; trust = 5; }
+      { source = ../DB9ADBBE6FBD1F0E694AF25D012321D46E090E61.pub; trust = 5; }
     ];
     settings = {
       use-agent = true; # to enable smartcard/ssh support?
@@ -171,7 +171,8 @@
       require-cross-certification = true;
       throw-keyids = true;
       with-fingerprint = true;
-      default-key = "A8DD4B51A93E2D9C15B4D27F0419FDA34202A683";
+      default-key = "DB9ADBBE6FBD1F0E694AF25D012321D46E090E61";
+      #default-key = "A8DD4B51A93E2D9C15B4D27F0419FDA34202A683";
       keyid-format = "0xlong";
       list-options = "show-uid-validity";
       verify-options = "show-uid-validity";
@@ -190,7 +191,7 @@
   services.gpg-agent = {
     enable = true;
     enableSshSupport = true;
-    #enableZshIntegration = true;
+    enableZshIntegration = true;
     #pinentryFlavor = "pinentry-rofi";
     #pinentryFlavor = "pinentry-curses";
     enableScDaemon = true;
