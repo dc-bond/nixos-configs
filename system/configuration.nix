@@ -67,14 +67,14 @@
 #    powerOnBoot = true;
 #  };
 
-# firewall
-  networking.nftables.enable = true; # use nftables for the firewall instead of default iptables
-  networking.firewall = {
-    enable = true;
-    #allowedTCPPorts = [ 
-    #  28764
-    #];
-  };
+## firewall
+#  networking.nftables.enable = true; # use nftables for the firewall instead of default iptables
+#  networking.firewall = {
+#    enable = true;
+#    allowedTCPPorts = [ 
+#      28764
+#    ];
+#  };
 
 # enable fonts 
   fonts.fontDir.enable = true;
