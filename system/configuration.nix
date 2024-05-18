@@ -48,8 +48,7 @@
 
 # system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [ # search system packages with 'nix search [package]'
-    pcsclite 
-    neovim
+    pcsclite # smartcard reader tool for yubikey functionality
     git # installed system-wide to allow ansible root user to clone repo on first install
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
   ];

@@ -56,7 +56,7 @@
     '';
     shellAliases = {
       ls = "eza -all --long -g -h --color=always --group-directories-first --git";
-      vim = "nvim";
+      #vim = "nvim";
 
       rebuild = "sudo nixos-rebuild switch --flake ~/nixos-configs";
       #flake-update = "nix flake update ~/nixos-configs";
@@ -133,6 +133,22 @@
         error_symbol = "[✖](bold red) ";
       };
     };
+  };
+
+# neovim
+  programs.neovim = {
+    enable = true;
+    defaultEditor = true;
+    viAlias = true;
+    vimAlias = true;
+    vimdiffAlias = true;
+    with pkgs.vimPlugins; [
+      nord-nvim
+      #fzf
+      #lightline.vim
+      #comfortable-motion.vim
+      #vim-beancount
+    ];
   };
 
 # outgoing ssh
