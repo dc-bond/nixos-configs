@@ -142,7 +142,7 @@
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
-    with pkgs.vimPlugins; [
+    plugins = with pkgs.vimPlugins; [
       nord-nvim
       #fzf
       #lightline.vim
