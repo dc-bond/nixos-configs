@@ -31,7 +31,7 @@
     glances # system monitor tool
   ];
 
-  programs.passwordStore = {
+  programs.password-store = {
     enable = true;
     settings = {
       PASSWORD_STORE_DIR = "${config.home.homeDirectory}/.password-store";
