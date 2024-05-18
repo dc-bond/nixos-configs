@@ -158,9 +158,9 @@
   programs.gpg = {
     enable = true;
     homedir = "${config.home.homeDirectory}/.gnupg";
-    #publicKeys = [ # to-do add public key declaratively
-    #  {source = ${gpgKey}; trust = 5;}
-    #];
+    publicKeys = [ # to-do add public key declaratively
+      {source = ../chris@dcbond.com-gpg.pub; trust = 5;}
+    ];
     settings = {
       use-agent = true; # to enable smartcard/ssh support?
       no-greeting = true;
