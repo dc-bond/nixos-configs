@@ -11,6 +11,7 @@
 {
   imports = [
     ./hardware-configuration.nix
+    #inputs.sops-nix.nixosModules.sops # import sops module
     inputs.home-manager.nixosModules.home-manager # import home-manager module
   ];
 

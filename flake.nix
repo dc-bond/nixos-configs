@@ -3,6 +3,8 @@
 
   inputs = {
     nixpkgs.url = "nixpkgs/nixos-23.11";
+    #sops-nix.url = "github:Mic92/sops-nix";
+    #sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager/release-23.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
   };
@@ -23,15 +25,17 @@
           ];
       };
     };
-    #homeConfigurations = {
-    #  "chris@thinkpad" = home-manager.lib.homeManagerConfiguration {
-    #    pkgs = nixpkgs.legacyPackages.x86_64-linux;
-    #    extraSpecialArgs = {inherit inputs outputs;};
-    #    modules = [./home-manager/home.nix];
-    #  };
-    #};
   };
 }
+
+
+
+
+
+
+
+
+
 
 #  outputs = { 
 #    self, 
