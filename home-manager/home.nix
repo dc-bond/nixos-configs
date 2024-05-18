@@ -159,7 +159,7 @@
     enable = true;
     homedir = "${config.home.homeDirectory}/.gnupg";
     publicKeys = [ 
-      source = { ~/nixos-configs/chris@dcbond.com-gpg.pub; trust = 5; }
+      { source = ~/nixos-configs/chris@dcbond.com-gpg.pub; trust = 5; }
     ];
     settings = {
       use-agent = true; # to enable smartcard/ssh support?
