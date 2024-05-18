@@ -198,13 +198,13 @@
         hostname = "opticon";
         user = "xixor";
         port = 39800;
-        identityFile = "~/.ssh/chris@dcbond.com-ssh.key";
+        #identityFile = "~/.ssh/chris@dcbond.com-ssh.key";
       };
       "github" = {
         hostname = "github.com";
         user = "dc-bond";
         port = 22;
-        identityFile = "~/.ssh/chris@dcbond.com-ssh.key";
+        #identityFile = "~/.ssh/chris@dcbond.com-ssh.key";
       };
     };
   };
