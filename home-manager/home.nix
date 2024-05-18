@@ -32,7 +32,7 @@
   ];
 
   programs.passwordStore = {
-    enable = true
+    enable = true;
     settings = {
       PASSWORD_STORE_DIR = "${config.home.homeDirectory}/.password-store";
     };
