@@ -72,7 +72,7 @@
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [ 
-      28764 
+      28765 
     ];
   };
 
