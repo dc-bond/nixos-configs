@@ -42,8 +42,8 @@
     sops # encryption tool
     (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
       fonts = [
-        "IBMPlexMono" # name is 'BlexMono' in system configs
-        "SourceCodePro" # name is 'SauceCodePro' in system configs
+        "IBMPlexMono" # name is 'BlexMono' for system configs
+        "SourceCodePro" # name is 'SauceCodePro' for system configs
       ];
     })
   ];
@@ -89,15 +89,11 @@
     '';
     shellAliases = {
       ls = "eza -all --long -g -h --color=always --group-directories-first --git";
-      #vim = "nvim";
-
       rebuild = "sudo nixos-rebuild switch --flake ~/nixos-configs";
       #flake-update = "nix flake update ~/nixos-configs";
       #upgrade = "sudo nixos-rebuild switch --upgrade --flake ~/nixos-configs#thinkpad";
-
       configsys = "nvim ~/nixos-configs/system/configuration.nix";
       confighome = "nvim ~/nixos-configs/home-manager/home.nix";
-
       stageconfig = "cd ~/nixos-configs && git add .";
       pushconfig = "cd ~/nixos-configs && git add . && git commit && git push git@github.com:dc-bond/nixos-configs.git";
       pullconfig = "cd ~/nixos-configs && git pull git@github.com:dc-bond/nixos-configs.git";

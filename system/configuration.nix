@@ -46,6 +46,36 @@
 # set hostname
   networking.hostName = "thinkpad";
 
+## wifi
+## https://git.kernel.org/pub/scm/network/wireless/iwd.git/tree/src/iwd.network.rst
+#  networking.wireless.iwd = { 
+#    enable = true;
+#    settings = {
+#      IPv6 = {
+#      Enabled = false;
+#      };
+#      Settings = {
+#        AutoConnect = true;
+#      };
+#    };
+#  };
+
+## bluetooth
+#  services.blueman.enable = true; # terminal-based bluetooth connection tool
+#  hardware.bluetooth = {
+#    enable = true;
+#    powerOnBoot = true;
+#  };
+
+# firewall
+  networking.nftables.enable = true; # use nftables for the firewall instead of default iptables
+  networking.firewall = {
+    enable = true;
+    allowedTCPPorts = [ 
+      28764 
+    ];
+  };
+
 # enable fonts 
   fonts.fontDir.enable = true;
 
@@ -83,14 +113,16 @@
   };
 
 # incoming ssh server
-  services.openssh.enable = true; # enable openssh service
-  services.openssh.ports = [
-    28764 # change and encrypt
-  ];
-  services.openssh.settings = {
-    PasswordAuthentication = false;
-    PermitRootLogin = "no";
-    KbdInteractiveAuthentication = false;
+  services.openssh = {
+    enable = true;
+    ports = [
+      28764
+    ];
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
+      KbdInteractiveAuthentication = false;
+    };
   };
 
 # ?
