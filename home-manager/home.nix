@@ -206,7 +206,8 @@
 
 # symlink non-module package dotfiles
   home.file = {
-  ".sops.yaml".source = ./home-dotfiles/sops.yaml;
+    ".sops.yaml".source = ./home-dotfiles/sops.yaml;
+  };
 
 # start/re-start services after system rebuild
   systemd.user.startServices = "sd-switch";
