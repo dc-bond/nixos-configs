@@ -11,7 +11,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    #inputs.sops-nix.nixosModules.sops # import sops module
+    inputs.sops-nix.nixosModules.sops # import sops module
     inputs.home-manager.nixosModules.home-manager # import home-manager module
   ];
 
@@ -53,6 +53,10 @@
     git # installed system-wide to allow ansible root user to clone repo on first install
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
   ];
+
+# sops
+#sops.defaultSopsFile = ./secrets/secrets.sops.yml;
+#sops.defaultSopsFormat = "yaml";
 
 # user setup
   users.users = {

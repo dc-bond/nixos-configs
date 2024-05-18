@@ -136,8 +136,6 @@
 
 # change password
 # change ownership of nixos-configs
-# 'gpg --search-keys chris@dcbond.com' to import gpg public key into keyring, then set trust to ultimate
-# ensure yubikey loaded and gpg auth key loaded into gpg-agent 'via ssh-add -l'
 
 # nix-sops
 # flakes/update packages
