@@ -25,17 +25,8 @@
 # enable home-manager itself
   programs.home-manager.enable = true;
 
-# fonts
-
+# enable user fonts
   fonts.fontconfig.enable = true;
-  #fonts.packages = with pkgs; [
-  #  (pkgs.nerdfonts.override {
-  #    fonts = [
-  #      "IBMPlexMono"
-  #      "SauceCodePro"
-  #    ];
-  #  })
-  #];
 
 # define username and home directory
   home = {
@@ -49,10 +40,10 @@
     pfetch # system info displayed on shell startup
     glances # system monitor tool
     sops # encryption tool
-    (pkgs.nerdfonts.override {
+    (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
       fonts = [
-        "IBMPlexMono"
-        "SourceCodePro"
+        "IBMPlexMono" # name is 'BlexMono' in system configs
+        "SourceCodePro" # name is 'SauceCodePro' in system configs
       ];
     })
   ];
