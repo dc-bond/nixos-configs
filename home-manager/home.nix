@@ -28,14 +28,14 @@
 # fonts
 
   fonts.fontconfig.enable = true;
-  fonts.packages = with pkgs; [
-    (pkgs.nerdfonts.override {
-      fonts = [
-        "IBMPlexMono"
-        "SauceCodePro"
-      ];
-    })
-  ];
+  #fonts.packages = with pkgs; [
+  #  (pkgs.nerdfonts.override {
+  #    fonts = [
+  #      "IBMPlexMono"
+  #      "SauceCodePro"
+  #    ];
+  #  })
+  #];
 
 # define username and home directory
   home = {
@@ -49,12 +49,12 @@
     pfetch # system info displayed on shell startup
     glances # system monitor tool
     sops # encryption tool
-    #(pkgs.nerdfonts.override {
-    #  fonts = [
-    #    "IBMPlexMono"
-    #    "SauceCodePro"
-    #  ];
-    #})
+    (pkgs.nerdfonts.override {
+      fonts = [
+        "IBMPlexMono"
+        "SauceCodePro"
+      ];
+    })
   ];
 
   #programs.alacritty = {
