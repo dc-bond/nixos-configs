@@ -36,6 +36,7 @@
     eza # modern replacement for 'ls'
     pfetch # system info displayed on shell startup
     glances # system monitor tool
+    sops # encryption tool
   ];
 
 # pass
@@ -202,6 +203,10 @@
     userName  = "dc-bond";
     userEmail = "chris@dcbond.com";
   };
+
+# symlink non-module package dotfiles
+  home.file = {
+  ".sops.yaml".source = ./home-dotfiles/sops.yaml;
 
 # start/re-start services after system rebuild
   systemd.user.startServices = "sd-switch";
