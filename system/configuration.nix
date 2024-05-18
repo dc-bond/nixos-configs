@@ -11,7 +11,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    inputs.sops-nix.nixosModules.sops # import sops module
+    #inputs.sops-nix.nixosModules.sops # import sops module
     inputs.home-manager.nixosModules.home-manager # import home-manager module
   ];
 
@@ -55,8 +55,8 @@
   ];
 
 # sops
-sops.defaultSopsFile = ./secrets/secrets.sops.yaml;
-sops.defaultSopsFormat = "yaml";
+#sops.defaultSopsFile = ./secrets/secrets.sops.yaml;
+#sops.defaultSopsFormat = "yaml";
 
 # user setup
   users.users = {
