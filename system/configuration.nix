@@ -71,9 +71,9 @@
   networking.nftables.enable = true; # use nftables for the firewall instead of default iptables
   networking.firewall = {
     enable = true;
-    allowedTCPPorts = [ 
-      28765 
-    ];
+    #allowedTCPPorts = [ 
+    #  28764
+    #];
   };
 
 # enable fonts 
