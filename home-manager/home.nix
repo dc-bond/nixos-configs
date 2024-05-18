@@ -8,7 +8,7 @@
 
 {
   imports = [
-    ./home-modules/yubikey-gpg.nix
+    #./home-modules/yubikey-gpg.nix
   ];
 
   nixpkgs = {
@@ -150,6 +150,48 @@
         identityFile = "~/.ssh/chris@dcbond.com-ssh.key";
       };
     };
+  };
+
+ # gnupg 
+  programs.gpg = {
+    enable = true;
+    homedir = "${config.home.homeDirectory}/.gnupg";
+    #publicKeys = [ # to-do add public key declaratively
+    #  {source = ${gpgKey}; trust = 5;}
+    #];
+    settings = {
+      use-agent = true; # to enable smartcard/ssh support?
+      no-greeting = true;
+      armor = true;
+      no-emit-version = true;
+      no-comments = true;
+      no-symkey-cache = true;
+      require-cross-certification = true;
+      throw-keyids = true;
+      with-fingerprint = true;
+      default-key = "A8DD4B51A93E2D9C15B4D27F0419FDA34202A683";
+      keyid-format = "0xlong";
+      list-options = "show-uid-validity";
+      verify-options = "show-uid-validity";
+      keyserver = "hkps://keyserver.ubuntu.com";
+      personal-cipher-preferences = "AES256 TWOFISH AES192 AES";
+      personal-digest-preferences = "SHA512 SHA384 SHA256 SHA224";
+      cert-digest-algo = "SHA512";
+      default-preference-list = "SHA512 SHA384 SHA256 SHA224 AES256 AES192 AES CAST5 ZLIB BZIP2 ZIP Uncompressed";
+    };
+    scdaemonSettings = {
+      disable-ccid = true;      
+    };
+  };
+
+# gpg-agent
+  services.gpg-agent = {
+    enable = true;
+    enableSshSupport = true;
+    #enableZshIntegration = true;
+    #pinentryFlavor = "pinentry-rofi";
+    #pinentryFlavor = "pinentry-curses";
+    enableScDaemon = true;
   };
 
 # git
