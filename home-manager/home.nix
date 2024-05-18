@@ -52,7 +52,7 @@
     (pkgs.nerdfonts.override {
       fonts = [
         "IBMPlexMono"
-        "SauceCodePro"
+        "SourceCodePro"
       ];
     })
   ];
