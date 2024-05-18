@@ -6,11 +6,13 @@
   ...
 }: 
 
+# module imports
 {
   imports = [
     #./home-modules/yubikey-gpg.nix
   ];
 
+# ?
   nixpkgs = {
     overlays = [
     ];

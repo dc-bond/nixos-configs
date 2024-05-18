@@ -7,12 +7,14 @@
   ...
 }: 
 
+# module imports
 {
   imports = [
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.home-manager # import home-manager module
   ];
 
+# ?
   nixpkgs = {
     overlays = [
     ];
@@ -21,6 +23,7 @@
     };
   };
 
+# ?
   nix = let
     flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
   in {
@@ -34,11 +37,15 @@
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
   };
 
+# bootloader configs
   boot.loader.systemd-boot.enable = true; # use systemd-boot EFI boot loader
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernel.sysctl = { "vm.swappiness" = 30;};
+
+# set hostname
   networking.hostName = "thinkpad";
 
+# system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [ # search system packages with 'nix search [package]'
     pcsclite 
     neovim
@@ -46,6 +53,7 @@
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
   ];
 
+# user setup
   users.users = {
     chris = {
       initialPassword = "changeme";
@@ -58,6 +66,7 @@
     };
   };
 
+# ?
   home-manager = {
     extraSpecialArgs = { inherit inputs outputs; };
     users = {
@@ -65,11 +74,10 @@
     };
   };
 
-# SSH SERVER ###########################################################################################################################
-
+# incoming ssh server
   services.openssh.enable = true; # enable openssh service
   services.openssh.ports = [
-    28764
+    28764 # change and encrypt
   ];
   services.openssh.settings = {
     PasswordAuthentication = false;
@@ -77,8 +85,7 @@
     KbdInteractiveAuthentication = false;
   };
 
-# TIMEZONE ###########################################################################################################################
-
+# ?
   time.timeZone = "America/New_York"; # set timezone
 
   i18n.defaultLocale = "en_US.UTF-8";
@@ -88,8 +95,7 @@
     useXkbConfig = true; # use xkb.options in tty.
   };
 
-# Z-SHELL SYSTEM-WIDE CONFIGS ############################################################################################################
-
+# z-shell
   programs.zsh = {
     enable = true; # z-shell enabled system-wide to source necessary files for users
     # added to zsh login shell to enable gpg-agent to serve ssh (.zprofile)
@@ -101,12 +107,10 @@
   };
   environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
   
-# SMARTCARD/YUBIKEY INTERFACE SYSTEM-WIDE ################################################################################################33
-
+# enable smartcard reader tool for yubikey functionality
   services.pcscd.enable = true;
   
-# ORIGINAL SYSTEM STATE VERSION ###########################################################################################################
-
+# original system state version
   system.stateVersion = "23.11"; # first install nix version pin for maintaining backward compatibility with application data - do not revise
 
 }
