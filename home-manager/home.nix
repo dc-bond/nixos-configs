@@ -20,17 +20,23 @@
     };
   };
 
+# enable home-manager itself
+  programs.home-manager.enable = true;
+
+# define username and home directory
   home = {
     username = "chris";
     homeDirectory = "/home/chris";
   };
 
+# user-specific packages installed (that aren't installed via their own program modules enabled below)
   home.packages = with pkgs; [ # only for installing packages that don't come with a programs.enable module
     eza # modern replacement for 'ls'
     pfetch # system info displayed on shell startup
     glances # system monitor tool
   ];
 
+# pass
   programs.password-store = {
     enable = true;
     settings = {
@@ -38,6 +44,7 @@
     };
   };
 
+# z-shell
   programs.zsh = {
     enable = true;
     enableCompletion = true;
@@ -70,6 +77,7 @@
     history.path = "${config.xdg.dataHome}/zsh/history";
   };
 
+# starship prompt for shell
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
@@ -124,6 +132,7 @@
     };
   };
 
+# outgoing ssh
   #services.ssh-agent.enable = true; # default is false, comment out if using gpg-agent to serve ssh
   programs.ssh = {
     enable = true;
@@ -143,19 +152,16 @@
     };
   };
 
+# git
   programs.git = {
     enable = true;
     userName  = "dc-bond";
     userEmail = "chris@dcbond.com";
   };
 
-  # git remote add nixos-configs https://github.com/dc-bond/nixos-configs.git
-  # git remote rm origin
-  # git remote set-url nixos-configs git@github.com:dc-bond/nixos-configs.git 
-
-  programs.home-manager.enable = true;
-
+# start/re-start services after system rebuild
   systemd.user.startServices = "sd-switch";
 
+# ?
   home.stateVersion = "23.11";
 }
