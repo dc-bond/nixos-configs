@@ -25,6 +25,18 @@
 # enable home-manager itself
   programs.home-manager.enable = true;
 
+# fonts
+
+  fonts.fontconfig.enable = true;
+  fonts.packages = with pkgs; [
+    (pkgs.nerdfonts.override {
+      fonts = [
+        "IBMPlexMono"
+        "SauceCodePro"
+      ];
+    })
+  ];
+
 # define username and home directory
   home = {
     username = "chris";
@@ -37,7 +49,37 @@
     pfetch # system info displayed on shell startup
     glances # system monitor tool
     sops # encryption tool
+    #(pkgs.nerdfonts.override {
+    #  fonts = [
+    #    "IBMPlexMono"
+    #    "SauceCodePro"
+    #  ];
+    #})
   ];
+
+  #programs.alacritty = {
+  #  enable = true;
+  #  settings = {
+  #    font = {
+  #      normal = {
+  #        family = "IosevkaTerm Nerd Font";
+  #        style = "Regular";
+  #      };
+  #      bold = {
+  #        family = "IosevkaTerm Nerd Font";
+  #        style = "Bold";
+  #      };
+  #      italic = {
+  #        family = "IosevkaTerm Nerd Font";
+  #        style = "Italic";
+  #      };
+  #      bold_italic = {
+  #        family = "IosevkaTerm Nerd Font";
+  #        style = "Bold Italic";
+  #      };
+  #      size = 16;
+  #    };
+  #  };
 
 # pass
   programs.password-store = {
@@ -198,13 +240,11 @@
         hostname = "opticon";
         user = "xixor";
         port = 39800;
-        #identityFile = "~/.ssh/chris@dcbond.com-ssh.key";
       };
       "github" = {
         hostname = "github.com";
         user = "dc-bond";
         port = 22;
-        #identityFile = "~/.ssh/chris@dcbond.com-ssh.key";
       };
     };
   };
@@ -247,7 +287,6 @@
     enableSshSupport = true;
     enableZshIntegration = true;
     #pinentryFlavor = "pinentry-rofi";
-    #pinentryFlavor = "pinentry-curses";
     enableScDaemon = true;
   };
 

@@ -46,6 +46,9 @@
 # set hostname
   networking.hostName = "thinkpad";
 
+# enable fonts 
+  fonts.fontDir.enable = true;
+
 # system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [ # search system packages with 'nix search [package]'
     pcsclite # smartcard reader tool for yubikey functionality
