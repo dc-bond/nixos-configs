@@ -16,7 +16,7 @@
   programs.gpg = {
     enable = true;
     homedir = "${config.home.homeDirectory}/.gnupg";
-    #publicKeys = [
+    #publicKeys = [ # to-do add public key declaratively
     #  {source = ${gpgKey}; trust = 5;}
     #];
     settings = {
