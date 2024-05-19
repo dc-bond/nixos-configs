@@ -17,7 +17,7 @@
     ...
   } @ inputs: 
   let
-    lib = nixpkgs.lib;
+    lib = nixpkgs.lib; # define lib as the nixpkgs version of the implementation library
     inherit (self) outputs;
   in {
     nixosConfigurations = { # output set that contains details on a nixos system configuration
