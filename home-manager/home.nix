@@ -296,6 +296,8 @@
     userEmail = "chris@dcbond.com";
   };
 
+  ####### HOW TO DEFINE GIT REPOS
+
 # symlink non-module package dotfiles
   home.file = {
     ".sops.yaml".source = ./home-dotfiles/.sops.yaml;
