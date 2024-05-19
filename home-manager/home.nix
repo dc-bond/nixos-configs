@@ -123,7 +123,7 @@
         disabled = false;
       };
       username = {
-        style_user = "bold yellow";
+        style_user = "bold green";
         style_root = "bold red";
         format = "[$user](style)@";
         disabled = false;
