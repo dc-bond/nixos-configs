@@ -125,14 +125,15 @@
     };
   };
 
-# ?
+# set timezone & locale
   time.timeZone = "America/New_York"; # set timezone
-
   i18n.defaultLocale = "en_US.UTF-8";
+
+# primary console/tty settings
   console = {
     font = "Lat2-Terminus16";
     #keyMap = "us";
-    useXkbConfig = true; # use xkb.options in tty.
+    useXkbConfig = true; # configure the primary console keymap from the xserver keyboard settings
   };
 
 # z-shell
