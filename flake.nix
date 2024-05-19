@@ -2,11 +2,11 @@
   description = "thinkpad laptop flake";
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-23.11";
+    nixpkgs.url = "nixpkgs/nixos-23.11"; # update to new channel identifier to update?
     #sops-nix.url = "github:Mic92/sops-nix";
     #sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager/release-23.11";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs"; # use version of nixpkgs defined above instead of home-manager's default to avoid getting out of sync
   };
 
   outputs = {
@@ -22,7 +22,7 @@
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./system/configuration.nix
-          ];
+        ];
       };
     };
   };
