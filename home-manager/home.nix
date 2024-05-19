@@ -117,11 +117,14 @@
   };
 
 # starship prompt for shell
+# https://starship.rs/config/#prompt
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
     settings = {
       add_newline = true;
+      command_timeout = 20000;
+      scan_timeout = 20000;
       line_break = {
         disabled = true;
       };
