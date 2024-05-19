@@ -129,7 +129,7 @@
   time.timeZone = "America/New_York"; # set timezone
   i18n.defaultLocale = "en_US.UTF-8";
 
-# primary console/tty settings
+# login/cli terminal settings
   console = {
     font = "Lat2-Terminus16";
     #keyMap = "us";

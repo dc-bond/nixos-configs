@@ -73,6 +73,12 @@
   #    };
   #  };
 
+# nix-index - file database search functionality for nixos, provides 'nix-locate' tool
+  programs.nix-index = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
 # pass
   programs.password-store = {
     enable = true;
