@@ -17,10 +17,10 @@
 
 # ?
   nixpkgs = {
-    overlays = [
+    overlays = [ # override default packages in nixpkgs repo, e.g. older versions, custom patched, etc.
     ];
     config = {
-      allowUnfree = true;
+      allowUnfree = true; # allow packages marked as proprietary/unfree nixpkgs to be installed
     };
   };
 

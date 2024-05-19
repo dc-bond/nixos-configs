@@ -15,11 +15,14 @@
     home-manager,
     ...
   } @ inputs: 
+  
   let
+    system = "x86_64-linux";
+    lib = nixpkgs.lib;
     inherit (self) outputs;
   in {
     nixosConfigurations = {
-      thinkpad = nixpkgs.lib.nixosSystem {
+      thinkpad = lib.nixosSystem {
         specialArgs = {inherit inputs outputs;};
         modules = [
           ./system/configuration.nix
