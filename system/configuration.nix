@@ -28,20 +28,27 @@
   nix = let
     flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
   in {
+    channel.enable = false;
+    registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs;
+    nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
     settings = {
       experimental-features = "nix-command flakes";
       flake-registry = "";
       nix-path = config.nix.nixPath;
     };
-    channel.enable = false;
-    registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs;
-    nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
   };
 
-# bootloader configs
-  boot.loader.systemd-boot.enable = true; # use systemd-boot EFI boot loader
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.kernel.sysctl = { "vm.swappiness" = 30;};
+# boot configs
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
+    kernel.sysctl = { "vm.swappiness" = 30;};
+  };
+  #boot.loader.systemd-boot.enable = true; # use systemd-boot EFI boot loader
+  #boot.loader.efi.canTouchEfiVariables = true;
+  #boot.kernel.sysctl = { "vm.swappiness" = 30;};
 
 # set hostname
   networking.hostName = "thinkpad";
