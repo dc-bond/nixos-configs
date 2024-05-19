@@ -71,9 +71,9 @@
   networking.nftables.enable = true; # use nftables for the firewall instead of default iptables
   networking.firewall = {
     enable = true;
-    #allowedTCPPorts = [ 
-    #  28764
-    #];
+    allowedTCPPorts = [ 
+      # 28764 # not needed as openssh server if active automatically opens port(s)
+    ];
   };
 
 # enable fonts 
@@ -116,7 +116,7 @@
   services.openssh = {
     enable = true;
     ports = [
-      28764
+      28763
     ];
     settings = {
       PasswordAuthentication = false;
