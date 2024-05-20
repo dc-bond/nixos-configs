@@ -41,6 +41,7 @@
     glances # system monitor
     sops # encryption
     nmap # network scanning
+    cowsay
     (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
       fonts = [
         "IBMPlexMono" # name is 'BlexMono' for system configs
