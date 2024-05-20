@@ -107,14 +107,14 @@
     - name: turn on swap
       ansible.builtin.command: swapon /mnt/.swapfile
 
-    - name: install git
-      ansible.builtin.command: nix-env -iA nixos.git
-
-    - name: clone git repo
-      ansible.builtin.command: git clone https://github.com/dc-bond/nixos-configs.git
-      args:
-        chdir: /mnt
-
+#    - name: install git
+#      ansible.builtin.command: nix-env -iA nixos.git
+#
+#    - name: clone git repo
+#      ansible.builtin.command: git clone https://github.com/dc-bond/nixos-configs.git
+#      args:
+#        chdir: /mnt
+#
 #    - name: run installation
 #      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad # used on first install from ISO to create boot entries, 'use nixos-rebuild switch --flake .' while in nixos-configs directory on subsequent revisions
 #      args:
