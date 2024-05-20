@@ -25,7 +25,7 @@
     };
   };
 
-# ?
+# nix package manager
   nix = 
   let
     flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
