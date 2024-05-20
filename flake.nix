@@ -7,10 +7,11 @@
     #sops-nix.url = "github:Mic92/sops-nix";
     #sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager/release-23.11";
-    home-manager.inputs.nixpkgs.follows = "nixpkgs"; # use version of nixpkgs defined above instead of home-manager's default to avoid getting out of sync
+    home-manager.inputs.nixpkgs.follows = "nixpkgs"; # home-manager sources nixpkgs for its own use so make home-manager use the same version of nixpkgs defined above to avoid getting out of sync
   };
 
-  outputs = { self, nixpkgs, home-manager, ... } @ inputs: # information about what the flake should create with the sources/inputs
+  #outputs = { self, nixpkgs, home-manager, ... } @ inputs:
+  outputs = { self, nixpkgs, ... } @ inputs:
   let
     lib = nixpkgs.lib; # specify nixpkgs version of lib
     inherit (self) outputs;
