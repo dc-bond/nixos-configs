@@ -10,14 +10,9 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs"; # use version of nixpkgs defined above instead of home-manager's default to avoid getting out of sync
   };
 
-  outputs = { # information about what the flake should create with the sources/inputs
-    self,
-    nixpkgs,
-    home-manager,
-    ...
-  } @ inputs: 
+  outputs = { self, nixpkgs, home-manager, ... } @ inputs: # information about what the flake should create with the sources/inputs
   let
-    lib = nixpkgs.lib; # define lib as the nixpkgs version of lib
+    lib = nixpkgs.lib; # specify nixpkgs version of lib
     inherit (self) outputs;
   in {
     nixosConfigurations = { # output set that contains details on a nixos system configuration
