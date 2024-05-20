@@ -15,7 +15,7 @@
     lib = nixpkgs.lib; # specify nixpkgs version of lib
     inherit (self) outputs;
   in {
-    nixosConfigurations = { # output set that contains details on a nixos system configuration
+    nixosConfigurations = { # output set that contains details on one or more system configurations
       thinkpad = lib.nixosSystem { # specify 'thinkpad' as system configuration name
         specialArgs = {inherit inputs outputs;}; # thinkpad system configuration inherits the definitions and outputs of this flake
         modules = [
