@@ -50,11 +50,11 @@
     kernel.sysctl = { "vm.swappiness" = 30;};
   };
 
-# wayland compositor related
-  programs.hyprland.enable = true;
-  #environment.sessionVariables.NIXOS_OZONE_WL = "1";
-  #security.polkit.enable = true;
-  #hardware.opengl.enable = true; # when using QEMU KVM
+## wayland compositor related
+#  programs.hyprland.enable = true;
+#  #environment.sessionVariables.NIXOS_OZONE_WL = "1";
+#  #security.polkit.enable = true;
+#  #hardware.opengl.enable = true; # when using QEMU KVM
 
 # set hostname
   networking.hostName = "thinkpad";
