@@ -16,7 +16,7 @@
     inherit (self) outputs;
   in {
     nixosConfigurations = { # output set that contains details on a nixos system configuration
-      thinkpad = lib.nixosSystem { # if hostname of system is same as 'thinkpad' defined here, no need to specify #thinkpad with the 'nixos-rebuild switch --flake .' command
+      thinkpad = lib.nixosSystem { # specify 'thinkpad' as system configuration name
         specialArgs = {inherit inputs outputs;}; # thinkpad system configuration inherits the definitions and outputs of this flake
         modules = [
           ./system/configuration.nix # nixos system configuration module is in effect the configuration.nix file
