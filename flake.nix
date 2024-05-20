@@ -1,5 +1,5 @@
 {
-  description = "thinkpad laptop flake";
+  description = "thinkpad laptop system configuration flake";
 
   inputs = { # information about sources/inputs to the flake
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11"; #  for current stable repo

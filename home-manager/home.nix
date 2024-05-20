@@ -41,7 +41,6 @@
     glances # system monitor
     sops # encryption
     nmap # network scanning
-    cowsay
     (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
       fonts = [
         "IBMPlexMono" # name is 'BlexMono' for system configs
@@ -49,6 +48,14 @@
       ];
     })
   ];
+
+# hyprland window manager
+  wayland.windowManager.hyprland = {
+    enable = true;
+    settings = {
+      "$mod" = "SUPER";
+    };
+  };
 
   #programs.alacritty = {
   #  enable = true;
@@ -296,8 +303,6 @@
     userName  = "dc-bond";
     userEmail = "chris@dcbond.com";
   };
-
-  ####### HOW TO DEFINE GIT REPOS
 
 # symlink non-module package dotfiles
   home.file = {

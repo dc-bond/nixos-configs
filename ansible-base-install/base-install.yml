@@ -116,5 +116,3 @@
       shell: /run/current-system/sw/bin/shutdown now
 
 # change password
-# change ownership of nixos-configs
-# update git config for repo for ssh access
