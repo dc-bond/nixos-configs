@@ -115,30 +115,25 @@
       args:
         chdir: /mnt
 
-    - name: run installation
-      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad # used on first install from ISO to create boot entries, 'use nixos-rebuild switch --flake .' while in nixos-configs directory on subsequent revisions
-      args:
-        chdir: /mnt/nixos-configs
-
-    - name: move nixos-configs to home
-      ansible.builtin.command: mv /mnt/nixos-configs /mnt/home/chris/nixos-configs
-
-    #- name: change nixos-configs directory ownership, group and permissions
-    #  ansible.builtin.file:
-    #    path: /mnt/home/chris/nixos-configs
-    #    state: directory
-    #    recurse: yes
-    #    owner: chris
-    #    group: users
-
-    - name: shutdown
-      shell: /run/current-system/sw/bin/shutdown now
+#    - name: run installation
+#      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad # used on first install from ISO to create boot entries, 'use nixos-rebuild switch --flake .' while in nixos-configs directory on subsequent revisions
+#      args:
+#        chdir: /mnt/nixos-configs
+#
+#    - name: move nixos-configs to home
+#      ansible.builtin.command: mv /mnt/nixos-configs /mnt/home/chris/nixos-configs
+#
+#    #- name: change nixos-configs directory ownership, group and permissions
+#    #  ansible.builtin.file:
+#    #    path: /mnt/home/chris/nixos-configs
+#    #    state: directory
+#    #    recurse: yes
+#    #    owner: chris
+#    #    group: users
+#
+#    - name: shutdown
+#      shell: /run/current-system/sw/bin/shutdown now
 
 # change password
 # change ownership of nixos-configs
-
-# nix-sops
-# flakes/update packages
-# fonts
-# hyprland window manager
-# neomutt
+# update git config for repo for ssh access

@@ -60,26 +60,26 @@
 # set hostname
   networking.hostName = "thinkpad";
 
-## wifi
-## https://git.kernel.org/pub/scm/network/wireless/iwd.git/tree/src/iwd.network.rst
-#  networking.wireless.iwd = { 
-#    enable = true;
-#    settings = {
-#      IPv6 = {
-#      Enabled = false;
-#      };
-#      Settings = {
-#        AutoConnect = true;
-#      };
-#    };
-#  };
+# wifi
+# https://git.kernel.org/pub/scm/network/wireless/iwd.git/tree/src/iwd.network.rst
+  networking.wireless.iwd = { 
+    enable = true;
+    settings = {
+      IPv6 = {
+      Enabled = false;
+      };
+      Settings = {
+        AutoConnect = true;
+      };
+    };
+  };
 
-## bluetooth
-#  services.blueman.enable = true; # terminal-based bluetooth connection tool
-#  hardware.bluetooth = {
-#    enable = true;
-#    powerOnBoot = true;
-#  };
+# bluetooth
+  services.blueman.enable = true; # terminal-based bluetooth connection tool
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+  };
 
 # firewall
   networking.nftables.enable = true; # use nftables for the firewall instead of default iptables
