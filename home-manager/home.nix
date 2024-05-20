@@ -97,7 +97,7 @@
     shellAliases = {
       ls = "eza -all --long -g -h --color=always --group-directories-first --git";
       rebuild = "sudo nixos-rebuild switch --flake ~/nixos-configs";
-      flake-update = "nix flake update ~/nixos-configs";
+      flakeupdate = "nix flake update ~/nixos-configs";
       #upgrade = "sudo nixos-rebuild switch --upgrade --flake ~/nixos-configs#thinkpad";
       configsys = "nvim ~/nixos-configs/system/configuration.nix";
       confighome = "nvim ~/nixos-configs/home-manager/home.nix";
