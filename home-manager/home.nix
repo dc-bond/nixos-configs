@@ -43,10 +43,10 @@
     })
   ];
 
-# hyprland compositor
-  wayland.windowManager.hyprland = {
-    enable = true;
-  };
+## hyprland compositor
+#  wayland.windowManager.hyprland = {
+#    enable = true;
+#  };
 
   #programs.alacritty = {
   #  enable = true;
