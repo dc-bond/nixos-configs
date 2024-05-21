@@ -51,7 +51,7 @@
 # security changes required for compositor
   security = {
     #rtkit.enable = true;
-    polkit.enable = true;
+    polkit.enable = true; # default setting
   };
 
 ## sound
