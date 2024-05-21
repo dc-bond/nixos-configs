@@ -10,7 +10,7 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs"; # home-manager sources nixpkgs for its own use so make home-manager use the same version of nixpkgs defined above to avoid getting out of sync
   };
 
-  outputs = { self, nixpkgs, home-manager ... } @ inputs:
+  outputs = { self, nixpkgs, home-manager, ... } @ inputs:
   let
     lib = nixpkgs.lib; # specify nixpkgs version of lib
     inherit (self) outputs;
