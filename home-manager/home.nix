@@ -298,7 +298,7 @@
 # symlink non-module package dotfiles
   home.file = {
     ".sops.yaml".source = ./home-dotfiles/.sops.yaml;
-    ".config/hypr/hyprland.conf".source = ./home-dotfiles/hyprland.conf;
+    #".config/hypr/hyprland.conf".source = ./home-dotfiles/hyprland.conf;
   };
 
 # start/re-start services after system rebuild
