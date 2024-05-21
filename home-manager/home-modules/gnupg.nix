@@ -34,6 +34,22 @@
     };
   };
 
+## zsh settings for gpg-agent
+#  programs.zsh = {
+    # added to zsh interactive shell to enable gpg-agent to serve ssh (.zshrc)
+#    initExtra = ''
+#      export GPG_TTY="$(tty)"
+#      export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+#      gpgconf --launch gpg-agent
+#    '';
+    # added to zsh environment shell to enable gpg-agent to serve ssh (.zshenv)
+#    envExtra = ''
+#      export GPG_TTY="$(tty)"
+#      export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+#      gpgconf --launch gpg-agent
+#    '';
+#  };
+
 # disable ssh-agent
   services.ssh-agent.enable = false;
 

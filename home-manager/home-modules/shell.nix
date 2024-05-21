@@ -6,6 +6,7 @@
   programs.zsh = {
     enable = true;
     enableCompletion = true;
+    # added to zsh interactive shell (.zshrc)
     initExtra = ''
       pfetch
     '';
