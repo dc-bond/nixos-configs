@@ -90,11 +90,11 @@
     ];
   };
 
-# nix-index - file database search functionality for nixos, provides 'nix-locate' tool
-  programs.nix-index = {
-    enable = true;
-    enableZshIntegration = true;
-  };
+## nix-index - file database search functionality for nixos, provides 'nix-locate' tool
+#  programs.nix-index = {
+#    enable = true;
+#    enableZshIntegration = true;
+#  };
 
 # enable fonts 
   fonts.fontDir.enable = true;
