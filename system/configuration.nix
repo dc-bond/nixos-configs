@@ -145,12 +145,6 @@
 # z-shell
   programs.zsh = {
     enable = true; # z-shell enabled system-wide to source necessary files for users
-    # added to zsh login shell to enable gpg-agent to serve ssh (.zprofile)
-    #loginShellInit = ''
-    #  export GPG_TTY="$(tty)"
-    #  export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-    #  gpgconf --launch gpg-agent
-    #'';
   };
   environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
   

@@ -3,7 +3,7 @@
 # module imports
 {
   imports = [
-    ./home-modules/gnupg.nix
+    #./home-modules/gnupg.nix
     ./home-modules/shell.nix
   ];
 
