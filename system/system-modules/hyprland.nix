@@ -1,11 +1,105 @@
-{ config, lib, pkgs, ... }: 
+{ pkgs, ... }: 
 
 {
 
 # hyprland
-  programs.hyprland.enable = true;
-  environment.sessionVariables.NIXOS_OZONE_WL = "1";
-  #security.polkit.enable = true;
-  #hardware.opengl.enable = true; # when using QEMU KVM
+  programs.hyprland = {
+    enable = true;
+    #nvidiaPatches = true;
+    #xwayland.enable = true;
+  };
+
+# system packages
+  environment.systemPackages = with pkgs; [
+    #waybar
+    #(pkgs.waybar.overrideAttrs (oldAttrs: {
+    #  mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
+    #})
+    #)
+    #eww-wayland # widgets
+    swww # animated wallpaper for wayland window managers
+    #swaylock-effects # wayland screenlock application
+    #wlogout # wayland logout application
+    #nwg-look # gtk settings manager for wayland
+    #rofi-wayland # application launcher
+    #pinentry-rofi # use rofi for pinentry
+    #rofi-calc # calculator add-on for rofi
+    #wlr-randr # wayland display setting tool for external monitors
+    #pywal # color theme changer
+    #dunst # notification daemon
+    #libnotify # library to support notification daemons
+    #xfce.xfce4-power-manager # laptop power manager
+    ##xdg-desktop-portal-hyprland # allow applications to communicate with window manager
+    #grim # wayland screenshot tool
+    #slurp # wayland region selector
+    #scrot # screenshot tool
+    #xfce.thunar # file manager
+    ##filelight # disk usage visualizer
+    #firefox # web browser
+    #mupdf # pdf viewer
+    #nextcloud-client # client for connecting to nextcloud servers
+    ##ffmpegthumbnailer
+    ##nvidia
+    #autorandr # automatically select a display configuration based on connected devices
+    #ddcutil # query and change monitor settings using DDC/CI and USB
+    #brightnessctl # screen brightness application
+    ##xorg-xset # tool to set keyboard repeat delay
+    #bleachbit # disk cleaner
+  ];
+
+## sound
+#  sound.enable = true
+#  security.rtkit.enable = true;
+#  security.polkit.enable = true;
+#  services.pipewire = {
+#    enable = true;
+#    alsa.enable = true;
+#    alsa.support32Bit = true;
+#    pulse.enable = true;
+#    jack.enable = true;
+#  };
+
+## alacritty terminal
+#  programs.alacritty = {
+#    enable = true;
+#    #settings = {
+#    #  font = {
+#    #    normal = {
+#    #      family = "IosevkaTerm Nerd Font";
+#    #      style = "Regular";
+#    #    };
+#    #    bold = {
+#    #      family = "IosevkaTerm Nerd Font";
+#    #      style = "Bold";
+#    #    };
+#    #    italic = {
+#    #      family = "IosevkaTerm Nerd Font";
+#    #      style = "Italic";
+#    #    };
+#    #    bold_italic = {
+#    #      family = "IosevkaTerm Nerd Font";
+#    #      style = "Bold Italic";
+#    #    };
+#    #    size = 16;
+#    #  };
+#    };
+
+## allow applications to communicate with compositor
+#  xdg.portal = {
+#    enable = true;
+#    extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+#  };
+
+## environment
+#  environment.sessionVariables = {
+#    NIXOS_OZONE_WL = "1";
+#    #WLR_NO_HARDWARE_CURSORS = "1"; # if cursor does not appear
+#  };
+
+## hardware
+#  hardware = {
+#    opengl.enable = true; # when using QEMU KVM
+#    nvidia.modesetting.enable = true;
+#  };
 
 }

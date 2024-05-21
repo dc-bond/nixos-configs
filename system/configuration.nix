@@ -20,6 +20,11 @@
     };
   };
 
+## system packages
+#  environment.systemPackages = with pkgs; [
+#
+#  ];
+
 # nix package manager related
   nix = 
   let
@@ -85,6 +90,12 @@
     ];
   };
 
+## nix-index - file database search functionality for nixos, provides 'nix-locate' tool
+#  programs.nix-index = {
+#    enable = true;
+#    enableZshIntegration = true;
+#  };
+
 # enable fonts 
   fonts.fontDir.enable = true;
 
@@ -149,9 +160,6 @@
     '';
   };
   environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
-  
-## enable smartcard reader tool for yubikey functionality
-#  services.pcscd.enable = true;
   
 # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "23.11";
