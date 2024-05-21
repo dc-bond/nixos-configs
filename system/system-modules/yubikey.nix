@@ -8,6 +8,7 @@
     yubikey-manager
     yubioath-flutter # gui authenticator app for yubikeys
     pcsclite # smartcard reader tool
+    #pcscliteWithPolkit # smartcard reader tool
   ];
 
 # enable smartcard reader tool
