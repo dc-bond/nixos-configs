@@ -48,10 +48,14 @@
     #bleachbit # disk cleaner
   ];
 
+# security changes required for compositor
+  security = {
+    #rtkit.enable = true;
+    polkit.enable = true;
+  };
+
 ## sound
 #  sound.enable = true
-#  security.rtkit.enable = true;
-#  security.polkit.enable = true;
 #  services.pipewire = {
 #    enable = true;
 #    alsa.enable = true;
