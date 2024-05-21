@@ -2,11 +2,12 @@
   description = "thinkpad laptop system configuration flake";
 
   inputs = { # information about sources/inputs to the flake
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11"; #  for current stable repo
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11"; #
     #nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; # for cutting-edge repo
     #sops-nix.url = "github:Mic92/sops-nix";
     #sops-nix.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager/release-23.11";
+    #home-manager.url = "github:nix-community/home-manager/master";
     home-manager.inputs.nixpkgs.follows = "nixpkgs"; # home-manager sources nixpkgs for its own use so make home-manager use the same version of nixpkgs defined above to avoid getting out of sync
   };
 
