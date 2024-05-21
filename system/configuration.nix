@@ -29,7 +29,7 @@
     settings = {
       experimental-features = "nix-command flakes";
       flake-registry = "";
-      nix-path = config.nix.nixPath;
+      nix-path = config.nix.nixPath; # workaround for https://github.com/NixOS/nix/issues/9574
     };
   };
 
@@ -50,9 +50,9 @@
     kernel.sysctl = { "vm.swappiness" = 30;};
   };
 
-## wayland compositor related
-#  programs.hyprland.enable = true;
-#  #environment.sessionVariables.NIXOS_OZONE_WL = "1";
+# wayland compositor related
+  programs.hyprland.enable = true;
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
 #  #security.polkit.enable = true;
 #  #hardware.opengl.enable = true; # when using QEMU KVM
 
