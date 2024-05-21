@@ -20,10 +20,10 @@
     };
   };
 
-## system packages
-#  environment.systemPackages = with pkgs; [
-#
-#  ];
+# system-wide packages installed (that aren't installed via their own program modules enabled below)
+  environment.systemPackages = with pkgs; [ # search system packages with 'nix search [package]'
+    usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
+  ];
 
 # nix package manager related
   nix = 
@@ -90,21 +90,14 @@
     ];
   };
 
-## nix-index - file database search functionality for nixos, provides 'nix-locate' tool
-#  programs.nix-index = {
-#    enable = true;
-#    enableZshIntegration = true;
-#  };
+# nix-index - file database search functionality for nixos, provides 'nix-locate' tool
+  programs.nix-index = {
+    enable = true;
+    enableZshIntegration = true;
+  };
 
 # enable fonts 
   fonts.fontDir.enable = true;
-
-# system-wide packages installed (that aren't installed via their own program modules enabled below)
-  environment.systemPackages = with pkgs; [ # search system packages with 'nix search [package]'
-    #pcsclite # smartcard reader tool for yubikey functionality
-    #git # installed system-wide to allow ansible root user to clone repo on first install
-    usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
-  ];
 
 # sops
 #sops.defaultSopsFile = ./secrets/secrets.sops.yaml;
