@@ -6,7 +6,6 @@
   environment.systemPackages = with pkgs; [
     yubikey-personalization # tool required to make changes to yubikeys
     yubikey-manager
-    yubioath-desktop # desktop tool to setup OTP codes on yubikey
     pcsclite # smartcard reader tool
   ];
 
