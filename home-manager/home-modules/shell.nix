@@ -6,6 +6,7 @@
   programs.zsh = {
     enable = true;
     enableCompletion = true;
+    #autocd = true; # move to directory without using cd
     # added to zsh interactive shell (.zshrc)
     initExtra = ''
       pfetch
