@@ -4,6 +4,8 @@
 {
   imports = [
     ./hardware-configuration.nix
+    #./system-modules/hyprland.nix
+    ./system-modules/yubikey.nix
     #inputs.sops-nix.nixosModules.sops # import sops module
     inputs.home-manager.nixosModules.home-manager # import home-manager module declared in flake.nix
   ];
@@ -50,12 +52,6 @@
     kernel.sysctl = { "vm.swappiness" = 30;};
   };
 
-## wayland compositor related
-#  programs.hyprland.enable = true;
-#  environment.sessionVariables.NIXOS_OZONE_WL = "1";
-#  #security.polkit.enable = true;
-#  #hardware.opengl.enable = true; # when using QEMU KVM
-
 # set hostname
   networking.hostName = "thinkpad";
 
@@ -94,8 +90,8 @@
 
 # system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [ # search system packages with 'nix search [package]'
-    pcsclite # smartcard reader tool for yubikey functionality
-    git # installed system-wide to allow ansible root user to clone repo on first install
+    #pcsclite # smartcard reader tool for yubikey functionality
+    #git # installed system-wide to allow ansible root user to clone repo on first install
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
   ];
 
@@ -154,8 +150,8 @@
   };
   environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
   
-# enable smartcard reader tool for yubikey functionality
-  services.pcscd.enable = true;
+## enable smartcard reader tool for yubikey functionality
+#  services.pcscd.enable = true;
   
 # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "23.11";

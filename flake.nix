@@ -17,7 +17,7 @@
   in {
     nixosConfigurations = { # output set that contains details on one or more system configurations
       thinkpad = lib.nixosSystem { # specify 'thinkpad' as system configuration name
-        specialArgs = {inherit inputs outputs;}; # thinkpad system configuration inherits the definitions and outputs of this flake
+        specialArgs = {inherit inputs outputs;}; # thinkpad system configuration inherits the inputs and outputs of this flake
         modules = [
           ./system/configuration.nix # nixos system configuration module is in effect the configuration.nix file
         ];
