@@ -14,6 +14,15 @@
 # enable smartcard reader tool
   services.pcscd.enable = true;
 
+  security.polkit.extraConfig = ''
+    polkit.addRule(function(action, subject) {
+      if (action.id == "org.debian.pcsc-lite.access_pcsc" &&
+        subject.isInGroup("wheel")) {
+        return polkit.Result.YES;
+      }
+    });
+  '';
+
 # udev package for yubikey
   services.udev.packages = with pkgs; [
     yubikey-personalization
