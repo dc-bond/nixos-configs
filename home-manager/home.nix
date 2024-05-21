@@ -4,7 +4,7 @@
 {
   imports = [
     ./home-modules/gnupg.nix
-    ./shell.nix
+    ./home-modules/shell.nix
   ];
 
 # ?
