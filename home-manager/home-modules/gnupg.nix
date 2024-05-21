@@ -34,12 +34,15 @@
     };
   };
 
+# disable ssh-agent
+  services.ssh-agent.enable = false;
+
 # gpg-agent
   services.gpg-agent = {
     enable = true;
     enableSshSupport = true;
     enableZshIntegration = true;
-    #pinentryFlavor = "pinentry-rofi"; # move to compositor module?
+    #pinentryFlavor = "pinentry-rofi"; when enabling rofi in a compositor
     enableScDaemon = true;
   };
 

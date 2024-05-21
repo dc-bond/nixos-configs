@@ -107,7 +107,6 @@
   };
 
 # outgoing ssh
-  #services.ssh-agent.enable = true; # default is false, comment out if using gpg-agent to serve ssh
   programs.ssh = {
     enable = true;
     matchBlocks = {
