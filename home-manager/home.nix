@@ -3,7 +3,7 @@
 # module imports
 {
   imports = [
-    #./home-modules/gnupg.nix
+    ./home-modules/gnupg.nix
     ./home-modules/shell.nix
   ];
 
@@ -141,4 +141,5 @@
 
 # original home state version - defines the first version of home-manager installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   home.stateVersion = "23.11";
+
 }
