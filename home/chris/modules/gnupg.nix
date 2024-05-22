@@ -29,20 +29,20 @@
       default-preference-list = "SHA512 SHA384 SHA256 SHA224 AES256 AES192 AES CAST5 ZLIB BZIP2 ZIP Uncompressed";
     };
     scdaemonSettings = {
-      disable-ccid = true; # disable gnupg's built-in smartcard reader function in order to default to system's smartcard reader (pcsclite package)
+      disable-ccid = true; # disable gnupg's integrated CCID smartcard driver in favor of using system's smartcard reader (pcsclite package) PC/PD driver instead so no conflicts
     };
   };
 
 # disable ssh-agent
   services.ssh-agent.enable = false;
 
-## gpg-agent
-#  services.gpg-agent = {
-#    enable = true;
-#    enableSshSupport = true;
-#    enableZshIntegration = true;
-#    #pinentryFlavor = "pinentry-rofi"; when enabling rofi in a compositor
-#    #enableScDaemon = false; # doesn't do anything
-#  };
+# gpg-agent
+  services.gpg-agent = {
+    enable = true; # this setting adds export GPG_TTY lines to user's .zshrc
+    enableSshSupport = true; # this setting adds 'gpg-connect-agent updatestartuptty /bye' to user's .zshrc
+    enableZshIntegration = true;
+    #pinentryFlavor = "pinentry-rofi"; when enabling rofi in a compositor
+    #enableScDaemon = true; # defaults to true
+  };
 
 }
