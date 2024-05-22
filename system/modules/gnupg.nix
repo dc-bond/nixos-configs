@@ -13,7 +13,7 @@
 #    };
 #  };
 
-# disable ssh-agent systemwide
-  programs.ssh.startAgent = false;
+## disable ssh-agent systemwide
+#  programs.ssh.startAgent = false;
 
 }

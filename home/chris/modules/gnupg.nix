@@ -34,8 +34,8 @@
     };
   };
 
-## disable ssh-agent
-#  services.ssh-agent.enable = false;
+# disable ssh-agent
+  services.ssh-agent.enable = false;
 
 # gpg-agent
   services.gpg-agent = {
