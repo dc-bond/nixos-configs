@@ -10,7 +10,7 @@
       { source = ../DB9ADBBE6FBD1F0E694AF25D012321D46E090E61.pub; trust = 5; }
     ];
     settings = { 
-      use-agent = true;
+      #use-agent = true;
       no-greeting = true;
       armor = true;
       no-emit-version = true;
