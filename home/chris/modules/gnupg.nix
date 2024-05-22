@@ -36,13 +36,13 @@
 # disable ssh-agent
   services.ssh-agent.enable = false;
 
-# gpg-agent
-  services.gpg-agent = {
-    enable = true;
-    enableSshSupport = true;
-    enableZshIntegration = true;
-    #pinentryFlavor = "pinentry-rofi"; when enabling rofi in a compositor
-    #enableScDaemon = false; # doesn't do anything
-  };
+## gpg-agent
+#  services.gpg-agent = {
+#    enable = true;
+#    enableSshSupport = true;
+#    enableZshIntegration = true;
+#    #pinentryFlavor = "pinentry-rofi"; when enabling rofi in a compositor
+#    #enableScDaemon = false; # doesn't do anything
+#  };
 
 }
