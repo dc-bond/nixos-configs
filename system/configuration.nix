@@ -4,7 +4,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    #./modules/hyprland.nix
+    ./modules/hyprland.nix
     #./modules/gnupg.nix # deprecated
     ./modules/yubikey.nix
     #inputs.sops-nix.nixosModules.sops # import sops module
