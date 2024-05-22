@@ -2,15 +2,15 @@
 
 {
 
- # gnupg 
+# gnupg 
   programs.gpg = {
-    enable = true; # already enabled systemwide via nixos gnupg system module
+    enable = true;
     homedir = "${config.home.homeDirectory}/.gnupg";
     publicKeys = [ 
       { source = ../DB9ADBBE6FBD1F0E694AF25D012321D46E090E61.pub; trust = 5; }
     ];
-    settings = {
-      use-agent = true; # to enable smartcard/ssh support?
+    settings = { 
+      use-agent = true;
       no-greeting = true;
       armor = true;
       no-emit-version = true;
@@ -34,8 +34,8 @@
     };
   };
 
-# disable ssh-agent
-  services.ssh-agent.enable = false;
+## disable ssh-agent
+#  services.ssh-agent.enable = false;
 
 # gpg-agent
   services.gpg-agent = {
