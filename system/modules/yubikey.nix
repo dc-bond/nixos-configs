@@ -7,12 +7,12 @@
     yubikey-personalization # tool required to make changes to yubikeys
     yubikey-manager
     yubioath-flutter # gui authenticator app for yubikeys
-    pcsclite # smartcard reader tool
+    #pcsclite # smartcard reader tool
     #pcscliteWithPolkit # smartcard reader tool
   ];
 
 # enable smartcard reader tool
-  #services.pcscd.enable = true;
+  services.pcscd.enable = true;
 
   #security.polkit.extraConfig = ''
   #  polkit.addRule(function(action, subject) {
