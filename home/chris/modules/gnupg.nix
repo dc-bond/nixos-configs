@@ -42,7 +42,7 @@
     enableSshSupport = true;
     enableZshIntegration = true;
     #pinentryFlavor = "pinentry-rofi"; when enabling rofi in a compositor
-    enableScDaemon = false;
+    #enableScDaemon = false; # doesn't do anything
   };
 
 }
