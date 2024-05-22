@@ -5,7 +5,7 @@
   imports = [
     ./hardware-configuration.nix
     #./system-modules/hyprland.nix
-    ./system-modules/gnupg.nix
+    #./system-modules/gnupg.nix
     ./system-modules/yubikey.nix
     #inputs.sops-nix.nixosModules.sops # import sops module
     inputs.home-manager.nixosModules.home-manager # import home-manager module declared in flake.nix
