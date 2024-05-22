@@ -12,7 +12,7 @@
   ];
 
 # enable smartcard reader tool
-  services.pcscd.enable = true;
+  #services.pcscd.enable = true;
 
   #security.polkit.extraConfig = ''
   #  polkit.addRule(function(action, subject) {
