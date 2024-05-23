@@ -17,7 +17,7 @@
   in {
     nixosConfigurations = {
       thinkpad = lib.nixosSystem {
-        inherit system
+        inherit system;
         modules = [
           ./system/configuration.nix
         ];
