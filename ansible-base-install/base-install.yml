@@ -108,7 +108,7 @@
       ansible.builtin.command: swapon /mnt/.swapfile
 
     - name: run installation
-      ansible.builtin.command: nixos-install --no-root-passwd --flake github:dc-bond/nixos-configs#thinkpad
+      ansible.builtin.command: nixos-install --no-root-passwd --no-write-lockfile --flake github:dc-bond/nixos-configs#thinkpad
       args:
         chdir: /mnt
 
