@@ -107,10 +107,10 @@
     - name: turn on swap
       ansible.builtin.command: swapon /mnt/.swapfile
 
-#    - name: run installation
-#      ansible.builtin.command: nixos-install --no-root-passwd --no-write-lock-file --flake github:dc-bond/nixos-configs#thinkpad
-#      args:
-#        chdir: /mnt
-#
-#    - name: shutdown
-#      shell: /run/current-system/sw/bin/shutdown now
+    - name: run installation
+      ansible.builtin.command: nixos-install --no-root-passwd --no-write-lock-file --flake github:dc-bond/nixos-configs#thinkpad
+      args:
+        chdir: /mnt
+
+    - name: shutdown
+      shell: /run/current-system/sw/bin/shutdown now

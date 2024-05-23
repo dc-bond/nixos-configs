@@ -10,14 +10,14 @@
   boot.extraModulePackages = [ ];
 
   fileSystems."/" = {
-    device = "/dev/disk/by-uuid/4ab2b6dc-6708-4105-84ae-9749044f11b0";
+    device = "/dev/disk/by-label/cryptroot";
     fsType = "ext4";
   };
 
-  boot.initrd.luks.devices."cryptroot".device = "/dev/disk/by-uuid/6c809478-1445-4e6e-b6e9-a998bca65ab9";
+  boot.initrd.luks.devices."cryptroot".device = "/dev/sda2";
 
   fileSystems."/boot" = { 
-    device = "/dev/disk/by-uuid/B2B2-0622";
+    device = "/dev/disk/by-label/boot";
     fsType = "vfat";
   };
 
