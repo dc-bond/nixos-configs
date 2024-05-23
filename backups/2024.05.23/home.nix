@@ -7,18 +7,17 @@
     ./modules/shell.nix
   ];
 
-# allow configuration options for packages from the nixpkgs repo
+# ?
   nixpkgs = {
-    overlays = [ # override default packages in nixpkgs repo, e.g. older versions, custom patched, etc.
+    overlays = [
     ];
     config = {
-      allowUnfree = true; # allow packages marked as proprietary/unfree
-      allowUnfreePredicate = _: true; # workaround for https://github.com/nix-community/home-manager/issues/2942
-      allowBroken = false; # do not allow packages marked as broken
+      allowUnfree = true;
+      allowUnfreePredicate = _: true;
     };
   };
 
-# install/enable home-manager itself
+# enable home-manager itself
   programs.home-manager.enable = true;
 
 # enable user fonts

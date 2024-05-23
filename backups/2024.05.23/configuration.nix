@@ -1,11 +1,13 @@
-{ inputs, config, lib, pkgs, ... }: 
+{ inputs, outputs, lib, config, pkgs, ... }: 
 
 # module imports
 {
   imports = [
     ./hardware-configuration.nix
-    #./modules/hyprland.nix
+    ./modules/hyprland.nix
     ./modules/yubikey.nix
+    #inputs.sops-nix.nixosModules.sops # import sops module
+    inputs.home-manager.nixosModules.home-manager # import home-manager module declared in flake.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
@@ -18,29 +20,39 @@
     };
   };
 
-  environment.systemPackages = with pkgs; [ 
+# system-wide packages installed (that aren't installed via their own program modules enabled below)
+  environment.systemPackages = with pkgs; [ # search system packages with 'nix search [package]'
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
   ];
 
 # nix package manager related
   nix = 
   let
-    flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs; # for the registry and path modifications just below
+    flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
   in {
+    channel.enable = false;
+    registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs;
+    nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
     settings = {
-      experimental-features = "nix-command flakes"; # enable flakes and 'nix' command
-      flake-registry = ""; # disable global flake registry
+      experimental-features = "nix-command flakes";
+      flake-registry = "";
       nix-path = config.nix.nixPath; # workaround for https://github.com/NixOS/nix/issues/9574
     };
-    channel.enable = false; # disable channels because using flakes instead
-    registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs; # make registry match flake inputs
-    nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs; # make nix path match flake inputs
+  };
+
+# settings for home-manager module
+  home-manager = {
+    extraSpecialArgs = { inherit inputs outputs; };
+    users = {
+      chris = import ../home/chris/home.nix;
+    };
   };
 
 # boot configs
   boot = {
     loader = {
       systemd-boot.enable = true;
+      #efi.canTouchEfiVariables = true;
     };
     kernel.sysctl = { "vm.swappiness" = 30;};
   };
@@ -86,6 +98,10 @@
 
 # enable fonts 
   fonts.fontDir.enable = true;
+
+# sops
+#sops.defaultSopsFile = ./secrets/secrets.sops.yaml;
+#sops.defaultSopsFormat = "yaml";
 
 # user setup
   users.users = {
