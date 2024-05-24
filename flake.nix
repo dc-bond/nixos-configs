@@ -10,15 +10,16 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = { self, nixpkgs, home-manager, ... } @ inputs:
   let
     system = "x86_64-linux";
     lib = nixpkgs.lib;
     pkgs = import nixpkgs { inherit system; };
+    inherit (self) outputs;
   in {
     nixosConfigurations = {
       thinkpad = lib.nixosSystem {
-        inherit system;
+        specialArgs = {inherit inputs outputs;};
         modules = [
           ./system/configuration.nix
         ];
