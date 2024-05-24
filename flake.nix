@@ -24,13 +24,5 @@
         ];
       };
     };
-    #homeConfigurations = {
-    #  chris = home-manager.lib.homeManagerConfiguration {
-    #    inherit pkgs;
-    #    modules = [
-    #      ./home/chris/home.nix 
-    #    ];
-    #  };
-    #};
   };
 }
