@@ -1,7 +1,8 @@
 { inputs, config, pkgs, ... }: 
 
-# module imports
 {
+  
+# module imports
   imports = [
     ./modules/gnupg.nix
     ./modules/shell.nix

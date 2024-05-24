@@ -1,7 +1,9 @@
-{ inputs, outputs, lib, config, pkgs, ... }: 
+{ inputs, lib, config, pkgs, ... }: 
+#{ inputs, outputs, lib, config, pkgs, ... }: 
 
-# module imports
 {
+  
+# module imports
   imports = [
     ./hardware-configuration.nix
     ./modules/hyprland.nix
@@ -97,10 +99,6 @@
 
 # enable fonts 
   fonts.fontDir.enable = true;
-
-# sops
-#sops.defaultSopsFile = ./secrets/secrets.sops.yaml;
-#sops.defaultSopsFormat = "yaml";
 
 # user setup
   users.users = {
