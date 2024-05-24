@@ -1,46 +1,28 @@
 {
-  
   description = "thinkpad laptop system configuration flake";
 
   inputs = {
-    #nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; # for cutting-edge repo
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11"; # stable repo
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs"; # home-manager sources nixpkgs for its own use so make home-manager use the same version of nixpkgs defined above to avoid getting out of sync
-    };
+    #nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; # for cutting-edge repo
+    home-manager.url = "github:nix-community/home-manager/release-23.11";
+    #home-manager.url = "github:nix-community/home-manager/master";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs"; # home-manager sources nixpkgs for its own use so make home-manager use the same version of nixpkgs defined above to avoid getting out of sync
+    #sops-nix.url = "github:Mic92/sops-nix";
+    #sops-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
-
-  #outputs = { self, nixpkgs, home-manager, ... } @ inputs: # check
-  #let
-  #  system = "x86_64-linux";
-  #  lib = nixpkgs.lib;
-  #  pkgs = import nixpkgs { inherit system; };
-  #  inherit (self) outputs; # check
-  #in {
-  #  nixosConfigurations = {
-  #    thinkpad = lib.nixosSystem {
-  #      specialArgs = {inherit inputs outputs;}; # check
-  #      modules = [
-  #        ./system/configuration.nix
-  #      ];
-  #    };
-  #  };
-  #};
 
   outputs = { self, nixpkgs, home-manager, ... } @ inputs:
   let
-    lib = nixpkgs.lib;
+    lib = nixpkgs.lib; # specify nixpkgs version of lib
     inherit (self) outputs;
   in {
-    nixosConfigurations = {
-      thinkpad = lib.nixosSystem {
-        specialArgs = {inherit inputs outputs;};
+    nixosConfigurations = { # output set that contains details on one or more system configurations
+      thinkpad = lib.nixosSystem { # specify 'thinkpad' as system configuration name
+        specialArgs = {inherit inputs outputs;}; # thinkpad system configuration inherits the inputs and outputs of this flake
         modules = [
-          ./system/configuration.nix
+          ./system/configuration.nix # nixos system configuration module is in effect the configuration.nix file
         ];
       };
     };
   };
-
 }
