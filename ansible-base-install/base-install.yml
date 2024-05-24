@@ -107,10 +107,11 @@
     - name: turn on swap
       ansible.builtin.command: swapon /mnt/.swapfile
 
-#    - name: run installation # should not need '--no-write-lock-file' option because flake.nix inputs should be same as reflected in flake.lock
-#      ansible.builtin.command: nixos-install --no-root-passwd --flake github:dc-bond/nixos-configs#thinkpad
-#      args:
-#        chdir: /mnt
-#
-#    - name: shutdown
-#      shell: /run/current-system/sw/bin/shutdown now
+    - name: run installation # should not need '--no-write-lock-file' option if flake.lock file in repo and inputs in flake.nix not changed from what is reflected in flake.lock
+      #ansible.builtin.command: nixos-install --no-root-passwd --flake github:dc-bond/nixos-configs#thinkpad
+      ansible.builtin.command: nixos-install --no-root-passwd --no-write-lock-file --flake github:dc-bond/nixos-configs#thinkpad
+      args:
+        chdir: /mnt
+
+    - name: shutdown
+      shell: /run/current-system/sw/bin/shutdown now
