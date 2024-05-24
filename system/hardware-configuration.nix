@@ -8,7 +8,7 @@
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ ];
   boot.extraModulePackages = [ ];
-  #boot.kernelParams = [ "nomodeset" ];
+  #boot.kernelParams = [ "nomodeset" ]; # enable to troubleshoot boot graphics issues
 
   fileSystems."/" = {
     device = "/dev/disk/by-label/cryptroot";
