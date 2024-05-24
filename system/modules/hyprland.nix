@@ -48,11 +48,11 @@
     #bleachbit # disk cleaner
   ];
 
-# security changes required for compositor
-  security = {
-    #rtkit.enable = true;
-    polkit.enable = true; # default setting
-  };
+## security changes required for compositor
+#  security = {
+#    rtkit.enable = true;
+#    polkit.enable = true; # default setting
+#  };
 
 ## sound
 #  sound.enable = true
