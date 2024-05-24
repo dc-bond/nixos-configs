@@ -5,7 +5,7 @@
 # module imports
   imports = [
     ./hardware-configuration.nix
-    ./modules/hyprland.nix
+    #./modules/hyprland.nix
     ./modules/yubikey.nix
     inputs.home-manager.nixosModules.home-manager # import home-manager module declared in flake.nix
   ];
