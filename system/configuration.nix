@@ -50,7 +50,7 @@
   
 # settings for home-manager module
   home-manager = {
-    extraSpecialArgs = { inherit inputs outputs; };
+    extraSpecialArgs = { inherit inputs outputs; }; # home-manager module inherits inputs and outputs of flake.nix
     users = {
       chris = import ../home/chris/home.nix;
     };
