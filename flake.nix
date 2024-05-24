@@ -1,4 +1,5 @@
 {
+  
   description = "thinkpad laptop system configuration flake";
 
   inputs = {
@@ -10,11 +11,26 @@
     };
   };
 
+  #outputs = { self, nixpkgs, home-manager, ... } @ inputs: # check
+  #let
+  #  system = "x86_64-linux";
+  #  lib = nixpkgs.lib;
+  #  pkgs = import nixpkgs { inherit system; };
+  #  inherit (self) outputs; # check
+  #in {
+  #  nixosConfigurations = {
+  #    thinkpad = lib.nixosSystem {
+  #      specialArgs = {inherit inputs outputs;}; # check
+  #      modules = [
+  #        ./system/configuration.nix
+  #      ];
+  #    };
+  #  };
+  #};
+
   outputs = { self, nixpkgs, home-manager, ... } @ inputs:
   let
-    system = "x86_64-linux";
     lib = nixpkgs.lib;
-    pkgs = import nixpkgs { inherit system; };
     inherit (self) outputs;
   in {
     nixosConfigurations = {
@@ -26,4 +42,5 @@
       };
     };
   };
+
 }
