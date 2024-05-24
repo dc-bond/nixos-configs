@@ -46,7 +46,8 @@
     enable = true; # this setting adds export GPG_TTY lines to user's .zshrc
     enableSshSupport = true; # this setting adds 'gpg-connect-agent updatestartuptty /bye' to user's .zshrc
     enableZshIntegration = true;
-    #pinentryPackage = "gtk2";
+    #pinentryPackage = "gtk-2";
+    #pinentryPackage = "pinentry-tty";
     #pinentryPackage = "pinentry-rofi"; # when enabling rofi in a compositor
     #enableScDaemon = true; # defaults to true
   };
