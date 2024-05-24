@@ -1,11 +1,13 @@
-{ inputs, config, pkgs, ... }: 
+{ inputs, outputs, lib, config, pkgs, ... }: 
 
 # module imports
 {
+
   imports = [
     ./hardware-configuration.nix
     #./modules/hyprland.nix
     ./modules/yubikey.nix
+    inputs.home-manager.nixosModules.home-manager # import home-manager module declared in flake.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
@@ -24,17 +26,18 @@
 
 # nix package manager related
   nix = {
-#  let
-#    flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs; # for the registry and path modifications just below
-#  in {
-    settings = {
-      experimental-features = "nix-command flakes"; # enable flakes and 'nix' command
-      flake-registry = ""; # disable global flake registry
-      nix-path = config.nix.nixPath; # workaround for https://github.com/NixOS/nix/issues/9574
+    let
+      flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs; # for the registry and path modifications just below
+    in {
+      settings = {
+        experimental-features = "nix-command flakes"; # enable flakes and 'nix' command
+        flake-registry = ""; # disable global flake registry
+        nix-path = config.nix.nixPath; # workaround for https://github.com/NixOS/nix/issues/9574
+      };
+      channel.enable = false; # disable channels because using flakes instead
+      registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs; # make registry match flake inputs
+      nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs; # make nix path match flake inputs
     };
-    channel.enable = false; # disable channels because using flakes instead
-    #registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs; # make registry match flake inputs
-    #nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs; # make nix path match flake inputs
   };
 
 # boot configs
@@ -43,6 +46,14 @@
       systemd-boot.enable = true;
     };
     kernel.sysctl = { "vm.swappiness" = 30;};
+  };
+  
+# settings for home-manager module
+  home-manager = {
+    extraSpecialArgs = { inherit inputs outputs; };
+    users = {
+      chris = import ../home/chris/home.nix;
+    };
   };
 
 # set hostname

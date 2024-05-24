@@ -24,13 +24,13 @@
         ];
       };
     };
-    homeConfigurations = {
-      chris = home-manager.lib.homeManagerConfiguration {
-        inherit pkgs;
-        modules = [
-          ./home/chris/home.nix 
-        ];
-      };
-    };
+    #homeConfigurations = {
+    #  chris = home-manager.lib.homeManagerConfiguration {
+    #    inherit pkgs;
+    #    modules = [
+    #      ./home/chris/home.nix 
+    #    ];
+    #  };
+    #};
   };
 }
