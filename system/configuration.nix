@@ -26,7 +26,7 @@
   ];
 
 # nix package manager related
-  nix =
+  nix = {
   #let
   #  flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs; # for the registry and path modifications just below
   #in {
