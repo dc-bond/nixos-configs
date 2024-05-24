@@ -25,19 +25,18 @@
   ];
 
 # nix package manager related
-  nix = {
-    let
-      flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs; # for the registry and path modifications just below
-    in {
-      settings = {
-        experimental-features = "nix-command flakes"; # enable flakes and 'nix' command
-        flake-registry = ""; # disable global flake registry
-        nix-path = config.nix.nixPath; # workaround for https://github.com/NixOS/nix/issues/9574
-      };
-      channel.enable = false; # disable channels because using flakes instead
-      registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs; # make registry match flake inputs
-      nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs; # make nix path match flake inputs
+  nix =
+  let
+    flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs; # for the registry and path modifications just below
+  in {
+    settings = {
+      experimental-features = "nix-command flakes"; # enable flakes and 'nix' command
+      flake-registry = ""; # disable global flake registry
+      nix-path = config.nix.nixPath; # workaround for https://github.com/NixOS/nix/issues/9574
     };
+    channel.enable = false; # disable channels because using flakes instead
+    registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs; # make registry match flake inputs
+    nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs; # make nix path match flake inputs
   };
 
 # boot configs
