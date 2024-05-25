@@ -5,7 +5,6 @@
 # module imports
   imports = [
     ./hardware-configuration.nix
-    #./modules/hyprland.nix
     ./modules/yubikey.nix
     inputs.home-manager.nixosModules.home-manager # import home-manager module declared in flake.nix
   ];
@@ -51,10 +50,13 @@
     };
   };
 
-  #programs.hyprland = {
-  #  enable = true;
-  #  package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-  #};
+# hyprland compositor
+  programs.hyprland = {
+    enable = true;
+    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+    #nvidiaPatches = true;
+    #xwayland.enable = true;
+  };
 
 # boot configs
   boot = {
@@ -151,13 +153,6 @@
     enable = true; # z-shell enabled system-wide to source necessary files for users
   };
   environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
-
-  programs.hyprland = {
-    enable = true;
-    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-    #nvidiaPatches = true;
-    #xwayland.enable = true;
-  };
 
 # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "23.11";
