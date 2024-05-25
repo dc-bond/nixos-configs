@@ -4,7 +4,7 @@
 
 # packages needed
   home.packages = with pkgs; [
-    pinentry-all
+    #pinentry-all
   ];
 
 # gnupg 
