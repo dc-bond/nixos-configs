@@ -152,12 +152,12 @@
   };
   environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
 
-  #programs.hyprland = {
-  #  enable = true;
-  #  package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-  #  #nvidiaPatches = true;
-  #  #xwayland.enable = true;
-  #};
+  programs.hyprland = {
+    enable = true;
+    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+    #nvidiaPatches = true;
+    #xwayland.enable = true;
+  };
 
 # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "23.11";
