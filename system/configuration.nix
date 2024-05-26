@@ -34,8 +34,8 @@
       flake-registry = "";
       nix-path = config.nix.nixPath; # workaround for https://github.com/NixOS/nix/issues/9574
       # cachix for hyprland?
-      #substituters = ["https://hyprland.cachix.org"];
-      #trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
+      substituters = ["https://hyprland.cachix.org"];
+      trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
     };
     channel.enable = false; # disable channels because using flake
     registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs; # make flake registry match flake inputs
