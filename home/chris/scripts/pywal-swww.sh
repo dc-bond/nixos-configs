@@ -6,9 +6,9 @@ wal -s -t -q -i ~/nixos-configs/home/chris/wallpaper/
 # load current pywal color scheme
 source "$HOME/.cache/wal/colors.sh"
 
-# copy color file to waybar folder
-cp ~/.cache/wal/colors-waybar.css ~/.config/waybar/
-cp $wallpaper ~/.cache/current_wallpaper.jpg
+## copy color file to waybar folder
+#cp ~/.cache/wal/colors-waybar.css ~/.config/waybar/
+#cp $wallpaper ~/.cache/current_wallpaper.jpg
 
 # get wallpaper image name
 newwall=$(echo $wallpaper | sed "s|$HOME/wallpaper/||g")
