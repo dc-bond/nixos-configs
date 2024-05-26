@@ -118,7 +118,7 @@
     - name: run installation
       ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad
       args:
-        chdir: /mnt
+        chdir: /mnt/nixos-configs
 
 #    - name: run installation
 #      ansible.builtin.command: nixos-install --no-root-passwd --no-write-lock-file --flake github:dc-bond/nixos-configs#thinkpad
