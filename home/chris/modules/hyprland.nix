@@ -9,8 +9,7 @@
       bind = [
         "$mainMod, RETURN, exec, alacritty"
         "$mainMod, Q, killactive"
-        ]
-      
+        ];
       extraConfig = ''
         
       '';
