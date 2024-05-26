@@ -4,21 +4,21 @@
 
   home.packages = with pkgs; [
     waybar
-    (pkgs.waybar.overrideAttrs (oldAttrs: {
-      mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
-    })
-    )
+    #(pkgs.waybar.overrideAttrs (oldAttrs: {
+    #  mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
+    #})
+    #)
     #eww-wayland # widgets
-    #swww # animated wallpaper for wayland window managers
+    swww # animated wallpaper for wayland window managers
     #swaylock-effects # wayland screenlock application
     #wlogout # wayland logout application
     #nwg-look # gtk settings manager for wayland
-    #rofi-wayland # application launcher
-    #pinentry-rofi # use rofi for pinentry
-    #rofi-calc # calculator add-on for rofi
+    rofi-wayland # application launcher
+    pinentry-rofi # use rofi for pinentry
+    rofi-calc # calculator add-on for rofi
     #wlr-randr # wayland display setting tool for external monitors
-    #pywal # color theme changer
-    #dunst # notification daemon
+    pywal # color theme changer
+    dunst # notification daemon
     #libnotify # library to support notification daemons
     #xfce.xfce4-power-manager # laptop power manager
     ##xdg-desktop-portal-hyprland # allow applications to communicate with window manager
