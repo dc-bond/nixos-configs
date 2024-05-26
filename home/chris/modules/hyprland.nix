@@ -2,9 +2,9 @@
 
 {
 
-#  home.file = {
-#    ".config/hypr/hyprland.conf".source = ./dotfiles/hyprland.conf;
-#  };
+  home.file = {
+    ".config/hypr/hyprland.conf".source = ./dotfiles/hyprland.conf;
+  };
 
   wayland.windowManager.hyprland = {
     enable = true;
