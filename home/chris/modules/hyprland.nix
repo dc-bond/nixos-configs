@@ -22,7 +22,7 @@
 
       # autostart
       #exec-once = ~/cypress-dotfiles/scripts/waybar-launch.sh
-      exec-once = swww-daemon init 
+      exec-once = swww init 
       exec-once = ~/nixos-configs/home/chris/scripts/pywal-swww.sh
       exec-once = dunst
       #exec-once = ~/cypress-dotfiles/scripts/gtk.sh

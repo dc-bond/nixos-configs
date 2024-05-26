@@ -36,7 +36,8 @@
   home.packages = with pkgs; [ # only for installing packages that don't come with a programs.enable module
     eza # modern replacement for 'ls'
     pfetch # system info displayed on shell startup
-    glances # system monitor
+    htop # system monitor
+    glances # another system monitor
     sops # encryption
     nmap # network scanning
     (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo

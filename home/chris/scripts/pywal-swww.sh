@@ -11,7 +11,7 @@ wal -s -t -q -i ~/nixos-configs/home/chris/wallpaper/
 #cp $wallpaper ~/.cache/current_wallpaper.jpg
 
 # get wallpaper image name
-newwall=$(echo $wallpaper | sed "s|$HOME/wallpaper/||g")
+newwall=$(echo $wallpaper | sed "s|~/nixos-configs/home/chris/wallpaper/||g")
 
 # set the new wallpaper
 swww img $wallpaper --transition-step 20 --transition-fps=20
