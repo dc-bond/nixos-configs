@@ -28,8 +28,8 @@
       #exec-once = ~/cypress-dotfiles/scripts/gtk.sh
       #exec-once = ~/cypress-dotfiles/scripts/autolock.sh &
 
-      # load pywal color file
-      source = ~/.cache/wal/colors-hyprland.conf
+      ## load pywal color file
+      #source = ~/.cache/wal/colors-hyprland.conf
 
       ## environment variables
       #env = XCURSOR_SIZE,16
