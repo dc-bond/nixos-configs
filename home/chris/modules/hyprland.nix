@@ -2,13 +2,19 @@
 
 {
 
-  home.file = {
-    ".config/hypr/hyprland.conf".source = ./dotfiles/hyprland.conf;
-  };
-
   wayland.windowManager.hyprland = {
     enable = true;
-
+    settings = {
+      "$mainMod" = "Alt";
+      bind = [
+        "$mainMod, RETURN, exec, alacritty"
+        "$mainMod, Q, killactive"
+        ]
+      
+      extraConfig = ''
+        
+      '';
+    };
   };
 
   home.packages = with pkgs; [
@@ -73,29 +79,30 @@
   #    );
   #};
 
-## alacritty terminal
-#  programs.alacritty = {
-#    enable = true;
-#    #settings = {
-#    #  font = {
-#    #    normal = {
-#    #      family = "IosevkaTerm Nerd Font";
-#    #      style = "Regular";
-#    #    };
-#    #    bold = {
-#    #      family = "IosevkaTerm Nerd Font";
-#    #      style = "Bold";
-#    #    };
-#    #    italic = {
-#    #      family = "IosevkaTerm Nerd Font";
-#    #      style = "Italic";
-#    #    };
-#    #    bold_italic = {
-#    #      family = "IosevkaTerm Nerd Font";
-#    #      style = "Bold Italic";
-#    #    };
-#    #    size = 16;
-#    #  };
-#    };
+# alacritty terminal
+  programs.alacritty = {
+    enable = true;
+    settings = {
+      font = {
+        normal = {
+          family = "SauceCodePro NF";
+          style = "Regular";
+        };
+        bold = {
+          family = "SauceCodePro NF";
+          style = "Bold";
+        };
+        italic = {
+          family = "SauceCodePro NF";
+          style = "Italic";
+        };
+        bold_italic = {
+          family = "SauceCodePro NF";
+          style = "Bold Italic";
+        };
+        size = 11.0;
+      };
+    };
+  };
 
 }
