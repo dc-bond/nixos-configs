@@ -127,3 +127,7 @@
 
     - name: shutdown
       shell: /run/current-system/sw/bin/shutdown now
+
+# change password
+# delete cloned repo from root directory
+# clone repo with ssh into home
