@@ -2,6 +2,7 @@
 # boot live ISO on target machine
 # set root user password on live ISO system to 'root' by running 'sudo passwd' as default nixos user so ansible can login as root on the target machine
 # install python into the live ISO with 'sudo nix-env -iA nixos.python3Minimal'
+# install git into the live ISO with 'sudo nix-env -iA nixos.git'
 # check live ISO system IP address with 'ip a' then ensure inventory.yml updated accordingly
 # run with 'ansible-playbook base-install.yml -i inventory.yml' while inside ansible project directory on provisioning machine
 
@@ -110,7 +111,7 @@
     - name: clone repository
       ansible.builtin.git:
         repo: https://github.com/dc-bond/nixos-configs.git
-        dest: /mnt
+        dest: /mnt/nixos-configs
         clone: yes
         update: yes
 
