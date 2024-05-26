@@ -8,7 +8,7 @@
     };
     home-manager = {
       #url = "github:nix-community/home-manager/release-23.11";
-      url = "github:nix-community/home-manager/master";
+      url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
