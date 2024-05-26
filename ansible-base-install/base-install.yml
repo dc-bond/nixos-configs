@@ -109,10 +109,10 @@
 
     - name: clone repository
       ansible.builtin.git:
-      repo: https://github.com/dc-bond/nixos-configs.git
-      dest: /mnt
-      clone: yes
-      update: yes
+        repo: https://github.com/dc-bond/nixos-configs.git
+        dest: /mnt
+        clone: yes
+        update: yes
 
     - name: run installation
       ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad
