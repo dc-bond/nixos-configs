@@ -45,8 +45,6 @@
 # settings for home-manager module
   home-manager = {
     extraSpecialArgs = { inherit inputs outputs; };
-    #useGlobalPkgs = true;
-    #useUserPackages = true;
     users = {
       chris = import ../home/chris/home.nix;
     };

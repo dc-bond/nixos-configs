@@ -115,15 +115,15 @@
         clone: yes
         update: yes
 
-#    - name: run installation
-#      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad
-#      args:
-#        chdir: /mnt/nixos-configs
-#
+    - name: run installation
+      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad
+      args:
+        chdir: /mnt/nixos-configs
+
 #    - name: run installation
 #      ansible.builtin.command: nixos-install --no-root-passwd --no-write-lock-file --flake github:dc-bond/nixos-configs#thinkpad
 #      args:
 #        chdir: /mnt
-#
-#    - name: shutdown
-#      shell: /run/current-system/sw/bin/shutdown now
+
+    - name: shutdown
+      shell: /run/current-system/sw/bin/shutdown now
