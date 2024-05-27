@@ -5,18 +5,11 @@
   wayland.windowManager.hyprland = {
     enable = true;
     xwayland.enable = false;
-    #settings = {
-    #  "$mainMod" = "Alt";
-    #  bind = [
-    #    "$mainMod, RETURN, exec, alacritty"
-    #    "$mainMod, Q, killactive"
-    #    ];
-    #};
     extraConfig = ''
 
       # monitor setup
       #monitor=eDP-1, disable
-      monitor=eDP-1, 1920x1080@60, 0x0, 1
+      #monitor=eDP-1, 1920x1080@60, 0x0, 1
       #monitor=HDMI-A-2, 2560x1440@60, 0x0, 1
       #monitor=HDMI-A-2, disable
 
@@ -229,35 +222,30 @@
     #bleachbit # disk cleaner
   ];
 
-# rxvt-unicode terminal
-  programs.urxvt = {
+# alacritty terminal
+  programs.alacritty = {
     enable = true;
+    #settings = {
+    #  font = {
+    #    normal = {
+    #      family = "SauceCodePro NF";
+    #      style = "Regular";
+    #    };
+    #    bold = {
+    #      family = "SauceCodePro NF";
+    #      style = "Bold";
+    #    };
+    #    italic = {
+    #      family = "SauceCodePro NF";
+    #      style = "Italic";
+    #    };
+    #    bold_italic = {
+    #      family = "SauceCodePro NF";
+    #      style = "Bold Italic";
+    #    };
+    #    size = 11.0;
+    #  };
+    #};
   };
-  
-## alacritty terminal
-#  programs.alacritty = {
-#    enable = true;
-#    settings = {
-#      font = {
-#        normal = {
-#          family = "SauceCodePro NF";
-#          style = "Regular";
-#        };
-#        bold = {
-#          family = "SauceCodePro NF";
-#          style = "Bold";
-#        };
-#        italic = {
-#          family = "SauceCodePro NF";
-#          style = "Italic";
-#        };
-#        bold_italic = {
-#          family = "SauceCodePro NF";
-#          style = "Bold Italic";
-#        };
-#        size = 11.0;
-#      };
-#    };
-#  };
 
 }
