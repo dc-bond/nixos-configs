@@ -119,7 +119,7 @@
       # keybindings
       $mainMod = Alt
 
-      bind = $mainMod, RETURN, exec, urxvt
+      bind = $mainMod, RETURN, exec, rxvt-unicode
       bind = $mainMod, Q, killactive
       bind = $mainMod, F, fullscreen
       #bind = $mainMod, D, exec, rofi -show combi -combi-modes "drun,run,ssh" -modes combi
