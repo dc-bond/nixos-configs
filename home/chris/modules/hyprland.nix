@@ -22,9 +22,10 @@
 
       # autostart
       #exec-once = ~/cypress-dotfiles/scripts/waybar-launch.sh
-      exec-once = swww-daemon 
-      exec-once = ~/nixos-configs/home/chris/scripts/pywal-swww.sh
-      exec-once = dunst
+      exec-once = swww-daemon
+      exec-once = swww img ~/nixos-configs/home/chris/wallpaper/wallpaper-1.jpg
+      #exec-once = ~/nixos-configs/home/chris/scripts/pywal-swww.sh
+      #exec-once = dunst
       #exec-once = ~/cypress-dotfiles/scripts/gtk.sh
       #exec-once = ~/cypress-dotfiles/scripts/autolock.sh &
 
