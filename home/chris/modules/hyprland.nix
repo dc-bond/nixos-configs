@@ -119,7 +119,7 @@
       # keybindings
       $mainMod = Alt
 
-      bind = $mainMod, RETURN, exec, alacritty
+      bind = $mainMod, RETURN, exec, urxvt
       bind = $mainMod, Q, killactive
       bind = $mainMod, F, fullscreen
       #bind = $mainMod, D, exec, rofi -show combi -combi-modes "drun,run,ssh" -modes combi
@@ -208,6 +208,7 @@
     #wlr-randr # wayland display setting tool for external monitors
     pywal # color theme changer
     dunst # notification daemon
+    #polkit-kde-agent # kde gui authentication agent
     #libnotify # library to support notification daemons
     #xfce.xfce4-power-manager # laptop power manager
     ##xdg-desktop-portal-hyprland # allow applications to communicate with window manager
@@ -227,31 +228,36 @@
     ##xorg-xset # tool to set keyboard repeat delay
     #bleachbit # disk cleaner
   ];
-  
-# alacritty terminal
-  programs.alacritty = {
+
+# rxvt-unicode terminal
+  programs.urxvt = {
     enable = true;
-    settings = {
-      font = {
-        normal = {
-          family = "SauceCodePro NF";
-          style = "Regular";
-        };
-        bold = {
-          family = "SauceCodePro NF";
-          style = "Bold";
-        };
-        italic = {
-          family = "SauceCodePro NF";
-          style = "Italic";
-        };
-        bold_italic = {
-          family = "SauceCodePro NF";
-          style = "Bold Italic";
-        };
-        size = 11.0;
-      };
-    };
   };
+  
+## alacritty terminal
+#  programs.alacritty = {
+#    enable = true;
+#    settings = {
+#      font = {
+#        normal = {
+#          family = "SauceCodePro NF";
+#          style = "Regular";
+#        };
+#        bold = {
+#          family = "SauceCodePro NF";
+#          style = "Bold";
+#        };
+#        italic = {
+#          family = "SauceCodePro NF";
+#          style = "Italic";
+#        };
+#        bold_italic = {
+#          family = "SauceCodePro NF";
+#          style = "Bold Italic";
+#        };
+#        size = 11.0;
+#      };
+#    };
+#  };
 
 }
