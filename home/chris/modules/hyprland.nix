@@ -198,6 +198,7 @@
     rofi-wayland # application launcher
     pinentry-rofi # use rofi for pinentry
     rofi-calc # calculator add-on for rofi
+    rofi-pass-wayland # add pass functionality to rofi
     #wlr-randr # wayland display setting tool for external monitors
     pywal # color theme changer
     dunst # notification daemon
@@ -247,5 +248,9 @@
     #  };
     #};
   };
+
+# rofi
+  programs.rofi = {
+    enable = true;
 
 }
