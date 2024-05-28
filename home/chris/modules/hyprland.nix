@@ -253,7 +253,7 @@
   programs.waybar = {
     enable = true;
     settings = { 
-      lib.importJSON = ../waybar/config.json;
+      lib.importJSON = ../dotfiles/waybar/config.json;
     };
     style = ''
     
