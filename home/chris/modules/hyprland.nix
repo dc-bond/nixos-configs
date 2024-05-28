@@ -195,7 +195,7 @@
     #swaylock-effects # wayland screenlock application
     #wlogout # wayland logout application
     #nwg-look # gtk settings manager for wayland
-    rofi-wayland # application launcher
+    #rofi-wayland # application launcher
     pinentry-rofi # use rofi for pinentry
     rofi-calc # calculator add-on for rofi
     rofi-pass-wayland # add pass functionality to rofi
@@ -249,9 +249,16 @@
     #};
   };
 
+# waybar
+  programs.waybar = {
+    enable = true;
+    package = inputs.hyprland.packages.${pkgs.system}.waybar-hyprland
+  };
+
 # rofi
   programs.rofi = {
     enable = true;
+    package = rofi-wayland;
   };
 
 }
