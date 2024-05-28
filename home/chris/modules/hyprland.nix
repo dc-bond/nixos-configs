@@ -1,4 +1,4 @@
-{ pkgs, ... }: 
+{ lib, pkgs, ... }: 
 
 {
 
@@ -253,7 +253,7 @@
   programs.waybar = {
     enable = true;
     settings = { 
-      lib.importJSON ../waybar/config.json;
+      lib.importJSON = ../waybar/config.json;
     };
     style = ''
     
