@@ -226,238 +226,38 @@
 # alacritty terminal
   programs.alacritty = {
     enable = true;
-    #settings = {
-    #  font = {
-    #    normal = {
-    #      family = "SauceCodePro NF";
-    #      style = "Regular";
-    #    };
-    #    bold = {
-    #      family = "SauceCodePro NF";
-    #      style = "Bold";
-    #    };
-    #    italic = {
-    #      family = "SauceCodePro NF";
-    #      style = "Italic";
-    #    };
-    #    bold_italic = {
-    #      family = "SauceCodePro NF";
-    #      style = "Bold Italic";
-    #    };
-    #    size = 11.0;
-    #  };
-    #};
+    settings = {
+      font = {
+        normal = {
+          family = "SauceCodePro NF";
+          style = "Regular";
+        };
+        bold = {
+          family = "SauceCodePro NF";
+          style = "Bold";
+        };
+        italic = {
+          family = "SauceCodePro NF";
+          style = "Italic";
+        };
+        bold_italic = {
+          family = "SauceCodePro NF";
+          style = "Bold Italic";
+        };
+        size = 11.0;
+      };
+    };
   };
 
-# waybar
-  programs.waybar = {
-    enable = true;
-    settings = { 
-      lib.importJSON = ../dotfiles/waybar/config.json;
-    };
-    style = ''
-    
-      @import 'colors-waybar.css';
-      
-      * {
-          font-family: SauceCodePro Nerd Font;
-          border: none;
-          min-height: 0;
-      }
-      
-      window#waybar {
-          background: #000000;
-          transition-property: background-color;
-          transition-duration: .5s;
-      }
-      
-      #workspaces button {
-          color: @color11;
-          transition: all 0.3s ease-in-out;
-          opacity: 0.8;
-          border-radius: 20px;
-          font-size: 14px;
-      }
-      
-      #workspaces button.active {
-          color: #ffffff;
-          background-color: @color11;
-          transition: all 0.3s ease-in-out;
-          border-radius: 20px;
-          opacity: 1.0;
-      }
-      
-      #workspaces button:hover {
-          color: #ffffff;
-          background-color: @color1;
-      }
-      
-      tooltip {
-          background-color: #ffffff;
-          border-radius: 10px;
-          opacity: 0.8;
-          padding: 20px;
-          margin: 0px;
-      }
-      
-      tooltip label {
-          color: @color11;
-      }
-      
-      .modules-left > widget:first-child > #workspaces {
-          margin-left: 0;
-      }
-      
-      .modules-right > widget:last-child > #workspaces {
-          margin-right: 0;
-      }
-      
-      #custom-updates {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #temperature {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #temperature.critical {
-          color: #ff3131;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #cpu {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #memory {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #disk {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #clock {
-          font-size: 14px;
-          color: #ffffff;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #pulseaudio {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #pulseaudio.muted {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #network.vpn {
-          color: #00ff00;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #network.ethernet {
-          color: #00ff00;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #network.wifi {
-          color: #00ff00;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #network.disconnected {
-          color: #77767b;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #network.disabled {
-          color: #77767b;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #bluetooth.on {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #bluetooth.connected {
-          color: #00ff00;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #bluetooth.off {
-          color: #77767b;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #bluetooth.disabled {
-          color: #77767b;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #battery {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      
-      #battery.charging, #battery.plugged {
-          color: #ffffff;
-      }
-      
-      @keyframes blink {
-          to {
-              background-color: #ffffff;
-              color: #000000;
-          }
-      }
-      
-      #battery.critical:not(.charging) {
-          background-color: #f53c3c;
-          color: #ffffff;
-          animation-name: blink;
-          animation-duration: 0.5s;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-          animation-direction: alternate;
-      }
-      
-      label:focus {
-          background-color: #000000;
-      }
-      
-      #backlight {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-    '';
-  };
+## waybar
+#  programs.waybar = {
+#    enable = true;
+#    settings = { 
+#      lib.importJSON = ../dotfiles/waybar/config.json;
+#    };
+#    style = ''
+#    '';
+#  };
 
 # rofi
   programs.rofi = {

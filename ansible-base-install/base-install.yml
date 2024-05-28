@@ -1,4 +1,5 @@
 # ensure ansible installed on provisioning machine
+# create bootable USB from downloaded ISO using 'dd bs=4M if=/path/to/file.iso of=/dev/sd[x] status=progress oflag=sync'
 # boot live ISO on target machine
 # set root user password on live ISO system to 'root' by running 'sudo passwd' as default nixos user so ansible can login as root on the target machine
 # install python into the live ISO with 'sudo nix-env -iA nixos.python3Minimal'
