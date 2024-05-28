@@ -252,7 +252,7 @@
 # waybar
   programs.waybar = {
     enable = true;
-    settings = {
+    settings = ''
 
       "position": "bottom",
       "layer": "top",
@@ -406,7 +406,7 @@
         "format-icons": ["󰛨"]
       }
 
-    };
+    '';
     style = ''
     
       @import 'colors-waybar.css';
