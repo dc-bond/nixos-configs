@@ -196,9 +196,9 @@
     #wlogout # wayland logout application
     #nwg-look # gtk settings manager for wayland
     #rofi-wayland # application launcher
-    pinentry-rofi # use rofi for pinentry
-    rofi-calc # calculator add-on for rofi
-    rofi-pass-wayland # add pass functionality to rofi
+    #pinentry-rofi # use rofi for pinentry
+    #rofi-calc # calculator add-on for rofi
+    #rofi-pass-wayland # add pass functionality to rofi
     #wlr-randr # wayland display setting tool for external monitors
     pywal # color theme changer
     dunst # notification daemon
@@ -252,7 +252,6 @@
 # waybar
   programs.waybar = {
     enable = true;
-    package = inputs.hyprland.packages.${pkgs.system}.waybar-hyprland;
   };
 
 # rofi
