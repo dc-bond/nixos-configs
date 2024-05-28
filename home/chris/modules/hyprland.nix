@@ -258,7 +258,7 @@
 # rofi
   programs.rofi = {
     enable = true;
-    package = rofi-wayland;
+    package = "rofi-wayland";
   };
 
 }
