@@ -16,16 +16,16 @@
     ansible_ssh_pass: root # root user passwd on live ISO system
     ansible_ssh_common_args: -o "StrictHostKeyChecking no" -o "UserKnownHostsFile /dev/null"
     ansible_python_interpreter: /nix/var/nix/profiles/default/bin/python # location of python path in live ISO system after installing with 'sudo nix-env -iA nixos.python3Minimal'
-    # virtual machine
-    install_drive: /dev/sda
-    boot_partition_suffix: "1"
-    root_partition_suffix: "2"
-    wired_interface: enp0s3
+    ## virtual machine
+    #install_drive: /dev/sda
+    #boot_partition_suffix: "1"
+    #root_partition_suffix: "2"
+    #wired_interface: enp0s3
     # thinkpad laptop
-    #install_drive: /dev/nvme0n1
-    #boot_partition_suffix: "p1"
-    #root_partition_suffix: "p2"
-    #wired_interface: enp0s31f6
+    install_drive: /dev/nvme0n1
+    boot_partition_suffix: "p1"
+    root_partition_suffix: "p2"
+    wired_interface: enp0s31f6
     #wireless_interface: wlan0
 
   tasks:
@@ -96,7 +96,8 @@
       ansible.builtin.command: mount /dev/disk/by-label/boot /mnt/boot
 
     - name: create swapfile
-      ansible.builtin.command: dd if=/dev/zero of=/mnt/.swapfile bs=1M count=2k status=progress
+      #ansible.builtin.command: dd if=/dev/zero of=/mnt/.swapfile bs=1K count=2M status=progress
+      ansible.builtin.command: dd if=/dev/zero of=/mnt/.swapfile bs=1K count=16M status=progress
 
     - name: set permissions on swap file
       ansible.builtin.file:
@@ -116,18 +117,18 @@
         clone: yes
         update: yes
 
-    - name: run installation
-      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad
-      args:
-        chdir: /mnt/nixos-configs
+#    - name: run installation
+#      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad
+#      args:
+#        chdir: /mnt/nixos-configs
 
 #    - name: run installation
 #      ansible.builtin.command: nixos-install --no-root-passwd --no-write-lock-file --flake github:dc-bond/nixos-configs#thinkpad
 #      args:
 #        chdir: /mnt
 
-    - name: shutdown
-      shell: /run/current-system/sw/bin/shutdown now
+#    - name: shutdown
+#      shell: /run/current-system/sw/bin/shutdown now
 
 # change password
 # delete cloned repo from root directory
