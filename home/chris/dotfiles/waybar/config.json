@@ -1,4 +1,5 @@
 {
+    
     "position": "bottom",
     "layer": "top",
     "margin-bottom": 0,
@@ -6,26 +7,26 @@
     "margin-left": 0,
     "margin-right": 0,    
 
-    "include": ["~/.config/waybar/modules.json"],
+    "include": ["./modules.json"],
 
     "modules-left": [
-        "hyprland/workspaces"
+      "hyprland/workspaces"
     ],
 
     "modules-right": [
-	"temperature",
-	"backlight",
-	"cpu",
-	"memory",
-	"disk",
-	"custom/updates",
-        "pulseaudio",
-        "battery", 
-        "bluetooth",
-        "network#vpn",
-        "network#wifi",
-        "network#ethernet",
-        "clock"
+	  "temperature",
+	  "backlight",
+	  "cpu",
+	  "memory",
+	  "disk",
+	  "custom/updates",
+      "pulseaudio",
+      "battery", 
+      "bluetooth",
+      "network#vpn",
+      "network#wifi",
+      "network#ethernet",
+      "clock"
     ]
 
 }
