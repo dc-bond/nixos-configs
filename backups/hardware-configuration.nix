@@ -15,7 +15,7 @@
     fsType = "ext4";
   };
 
-  boot.initrd.luks.devices."cryptroot".device = "/dev/nvme0n1p2";
+  boot.initrd.luks.devices."cryptroot".device = "/dev/sda2";
 
   fileSystems."/boot" = { 
     device = "/dev/disk/by-label/boot";
@@ -25,7 +25,7 @@
   swapDevices = [
     {
       device = "/.swapfile"; 
-      size = 16384; 
+      size = 2048; 
     }
   ];
 
