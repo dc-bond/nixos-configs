@@ -124,8 +124,8 @@
       # ----------------------------------------------------- 
       decoration {
         rounding = 5
-        active_opacity = 0.9
-        inactive_opacity = 0.7
+        active_opacity = 1.0
+        inactive_opacity = 0.8
         fullscreen_opacity = 1.0
         drop_shadow = true
         shadow_range = 30
