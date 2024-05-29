@@ -77,76 +77,75 @@
       # keyboard layout and mouse
       # ----------------------------------------------------- 
       input {
-          kb_layout = us
-          kb_variant =
-          kb_model =
-          kb_options =
-          kb_rules =
-          follow_mouse = 1
-          sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
-          touchpad {
-              natural_scroll = true
-          }
+        kb_layout = us
+        kb_variant =
+        kb_model =
+        kb_options =
+        kb_rules =
+        follow_mouse = 1
+        sensitivity = 0 # -1.0 - 1.0, 0 means no modification.
+        touchpad {
+          natural_scroll = true
+        }
       }
       # ----------------------------------------------------- 
       # window layout and colors
       # ----------------------------------------------------- 
       general {
-          gaps_in = 0
-          gaps_out = 0
-          border_size = 1
-          col.active_border = $color11
-          col.inactive_border = rgba(ffffffff)
-          layout = dwindle
+        gaps_in = 0
+        gaps_out = 0
+        border_size = 1
+        col.active_border = $color11
+        col.inactive_border = rgba(ffffffff)
+        layout = dwindle
       }
       # ----------------------------------------------------- 
       # window decorations
       # ----------------------------------------------------- 
       decoration {
-          rounding = 5
-          blur {
-              enabled = true
-              size = 6
-              passes = 2
-              new_optimizations = on
-              ignore_opacity = true
-              xray = true
-              blurls = waybar
-          }
-          active_opacity = 1.0
-          inactive_opacity = 0.8
-          fullscreen_opacity = 1.0
-      
-          drop_shadow = true
-          shadow_range = 30
-          shadow_render_power = 3
-          col.shadow = 0x66000000
+        rounding = 5
+        blur {
+          enabled = true
+          size = 6
+          passes = 2
+          new_optimizations = on
+          ignore_opacity = true
+          xray = true
+          blurls = waybar
+        }
+        active_opacity = 1.0
+        inactive_opacity = 0.8
+        fullscreen_opacity = 1.0
+        drop_shadow = true
+        shadow_range = 30
+        shadow_render_power = 3
+        col.shadow = 0x66000000
       }
       # ----------------------------------------------------- 
       # animations
       # ----------------------------------------------------- 
       animations {
-          enabled = true
-          bezier = myBezier, 0.05, 0.9, 0.1, 1.05
-          animation = windows, 1, 7, myBezier
-          animation = windowsOut, 1, 7, default, popin 80%
-          animation = border, 1, 10, default
-          animation = borderangle, 1, 8, default
-          animation = fade, 1, 7, default
-          animation = workspaces, 1, 6, default
+        enabled = true
+        bezier = myBezier, 0.05, 0.9, 0.1, 1.05
+        animation = windows, 1, 7, myBezier
+        animation = windowsOut, 1, 7, default, popin 80%
+        animation = border, 1, 10, default
+        animation = borderangle, 1, 8, default
+        animation = fade, 1, 7, default
+        animation = workspaces, 1, 6, default
       }
       # ----------------------------------------------------- 
       # layouts
       # ----------------------------------------------------- 
       dwindle {
-          pseudotile = true
-          preserve_split = true
+        pseudotile = true
+        preserve_split = true
       }
       master {
-          new_is_master = true
+        new_is_master = true
       }
       gestures {
-          workspace_swipe = false
+        workspace_swipe = false
       }
       # ----------------------------------------------------- 
       # window rules
@@ -158,16 +157,16 @@
       # misc settings
       # ----------------------------------------------------- 
       misc {
-          disable_hyprland_logo = true
-          disable_splash_rendering = true
+        disable_hyprland_logo = true
+        disable_splash_rendering = true
       }
       input {
-          repeat_delay = 200
-          repeat_rate = 40
+        repeat_delay = 200
+        repeat_rate = 40
       }
       #device {
-      #    name = razer-proclickm-1
-      #    sensitivity = -0.7 
+      #  name = razer-proclickm-1
+      #  sensitivity = -0.7 
       #}
     '';
   };
