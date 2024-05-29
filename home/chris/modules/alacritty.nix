@@ -2,9 +2,6 @@
 
 {
 
-#  home.packages = with pkgs; [
-#  ];
-
 # alacritty terminal
   programs.alacritty = {
     enable = true;
@@ -26,7 +23,7 @@
           family = "SauceCodePro NF";
           style = "Bold Italic";
         };
-        size = 11.0;
+        size = 8.0;
       };
     };
   };

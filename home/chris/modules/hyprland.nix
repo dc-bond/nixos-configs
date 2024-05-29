@@ -2,19 +2,39 @@
 
 {
 
+# module imports
+  imports = [
+    ./alacritty.nix
+  ];
+
+# enable hyprland home-manager module
   wayland.windowManager.hyprland = {
     enable = true;
-    #nvidiaPatches = true;
     #xwayland.enable = false;
     #settings = {
-
     #};
     extraConfig = ''
       # ----------------------------------------------------- 
-      # startup
+      # monitors
+      # ----------------------------------------------------- 
+      #monitor=eDP-1, disable
+      #monitor=eDP-1, 1920x1080@60, 0x0, 1
+      #monitor=HDMI-A-2, 2560x1440@60, 0x0, 1
+      #monitor=HDMI-A-2, disable
+      # ----------------------------------------------------- 
+      # autostart
       # ----------------------------------------------------- 
       exec-once = swww-daemon
       exec-once = swww img ~/nixos-configs/home/chris/wallpaper/wallpaper-1.jpg
+      #exec-once = ~/cypress-dotfiles/scripts/waybar-launch.sh
+      #exec-once = ~/cypress-dotfiles/scripts/updatewal-swww.sh
+      #exec-once = dunst
+      #exec-once = ~/cypress-dotfiles/scripts/gtk.sh
+      #exec-once = ~/cypress-dotfiles/scripts/autolock.sh &
+      # ----------------------------------------------------- 
+      # load pywal color file
+      # ----------------------------------------------------- 
+      #source = ~/.cache/wal/colors-hyprland.conf
       # ----------------------------------------------------- 
       # key bindings
       # ----------------------------------------------------- 
@@ -104,6 +124,13 @@
       # ----------------------------------------------------- 
       decoration {
         rounding = 5
+        active_opacity = 0.9
+        inactive_opacity = 0.7
+        fullscreen_opacity = 1.0
+        drop_shadow = true
+        shadow_range = 30
+        shadow_render_power = 3
+        col.shadow = 0x66000000
         blur {
           enabled = true
           size = 6
@@ -113,13 +140,6 @@
           xray = true
           blurls = waybar
         }
-        active_opacity = 1.0
-        inactive_opacity = 0.8
-        fullscreen_opacity = 1.0
-        drop_shadow = true
-        shadow_range = 30
-        shadow_render_power = 3
-        col.shadow = 0x66000000
       }
       # ----------------------------------------------------- 
       # animations
@@ -221,31 +241,5 @@
 #    NIXOS_OZONE_WL = "1";
 #    #WLR_NO_HARDWARE_CURSORS = "1"; # if cursor does not appear
 #  };
-
-# alacritty terminal
-  programs.alacritty = {
-    enable = true;
-    settings = {
-      font = {
-        normal = {
-          family = "SauceCodePro NF";
-          style = "Regular";
-        };
-        bold = {
-          family = "SauceCodePro NF";
-          style = "Bold";
-        };
-        italic = {
-          family = "SauceCodePro NF";
-          style = "Italic";
-        };
-        bold_italic = {
-          family = "SauceCodePro NF";
-          style = "Bold Italic";
-        };
-        size = 8.0;
-      };
-    };
-  };
 
 }
