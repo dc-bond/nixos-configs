@@ -144,7 +144,6 @@
 # login/cli terminal settings
   console = {
     font = "Lat2-Terminus16";
-    #font = "BlexMono";
     #keyMap = "us";
     useXkbConfig = true; # configure the primary console keymap from the xserver keyboard settings
   };

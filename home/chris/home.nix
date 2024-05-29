@@ -7,6 +7,7 @@
     ./modules/gnupg.nix
     ./modules/shell.nix
     ./modules/hyprland.nix
+    #./modules/alacritty.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
@@ -136,7 +137,7 @@
 
 # symlink non-module package dotfiles
   home.file = {
-    ".sops.yaml".source = ./dotfiles/.sops.yaml;
+    ".sops.yaml".source = ./dotfiles/sops/.sops.yaml;
   };
 
 # start/re-start services after system rebuild
