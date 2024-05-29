@@ -90,8 +90,8 @@
       # ----------------------------------------------------- 
       # environment
       # ----------------------------------------------------- 
-      env = XCURSOR_SIZE,16
-      #env = PATH,$PATH:$HOME/cypress-dotfiles/scripts:$HOME/.cargo/bin
+      env = XCURSOR_SIZE,20
+      env = PATH,$PATH:$HOME/nixos-configs/home/chris/scripts
       env = EDITOR,nvim
       env = VISUAL=nvim
       env = TERM=xterm-256color
