@@ -1,10 +1,9 @@
-{ inputs, pkgs, ... }: 
+{ inputs, config, pkgs, ... }: 
 
 {
 
   wayland.windowManager.hyprland = {
     enable = true;
-    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
     #nvidiaPatches = true;
     #xwayland.enable = false;
     #settings = {
@@ -13,6 +12,8 @@
     extraConfig = ''
       exec-once = swww-daemon
       exec-once = swww img ~/nixos-configs/home/chris/wallpaper/wallpaper-1.jpg
+      $mainMod = Alt
+      bind = $mainMod, RETURN, exec, alacritty
     '';
   };
 

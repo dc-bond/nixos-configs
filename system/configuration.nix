@@ -53,9 +53,7 @@
 # hyprland compositor
   programs.hyprland = {
     enable = true;
-    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-    #nvidiaPatches = true;
-    #xwayland.enable = true;
+    #package = inputs.hyprland.packages.${pkgs.system}.hyprland; # for flake input?
   };
 
 # boot configs
