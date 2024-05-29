@@ -5,6 +5,8 @@
 # module imports
   imports = [
     ./alacritty.nix
+    ./rofi.nix
+    ./waybar.nix
   ];
 
 # enable hyprland home-manager module
@@ -25,9 +27,9 @@
       # autostart
       # ----------------------------------------------------- 
       exec-once = swww-daemon
-      exec-once = swww img ~/nixos-configs/home/chris/wallpaper/wallpaper-1.jpg
+      #exec-once = swww img ~/nixos-configs/home/chris/wallpaper/wallpaper-1.jpg
+      exec-once = ~/nixos-configs/home/chris/scripts/pywal-swww.sh
       #exec-once = ~/cypress-dotfiles/scripts/waybar-launch.sh
-      #exec-once = ~/cypress-dotfiles/scripts/updatewal-swww.sh
       #exec-once = dunst
       #exec-once = ~/cypress-dotfiles/scripts/gtk.sh
       #exec-once = ~/cypress-dotfiles/scripts/autolock.sh &

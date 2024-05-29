@@ -9,22 +9,22 @@
       font = {
         normal = {
           #family = "SauceCodePro NF";
-          family = "BlexMono";
+          family = "BlexMono NF";
           style = "Regular";
         };
         bold = {
           #family = "SauceCodePro NF";
-          family = "BlexMono";
+          family = "BlexMono NF";
           style = "Bold";
         };
         italic = {
           #family = "SauceCodePro NF";
-          family = "BlexMono";
+          family = "BlexMono NF";
           style = "Italic";
         };
         bold_italic = {
           #family = "SauceCodePro NF";
-          family = "BlexMono";
+          family = "BlexMono NF";
           style = "Bold Italic";
         };
         size = 8.0;

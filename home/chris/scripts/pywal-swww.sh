@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # select random wallpaper and create color scheme
 wal -s -t -q -i ~/nixos-configs/home/chris/wallpaper/
