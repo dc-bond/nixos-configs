@@ -11,10 +11,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    hyprland.url = "github:hyprwm/Hyprland";
+    #hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
   };
 
-  outputs = { self, nixpkgs, home-manager, hyprland, ... } @ inputs:
+  outputs = { self, nixpkgs, home-manager, ... } @ inputs:
   let
     inherit (self) outputs;
   in {
@@ -23,21 +23,6 @@
         specialArgs = { inherit inputs outputs; };
         modules = [
           ./system/configuration.nix
-          hyprland.nixosModules.default
-          { 
-            programs.hyprland = {
-              enable = true;
-            };
-          }
-          home-manager.nixosModules.home-manager
-          { 
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              users.chris = import ./home/chris/home.nix;
-              extraSpecialArgs = { inherit inputs outputs; };
-            };
-          }
         ];
       };
     };

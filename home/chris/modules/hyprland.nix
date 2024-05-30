@@ -7,12 +7,12 @@
     ./alacritty.nix
     ./rofi.nix
     ./waybar.nix
-    ./scripts.nix
   ];
 
 # enable hyprland home-manager module
   wayland.windowManager.hyprland = {
     enable = true;
+    systemdIntegration = true;
     #xwayland.enable = false;
     #settings = {
     #};
@@ -28,10 +28,10 @@
       # autostart
       # ----------------------------------------------------- 
       exec-once = swww-daemon
-      exec-once = pywal-swww
+      exec = sleep 0.5 && pywal-swww
+      exec-once = dunst
       #exec-once = swww img ~/nixos-configs/home/chris/wallpaper/wallpaper-1.jpg
       #exec-once = ~/cypress-dotfiles/scripts/waybar-launch.sh
-      #exec-once = dunst
       #exec-once = ~/cypress-dotfiles/scripts/gtk.sh
       #exec-once = ~/cypress-dotfiles/scripts/autolock.sh &
       # ----------------------------------------------------- 
@@ -91,8 +91,8 @@
       # ----------------------------------------------------- 
       # environment
       # ----------------------------------------------------- 
-      env = XCURSOR_SIZE,20
-      env = PATH,$PATH:$HOME/nixos-configs/home/chris/scripts:/run/current-system/sw/bin
+      env = XCURSOR_SIZE,16
+      #env = PATH,$PATH:$HOME/nixos-configs/home/chris/scripts:/run/current-system/sw/bin
       env = EDITOR,nvim
       env = VISUAL=nvim
       env = TERM=xterm-256color

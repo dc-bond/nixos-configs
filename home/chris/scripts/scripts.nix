@@ -27,9 +27,7 @@ let
   '';
 in 
 {
-
   home.packages = with pkgs; [
     pywal-swww
   ];
-
 }

@@ -6,7 +6,7 @@
   imports = [
     ./hardware-configuration.nix
     ./modules/yubikey.nix
-    #inputs.home-manager.nixosModules.home-manager # import home-manager module declared in flake.nix
+    inputs.home-manager.nixosModules.home-manager # import home-manager module declared in flake.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
@@ -43,25 +43,25 @@
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs; # make nix path match flake inputs
   };
 
-## settings for home-manager module
-#  home-manager = {
-#    extraSpecialArgs = { inherit inputs outputs; };
-#    users = {
-#      chris = import ../home/chris/home.nix;
-#    };
-#  };
+# settings for home-manager module
+  home-manager = {
+    extraSpecialArgs = { inherit inputs outputs; };
+    users = {
+      chris = import ../home/chris/home.nix;
+    };
+  };
 
 # hyprland compositor
   programs.hyprland = {
     enable = true;
-    package = inputs.hyprland.packages.${pkgs.system}.hyprland; # for flake input?
+    #package = inputs.hyprland.packages.${pkgs.system}.hyprland; # for flake input?
   };
 
 # boot configs
   boot = {
     loader = {
       systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
+      #efi.canTouchEfiVariables = true;
     };
     kernel.sysctl = { "vm.swappiness" = 30;};
   };
