@@ -91,7 +91,7 @@
       # environment
       # ----------------------------------------------------- 
       env = XCURSOR_SIZE,20
-      env = PATH,$PATH:$HOME/nixos-configs/home/chris/scripts
+      env = PATH,$PATH:$HOME/nixos-configs/home/chris/scripts:/run/current-system/sw/bin
       env = EDITOR,nvim
       env = VISUAL=nvim
       env = TERM=xterm-256color
