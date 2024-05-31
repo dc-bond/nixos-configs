@@ -21,6 +21,10 @@
       display-drun = "Applications";
       display-ssh = "SSH";
       display-calc = "Calculator";
+      border = 0;
+      border-radius = 0;
+      padding = 16 14;
+      width = 500px;
     };
   };
 
