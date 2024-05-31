@@ -11,7 +11,10 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    hyprland.url = "github:hyprwm/Hyprland";
+    #hyprland.url = "github:hyprwm/Hyprland";
+    hyprland = {
+      url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+    };
   };
 
   outputs = { self, nixpkgs, home-manager, hyprland, ... } @ inputs:
@@ -27,6 +30,7 @@
           { 
             programs.hyprland = {
               enable = true;
+              package = inputs.hyprland.packages.${pkgs.system}.hyprland;
             };
           }
           home-manager.nixosModules.home-manager

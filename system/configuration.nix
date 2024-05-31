@@ -51,11 +51,11 @@
 #    };
 #  };
 
-# hyprland compositor
-  programs.hyprland = {
-    enable = true;
-    package = inputs.hyprland.packages.${pkgs.system}.hyprland; # for flake input?
-  };
+## hyprland compositor
+#  programs.hyprland = {
+#    enable = true;
+#    package = inputs.hyprland.packages.${pkgs.system}.hyprland; # for flake input?
+#  };
 
 # boot configs
   boot = {
