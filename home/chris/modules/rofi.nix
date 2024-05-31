@@ -24,7 +24,7 @@
       border = 0;
       border-radius = 0;
       padding = 16 14;
-      width = 500px;
+      width = "500px";
     };
   };
 
