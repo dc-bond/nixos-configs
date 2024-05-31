@@ -34,8 +34,6 @@
     homeDirectory = "/home/chris";
   };
 
-  home.packages = [ (pkgs.buildEnv { name = "my-scripts"; paths = [ ./scripts ]; }) ];
-
 # user-specific packages installed (that aren't installed via their own program modules enabled below)
   home.packages = with pkgs; [ # only for installing packages that don't come with a programs.enable module
     eza # modern replacement for 'ls'
@@ -49,6 +47,12 @@
         "IBMPlexMono" # name is 'BlexMono' for system configs
         "SourceCodePro" # name is 'SauceCodePro' for system configs
       ];
+    })
+    (pkgs.buildEnv { 
+      name = "my-scripts"; 
+      paths = [ 
+        ./scripts 
+      ]; 
     })
   ];
 
