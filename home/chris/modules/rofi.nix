@@ -13,7 +13,7 @@
     terminal = "${pkgs.alacritty}/bin/alacritty";
     font = "SauceCodePro Nerd Font 10";
     location = "center";
-    theme = ../dotfiles/rofi/Ayu-Mirage.rasi
+    theme = ../dotfiles/rofi/Ayu-Mirage.rasi;
     extraConfig = {
       #modes = "window,drun,run,ssh,combi,calc,power-menu:${pkgs.rofi-power-menu}/bin/rofi-power-menu";
       display-combi = "Combination Mode";
