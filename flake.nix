@@ -26,22 +26,21 @@
         specialArgs = { inherit inputs outputs; };
         modules = [
           ./system/configuration.nix
-          #hyprland.nixosModules.default
-          #{ 
-          #  programs.hyprland = {
-          #    enable = true;
-          #    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-          #  };
-          #}
-          #home-manager.nixosModules.home-manager
-          #{ 
-          #  home-manager = {
-          #    useGlobalPkgs = true;
-          #    useUserPackages = true;
-          #    users.chris = import ./home/chris/home.nix;
-          #    extraSpecialArgs = { inherit inputs outputs; };
-          #  };
-          #}
+          hyprland.nixosModules.default
+          { 
+            programs.hyprland = {
+              enable = true;
+            };
+          }
+          home-manager.nixosModules.home-manager
+          { 
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              users.chris = import ./home/chris/home.nix;
+              extraSpecialArgs = { inherit inputs outputs; };
+            };
+          }
         ];
       };
     };

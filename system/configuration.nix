@@ -6,8 +6,8 @@
   imports = [
     ./hardware-configuration.nix
     ./modules/yubikey.nix
-    inputs.home-manager.nixosModules.home-manager # import home-manager module declared in flake.nix
-    inputs.hyprland.nixosModules.default # import hyprland module declared in flake.nix
+    #inputs.home-manager.nixosModules.home-manager # import home-manager module declared in flake.nix
+    #inputs.hyprland.nixosModules.default # import hyprland module declared in flake.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
@@ -44,21 +44,21 @@
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs; # make nix path match flake inputs
   };
 
-# settings for home-manager module
-  home-manager = {
-    extraSpecialArgs = { inherit inputs outputs; };
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    users = {
-      chris = import ../home/chris/home.nix;
-    };
-  };
-
-# hyprland compositor
-  programs.hyprland = {
-    enable = true;
-    #package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-  };
+## settings for home-manager module
+#  home-manager = {
+#    extraSpecialArgs = { inherit inputs outputs; };
+#    useGlobalPkgs = true;
+#    useUserPackages = true;
+#    users = {
+#      chris = import ../home/chris/home.nix;
+#    };
+#  };
+#
+## hyprland compositor
+#  programs.hyprland = {
+#    enable = true;
+#    #package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+#  };
 
 # boot configs
   boot = {
