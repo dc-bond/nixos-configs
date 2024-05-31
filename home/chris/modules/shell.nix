@@ -8,9 +8,9 @@
     enableCompletion = true;
     #autocd = true; # move to directory without using cd
     # added to zsh interactive shell (.zshrc)
-    initExtra = ''
-      pfetch
-    '';
+    #initExtra = ''
+    #  pfetch
+    #'';
     shellAliases = {
       ls = "eza -all --long -g -h --color=always --group-directories-first --git";
       rebuild = "sudo nixos-rebuild switch --flake ~/nixos-configs";
