@@ -27,21 +27,21 @@
         modules = [
           ./system/configuration.nix
           hyprland.nixosModules.default
-          { 
-            programs.hyprland = {
-              enable = true;
-              package = inputs.hyprland.packages.${pkgs.system}.hyprland;
-            };
-          }
+          #{ 
+          #  programs.hyprland = {
+          #    enable = true;
+          #    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+          #  };
+          #}
           home-manager.nixosModules.home-manager
-          { 
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              users.chris = import ./home/chris/home.nix;
-              extraSpecialArgs = { inherit inputs outputs; };
-            };
-          }
+          #{ 
+          #  home-manager = {
+          #    useGlobalPkgs = true;
+          #    useUserPackages = true;
+          #    users.chris = import ./home/chris/home.nix;
+          #    extraSpecialArgs = { inherit inputs outputs; };
+          #  };
+          #}
         ];
       };
     };

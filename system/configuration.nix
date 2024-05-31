@@ -43,19 +43,21 @@
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs; # make nix path match flake inputs
   };
 
-## settings for home-manager module
-#  home-manager = {
-#    extraSpecialArgs = { inherit inputs outputs; };
-#    users = {
-#      chris = import ../home/chris/home.nix;
-#    };
-#  };
+# settings for home-manager module
+  home-manager = {
+    extraSpecialArgs = { inherit inputs outputs; };
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users = {
+      chris = import ../home/chris/home.nix;
+    };
+  };
 
-## hyprland compositor
-#  programs.hyprland = {
-#    enable = true;
-#    package = inputs.hyprland.packages.${pkgs.system}.hyprland; # for flake input?
-#  };
+# hyprland compositor
+  programs.hyprland = {
+    enable = true;
+    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+  };
 
 # boot configs
   boot = {
