@@ -26,14 +26,14 @@
         specialArgs = { inherit inputs outputs; };
         modules = [
           ./system/configuration.nix
-          hyprland.nixosModules.default
+          #hyprland.nixosModules.default
           #{ 
           #  programs.hyprland = {
           #    enable = true;
           #    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
           #  };
           #}
-          home-manager.nixosModules.home-manager
+          #home-manager.nixosModules.home-manager
           #{ 
           #  home-manager = {
           #    useGlobalPkgs = true;

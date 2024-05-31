@@ -6,7 +6,7 @@
   imports = [
     ./hardware-configuration.nix
     ./modules/yubikey.nix
-    #inputs.home-manager.nixosModules.home-manager # import home-manager module declared in flake.nix
+    inputs.home-manager.nixosModules.home-manager # import home-manager module declared in flake.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
