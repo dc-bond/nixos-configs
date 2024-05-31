@@ -36,7 +36,7 @@
       # ----------------------------------------------------- 
       # load pywal color file
       # ----------------------------------------------------- 
-      #source = ~/.cache/wal/colors-hyprland.conf
+      source = ~/.cache/wal/colors-hyprland.conf
       # ----------------------------------------------------- 
       # key bindings
       # ----------------------------------------------------- 
@@ -52,9 +52,9 @@
       bind = $mainMod, right, movefocus, r
       bind = $mainMod, up, movefocus, u
       bind = $mainMod, down, movefocus, d
-      bind = $mainMod, PRINT, exec, ~/cypress-dotfiles/scripts/screenshot.sh
-      bind = $mainMod SHIFT, Q, exec, ~/cypress-dotfiles/scripts/powermenu.sh
-      bind = $mainMod SHIFT, R, exec, ~/cypress-dotfiles/scripts/updatewal-swww.sh
+      #bind = $mainMod, PRINT, exec, ~/cypress-dotfiles/scripts/screenshot.sh
+      #bind = $mainMod SHIFT, Q, exec, ~/cypress-dotfiles/scripts/powermenu.sh
+      bind = $mainMod SHIFT, R, exec, ~/nixos-configs/home/chris/scripts/pywal-swww.sh
       bind = $mainMod, F8, exec, rfkill toggle wlan
       #bind = $mainMod, F10, exec, rfkill toggle bluetooth
       bind = $mainMod, F5, exec, brightnessctl set 10%-
