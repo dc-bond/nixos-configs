@@ -48,12 +48,12 @@
         "SourceCodePro" # name is 'SauceCodePro' for system configs
       ];
     })
-    (pkgs.buildEnv { 
-      name = "my-scripts"; 
-      paths = [ 
-        ./scripts 
-      ]; 
-    })
+    #(pkgs.buildEnv { 
+    #  name = "my-scripts"; 
+    #  paths = [ 
+    #    ./scripts 
+    #  ]; 
+    #})
   ];
 
 # pass
