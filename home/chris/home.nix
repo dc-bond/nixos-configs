@@ -4,7 +4,6 @@
   
 # module imports
   imports = [
-    #inputs.hyprland.homeManagerModules.default
     ./scripts/scripts.nix
     ./modules/gnupg.nix
     ./modules/neovim.nix
@@ -34,6 +33,8 @@
     username = "chris";
     homeDirectory = "/home/chris";
   };
+
+  home.packages = [ (pkgs.buildEnv { name = "my-scripts"; paths = [ ./scripts ]; }) ];
 
 # user-specific packages installed (that aren't installed via their own program modules enabled below)
   home.packages = with pkgs; [ # only for installing packages that don't come with a programs.enable module

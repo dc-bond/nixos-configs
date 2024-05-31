@@ -28,7 +28,7 @@
       # autostart
       # ----------------------------------------------------- 
       exec-once = swww-daemon
-      exec = sleep 0.5 && pywal-swww
+      exec-once = ~/cypress-dotfiles/home/chris/scripts/pywal-swww.sh
       exec-once = dunst
       #exec-once = swww img ~/nixos-configs/home/chris/wallpaper/wallpaper-1.jpg
       #exec-once = ~/cypress-dotfiles/scripts/waybar-launch.sh
