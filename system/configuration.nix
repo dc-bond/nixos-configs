@@ -7,6 +7,7 @@
     ./hardware-configuration.nix
     ./modules/yubikey.nix
     inputs.home-manager.nixosModules.home-manager # import home-manager module declared in flake.nix
+    inputs.hyprland.nixosModules.default # import hyprland module declared in flake.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
@@ -56,7 +57,7 @@
 # hyprland compositor
   programs.hyprland = {
     enable = true;
-    package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+    #package = inputs.hyprland.packages.${pkgs.system}.hyprland;
   };
 
 # boot configs
