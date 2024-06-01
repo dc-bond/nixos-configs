@@ -15,15 +15,10 @@
   };
 
   home.packages = with pkgs; [
-    #waybar
-    #(pkgs.waybar.overrideAttrs (oldAttrs: {
-    #  mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
-    #})
-    #)
     #eww-wayland # widgets
     swww # animated wallpaper for wayland window managers
-    swaylock-effects # wayland screenlock application
-    wlogout # wayland logout application
+    #swaylock-effects # wayland screenlock application
+    #wlogout # wayland logout application
     #nwg-look # gtk settings manager for wayland
     #pinentry-rofi # use rofi for pinentry
     #rofi-calc # calculator add-on for rofi

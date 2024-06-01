@@ -7,21 +7,16 @@
     recursive = true;
   };
 
-  home.packages = with pkgs; [
-    waybar
-    #(pkgs.waybar.overrideAttrs (oldAttrs: {
-    #  mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
-    #})
-    #)
-  ];
+  #home.packages = with pkgs; [
+  #  waybar
+  #  #(pkgs.waybar.overrideAttrs (oldAttrs: {
+  #  #  mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
+  #  #})
+  #  #)
+  #];
 
-  #programs.waybar = {
-  #  enable = true;
-  #  #settings = { 
-  #  #  lib.importJSON = ../dotfiles/waybar/config.json;
-  #  #};
-  #  #style = ''
-  #  #'';
-  #};
+  programs.waybar = {
+    enable = true;
+  };
 
 }
