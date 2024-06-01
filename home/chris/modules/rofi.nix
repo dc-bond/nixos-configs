@@ -32,7 +32,7 @@
       "padding" = mkLiteral "16 14";
       "width" = mkLiteral "500px";
       "y-offset" = mkLiteral "29";
-    }
+    }';
   };
 
 }
