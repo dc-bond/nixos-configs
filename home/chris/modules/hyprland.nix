@@ -223,9 +223,9 @@
     #grim # wayland screenshot tool
     #slurp # wayland region selector
     #scrot # screenshot tool
-    #xfce.thunar # file manager
+    xfce.thunar # file manager
     ##filelight # disk usage visualizer
-    #firefox # web browser
+    firefox # web browser
     #mupdf # pdf viewer
     #nextcloud-client # client for connecting to nextcloud servers
     ##ffmpegthumbnailer
