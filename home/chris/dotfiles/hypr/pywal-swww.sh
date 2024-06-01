@@ -18,7 +18,8 @@ swww img $wallpaper --transition-step 20 --transition-fps=20
 
 # reload waybar
 killall waybar
-waybar -c ~/.config/waybar/config.json
+waybar
+#waybar -c ~/.config/waybar/config.json
 
 ## send notification
 #notify-send "Theme and Wallpaper updated" "With image $newwall"
