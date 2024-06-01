@@ -9,10 +9,10 @@
 
   home.packages = with pkgs; [
     waybar
-    (pkgs.waybar.overrideAttrs (oldAttrs: {
-      mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
-    })
-    )
+    #(pkgs.waybar.overrideAttrs (oldAttrs: {
+    #  mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
+    #})
+    #)
   ];
 
   #programs.waybar = {
