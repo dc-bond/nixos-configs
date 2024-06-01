@@ -3,6 +3,12 @@
 {
 
 # rofi
+
+  home.file."${config.xdg.configHome}/rofi" = {
+    source = ../dotfiles/rofi;
+    recursive = true;
+  };
+
   programs.rofi = {
     enable = true;
     package = pkgs.rofi-wayland;
@@ -16,23 +22,23 @@
     theme = ../dotfiles/rofi/Ayu-Mirage.rasi;
     #xoffset = ;
     #yoffset = 29;
-    extraConfig = {
-      modes = "window,drun,run,ssh,combi,calc,power-menu:${pkgs.rofi-power-menu}/bin/rofi-power-menu";
-      display-combi = "Combination Mode";
-      display-run = "Shell Scripts";
-      display-drun = "Applications";
-      display-ssh = "SSH";
-      display-calc = "Calculator";
-    };
-    window = {
-      "font" = mkLiteral "SauceCodePro Nerd Font 10";
-      "location" = mkLiteral "center";
-      "border" = mkLiteral "0";
-      "border-radius" = mkLiteral "0";
-      "padding" = mkLiteral "16 14";
-      "width" = mkLiteral "500px";
-      "y-offset" = mkLiteral "29";
-    };
+    #extraConfig = {
+    #  modes = "window,drun,run,ssh,combi,calc,power-menu:${pkgs.rofi-power-menu}/bin/rofi-power-menu";
+    #  display-combi = "Combination Mode";
+    #  display-run = "Shell Scripts";
+    #  display-drun = "Applications";
+    #  display-ssh = "SSH";
+    #  display-calc = "Calculator";
+    #};
+    #window = {
+    #  "font" = mkLiteral "SauceCodePro Nerd Font 10";
+    #  "location" = mkLiteral "center";
+    #  "border" = mkLiteral "0";
+    #  "border-radius" = mkLiteral "0";
+    #  "padding" = mkLiteral "16 14";
+    #  "width" = mkLiteral "500px";
+    #  "y-offset" = mkLiteral "29";
+    #};
   };
 
 }
