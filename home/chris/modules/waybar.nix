@@ -21,14 +21,14 @@
       enable = false;
       target = "graphical-session.target";
     };
-    style = ''
-      #@import 'colors-waybar.css';
-      * {
-        font-family: SauceCodePro Nerd Font;
-        border: none;
-        min-height: 0;
-      }
-    '';
+    #style = ''
+    #  #@import 'colors-waybar.css';
+    #  * {
+    #    font-family: SauceCodePro Nerd Font;
+    #    border: none;
+    #    min-height: 0;
+    #  }
+    #'';
     settings = [{
       "position" = "bottom";
       "layer" = "top";
