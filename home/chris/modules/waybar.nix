@@ -13,7 +13,7 @@
       mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
     })
     )
-  ]
+  ];
 
   #programs.waybar = {
   #  enable = true;
