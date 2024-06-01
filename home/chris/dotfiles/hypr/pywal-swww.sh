@@ -17,9 +17,8 @@ newwall=$(echo $wallpaper | sed "s|~/nixos-configs/home/chris/wallpaper/||g")
 swww img $wallpaper --transition-step 20 --transition-fps=20
 
 # reload waybar
-killall waybar
+pkill waybar
 waybar
-#waybar -c ~/.config/waybar/config.json
 
 ## send notification
 #notify-send "Theme and Wallpaper updated" "With image $newwall"
