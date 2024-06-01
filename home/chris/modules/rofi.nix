@@ -13,7 +13,6 @@
     package = pkgs.rofi-wayland;
     plugins = with pkgs; [
       rofi-calc
-      rofi-power-menu
     ];
     terminal = "${pkgs.alacritty}/bin/alacritty";
     theme = ../dotfiles/rofi/Ayu-Mirage.rasi;
