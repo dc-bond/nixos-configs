@@ -4,7 +4,6 @@
   
 # module imports
   imports = [
-    #./scripts/scripts.nix
     ./modules/gnupg.nix
     ./modules/neovim.nix
     ./modules/shell.nix
