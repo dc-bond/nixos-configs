@@ -22,10 +22,9 @@
     #)
     #eww-wayland # widgets
     swww # animated wallpaper for wayland window managers
-    #swaylock-effects # wayland screenlock application
-    #wlogout # wayland logout application
+    swaylock-effects # wayland screenlock application
+    wlogout # wayland logout application
     #nwg-look # gtk settings manager for wayland
-    #rofi-wayland # application launcher
     #pinentry-rofi # use rofi for pinentry
     #rofi-calc # calculator add-on for rofi
     #rofi-pass-wayland # add pass functionality to rofi
@@ -48,7 +47,7 @@
     ##nvidia
     #autorandr # automatically select a display configuration based on connected devices
     #ddcutil # query and change monitor settings using DDC/CI and USB
-    #brightnessctl # screen brightness application
+    brightnessctl # screen brightness application
     ##xorg-xset # tool to set keyboard repeat delay
     #bleachbit # disk cleaner
   ];
