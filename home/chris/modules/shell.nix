@@ -16,13 +16,9 @@
       rebuild = "sudo nixos-rebuild switch --flake ~/nixos-configs";
       flakeupdate = "nix flake update ~/nixos-configs";
       #upgrade = "sudo nixos-rebuild switch --upgrade --flake ~/nixos-configs#thinkpad";
-      configsys = "nvim ~/nixos-configs/system/configuration.nix";
-      confighome = "nvim ~/nixos-configs/home-manager/home.nix";
       stageconfig = "cd ~/nixos-configs && git add .";
       pushconfig = "cd ~/nixos-configs && git add . && git commit && git push origin main";
       pullconfig = "cd ~/nixos-configs && git pull origin main";
-      #pushconfig = "cd ~/nixos-configs && git add . && git commit && git push git@github.com:dc-bond/nixos-configs.git";
-      #pullconfig = "cd ~/nixos-configs && git pull git@github.com:dc-bond/nixos-configs.git";
     };
     zplug = {
       enable = true;
