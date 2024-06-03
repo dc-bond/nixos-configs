@@ -156,6 +156,12 @@
   };
   environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
 
+# enable electron apps use wayland native
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+    #WLR_NO_HARDWARE_CURSORS = "1"; # if cursor does not appear
+  };
+
 # set systemd file limit
   systemd.extraConfig = "DefaultLimitNOFILE=2048"; # defaults to 1024 if unset
   
