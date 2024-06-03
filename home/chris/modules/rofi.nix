@@ -16,11 +16,10 @@
 
   programs.rofi = {
     enable = true;
-    package = pkgs.rofi;
-    #package = pkgs.rofi-wayland;
-    plugins = with pkgs; [
-      rofi-calc
-    ];
+    package = pkgs.rofi-wayland;
+    #plugins = with pkgs; [
+    #  rofi-calc
+    #];
     terminal = "${pkgs.alacritty}/bin/alacritty";
     theme = ../dotfiles/rofi/Ayu-Mirage.rasi;
   };
