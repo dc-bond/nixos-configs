@@ -22,7 +22,7 @@
 
 # system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [
-    cargo # rust language toolchain (required for swww in hyprland?)
+    #cargo # rust language toolchain (required for swww in hyprland?)
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
   ];
 
@@ -53,11 +53,15 @@
 #      chris = import ../home/chris/home.nix;
 #    };
 #  };
-#
+
 ## hyprland compositor
 #  programs.hyprland = {
 #    enable = true;
 #    #package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+#  };
+#  environment.sessionVariables = {
+#    NIXOS_OZONE_WL = "1"; # enable electron apps to use wayland
+#    #WLR_NO_HARDWARE_CURSORS = "1"; # if cursor does not appear
 #  };
 
 # boot configs
@@ -155,12 +159,6 @@
     enable = true; # z-shell enabled system-wide to source necessary files for users
   };
   environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
-
-# enable electron apps use wayland native
-  environment.sessionVariables = {
-    NIXOS_OZONE_WL = "1";
-    #WLR_NO_HARDWARE_CURSORS = "1"; # if cursor does not appear
-  };
 
 # set systemd file limit
   systemd.extraConfig = "DefaultLimitNOFILE=2048"; # defaults to 1024 if unset
