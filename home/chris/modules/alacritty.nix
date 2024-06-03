@@ -27,7 +27,7 @@
           #family = "BlexMono NF";
           style = "Bold Italic";
         };
-        size = 8.0;
+        size = 12.0;
       };
     };
   };
