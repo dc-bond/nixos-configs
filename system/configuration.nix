@@ -22,7 +22,7 @@
 
 # system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [
-    #cargo # rust language toolchain (required for swww in hyprland?)
+    #cargo # rust language toolchain
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
   ];
 
