@@ -30,7 +30,7 @@
           { 
             programs.hyprland = {
               enable = true;
-              xwayland.enable = false; # defaults to true
+              xwayland.enable = true; # defaults to true
             };
           }
           home-manager.nixosModules.home-manager

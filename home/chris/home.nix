@@ -69,7 +69,6 @@
     package = pkgs.vscodium;
     extensions = with pkgs.vscode-extensions; [
       bbenoist.nix
-      arcticicestudio.nord-visual-studio-code
       asvetliakov.vscode-neovim
       redhat.vscode-yaml
       pkief.material-icon-theme

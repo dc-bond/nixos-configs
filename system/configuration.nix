@@ -54,11 +54,11 @@
 #    };
 #  };
 
-# hyprland compositor
-  environment.sessionVariables = {
-    NIXOS_OZONE_WL = "1"; # enable electron apps to use wayland natively
-    #WLR_NO_HARDWARE_CURSORS = "1"; # if cursor does not appear
-  };
+## hyprland compositor
+#  environment.sessionVariables = {
+#    NIXOS_OZONE_WL = "1"; # enable electron apps to use wayland natively
+#    #WLR_NO_HARDWARE_CURSORS = "1"; # if cursor does not appear
+#  };
 
 # boot configs
   boot = {
