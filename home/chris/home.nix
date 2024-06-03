@@ -63,6 +63,26 @@
     };
   };
 
+# vscode
+  programs.vscode = {
+    enable = true;
+    extensions = with pkgs.vscode-extensions; [
+      bbenoist.nix
+      arcticicestudio.nord-visual-studio-code
+      asvetliakov.vscode-neovim
+      redhat.vscode-yaml
+      pkief.material-icon-theme
+      signageos.signageos-vscode-sops
+      ms-python.python
+    ];
+    #userSettings = {
+
+    #};
+  };
+
+# nextcloud client
+  services.nextcloud-client.enable = true;
+
 # outgoing ssh
   programs.ssh = {
     enable = true;
