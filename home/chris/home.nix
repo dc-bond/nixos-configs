@@ -66,6 +66,7 @@
 # vscode
   programs.vscode = {
     enable = true;
+    package = pkgs.vscodium;
     extensions = with pkgs.vscode-extensions; [
       bbenoist.nix
       arcticicestudio.nord-visual-studio-code
@@ -75,9 +76,6 @@
       signageos.signageos-vscode-sops
       ms-python.python
     ];
-    #userSettings = {
-
-    #};
   };
 
 # nextcloud client
