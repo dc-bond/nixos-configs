@@ -9,8 +9,8 @@
   };
 
   home.packages = with pkgs; [
-    pinentry-rofi # use rofi for pinentry
-    #rofi-calc # calculator add-on for rofi
+    #pinentry-rofi # use rofi for pinentry
+    rofi-calc # calculator add-on for rofi
     #rofi-pass-wayland # add pass functionality to rofi
   ];
 
