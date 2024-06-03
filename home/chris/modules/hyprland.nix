@@ -44,16 +44,10 @@
     #bleachbit # disk cleaner
   ];
 
-# allow applications to communicate with compositor
-  xdg.portal = {
-    enable = true;
-    extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+# environment
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+    #WLR_NO_HARDWARE_CURSORS = "1"; # if cursor does not appear
   };
-
-## environment
-#  environment.sessionVariables = {
-#    NIXOS_OZONE_WL = "1";
-#    #WLR_NO_HARDWARE_CURSORS = "1"; # if cursor does not appear
-#  };
 
 }
