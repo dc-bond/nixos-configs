@@ -44,11 +44,11 @@
     #bleachbit # disk cleaner
   ];
 
-## allow applications to communicate with compositor
-#  xdg.portal = {
-#    enable = true;
-#    extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
-#  };
+# allow applications to communicate with compositor
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ pkgs.xdg-desktop-portal-hyprland ];
+  };
 
 ## environment
 #  environment.sessionVariables = {

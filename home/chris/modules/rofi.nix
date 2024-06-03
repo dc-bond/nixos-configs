@@ -8,11 +8,11 @@
     recursive = true;
   };
 
-  home.packages = with pkgs; [
-    #pinentry-rofi # use rofi for pinentry
-    rofi-calc # calculator add-on for rofi
-    #rofi-pass-wayland # add pass functionality to rofi
-  ];
+  #home.packages = with pkgs; [
+  #  #pinentry-rofi # use rofi for pinentry
+  #  rofi-calc # calculator add-on for rofi
+  #  #rofi-pass-wayland # add pass functionality to rofi
+  #];
 
   programs.rofi = {
     enable = true;
