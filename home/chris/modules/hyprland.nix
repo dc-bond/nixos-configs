@@ -9,11 +9,6 @@
     ./waybar.nix
   ];
 
-  #home.file."${config.xdg.configHome}/hypr" = {
-  #  source = ../dotfiles/hypr;
-  #  recursive = true;
-  #};
-
   home.packages = with pkgs; [
     #eww-wayland # widgets
     swww # animated wallpaper for wayland window managers
@@ -47,8 +42,15 @@
     enable = true;
     settings = {
       "$mod" = "Alt";
+      exec-once = [
+        "swww-daemon"
+        "~/nixos-configs/home/chris/dotfiles/hypr/pywal-swww.sh"
+        "dunst"
+      ];      
       bind = [
         "$mod, RETURN, exec, alacritty"
+	      "$mod, D, exec, rofi -show combi -combi-modes drun,run,ssh -modes combi"
+	      "$mod, C, exec, rofi -show calc -modi calc -no-show-match -no-sort" # not working
         "$mod, E, exec, thunar"
         "$mod, Q, killactive"
         "$mod, F, fullscreen"
@@ -90,24 +92,97 @@
         "$mod SHIFT, up, resizeactive, 0 -100"
         "$mod SHIFT, down, resizeactive, 0 100"
       ];
-      #bindl = [
-      #  ", switch:on:Lid Switch,exec,hyprctl keyword monitor "eDP-1, disable""
-      #  ", switch:off:Lid Switch,exec,hyprctl keyword monitor "eDP-1, 1920x1080@60, 1920, 1""
+      bindl = [
+        ", switch:on:Lid Switch,exec,hyprctl keyword monitor eDP-1, disable"
+        ", switch:off:Lid Switch,exec,hyprctl keyword monitor eDP-1, 1920x1080@60, 1920, 1"
+      ];
+      monitor = [
+        "eDP-1, 1920x1080@60, 1920x0, 1"
+        "DP-6, 2560x1440@144, 0x0, 1"
+      ];
+      environment = [
+        "XCURSOR_SIZE,16"
+        "EDITOR,nvim"
+        "VISUAL=nvim"
+        "TERM=xterm-256color"
+      ];
+      #source = [
+      #  "~/.cache/wal/colors-hyprland.conf" # not working
       #];
-      #monitor = [
-      #  "eDP-1, 1920x1080@60, 1920x0, 1"
-      #  "DP-6, 2560x1440@144, 0x0, 1"
-      #];
+      windowrule = [
+        "float,^(pavucontrol)$"
+        "float,^(blueman-manager)$"
+        "float,^(iwdgui)$"
+      ];
+      input = {
+        kb_layout = "us";
+        repeat_delay = "200";
+        repeat_rate = "30";
+        follow_mouse = "1";
+        sensitivity = "0";
+        touchpad = {
+          natural_scroll = true;
+          disable_while_typing = true;
+        };
+      };
+      device = {
+        name = "razer-proclickm-1"; # not working
+        sensitivity = "-0.5";
+      };
+      general = {
+        gaps_in = 0;
+        gaps_out = 0;
+        border_size = 1;
+        #col.active_border = "$color11";
+        #col.inactive_border = "rgba(ffffffff)";
+        layout = "dwindle";
+      };
+      decoration = {
+        rounding = "5";
+        active_opacity = "1.0";
+        inactive_opacity = "0.8";
+        fullscreen_opacity = "1.0";
+        drop_shadow = true;
+        shadow_range = "30";
+        shadow_render_power = "3";
+        #col.shadow = "0x66000000";
+        blur = {
+          enabled = true;
+          size = "6";
+          passes = "2";
+          new_optimizations = "on";
+          ignore_opacity = true;
+          xray = true;
+          blurls = "waybar";
+        };
+      };
+      animations = {
+        enabled = true;
+        bezier = "myBezier, 0.05, 0.9, 0.1, 1.05";
+        animation = [ 
+          "windows, 1, 7, myBezier"
+          "windowsOut, 1, 7, default, popin 80%"
+          "border, 1, 10, default"
+          "borderangle, 1, 8, default"
+          "fade, 1, 7, default"
+          "workspaces, 1, 6, default"
+        ];
+      };
+      dwindle = {
+        pseudotile = true;
+        preserve_split = true;
+      };
+      master = {
+        new_is_master = true;
+      };
+      gestures = {
+        workspace_swipe = false;
+      };
+      misc = {
+        disable_hyprland_logo = true;
+        disable_splash_rendering = true;
+      };
     };
-    extraConfig = ''
-      monitor = eDP-1, 1920x1080@60, 1920x0, 1
-      monitor = DP-6, 2560x1440@144, 0x0, 1
-      exec-once = swww-daemon
-      exec-once = ~/nixos-configs/home/chris/dotfiles/hypr/pywal-swww.sh
-      exec-once = dunst
-      bindl = , switch:on:Lid Switch,exec,hyprctl keyword monitor "eDP-1, disable"
-      bindl = , switch:off:Lid Switch,exec,hyprctl keyword monitor "eDP-1, 1920x1080@60, 1920, 1"
-    '';
   };
 
 
