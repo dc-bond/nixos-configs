@@ -4,6 +4,7 @@
 
 # module imports
   imports = [
+    ./theme.nix
     ./alacritty.nix
     ./rofi.nix
     ./waybar.nix
@@ -34,7 +35,6 @@
     #autorandr # automatically select a display configuration based on connected devices
     #ddcutil # query and change monitor settings using DDC/CI and USB
     brightnessctl # screen brightness application
-    ##xorg-xset # tool to set keyboard repeat delay
     #bleachbit # disk cleaner
   ];
 
@@ -201,45 +201,5 @@
       };
     };
   };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-## themes
-#  home.pointerCursor = {
-#    gtk.enable = true;
-#    # x11.enable = true;
-#    package = pkgs.bibata-cursors;
-#    name = "Bibata-Modern-Classic";
-#    size = 16;
-#  };
-#  
-#  gtk = {
-#    enable = true;
-#    theme = {
-#      package = pkgs.flat-remix-gtk;
-#      name = "Flat-Remix-GTK-Grey-Darkest";
-#    };
-#  
-#    iconTheme = {
-#      package = pkgs.gnome.adwaita-icon-theme;
-#      name = "Adwaita";
-#    };
-#  
-#    font = {
-#      name = "Sans";
-#      size = 11;
-#    };
-#  };
 
 }
