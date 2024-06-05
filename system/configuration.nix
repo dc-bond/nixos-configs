@@ -158,6 +158,9 @@
 
 # set systemd file limit
   systemd.extraConfig = "DefaultLimitNOFILE=2048"; # defaults to 1024 if unset
+
+# lid switch functionality for laoptop
+  services.logind.lidSwitch = "ignore";
   
 # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "23.11";
