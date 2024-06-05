@@ -8,7 +8,7 @@
     ./modules/neovim.nix
     ./modules/shell.nix
     ./modules/hyprland.nix
-    ./modules/firefox.nix
+    #./modules/firefox.nix
   ];
 
 ## allow configuration options for packages from the nixpkgs repo
@@ -42,6 +42,7 @@
     glances # another system monitor
     sops # encryption
     nmap # network scanning
+    firefox
     (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
       fonts = [
         "IBMPlexMono" # name is 'BlexMono' for system configs
