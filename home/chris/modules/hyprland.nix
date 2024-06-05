@@ -40,6 +40,16 @@
 
   wayland.windowManager.hyprland = {
     enable = true;
+    extraConfig = ''
+      device {
+        name=razer-proclickm
+        sensitivity=-0.5
+      }
+      device {
+        name=razer-proclickm-1
+        sensitivity=-0.5
+      }
+    '';
     settings = {
       "$mod" = "Alt";
       exec-once = [
@@ -128,10 +138,14 @@
           disable_while_typing = true;
         };
       };
-      device = {
-        name = "razer-proclickm-1";
-        sensitivity = "-0.5";
-      };
+      #device = {
+      #  name = "razer-proclickm";
+      #  sensitivity = "-0.5";
+      #};
+      #device = {
+      #  name = "razer-proclickm-1";
+      #  sensitivity = "-0.5";
+      #};
       general = {
         gaps_in = 0;
         gaps_out = 0;
