@@ -8,6 +8,7 @@
     ./modules/neovim.nix
     ./modules/shell.nix
     ./modules/hyprland.nix
+    ./modules/firefox.nix
   ];
 
 ## allow configuration options for packages from the nixpkgs repo
