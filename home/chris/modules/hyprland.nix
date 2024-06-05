@@ -116,17 +116,20 @@
       ];
       input = {
         kb_layout = "us";
+        numlock_by_default = true;
         repeat_delay = "200";
-        repeat_rate = "30";
+        repeat_rate = "35";
         follow_mouse = "1";
-        sensitivity = "0";
+        accel_profile = "adaptive";
+        #accel_profile = "custom 200 0.0 0.5";
+        #sensitivity = "0";
         touchpad = {
           natural_scroll = true;
           disable_while_typing = true;
         };
       };
       device = {
-        name = "razer-proclickm-1"; # not working
+        name = "razer-proclickm-1";
         sensitivity = "-0.5";
       };
       general = {
