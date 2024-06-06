@@ -1,8 +1,10 @@
 { config, lib, pkgs, ... }: 
 
-let
-  inherit (config.vars) fontSize;
-in {
+#let
+#  inherit (config.vars) fontSize;
+#in 
+
+{
     
   home.pointerCursor = {
     name = "Dracula-cursors";
@@ -31,7 +33,7 @@ in {
 
     font = {
       name = "Sans Serif";
-      size = fontSize;
+      size = 9;
     };
   };
 
@@ -41,15 +43,15 @@ in {
   ];
   qt = {
     enable = true;
-    platformTheme = "qtct";
+    platformTheme.name = "qtct";
   };
 
-  xresources.extraConfig =
-    builtins.readFile
-    "${pkgs.dracula-theme}/xres";
+  #xresources.extraConfig =
+  #  builtins.readFile
+  #  "${pkgs.dracula-theme}/xres";
 
   xdg.configFile = let
-    floatFont = lib.strings.floatToString fontSize;
+    floatFont = lib.strings.floatToString 9;
     qtconf =
       /*
       ini
