@@ -4,10 +4,11 @@
 
 # module imports
   imports = [
-    ./theme.nix
+    #./theme.nix
     ./alacritty.nix
     ./rofi.nix
     ./waybar.nix
+    ./redshift.nix
   ];
 
   home.packages = with pkgs; [
