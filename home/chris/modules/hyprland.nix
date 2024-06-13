@@ -8,7 +8,7 @@
     ./alacritty.nix
     ./rofi.nix
     ./waybar.nix
-    ./redshift.nix
+    ./gammastep.nix
   ];
 
   home.packages = with pkgs; [
