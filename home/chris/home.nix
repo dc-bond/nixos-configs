@@ -41,7 +41,6 @@
     glances # another system monitor
     sops # encryption
     nmap # network scanning
-    firefox # web browser
     (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
       fonts = [
         "IBMPlexMono" # name is 'BlexMono' for system configs
@@ -57,24 +56,6 @@
       PASSWORD_STORE_DIR = "${config.home.homeDirectory}/.password-store";
     };
   };
-
-# vscode
-  programs.vscode = {
-    enable = true;
-    package = pkgs.vscodium;
-    extensions = with pkgs.vscode-extensions; [
-      bbenoist.nix
-      asvetliakov.vscode-neovim
-      arcticicestudio.nord-visual-studio-code
-      redhat.vscode-yaml
-      pkief.material-icon-theme
-      signageos.signageos-vscode-sops
-      ms-python.python
-    ];
-  };
-
-# nextcloud client
-  services.nextcloud-client.enable = true;
 
 # outgoing ssh
   programs.ssh = {

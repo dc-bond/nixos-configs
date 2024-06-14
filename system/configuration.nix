@@ -21,6 +21,7 @@
 # system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [
     #cargo # rust language toolchain
+    brightnessctl # screen brightness application
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
   ];
 

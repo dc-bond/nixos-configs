@@ -9,12 +9,14 @@
     ./rofi.nix
     ./waybar.nix
     ./gammastep.nix
+    ./nextcloud-client.nix
+    ./vscodium.nix
+    ./firefox.nix
   ];
 
   home.packages = with pkgs; [
     #eww-wayland # widgets
     swww # animated wallpaper for wayland window managers\
-    blueman # bluetooth utility
     #swaylock-effects # wayland screenlock application
     #wlogout # wayland logout application
     #nwg-look # gtk settings manager for wayland
@@ -36,7 +38,6 @@
     #wlr-randr # wayland display setting tool for external monitors
     #autorandr # automatically select a display configuration based on connected devices
     #ddcutil # query and change monitor settings using DDC/CI and USB
-    brightnessctl # screen brightness application
     #bleachbit # disk cleaner
   ];
 

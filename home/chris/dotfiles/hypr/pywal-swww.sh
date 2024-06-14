@@ -20,6 +20,5 @@ swww img $wallpaper --transition-step 20 --transition-fps=20
 pkill waybar
 waybar
 
-## send notification
-#notify-send "Theme and Wallpaper updated" "With image $newwall"
-#echo "DONE!"
+# send notification
+notify-send "Theme and Wallpaper updated" "With image $newwall" # doesn't work
