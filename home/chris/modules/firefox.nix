@@ -3,7 +3,7 @@
 {
 
 # firefox
-  sprograms.firefox = {
+  programs.firefox = {
     enable = true;
   };
 

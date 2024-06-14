@@ -92,12 +92,22 @@
     powerOnBoot = true;
   };
 
+# sound
+  security.rtkit.enable = true; # RealtimeKit system service, which hands out realtime scheduling priority to user processes on demand
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    #jack.enable = true;
+  };
+
 # firewall
   networking.nftables.enable = true; # use nftables for the firewall instead of default iptables
   networking.firewall = {
     enable = true;
     allowedTCPPorts = [ 
-      # 28764 # not needed as openssh server if active automatically opens port(s)
+      # 28764 # not needed as openssh server if active automatically opens its port(s)
     ];
   };
 

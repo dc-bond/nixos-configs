@@ -25,16 +25,13 @@
     #polkit-kde-agent # kde gui authentication agent
     #libnotify # library to support notification daemons
     #xfce.xfce4-power-manager # laptop power manager
-    ##xdg-desktop-portal-hyprland # allow applications to communicate with window manager
     #grim # wayland screenshot tool
     #slurp # wayland region selector
     #scrot # screenshot tool
     xfce.thunar # file manager
-    ##filelight # disk usage visualizer
+    filelight # disk usage visualizer
     #mupdf # pdf viewer
-    #nextcloud-client # client for connecting to nextcloud servers
     ##ffmpegthumbnailer
-    ##nvidia
     #wlr-randr # wayland display setting tool for external monitors
     #autorandr # automatically select a display configuration based on connected devices
     #ddcutil # query and change monitor settings using DDC/CI and USB
