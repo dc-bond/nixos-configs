@@ -13,7 +13,8 @@
 
   home.packages = with pkgs; [
     #eww-wayland # widgets
-    swww # animated wallpaper for wayland window managers
+    swww # animated wallpaper for wayland window managers\
+    blueman # bluetooth utility
     #swaylock-effects # wayland screenlock application
     #wlogout # wayland logout application
     #nwg-look # gtk settings manager for wayland
@@ -122,8 +123,7 @@
       #];
       windowrule = [
         "float,^(pavucontrol)$"
-        "float,^(blueman-manager)$"
-        "float,^(iwdgui)$"
+        "float,^(blueman-manager)$" # not working
       ];
       input = {
         kb_layout = "us";
