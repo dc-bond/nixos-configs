@@ -15,9 +15,13 @@
     hyprland = {
       url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, home-manager, hyprland, ... } @ inputs:
+  outputs = { self, nixpkgs, home-manager, hyprland, sops-nix, ... } @ inputs:
   let
     inherit (self) outputs;
   in {
@@ -42,6 +46,7 @@
               extraSpecialArgs = { inherit inputs outputs; };
             };
           }
+          sops-nix.nixosModules.sops
         ];
       };
     };

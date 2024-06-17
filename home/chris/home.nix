@@ -39,7 +39,7 @@
     pfetch # system info displayed on shell startup
     htop # system monitor
     glances # another system monitor
-    sops # encryption
+    #sops # encryption
     nmap # network scanning
     (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
       fonts = [
@@ -83,7 +83,7 @@
 
 # symlink non-module package dotfiles
   home.file = {
-    ".sops.yaml".source = ./dotfiles/sops/.sops.yaml;
+    #".sops.yaml".source = ./dotfiles/sops/.sops.yaml;
   };
 
 # start/re-start services after system rebuild

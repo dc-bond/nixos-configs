@@ -43,35 +43,29 @@
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs; # make nix path match flake inputs
   };
 
-## settings for home-manager module
-#  home-manager = {
-#    extraSpecialArgs = { inherit inputs outputs; };
-#    useGlobalPkgs = true;
-#    useUserPackages = true;
-#    users = {
-#      chris = import ../home/chris/home.nix;
-#    };
-#  };
-
-## hyprland compositor
-#  environment.sessionVariables = {
-#    NIXOS_OZONE_WL = "1"; # enable electron apps to use wayland natively
-#    #WLR_NO_HARDWARE_CURSORS = "1"; # if cursor does not appear
-#  };
-
 # boot configs
   boot = {
     loader = {
       systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
     };
+    #initrd.systemd.network.wait-online.anyInterface = true;
     kernel.sysctl = { "vm.swappiness" = 30;};
-    extraModulePackages = [config.boot.kernelPackages.wireguard];
+    #extraModulePackages = [ config.boot.kernelPackages.wireguard ];
   };
 
 # networking
   networking = {
+    useDHCP = false;
+    #useNetworkd = true;
     hostName = "thinkpad";
+    nftables.enable = true; # use nftables for the firewall instead of default iptables
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [ 
+        # 28764 # not needed as openssh server if active automatically opens its port(s)
+      ];
+    };
     # https://git.kernel.org/pub/scm/network/wireless/iwd.git/tree/src/iwd.network.rst
     wireless.iwd = { 
       enable = true;
@@ -87,7 +81,7 @@
   };
   systemd.network = {
     enable = true;
-    wait-online.anyInterface = true;
+    #wait-online.anyInterface = true;
     #netdevs = {
     #  "40-wg0" = {
     #    netdevConfig = {
@@ -111,13 +105,13 @@
     #      }
     #    ];
     #  };
-    };
+    #};
     networks = {
-      "10-enp0s31f6" = {
-        matchConfig.Name = "enp0s31f6";
-        networkConfig.DHCP = "ipv4";
-        linkConfig.RequiredForOnline = "no";
-      };    
+      #"10-enp0s31f6" = {
+      #  matchConfig.Name = "enp0s31f6";
+      #  networkConfig.DHCP = "ipv4";
+      #  linkConfig.RequiredForOnline = "no";
+      #};    
       "20-enp0s20f0u2u1u2" = {
         matchConfig.Name = "enp0s20f0u2u1u2";
         networkConfig.DHCP = "ipv4";
@@ -164,21 +158,6 @@
     };
     #jack.enable = true;
   };
-
-# firewall
-  networking.nftables.enable = true; # use nftables for the firewall instead of default iptables
-  networking.firewall = {
-    enable = true;
-    allowedTCPPorts = [ 
-      # 28764 # not needed as openssh server if active automatically opens its port(s)
-    ];
-  };
-
-## nix-index - file database search functionality for nixos, provides 'nix-locate' tool
-#  programs.nix-index = {
-#    enable = true;
-#    enableZshIntegration = true;
-#  };
 
 # enable fonts 
   fonts.fontDir.enable = true;
@@ -231,7 +210,7 @@
 # set systemd file limit
   systemd.extraConfig = "DefaultLimitNOFILE=2048"; # defaults to 1024 if unset
 
-## lid switch functionality for laoptop
+## lid switch functionality for laptop
 #  services.logind.lidSwitch = "ignore";
   
 # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
