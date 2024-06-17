@@ -20,6 +20,7 @@
     #swaylock-effects # wayland screenlock application
     #wlogout # wayland logout application
     #nwg-look # gtk settings manager for wayland
+    pwvucontrol # pipewire audio volume control app
     pywal # color theme changer
     dunst # notification daemon
     #polkit-kde-agent # kde gui authentication agent
@@ -54,8 +55,8 @@
       "$mod" = "Alt";
       exec-once = [
         "swww-daemon"
-        "~/nixos-configs/home/chris/dotfiles/hypr/pywal-swww.sh"
         "dunst"
+        "~/nixos-configs/home/chris/dotfiles/hypr/pywal-swww.sh"
       ];      
       bind = [
         "$mod, RETURN, exec, alacritty"
@@ -130,8 +131,6 @@
         repeat_rate = "35";
         follow_mouse = "1";
         accel_profile = "adaptive";
-        #accel_profile = "custom 200 0.0 0.5";
-        #sensitivity = "0";
         touchpad = {
           natural_scroll = true;
           disable_while_typing = true;

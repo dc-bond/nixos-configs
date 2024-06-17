@@ -21,4 +21,4 @@ pkill waybar
 waybar
 
 # send notification
-notify-send "Theme and Wallpaper updated" "With image $newwall" # doesn't work
+dunstify "wallpaper updated with image $newwall"

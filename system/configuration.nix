@@ -66,22 +66,81 @@
       efi.canTouchEfiVariables = true;
     };
     kernel.sysctl = { "vm.swappiness" = 30;};
+    extraModulePackages = [config.boot.kernelPackages.wireguard];
   };
 
-# set hostname
-  networking.hostName = "thinkpad";
-
-# wifi
-# https://git.kernel.org/pub/scm/network/wireless/iwd.git/tree/src/iwd.network.rst
-  networking.wireless.iwd = { 
+# networking
+  networking = {
+    hostName = "thinkpad";
+    # https://git.kernel.org/pub/scm/network/wireless/iwd.git/tree/src/iwd.network.rst
+    wireless.iwd = { 
+      enable = true;
+      settings = {
+        IPv6 = {
+        Enabled = false;
+        };
+        Settings = {
+          AutoConnect = true;
+        };
+      };
+    };
+  };
+  systemd.network = {
     enable = true;
-    settings = {
-      IPv6 = {
-      Enabled = false;
-      };
-      Settings = {
-        AutoConnect = true;
-      };
+    wait-online.anyInterface = true;
+    #netdevs = {
+    #  "40-wg0" = {
+    #    netdevConfig = {
+    #      Kind = "wireguard";
+    #      Name = "wg0";
+    #      MTUBytes = "1500";
+    #    };
+    #    wireguardConfig = {
+    #      # Don't use a file from the Nix store as these are world readable. Must be readable by the systemd.network user
+    #      PrivateKeyFile = "/run/keys/wireguard-privkey";
+    #      ListenPort = 9918;
+    #    };
+    #    wireguardPeers = [
+    #      {
+    #        wireguardPeerConfig = {
+    #          PublicKey = "JH+yC7BcAp2G7l24/8KtwCI0pwLMdYw4e2r59TyrFnk=";
+    #          AllowedIPs = ["0.0.0.0/0" "::/0"];
+    #          Endpoint = "vpn.dcbond.com:51820";
+    #          #PersistentKeepalive = "25";
+    #        };
+    #      }
+    #    ];
+    #  };
+    };
+    networks = {
+      "10-enp0s31f6" = {
+        matchConfig.Name = "enp0s31f6";
+        networkConfig.DHCP = "ipv4";
+        linkConfig.RequiredForOnline = "no";
+      };    
+      "20-enp0s20f0u2u1u2" = {
+        matchConfig.Name = "enp0s20f0u2u1u2";
+        networkConfig.DHCP = "ipv4";
+        linkConfig.RequiredForOnline = "no";
+      };    
+      "30-wlan0" = {
+        matchConfig.Name = "wlan0";
+        networkConfig.DHCP = "ipv4";
+        linkConfig.RequiredForOnline = "no";
+      };    
+      #"40-wg0" = {
+      #  matchConfig.Name = "wg0";
+      #  address = ["172.22.1.6/32"];
+      #  gateway = [
+      #    ""
+      #    ""
+      #  ];
+      #  DHCP = "no";
+      #  dns = ["192.168.1.2"];
+      #  #ntp = [""];
+      #  networkConfig.IPv6AcceptRA = false;
+      #  linkConfig.RequiredForOnline = "no";
+      #};    
     };
   };
 
@@ -96,9 +155,13 @@
   security.rtkit.enable = true; # RealtimeKit system service, which hands out realtime scheduling priority to user processes on demand
   services.pipewire = {
     enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
+    audio.enable = true;
     pulse.enable = true;
+    wireplumber.enable = true;
+    alsa = {
+      enable = true;
+      support32Bit = true;
+    };
     #jack.enable = true;
   };
 
