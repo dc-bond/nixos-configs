@@ -6,6 +6,7 @@
   imports = [
     ./hardware-configuration.nix
     ./modules/yubikey.nix
+    ./modules/networking.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
@@ -41,12 +42,20 @@
     channel.enable = false; # disable channels because using flake
     registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs; # make flake registry match flake inputs
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs; # make nix path match flake inputs
+    gc = { # on a weekly basis, delete any generations older than 7 days then garbage-collect unreferenced programs and symlinks
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 7d";
+    };
   };
 
 # boot configs
   boot = {
     loader = {
-      systemd-boot.enable = true;
+      systemd-boot = {
+        enable = true;
+        configurationLimit = 10; # only display last 10 generations
+      };
       efi.canTouchEfiVariables = true;
     };
     #initrd.systemd.network.wait-online.anyInterface = true;
@@ -54,89 +63,13 @@
     #extraModulePackages = [ config.boot.kernelPackages.wireguard ];
   };
 
-# networking
-  networking = {
-    useDHCP = false;
-    #useNetworkd = true;
-    hostName = "thinkpad";
-    nftables.enable = true; # use nftables for the firewall instead of default iptables
-    firewall = {
-      enable = true;
-      allowedTCPPorts = [ 
-        # 28764 # not needed as openssh server if active automatically opens its port(s)
-      ];
+# sops
+  sops.secrets."wg-private-key" = {
+    sopsFile = ../../secrets/${my_hostname}.yaml;
+    group = "systemd-network";
+    mode = "0640";
+    restartUnits = [ "systemd-networkd.service" ];
     };
-    # https://git.kernel.org/pub/scm/network/wireless/iwd.git/tree/src/iwd.network.rst
-    wireless.iwd = { 
-      enable = true;
-      settings = {
-        IPv6 = {
-        Enabled = false;
-        };
-        Settings = {
-          AutoConnect = true;
-        };
-      };
-    };
-  };
-  systemd.network = {
-    enable = true;
-    #wait-online.anyInterface = true;
-    #netdevs = {
-    #  "40-wg0" = {
-    #    netdevConfig = {
-    #      Kind = "wireguard";
-    #      Name = "wg0";
-    #      MTUBytes = "1500";
-    #    };
-    #    wireguardConfig = {
-    #      # Don't use a file from the Nix store as these are world readable. Must be readable by the systemd.network user
-    #      PrivateKeyFile = "/run/keys/wireguard-privkey";
-    #      ListenPort = 9918;
-    #    };
-    #    wireguardPeers = [
-    #      {
-    #        wireguardPeerConfig = {
-    #          PublicKey = "JH+yC7BcAp2G7l24/8KtwCI0pwLMdYw4e2r59TyrFnk=";
-    #          AllowedIPs = ["0.0.0.0/0" "::/0"];
-    #          Endpoint = "vpn.dcbond.com:51820";
-    #          #PersistentKeepalive = "25";
-    #        };
-    #      }
-    #    ];
-    #  };
-    #};
-    networks = {
-      #"10-enp0s31f6" = {
-      #  matchConfig.Name = "enp0s31f6";
-      #  networkConfig.DHCP = "ipv4";
-      #  linkConfig.RequiredForOnline = "no";
-      #};    
-      "20-enp0s20f0u2u1u2" = {
-        matchConfig.Name = "enp0s20f0u2u1u2";
-        networkConfig.DHCP = "ipv4";
-        linkConfig.RequiredForOnline = "no";
-      };    
-      "30-wlan0" = {
-        matchConfig.Name = "wlan0";
-        networkConfig.DHCP = "ipv4";
-        linkConfig.RequiredForOnline = "no";
-      };    
-      #"40-wg0" = {
-      #  matchConfig.Name = "wg0";
-      #  address = ["172.22.1.6/32"];
-      #  gateway = [
-      #    ""
-      #    ""
-      #  ];
-      #  DHCP = "no";
-      #  dns = ["192.168.1.2"];
-      #  #ntp = [""];
-      #  networkConfig.IPv6AcceptRA = false;
-      #  linkConfig.RequiredForOnline = "no";
-      #};    
-    };
-  };
 
 # bluetooth
   services.blueman.enable = true; # terminal-based bluetooth connection tool

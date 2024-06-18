@@ -47,6 +47,11 @@
             };
           }
           sops-nix.nixosModules.sops
+          { 
+            sops = {
+              defaultSopsFile = ./secrets/sops.yaml ;
+            };
+          }
         ];
       };
     };
