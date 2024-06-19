@@ -62,7 +62,7 @@
     enable = true;
     matchBlocks = {
       "opticon" = {
-        hostname = "opticon";
+        hostname = "vpn.opticon.dev";
         user = "xixor";
         port = 39800;
       };

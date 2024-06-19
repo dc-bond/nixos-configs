@@ -22,6 +22,7 @@
 # system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [
     #cargo # rust language toolchain
+    age # encryption tool
     brightnessctl # screen brightness application
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
   ];
@@ -63,13 +64,13 @@
     #extraModulePackages = [ config.boot.kernelPackages.wireguard ];
   };
 
-# sops
-  sops.secrets."wg-private-key" = {
-    sopsFile = ../../secrets/${my_hostname}.yaml;
-    group = "systemd-network";
-    mode = "0640";
-    restartUnits = [ "systemd-networkd.service" ];
-    };
+## sops
+#  sops.secrets."testkey" = {
+#    sopsFile = ./secrets.yaml;
+#    #group = "systemd-network";
+#    #mode = "0640";
+#    #restartUnits = [ "systemd-networkd.service" ];
+#    };
 
 # bluetooth
   services.blueman.enable = true; # terminal-based bluetooth connection tool

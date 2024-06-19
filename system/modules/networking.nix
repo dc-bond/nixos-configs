@@ -1,4 +1,4 @@
-{ pkgs, ... }: 
+{ lib, pkgs, ... }: 
 
 {
   
@@ -27,15 +27,16 @@
       };
     };
   };
+  systemd.services.systemd-networkd-wait-online.enable = lib.mkForce false; # for wait-online error - need to find proper solution
   systemd.network = {
     enable = true;
-    wait-online.anyInterface = true; # systemd's wait-online target only requires that at least one managed interface be up instead of all managed interfaces
+    #wait-online.anyInterface = true; # systemd's wait-online target only requires that at least one managed interface be up instead of all managed interfaces
     networks = {
-      #"10-enp0s31f6" = {
-      #  matchConfig.Name = "enp0s31f6";
-      #  networkConfig.DHCP = "ipv4";
-      #  linkConfig.RequiredForOnline = "no";
-      #};    
+      "10-enp0s31f6" = {
+        matchConfig.Name = "enp0s31f6";
+        networkConfig.DHCP = "ipv4";
+        linkConfig.RequiredForOnline = "no";
+      };    
       "20-enp0s20f0u2u1u2" = {
         matchConfig.Name = "enp0s20f0u2u1u2";
         networkConfig.DHCP = "ipv4";
