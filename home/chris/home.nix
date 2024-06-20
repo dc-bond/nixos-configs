@@ -4,6 +4,7 @@
   
 # module imports
   imports = [
+    home-manager.nixosModules.home-manager
     ./modules/gnupg.nix
     ./modules/neovim.nix
     ./modules/shell.nix
