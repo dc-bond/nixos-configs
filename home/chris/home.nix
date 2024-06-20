@@ -4,6 +4,7 @@
   
 # module imports
   imports = [
+    #home-manager.nixosModules.home-manager # imported from flake input
     ./modules/gnupg.nix
     ./modules/neovim.nix
     ./modules/shell.nix
@@ -22,10 +23,7 @@
 #  };
 
 # home-manager module settings
-  #programs.home-manager.enable = true;
-  programs.home-manager = {
-    enable = true;
-  };
+  programs.home-manager.enable = true;
 
 # enable user fonts
   fonts.fontconfig.enable = true;

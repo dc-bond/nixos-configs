@@ -8,6 +8,7 @@
     ./modules/yubikey.nix
     ./modules/networking.nix
     ./modules/sops.nix
+    ./modules/hyprland.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
@@ -65,20 +66,6 @@
     kernel.sysctl = { "vm.swappiness" = 30;};
     #extraModulePackages = [ config.boot.kernelPackages.wireguard ];
   };
-
-## sops
-#  sops.secrets."testkey" = {
-#    sopsFile = ./secrets.yaml;
-#    #group = "systemd-network";
-#    #mode = "0640";
-#    #restartUnits = [ "systemd-networkd.service" ];
-#    };
-
-## hyprland system module
-#  programs.hyprland = {
-#    enable = true;
-#    xwayland.enable = true; # defaults to true
-#  };
 
 # bluetooth
   services.blueman.enable = true; # terminal-based bluetooth connection tool
