@@ -97,8 +97,8 @@
       ansible.builtin.command: mount /dev/disk/by-label/boot /mnt/boot
 
     - name: create swapfile
-      #ansible.builtin.command: dd if=/dev/zero of=/mnt/.swapfile bs=1K count=2M status=progress
-      ansible.builtin.command: dd if=/dev/zero of=/mnt/.swapfile bs=1K count=16M status=progress
+      #ansible.builtin.command: dd if=/dev/zero of=/mnt/.swapfile bs=1K count=2M status=progress # for virtual machine testing
+      ansible.builtin.command: dd if=/dev/zero of=/mnt/.swapfile bs=1K count=16M status=progress # for thinkpad production
 
     - name: set permissions on swap file
       ansible.builtin.file:
@@ -133,4 +133,4 @@
 
 # change password
 # delete cloned repo from root directory
-# clone repo with ssh into home directory
+# clone repo (using github ssh url) into home directory

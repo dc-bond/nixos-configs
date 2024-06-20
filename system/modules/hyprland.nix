@@ -3,7 +3,7 @@
 {
 
   imports = [
-    hyprland.nixosModules.default # imported from flake inputs
+    inputs.hyprland.nixosModules.default # imported from flake inputs
   ];
 
   programs.hyprland = {
