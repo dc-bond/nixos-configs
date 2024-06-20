@@ -1,6 +1,7 @@
 # ensure ansible installed on provisioning machine
 # create bootable USB from downloaded ISO using 'dd bs=4M if=/path/to/file.iso of=/dev/sd[x] status=progress oflag=sync'
 # boot live ISO on target machine
+# securely erase install drive with 'sudo shred --verbose --random-source=/dev/urandom -n1 --zero /dev/sd[drive letter]'
 # set root user password on live ISO system to 'root' by running 'sudo passwd' as default nixos user so ansible can login as root on the target machine
 # install python into the live ISO with 'sudo nix-env -iA nixos.python3Minimal'
 # install git into the live ISO with 'sudo nix-env -iA nixos.git'
@@ -32,7 +33,7 @@
 
     - name: load encrypted variables # sops requires gpg key on machine running ansible to decrypt secrets file (also requires yubikey to unlock gpg key)
       community.sops.load_vars:
-        file: secrets.sops.yml
+        file: secrets.sops.yaml
 
     - name: abort if the host is not booted from the nixos install media
       fail:

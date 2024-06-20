@@ -30,13 +30,6 @@
         specialArgs = { inherit inputs outputs; };
         modules = [
           ./system/configuration.nix
-          #hyprland.nixosModules.default
-          #{
-          #  programs.hyprland = {
-          #    enable = true;
-          #    xwayland.enable = true; # defaults to true
-          #  };
-          #}
           home-manager.nixosModules.home-manager
           {
             home-manager = {
