@@ -1,15 +1,13 @@
 keys:
   - &users:
-    - &chris age1v2j6pfycg686a9zvgwjzfu5p9v9wfxwrxjgg2er09u7q6dxqly4qhefnff # chris public age key
-    #- &chris DB9ADBBE6FBD1F0E694AF25D012321D46E090E61 # chris public gpg key fingerprint
+    - &chris DB9ADBBE6FBD1F0E694AF25D012321D46E090E61 # public gpg key fingerprint
   - &hosts:
-    - &thinkpad age18a64qgesyjx6wns78rdxu3rfp2pjyattpac05wt0cuny3qcqfqwq43x778 # thinkpad public age key (converted from ssh public ed25519 key in /etc/ssh)
+    - &thinkpad age1863w249676ln7c7gsv945hrlef26fumrkr3ynze066jkz4eyxp0sewdzkx # public age key (converted from ssh public ed25519 key in /etc/ssh)
 
 creation_rules:
-  - path_regex: \.sops\.yaml
+  - path_regex: secrets.(yaml|json|env|ini)$ 
     key_groups:
-      #- pgp:
-      #  - *chris
-      - age:
+      - pgp:
         - *chris
+        age:
         - *thinkpad

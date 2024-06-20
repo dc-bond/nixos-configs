@@ -7,7 +7,7 @@
     ./hardware-configuration.nix
     ./modules/yubikey.nix
     ./modules/networking.nix
-    #./modules/sops.nix
+    ./modules/sops.nix
     ./modules/hyprland.nix
   ];
 
@@ -23,9 +23,9 @@
 
 # system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [
-    #cargo # rust language toolchain
+    (import ../scripts/hello-world.nix { inherit pkgs config; })
     age # encryption tool
-    #sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
+    sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     brightnessctl # screen brightness application
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
   ];
