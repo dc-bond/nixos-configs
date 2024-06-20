@@ -44,11 +44,11 @@
     extraConfig = ''
       device {
         name=razer-proclickm
-        sensitivity=-0.5
+        sensitivity=-0.6
       }
       device {
         name=razer-proclickm-1
-        sensitivity=-0.5
+        sensitivity=-0.6
       }
     '';
     settings = {

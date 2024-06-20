@@ -21,8 +21,14 @@
 #    };
 #  };
 
-# enable home-manager itself
-  programs.home-manager.enable = true;
+# home-manager module settings
+  programs.home-manager = {
+    enable = true;
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    users.chris = import ./home/chris/home.nix;
+    extraSpecialArgs = { inherit inputs outputs; };
+  };
 
 # enable user fonts
   fonts.fontconfig.enable = true;

@@ -7,6 +7,8 @@
     ./hardware-configuration.nix
     ./modules/yubikey.nix
     ./modules/networking.nix
+    ./modules/hyprland.nix
+    #./modules/sops.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
@@ -23,6 +25,7 @@
   environment.systemPackages = with pkgs; [
     #cargo # rust language toolchain
     age # encryption tool
+    sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     brightnessctl # screen brightness application
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
   ];
