@@ -22,10 +22,10 @@
 #  };
 
 # home-manager module settings
-  programs.home-manager.enable = true;
-  #programs.home-manager = {
-  #  enable = true;
-  #};
+  #programs.home-manager.enable = true;
+  programs.home-manager = {
+    enable = true;
+  };
 
 # enable user fonts
   fonts.fontconfig.enable = true;

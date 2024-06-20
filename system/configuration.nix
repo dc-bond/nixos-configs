@@ -7,8 +7,7 @@
     ./hardware-configuration.nix
     ./modules/yubikey.nix
     ./modules/networking.nix
-    #./modules/hyprland.nix
-    #./modules/sops.nix
+    ./modules/sops.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
