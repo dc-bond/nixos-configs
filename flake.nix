@@ -31,7 +31,21 @@
         modules = [
           ./system/configuration.nix
           hyprland.nixosModules.default
+          {
+            programs.hyprland = {
+              enable = true;
+              xwayland.enable = true; # defaults to true
+            };
+          }
           home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              users.chris = import ./home/chris/home.nix;
+              extraSpecialArgs = { inherit inputs outputs; };
+            };
+          }
           #sops-nix.nixosModules.sops
         ];
       };

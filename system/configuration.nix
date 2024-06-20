@@ -7,7 +7,7 @@
     ./hardware-configuration.nix
     ./modules/yubikey.nix
     ./modules/networking.nix
-    ./modules/hyprland.nix
+    #./modules/hyprland.nix
     #./modules/sops.nix
   ];
 
@@ -74,6 +74,12 @@
 #    #mode = "0640";
 #    #restartUnits = [ "systemd-networkd.service" ];
 #    };
+
+## hyprland system module
+#  programs.hyprland = {
+#    enable = true;
+#    xwayland.enable = true; # defaults to true
+#  };
 
 # bluetooth
   services.blueman.enable = true; # terminal-based bluetooth connection tool

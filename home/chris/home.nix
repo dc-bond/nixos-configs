@@ -4,7 +4,6 @@
   
 # module imports
   imports = [
-    home-manager.nixosModules.home-manager
     ./modules/gnupg.nix
     ./modules/neovim.nix
     ./modules/shell.nix
@@ -25,10 +24,6 @@
 # home-manager module settings
   programs.home-manager = {
     enable = true;
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    users.chris = import ./home/chris/home.nix;
-    extraSpecialArgs = { inherit inputs outputs; };
   };
 
 # enable user fonts
