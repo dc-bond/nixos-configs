@@ -4,10 +4,10 @@ keys:
   - &hosts:
     - &thinkpad age1863w249676ln7c7gsv945hrlef26fumrkr3ynze066jkz4eyxp0sewdzkx # public age key (converted from ssh public ed25519 key in /etc/ssh)
 
-creation_rules:
+creation_rules: # when sops creates/edits a secrets.yaml file it encrypts using both gpg and age public keys and one or the other corresponding private keys will be required to decrypt
   - path_regex: secrets.(yaml|json|env|ini)$ 
     key_groups:
       - pgp:
-        - *chris
+        - *chris 
         age:
         - *thinkpad
