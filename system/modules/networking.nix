@@ -6,6 +6,7 @@
     useDHCP = false;
     hostName = "thinkpad";
     nftables.enable = true; # use nftables for the firewall instead of default iptables
+    wireguard.enable = true;
     firewall = {
       enable = true;
       #allowedTCPPorts = [ 
@@ -57,9 +58,11 @@
         ];
         DHCP = "no";
         dns = ["192.168.1.2"];
-        #ntp = [""];
+        linkConfig = {
+          ActivationPolicy = "manual";
+          RequiredForOnline = "no";
+        };
         networkConfig.IPv6AcceptRA = false;
-        linkConfig.RequiredForOnline = "no";
       };    
     };
     netdevs = {
@@ -79,7 +82,7 @@
               PublicKey = "JH+yC7BcAp2G7l24/8KtwCI0pwLMdYw4e2r59TyrFnk="; # wireguard server pubkey
               AllowedIPs = ["0.0.0.0/0" "::/0"];
               Endpoint = "vpn.dcbond.com:51820"; # wireguard server address
-              #PersistentKeepalive = "25";
+              PersistentKeepalive = 25;
             };
           }
         ];
