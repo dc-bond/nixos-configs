@@ -19,8 +19,9 @@
       #keyFile = "/var/lib/sops-nix/key.txt"; # where age key lives in the file system
       #generateKey = true; # automatically generate age keypair if doesn't exist in above location
     };
-    secrets = {
-      test = {}; # output to /run/secrets/test
+    secrets = { # output to /run/secrets/...
+      sshd-port = {};
+      test = {};
     };
   };
 

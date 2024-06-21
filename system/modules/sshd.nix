@@ -1,17 +1,12 @@
-{ config, ... }: 
+{ lib, pkgs, config, ... }: 
 
 {
-
-let
-  sshd-port = config.sops.secrets.sshd-port.path;
-in
-
 
   services.openssh = {
     enable = true;
     ports = [
-      #28764
-      $(cat ${sshd-port})
+      28764
+      #config.sops.secrets.sshd-port.path
     ];
     settings = {
       PasswordAuthentication = false;
