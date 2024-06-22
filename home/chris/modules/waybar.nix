@@ -35,10 +35,10 @@
         #"pulseaudio",
         "battery"
         "bluetooth"
-        "network#vpn"
+        "network#wg0"
         "network#wifi"
-        "network#wired"
-        "network#wired-dock"
+        "network#ethernet"
+        "network#ethernet-dock"
         "clock"
       ];
       "hyprland/workspaces" = {
@@ -80,12 +80,12 @@
 	      "format-critical" = "{temperatureC}°C ";
 	      "format" = "{temperatureC}°C ";
       };
-      "network#vpn" = {
+      "network#wg0" = {
         "interface" = "wg0";
         "format" = "󰴳";
         "format-disconnected" = "󰦞";
-        "tooltip-format" = "VPN: {ipaddr}";
-        "tooltip-format-disabled" = "VPN: Disconnected";
+        "tooltip-format" = "Wireguard: {ipaddr}";
+        "tooltip-format-disabled" = "Wireguard: Disconnected";
       };
       "network#wifi" = {
         "interface" = "wlan0";
@@ -94,19 +94,19 @@
         "tooltip-format-wifi" = "Wifi: {essid} {ipaddr}";
         "tooltip-format-disconnected" = "Wifi: Disconnected";
       };
-      "network#wired" = {
+      "network#ethernet" = {
         "interface" = "enp0s31f6";
         "format-ethernet" = "󰌗";
         "format-disconnected" = "󰌗";
-        "tooltip-format-ethernet" = "Wired: {ipaddr}";
-        "tooltip-format-disconnected" = "Wired: Disconnected";
+        "tooltip-format-ethernet" = "Ethernet: {ipaddr}";
+        "tooltip-format-disconnected" = "Ethernet: Disconnected";
       };
-      "network#wired-dock" = {
+      "network#ethernet-dock" = {
         "interface" = "enp0s20f0u2u1u2";
         "format-ethernet" = "󰌗";
         "format-disconnected" = "󰌗";
-        "tooltip-format-ethernet" = "Wired-Dock: {ipaddr}";
-        "tooltip-format-disconnected" = "Wired-Dock: Disconnected";
+        "tooltip-format-ethernet" = "Ethernet-Dock: {ipaddr}";
+        "tooltip-format-disconnected" = "Ethernet-Dock: Disconnected";
       };
       "battery" = {
 	      "interval" = 30;

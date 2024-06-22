@@ -55,7 +55,7 @@
       "$mod" = "Alt";
       exec-once = [
         "swww-daemon"
-        "dunst"
+        #"dunst"
         "~/nixos-configs/home/chris/dotfiles/hypr/pywal-swww.sh"
       ];      
       bind = [
