@@ -58,40 +58,60 @@
         dhcpV6Config.RouteMetric = 600;
         linkConfig.RequiredForOnline = "no";
       };    
-      "40-wg0" = {
-        matchConfig.Name = "wg0";
-        address = ["172.22.1.6/32"];
-        DHCP = "no";
-        dns = ["192.168.1.1"];
-        linkConfig = {
-          ActivationPolicy = "manual";
-          RequiredForOnline = "no";
-        };
-        networkConfig.IPv6AcceptRA = false;
-      };    
+      #"40-wg0" = {
+      #  matchConfig.Name = "wg0";
+      #  #address = ["172.22.1.6/32"];
+      #  #DHCP = "no";
+      #  #dns = ["192.168.1.2"];
+      #  networkConfig = {
+      #    Address = "172.22.1.6/32";
+      #    DNS = "192.168.1.2";
+      #    IPv6AcceptRA = false;
+      #    DNSDefaultRoute = true;
+      #    Domains = "~.";
+      #  };
+      #  routingPolicyRules = {
+      #    FirewallMark = "0x8888";
+      #    InvertRule = true;
+      #    Table = "1000";
+      #    Priority = "10";
+      #  };
+      #  routes.routeConfig = {
+      #    Destination = "0.0.0.0/0";
+      #    Table = "1000";
+      #  };
+      #  linkConfig = {
+      #    ActivationPolicy = "manual";
+      #    RequiredForOnline = "no";
+      #  };
+      #};    
     };
     netdevs = {
-      "40-wg0" = {
-        netdevConfig = {
-          Kind = "wireguard";
-          Name = "wg0";
-          MTUBytes = "1500";
-        };
-        wireguardConfig = {
-          PrivateKeyFile = "${config.sops.secrets.wg-key.path}";
-          ListenPort = 9918;
-        };
-        wireguardPeers = [
-          {
-            wireguardPeerConfig = {
-              PublicKey = "JH+yC7BcAp2G7l24/8KtwCI0pwLMdYw4e2r59TyrFnk="; # wireguard opticon server pubkey
-              AllowedIPs = ["0.0.0.0/0" "::/0"];
-              Endpoint = "vpn.opticon.dev:51820"; # wireguard opticon server address
-              PersistentKeepalive = 25;
-            };
-          }
-        ];
-      };
+      #"40-wg0" = {
+      #  netdevConfig = {
+      #    Kind = "wireguard";
+      #    Name = "wg0";
+      #    #MTUBytes = "1300";
+      #  };
+      #  wireguardConfig = {
+      #    PrivateKeyFile = "${config.sops.secrets.wg-key.path}";
+      #    ListenPort = 9918;
+      #    FirewallMark = "0x8888";
+      #  };
+      #  wireguardPeers = [
+      #    {
+      #      wireguardPeerConfig = {
+      #        PublicKey = "JH+yC7BcAp2G7l24/8KtwCI0pwLMdYw4e2r59TyrFnk="; # wireguard opticon server pubkey
+      #        AllowedIPs = [
+      #          "0.0.0.0/0" 
+      #          "::/0"
+      #        ];
+      #        Endpoint = "vpn.opticon.dev:51820"; # wireguard opticon server address
+      #        PersistentKeepalive = 25;
+      #      };
+      #    }
+      #  ];
+      #};
     };
   };
 
