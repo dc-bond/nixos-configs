@@ -7,9 +7,16 @@
   networking = {
     useDHCP = false; # disable defaut dhcpcd networking backend in favor of systemd-networkd enabled below
     hostName = "thinkpad";
-    nftables = {
-      enable = true; # use nftables for the firewall instead of default iptables
+    firewall = {
+      enable = true;
+      #allowedTCPPorts = [ 
+      #  28764 # not needed as openssh server if active automatically opens its port(s)
+      #];
+      #allowedUDPPorts = [ 
+        
+      #];
     };
+    #nftables.enable = true; # use nftables for the firewall instead of default iptables
     wireless.iwd = { 
       enable = true;
       settings = {

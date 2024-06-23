@@ -16,6 +16,8 @@
       rebuild = "sudo nixos-rebuild switch --flake ~/nixos-configs";
       wgup = "sudo networkctl up wg0";
       wgdn = "sudo networkctl down wg0";
+      wglogon = "echo module wireguard +p | sudo tee /sys/kernel/debug/dynamic_debug/control";
+      wglogs = "journalctl -ekf";
       networks = "iwctl station wlan0 get-networks";
       flakeupdate = "nix flake update ~/nixos-configs";
       #upgrade = "sudo nixos-rebuild switch --upgrade --flake ~/nixos-configs#thinkpad";
