@@ -22,6 +22,14 @@ in
             type filter hook prerouting priority raw; policy accept;
             iifname != "wg0" ip daddr ${wgIpv4} fib saddr type != local drop
           }
+          chain premangle {
+            type filter hook prerouting priority mangle; policy accept;
+            meta l4proto udp meta mark set ct mark
+          }
+          chain postmangle {
+            type filter hook postrouting priority mangle; policy accept;
+            meta l4proto udp meta mark ${toString wgFwMark} ct mark set meta mark
+          }
         }
       '';
     };
