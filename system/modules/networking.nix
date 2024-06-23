@@ -1,21 +1,39 @@
 { lib, config, pkgs, ... }: 
 
+let
+  wgIpv4 = "172.22.1.6/22";
+  wgFwMark = 4242;
+  wgTable = 4000;
+in
+
 {
 
+  services.resolved.enable = true; # use systemd-resolved for DNS functionality
+
   networking = {
-    useDHCP = false;
+    useDHCP = false; # disable defaut dhcpcd networking backend in favor of systemd-networkd enabled below
     hostName = "thinkpad";
-    nftables.enable = true; # use nftables for the firewall instead of default iptables
-    wireguard.enable = true;
-    firewall = {
-      enable = true;
-      #allowedTCPPorts = [ 
-      #  # 28764 # not needed as openssh server if active automatically opens its port(s)
-      #];
-      #allowedUDPPorts = [ 
-      #  # 51820 # wireguard in server mode
-      #];
+    nftables = {
+      enable = true; # use nftables for the firewall instead of default iptables
+      ruleset = 
+      ''
+        table inet wg-wg0 {
+          chain preraw {
+            type filter hook prerouting priority raw; policy accept;
+            iifname != "wg0" ip daddr ${wgIpv4} fib saddr type != local drop
+          }
+        }
+      '';
     };
+    #firewall = {
+    #  enable = true;
+    #  #allowedTCPPorts = [ 
+    #  #  # 28764 # not needed as openssh server if active automatically opens its port(s)
+    #  #];
+    #  #allowedUDPPorts = [ 
+    #  #  # 51820 # wireguard in server mode
+    #  #];
+    #};
     wireless.iwd = { 
       enable = true;
       settings = {
@@ -29,6 +47,7 @@
       };
     };
   };
+
   systemd.services.systemd-networkd-wait-online.enable = lib.mkForce false; # for wait-online error - need to find proper solution
   systemd.network = {
     enable = true;
@@ -58,60 +77,83 @@
         dhcpV6Config.RouteMetric = 600;
         linkConfig.RequiredForOnline = "no";
       };    
-      #"40-wg0" = {
-      #  matchConfig.Name = "wg0";
-      #  #address = ["172.22.1.6/32"];
-      #  #DHCP = "no";
-      #  #dns = ["192.168.1.2"];
-      #  networkConfig = {
-      #    Address = "172.22.1.6/32";
-      #    DNS = "192.168.1.2";
-      #    IPv6AcceptRA = false;
-      #    DNSDefaultRoute = true;
-      #    Domains = "~.";
-      #  };
-      #  routingPolicyRules = {
-      #    FirewallMark = "0x8888";
-      #    InvertRule = true;
-      #    Table = "1000";
-      #    Priority = "10";
-      #  };
-      #  routes.routeConfig = {
-      #    Destination = "0.0.0.0/0";
-      #    Table = "1000";
-      #  };
-      #  linkConfig = {
-      #    ActivationPolicy = "manual";
-      #    RequiredForOnline = "no";
-      #  };
-      #};    
+      "40-wg0" = {
+        matchConfig.Name = "wg0";
+        networkConfig = {
+          Address = "${wgIpv4}";
+          DNS = "192.168.1.2";
+          DNSDefaultRoute = true; # make wireguard tunnel the default route for all DNS requests
+          Domains = "~."; # default DNS route for all domains
+        };
+        routingPolicyRules = [
+        {
+          routingPolicyRuleConfig = {
+            Family = "both";
+            Table = "main";
+            SuppressPrefixLength = 0;
+            Priority = 10;
+          };
+        }
+        {
+          routingPolicyRuleConfig = {
+            Family = "both";
+            InvertRule = true;
+            FirewallMark = wgFwMark;
+            Table = wgTable;
+            Priority = 11;
+          };
+        }
+      ];
+      routes = [
+        {
+          routeConfig = {
+            Destination = "0.0.0.0/0";
+            Table = wgTable;
+            Scope = "link";
+          };
+        }
+        {
+          routeConfig = {
+            Destination = "::/0";
+            Table = wgTable;
+            Scope = "link";
+          };
+        }
+      ];
+        linkConfig = {
+          ActivationPolicy = "manual";
+          RequiredForOnline = "no";
+        };
+      };    
     };
     netdevs = {
-      #"40-wg0" = {
-      #  netdevConfig = {
-      #    Kind = "wireguard";
-      #    Name = "wg0";
-      #    #MTUBytes = "1300";
-      #  };
-      #  wireguardConfig = {
-      #    PrivateKeyFile = "${config.sops.secrets.wg-key.path}";
-      #    ListenPort = 9918;
-      #    FirewallMark = "0x8888";
-      #  };
-      #  wireguardPeers = [
-      #    {
-      #      wireguardPeerConfig = {
-      #        PublicKey = "JH+yC7BcAp2G7l24/8KtwCI0pwLMdYw4e2r59TyrFnk="; # wireguard opticon server pubkey
-      #        AllowedIPs = [
-      #          "0.0.0.0/0" 
-      #          "::/0"
-      #        ];
-      #        Endpoint = "vpn.opticon.dev:51820"; # wireguard opticon server address
-      #        PersistentKeepalive = 25;
-      #      };
-      #    }
-      #  ];
-      #};
+      "40-wg0" = {
+        netdevConfig = {
+          Kind = "wireguard";
+          Name = "wg0";
+          MTUBytes = "1420";
+        };
+        wireguardConfig = {
+          PrivateKeyFile = "${config.sops.secrets.wg-key.path}";
+          ListenPort = 9918;
+          FirewallMark = wgFwMark;
+          RouteTable = "off";
+        };
+        wireguardPeers = [
+          {
+            wireguardPeerConfig = {
+              PublicKey = "JH+yC7BcAp2G7l24/8KtwCI0pwLMdYw4e2r59TyrFnk="; # wireguard opticon server pubkey
+              AllowedIPs = [
+                "0.0.0.0/0" 
+                "::/0"
+              ];
+              Endpoint = "vpn.opticon.dev:51820"; # wireguard opticon server address
+              PersistentKeepalive = 25;
+              RouteTable = "off";
+            };
+          }
+        ];
+      };
     };
   };
 
