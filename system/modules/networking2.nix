@@ -2,8 +2,8 @@
 
 let
   wgIpv4 = "172.22.1.6/22";
-  wgFwMark = "0x8888";
-  wgserverIp = "73.154.234.24";
+  wgFwMark = 4242;
+  wgServerIp = "73.154.234.24";
   wgTable = 1000;
 in
 

@@ -6,8 +6,10 @@
   imports = [
     ./hardware-configuration.nix
     ./modules/yubikey.nix
+    ./modules/networking.nix
     #./modules/networking1.nix
-    ./modules/networking2.nix
+    #./modules/networking2.nix
+    #./modules/wireguard.nix
     ./modules/sops.nix
     ./modules/sshd.nix
     ./modules/hyprland.nix
