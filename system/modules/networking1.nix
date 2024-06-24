@@ -21,7 +21,6 @@ in
   networking = {
     #nameservers = [
     #  "1.1.1.1"
-    #  "9.9.9.9"
     #];
     nftables = {
       enable = true; # use nftables for the firewall instead of default iptables
@@ -63,12 +62,13 @@ in
         wireguardPeers = [
           {
             wireguardPeerConfig = {
-              PublicKey = "JH+yC7BcAp2G7l24/8KtwCI0pwLMdYw4e2r59TyrFnk="; # wireguard opticon server pubkey
+              PublicKey = "JH+yC7BcAp2G7l24/8KtwCI0pwLMdYw4e2r59TyrFnk="; # wireguard server pubkey
               AllowedIPs = [
                 "0.0.0.0/0" 
                 "::/0"
               ];
-              Endpoint = "vpn.opticon.dev:51820"; # wireguard opticon server address
+              #Endpoint = "vpn.opticon.dev:51820"; # wireguard server address
+              Endpoint = ":51820"; # wireguard server address
               PersistentKeepalive = 25;
               RouteTable = "off";
             };
