@@ -85,3 +85,5 @@ in
   };
 
 }
+
+# wireguard: wg0: Handshake for peer 4 (73.154.234.24:51820) did not complete after 5 seconds, retrying (try 2)
