@@ -7,15 +7,15 @@ in
 
 {
 
-  #sops = {
-  #  secrets = {
-  #    wg-key = {
-  #      owner = "${config.users.users.systemd-network.name}";
-  #      group = "${config.users.users.systemd-network.group}";
-  #      mode = "0440";
-  #    };
-  #  };
-  #};
+  sops = {
+    secrets = {
+      wg-key = {
+        owner = "${config.users.users.systemd-network.name}";
+        group = "${config.users.users.systemd-network.group}";
+        mode = "0440";
+      };
+    };
+  };
 
   systemd.network = {
     
@@ -26,8 +26,7 @@ in
           Name = "wg0";
         };
         wireguardConfig = {
-          #PrivateKeyFile = "${config.sops.secrets.wg-key.path}";
-          PrivateKey = "";
+          PrivateKeyFile = "${config.sops.secrets.wg-key.path}";
           ListenPort = 9918;
           FirewallMark = wgFwMark;
         };
