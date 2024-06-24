@@ -17,6 +17,12 @@ in
     };
   };
 
+  #networking.firewall = {
+  #  allowedUDPPorts = [ 
+  #    9918 # wireguard listening port?
+  #  ];
+  #};
+
   systemd.network = {
     
     netdevs = {
@@ -48,7 +54,7 @@ in
 
     networks = {
 
-      "40-wg0" = {
+      "99-wg0" = {
         matchConfig.Name = "wg0";
         networkConfig = {
           Address = "172.22.1.6/22";
@@ -75,7 +81,7 @@ in
         }
       ];
         linkConfig = {
-          ActivationPolicy = "manual";
+          ActivationPolicy = "manual"; # manually turn on/off wireguard tunnel with networkctl instead of automatically at boot
           RequiredForOnline = "no";
         };
       };    

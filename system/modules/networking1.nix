@@ -1,7 +1,7 @@
 { lib, config, pkgs, ... }: 
 
 let
-  wgIpv4 = "172.22.1.6/22";
+  wgIpv4 = "172.22.1.6/32";
   wgFwMark = 4242;
   wgTable = 4000;
 in
@@ -19,10 +19,10 @@ in
   };
 
   networking = {
-    nameservers = [
-      "1.1.1.1"
-      "9.9.9.9"
-    ];
+    #nameservers = [
+    #  "1.1.1.1"
+    #  "9.9.9.9"
+    #];
     nftables = {
       enable = true; # use nftables for the firewall instead of default iptables
       ruleset = 
@@ -56,7 +56,7 @@ in
         };
         wireguardConfig = {
           PrivateKeyFile = "${config.sops.secrets.wg-key.path}";
-          #ListenPort = 9918;
+          ListenPort = 9918;
           FirewallMark = wgFwMark;
           RouteTable = "off";
         };

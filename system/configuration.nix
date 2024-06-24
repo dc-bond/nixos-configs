@@ -7,7 +7,7 @@
     ./hardware-configuration.nix
     ./modules/yubikey.nix
     ./modules/networking.nix
-    #./modules/networking1.nix
+    ./modules/networking1.nix
     #./modules/networking2.nix
     #./modules/networking3.nix
     #./modules/wireguard.nix
