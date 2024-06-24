@@ -20,7 +20,6 @@
       #generateKey = true; # automatically generate age keypair if doesn't exist in above location
     };
     secrets = { # output to /run/secrets/...
-      sshd-port = {};
       test = {};
     };
   };

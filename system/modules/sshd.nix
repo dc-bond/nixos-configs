@@ -15,10 +15,10 @@
     };
   };
 
-  sops = {
-    secrets = {
-      sshd-port = {};
-    };
-  };
+  #sops = {
+  #  secrets = {
+  #    sshd-port = {};
+  #  };
+  #};
   
 }
