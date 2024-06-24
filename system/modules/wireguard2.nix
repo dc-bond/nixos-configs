@@ -17,12 +17,6 @@ in
     };
   };
 
-  #networking.firewall = {
-  #  allowedUDPPorts = [ 
-  #    9918 # wireguard listening port?
-  #  ];
-  #};
-
   systemd.network = {
     
     netdevs = {
@@ -43,7 +37,8 @@ in
               AllowedIPs = [
                 "0.0.0.0/0" 
               ];
-              Endpoint = "vpn.opticon.dev:51820"; # wireguard server address
+              #Endpoint = "vpn.opticon.dev:51820"; # wireguard server address
+              Endpoint = ":51820"; # wireguard server address
               PersistentKeepalive = 25;
             };
           }

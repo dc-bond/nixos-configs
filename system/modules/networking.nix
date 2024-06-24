@@ -8,7 +8,6 @@
     useDHCP = false; # disable defaut dhcpcd networking backend in favor of systemd-networkd enabled below
     hostName = "thinkpad";
     firewall = {
-      #enable = false;
       enable = true;
       #allowedTCPPorts = [ 
       #  28764 # not needed as openssh server if active automatically opens its port(s)
