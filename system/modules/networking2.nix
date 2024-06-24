@@ -7,15 +7,15 @@ in
 
 {
 
-  sops = {
-    secrets = {
-      wg-key = {
-        owner = "${config.users.users.systemd-network.name}";
-        group = "${config.users.users.systemd-network.group}";
-        mode = "0440";
-      };
-    };
-  };
+  #sops = {
+  #  secrets = {
+  #    wg-key = {
+  #      owner = "${config.users.users.systemd-network.name}";
+  #      group = "${config.users.users.systemd-network.group}";
+  #      mode = "0440";
+  #    };
+  #  };
+  #};
 
   systemd.network = {
     
@@ -26,18 +26,19 @@ in
           Name = "wg0";
         };
         wireguardConfig = {
-          PrivateKeyFile = "${config.sops.secrets.wg-key.path}";
+          #PrivateKeyFile = "${config.sops.secrets.wg-key.path}";
+          PrivateKey = "";
           ListenPort = 9918;
           FirewallMark = wgFwMark;
         };
         wireguardPeers = [
           {
             wireguardPeerConfig = {
-              PublicKey = "JH+yC7BcAp2G7l24/8KtwCI0pwLMdYw4e2r59TyrFnk="; # wireguard opticon server pubkey
+              PublicKey = "JH+yC7BcAp2G7l24/8KtwCI0pwLMdYw4e2r59TyrFnk="; # wireguard server pubkey
               AllowedIPs = [
                 "0.0.0.0/0" 
               ];
-              Endpoint = "vpn.opticon.dev:51820"; # wireguard opticon server address
+              Endpoint = "vpn.opticon.dev:51820"; # wireguard server address
               PersistentKeepalive = 25;
             };
           }

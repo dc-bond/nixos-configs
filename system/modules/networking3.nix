@@ -28,7 +28,7 @@
         netdevConfig = {
           Kind = "wireguard";
           Name = "wg0";
-          MTUBytes = "1300";
+          #MTUBytes = "1300";
         };
         wireguardConfig = {
           PrivateKeyFile = "${config.sops.secrets.wg-key.path}";
@@ -55,9 +55,8 @@
           DNS = "192.168.1.2";
           #Gateway = ;
           IPv6AcceptRA = false;
-          
-          #DNSDefaultRoute = true; # make wireguard tunnel the default route for all DNS requests
-          #Domains = "~."; # default DNS route for all domains
+          DNSDefaultRoute = true; # make wireguard tunnel the default route for all DNS requests
+          Domains = "~."; # default DNS route for all domains
         };
       };
     };
