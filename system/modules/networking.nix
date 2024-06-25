@@ -36,6 +36,10 @@
     enable = true;
     #wait-online.anyInterface = true; # systemd's wait-online target only requires that at least one managed interface be up instead of all managed interfaces
     networks = {
+      "05-loopback" = {
+        matchConfig.Name = "lo";
+        linkConfig.RequiredForOnline = "no";
+      };    
       "10-ethernet" = {
         matchConfig.Name = "enp0s31f6";
         networkConfig.DHCP = "ipv4";

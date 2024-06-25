@@ -22,7 +22,7 @@
     #nwg-look # gtk settings manager for wayland
     pwvucontrol # pipewire audio volume control app
     pywal # color theme changer
-    dunst # notification daemon
+    #dunst # notification daemon
     #polkit-kde-agent # kde gui authentication agent
     #libnotify # library to support notification daemons
     #xfce.xfce4-power-manager # laptop power manager

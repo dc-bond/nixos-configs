@@ -7,7 +7,7 @@
     ./hardware-configuration.nix
     ./modules/yubikey.nix
     ./modules/networking.nix
-    ./modules/wireguard2.nix
+    #./modules/wireguard2.nix
     ./modules/sops.nix
     ./modules/sshd.nix
     ./modules/hyprland.nix
@@ -87,7 +87,6 @@
       enable = true;
       support32Bit = true;
     };
-    #jack.enable = true;
   };
 
 # enable fonts 

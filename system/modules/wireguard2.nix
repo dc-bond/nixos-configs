@@ -37,8 +37,7 @@ in
               AllowedIPs = [
                 "0.0.0.0/0" 
               ];
-              #Endpoint = "vpn.opticon.dev:51820"; # wireguard server address
-              Endpoint = ":51820"; # wireguard server address
+              Endpoint = "vpn.opticon.dev:51820"; # wireguard server address
               PersistentKeepalive = 25;
             };
           }
@@ -85,5 +84,3 @@ in
   };
 
 }
-
-# wireguard: wg0: Handshake for peer 4 (73.154.234.24:51820) did not complete after 5 seconds, retrying (try 2)
