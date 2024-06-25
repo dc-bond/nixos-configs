@@ -11,6 +11,7 @@
     ./modules/sops.nix
     ./modules/sshd.nix
     ./modules/hyprland.nix
+    ./modules/printing.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
