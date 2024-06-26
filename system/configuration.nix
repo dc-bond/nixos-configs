@@ -141,8 +141,8 @@
   };
   environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
 
-##?? 
-#  environment.variables.DISPLAY = "wayland-1";
+# disable suspend on laptop lid close
+  services.logind.lidSwitch = "ignore";
 
 # set systemd file limit
   systemd.extraConfig = "DefaultLimitNOFILE=2048"; # defaults to 1024 if unset
