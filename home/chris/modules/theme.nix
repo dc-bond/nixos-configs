@@ -1,76 +1,61 @@
 { config, lib, pkgs, ... }: 
 
-#let
-#  inherit (config.vars) fontSize;
-#in 
-
 {
+
+  home.packages = with pkgs; [
+    libsForQt5.qtstyleplugin-kvantum
+    qt6Packages.qtstyleplugin-kvantum
+  ];
     
   home.pointerCursor = {
-    name = "Dracula-cursors";
-    package = pkgs.dracula-theme;
-    size = 24;
-
+    name = "WhiteSur-cursors";
+    package = pkgs.whitesur-cursors;
+    size = 20;
     gtk.enable = true;
-
     x11 = {
       enable = true;
-      defaultCursor = "Dracula-cursors";
+      defaultCursor = "WhiteSur-cursors";
     };
   };
 
   gtk = {
     enable = true;
     theme = {
-      name = "Dracula";
-      package = pkgs.dracula-theme;
+      name = "Materia-light";
+      package = pkgs.materia-theme;
     };
-
     iconTheme = {
-      name = "Flat-Remix-Violet-Dark";
-      package = pkgs.flat-remix-icon-theme;
+      name = "Papirus";
+      package = pkgs.papirus-nord;
     };
-
     font = {
-      name = "Sans Serif";
-      size = 9;
+      name = "Source Sans Pro";
+      size = 10;
     };
   };
 
-  home.packages = with pkgs; [
-    libsForQt5.qtstyleplugin-kvantum
-    qt6Packages.qtstyleplugin-kvantum
-  ];
   qt = {
     enable = true;
     platformTheme.name = "qtct";
   };
 
-  #xresources.extraConfig =
-  #  builtins.readFile
-  #  "${pkgs.dracula-theme}/xres";
+  #xdg.configFile = let
+  #  floatFont = lib.strings.floatToString 10;
+  #  qtconf =
+  #    ''
+  #      [Fonts]
+  #      fixed="Sans Serif,${floatFont},-1,5,50,0,0,0,0,0"
+  #      general="Sans Serif,${floatFont},-1,5,50,0,0,0,0,0"
 
-  xdg.configFile = let
-    floatFont = lib.strings.floatToString 9;
-    qtconf =
-      /*
-      ini
-      */
-      ''
-        [Fonts]
-        fixed="Sans Serif,${floatFont},-1,5,50,0,0,0,0,0"
-        general="Sans Serif,${floatFont},-1,5,50,0,0,0,0,0"
-
-        [Appearance]
-        icon_theme=Flat-Remix-Violet-Dark
-        style='';
-    # The newline before this must be there
-  in {
-    "Kvantum/Dracula/Dracula.kvconfig".source = "${pkgs.dracula-theme}/share/Kvantum/Dracula-purple-solid/Dracula-purple-solid.kvconfig";
-    "Kvantum/Dracula/Dracula.svg".source = "${pkgs.dracula-theme}/share/Kvantum/Dracula-purple-solid/Dracula-purple-solid.svg";
-    "Kvantum/kvantum.kvconfig".text = "[General]\ntheme=Dracula";
-
-    "qt5ct/qt5ct.conf".text = qtconf + "kvantum";
-    "qt6ct/qt6ct.conf".text = qtconf + "kvantum";
-  };
+  #      [Appearance]
+  #      icon_theme=Flat-Remix-Violet-Dark
+  #      style=
+  #    '';
+  #in {
+  #  "Kvantum/Dracula/Dracula.kvconfig".source = "${pkgs.dracula-theme}/share/Kvantum/Dracula-purple-solid/Dracula-purple-solid.kvconfig";
+  #  "Kvantum/Dracula/Dracula.svg".source = "${pkgs.dracula-theme}/share/Kvantum/Dracula-purple-solid/Dracula-purple-solid.svg";
+  #  "Kvantum/kvantum.kvconfig".text = "[General]\ntheme=Dracula";
+  #  "qt5ct/qt5ct.conf".text = qtconf + "kvantum";
+  #  "qt6ct/qt6ct.conf".text = qtconf + "kvantum";
+  #};
 }

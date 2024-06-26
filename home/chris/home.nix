@@ -8,6 +8,7 @@
     ./modules/gnupg.nix
     ./modules/neovim.nix
     ./modules/shell.nix
+    ./modules/theme.nix
     ./modules/hyprland.nix
   ];
 
@@ -34,20 +35,13 @@
     homeDirectory = "/home/chris";
   };
 
-# user-specific packages installed (that aren't installed via their own program modules enabled below)
-  home.packages = with pkgs; [ # only for installing packages that don't come with a programs.enable module
+# user-specific packages
+  home.packages = with pkgs; [
     eza # modern replacement for 'ls'
     pfetch # system info displayed on shell startup
     htop # system monitor
     glances # another system monitor
-    #sops # encryption
     nmap # network scanning
-    (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
-      fonts = [
-        "IBMPlexMono" # name is 'BlexMono' for system configs
-        "SourceCodePro" # name is 'SauceCodePro' for system configs
-      ];
-    })
   ];
 
 # pass

@@ -31,6 +31,11 @@
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     brightnessctl # screen brightness application
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
+    #(pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
+    #  fonts = [
+    #    "SourceCodePro"
+    #  ];
+    #})
   ];
 
 # nix package manager related
@@ -65,9 +70,7 @@
       };
       efi.canTouchEfiVariables = true;
     };
-    #initrd.systemd.network.wait-online.anyInterface = true;
     kernel.sysctl = { "vm.swappiness" = 30;};
-    #extraModulePackages = [ config.boot.kernelPackages.wireguard ];
   };
 
 # bluetooth
@@ -90,8 +93,19 @@
     };
   };
 
-# enable fonts 
-  fonts.fontDir.enable = true;
+# enable and install fonts 
+  fonts = {
+    fontDir.enable = true;
+    packages = with pkgs; [
+      source-code-pro
+      source-sans-pro
+      (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
+        fonts = [
+          "SourceCodePro"
+        ];
+      })
+    ];
+  };
 
 # user setup
   users.users = {
@@ -114,9 +128,11 @@
 
 # login/cli terminal settings
   console = {
+    earlySetup = true;
     font = "Lat2-Terminus16";
-    #keyMap = "us";
-    useXkbConfig = true; # configure the primary console keymap from the xserver keyboard settings
+    #font = "${pkgs.source-code-pro}/share/consolefonts/ter-132n.psf.gz";
+    packages = with pkgs; [ source-code-pro ];
+    keyMap = "us";
   };
 
 # z-shell
@@ -128,9 +144,6 @@
 # set systemd file limit
   systemd.extraConfig = "DefaultLimitNOFILE=2048"; # defaults to 1024 if unset
 
-## lid switch functionality for laptop
-#  services.logind.lidSwitch = "ignore";
-  
 # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "23.11";
 
