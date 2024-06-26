@@ -35,6 +35,12 @@
     homeDirectory = "/home/chris";
   };
 
+# define default folders in home directory
+  xdg.userDirs = {
+    enable = true;
+    download = "${config.home.homeDirectory}/downloads";
+  };
+
 # user-specific packages
   home.packages = with pkgs; [
     eza # modern replacement for 'ls'
@@ -77,9 +83,9 @@
   };
 
 # symlink non-module package dotfiles
-  home.file = {
-    #".sops.yaml".source = ./dotfiles/sops/.sops.yaml;
-  };
+  #home.file = {
+  #  #".sops.yaml".source = ./dotfiles/sops/.sops.yaml;
+  #};
 
 # start/re-start services after system rebuild
   systemd.user.startServices = "sd-switch";
