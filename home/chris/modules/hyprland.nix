@@ -112,7 +112,7 @@
         "DP-6, 2560x1440@144, 0x0, 1"
       ];
       environment = [
-        "XCURSOR_SIZE,16"
+        #"XCURSOR_SIZE,16"
         "EDITOR,nvim"
         "VISUAL=nvim"
         "TERM=xterm-256color"
@@ -196,6 +196,9 @@
       misc = {
         disable_hyprland_logo = true;
         disable_splash_rendering = true;
+      };
+      debug = {
+        disable_logs = false;
       };
     };
   };
