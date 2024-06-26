@@ -62,7 +62,7 @@
         "$mod, RETURN, exec, alacritty"
 	      "$mod, D, exec, rofi -show combi -combi-modes drun,run,ssh -modes combi"
 	      "$mod, C, exec, rofi -show calc -modi calc -no-show-match -no-sort" # not working
-        "$mod, E, exec, thunar"
+        "$mod, S, exec, systemctl suspend"
         "$mod, Q, killactive"
         "$mod, F, fullscreen"
         "$mod, T, togglefloating"
@@ -105,11 +105,14 @@
       ];
       bindl = [
         ", switch:on:Lid Switch,exec,hyprctl keyword monitor eDP-1, disable"
-        ", switch:off:Lid Switch,exec,hyprctl keyword monitor eDP-1, 1920x1080@60, 1920, 1"
+        #", switch:off:Lid Switch,exec,hyprctl keyword monitor eDP-1, 1920x1080@60, 1920, 1"
+        ", switch:off:Lid Switch,exec,hyprctl keyword monitor eDP-1, 1920x1080@60, 0x0, 1"
       ];
       monitor = [
-        "eDP-1, 1920x1080@60, 1920x0, 1"
-        "DP-6, 2560x1440@144, 0x0, 1"
+        #"eDP-1, 1920x1080@60, 1920x0, 1"
+        "eDP-1, 1920x1080@60, 0x0, 1"
+        "DP-5, 2560x1440@100, 0x0, 1"
+        "DP-6, 2560x1440@100, 0x0, 1"
       ];
       environment = [
         #"XCURSOR_SIZE,16"
