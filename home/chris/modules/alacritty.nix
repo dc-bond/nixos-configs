@@ -22,7 +22,7 @@
           family = "SauceCodePro NF";
           style = "Bold Italic";
         };
-        size = 11.0;
+        size = 11.5;
       };
     };
   };
