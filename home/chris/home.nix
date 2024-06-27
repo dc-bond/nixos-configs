@@ -12,17 +12,6 @@
     ./modules/hyprland.nix
   ];
 
-## allow configuration options for packages from the nixpkgs repo
-#  nixpkgs = {
-#    overlays = [ # override default packages in nixpkgs repo, e.g. older versions, custom patched, etc.
-#    ];
-#    config = {
-#      allowUnfree = true; # allow packages marked as proprietary/unfree
-#      allowBroken = false; # do not allow packages marked as broken
-#      allowUnfreePredicate = _: true; # workaround for https://github.com/nix-community/home-manager/issues/2942
-#    };
-#  };
-
 # home-manager module settings
   programs.home-manager.enable = true;
 
