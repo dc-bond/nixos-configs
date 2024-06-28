@@ -7,11 +7,11 @@
     ./hardware-configuration.nix
     ./modules/yubikey.nix
     ./modules/networking.nix
-    #./modules/wireguard2.nix
+    ./modules/wireguard1.nix
     ./modules/sops.nix
     ./modules/sshd.nix
     ./modules/hyprland.nix
-    ./modules/printing.nix
+    #./modules/printing.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
