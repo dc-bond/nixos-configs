@@ -7,23 +7,20 @@
     enable = true;
     enableCompletion = true;
     #autocd = true; # move to directory without using cd
-    # added to zsh interactive shell (.zshrc)
-    initExtra = ''
+    initExtra = # added to zsh interactive shell (.zshrc)
+    ''
       pfetch
     '';
     shellAliases = {
       ls = "eza -all --long -g -h --color=always --group-directories-first --git";
       rebuild = "sudo nixos-rebuild switch --flake ~/nixos-configs";
+      update = "sudo nix flake update ~/nixos-configs";
+      overhaul = "sudo nix flake update ~/nixos-configs && sudo nixos-rebuild switch --flake ~/nixos-configs";
       wgup = "sudo networkctl up wg0";
       wgdn = "sudo networkctl down wg0";
       wglogon = "echo module wireguard +p | sudo tee /sys/kernel/debug/dynamic_debug/control";
       wglogs = "journalctl -ekf";
       networks = "iwctl station wlan0 get-networks";
-      flakeupdate = "nix flake update ~/nixos-configs";
-      #upgrade = "sudo nixos-rebuild switch --upgrade --flake ~/nixos-configs#thinkpad";
-      stageconfig = "cd ~/nixos-configs && git add .";
-      pushconfig = "cd ~/nixos-configs && git add . && git commit && git push origin main";
-      pullconfig = "cd ~/nixos-configs && git pull origin main";
     };
     zplug = {
       enable = true;
