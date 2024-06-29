@@ -7,7 +7,7 @@
     ./hardware-configuration.nix
     ./modules/yubikey.nix
     ./modules/networking.nix
-    ./modules/wireguard1.nix
+    ./modules/wireguard.nix
     ./modules/sops.nix
     ./modules/sshd.nix
     ./modules/hyprland.nix

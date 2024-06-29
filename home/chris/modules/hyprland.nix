@@ -191,7 +191,8 @@
         preserve_split = true;
       };
       master = {
-        new_is_master = true;
+        allow_small_split = true;
+        new_on_top = false;
       };
       gestures = {
         workspace_swipe = false;
