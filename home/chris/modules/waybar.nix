@@ -27,7 +27,7 @@
         #"pulseaudio",
         "battery"
         "bluetooth"
-        "network#wg0"
+        "network#wireguard"
         "network#wifi"
         "network#ethernet"
         "network#ethernet-dock"
@@ -72,12 +72,13 @@
 	      "format-critical" = "{temperatureC}°C ";
 	      "format" = "{temperatureC}°C ";
       };
-      "network#wg0" = {
+      "network#wireguard" = {
         "interface" = "wg0";
         "format" = "󰴳";
-        "format-disconnected" = "󰦞";
+        "format-disconnected" = "󰴳";
+        #"format-disconnected" = "󰦞";
         "tooltip-format" = "Wireguard: {ipaddr}";
-        "tooltip-format-disabled" = "Wireguard: Disconnected";
+        "tooltip-format-disconnected" = "Wireguard: Disconnected";
       };
       "network#wifi" = {
         "interface" = "wlan0";
@@ -222,7 +223,12 @@
           color: #ffffff;
           padding: 1px 10px 1px 10px;
       }
-      #network.vpn {
+      #network.wireguard {
+          color: #00ff00;
+          font-size: 14px;
+          padding: 1px 10px 1px 10px;
+      }
+      #network.wifi {
           color: #00ff00;
           font-size: 14px;
           padding: 1px 10px 1px 10px;
@@ -232,7 +238,7 @@
           font-size: 14px;
           padding: 1px 10px 1px 10px;
       }
-      #network.wifi {
+      #network.ethernet-dock {
           color: #00ff00;
           font-size: 14px;
           padding: 1px 10px 1px 10px;
