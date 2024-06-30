@@ -54,7 +54,6 @@ in
   };
 
   systemd.network = {
-    
     netdevs = {
       "40-wg0" = {
         netdevConfig = {
@@ -70,24 +69,19 @@ in
         };
         wireguardPeers = [
           {
-            wireguardPeerConfig = {
-              PublicKey = "JH+yC7BcAp2G7l24/8KtwCI0pwLMdYw4e2r59TyrFnk="; # wireguard server pubkey
-              AllowedIPs = [
-                "0.0.0.0/0" 
-                "::/0"
-              ];
-              Endpoint = "vpn.opticon.dev:51820"; # wireguard server address
-              PersistentKeepalive = 25;
-              RouteTable = "off";
-            };
+            PublicKey = "JH+yC7BcAp2G7l24/8KtwCI0pwLMdYw4e2r59TyrFnk="; # wireguard server pubkey
+            AllowedIPs = [
+              "0.0.0.0/0" 
+              "::/0"
+            ];
+            Endpoint = "vpn.opticon.dev:51820"; # wireguard server address
+            PersistentKeepalive = 25;
+            RouteTable = "off";
           }
         ];
       };
-
     };
-    
     networks = {
-
       "40-wg0" = {
         matchConfig.Name = "wg0";
         networkConfig = {
@@ -96,48 +90,39 @@ in
           DNSDefaultRoute = true; # make wireguard tunnel the default route for all DNS requests
           Domains = "~."; # default DNS route for all domains
         };
-        routingPolicyRules = [
-        {
-          routingPolicyRuleConfig = {
-            Family = "both";
-            Table = "thinkpad-firewall";
-            SuppressPrefixLength = 0;
-            Priority = 10;
-          };
-        }
-        {
-          routingPolicyRuleConfig = {
-            Family = "both";
-            InvertRule = true;
-            FirewallMark = wgFwMark;
-            Table = wgTable;
-            Priority = 11;
-          };
-        }
-        ];
-        routes = [
-          {
-            routeConfig = {
-              Destination = "0.0.0.0/0";
-              Table = wgTable;
-              Scope = "link";
-            };
-          }
-          {
-            routeConfig = {
-              Destination = "::/0";
-              Table = wgTable;
-              Scope = "link";
-            };
-          }
-        ];
         linkConfig = {
           ActivationPolicy = "manual";
           RequiredForOnline = "no";
         };
+        routingPolicyRules = [
+        {
+          Family = "both";
+          Table = "thinkpad-firewall";
+          SuppressPrefixLength = 0;
+          Priority = 10;
+        }
+        {
+          Family = "both";
+          InvertRule = true;
+          FirewallMark = wgFwMark;
+          Table = wgTable;
+          Priority = 11;
+        }
+        ];
+        routes = [
+          {
+            Destination = "0.0.0.0/0";
+            Table = wgTable;
+            Scope = "link";
+          }
+          {
+            Destination = "::/0";
+            Table = wgTable;
+            Scope = "link";
+          }
+        ];
       };    
     };
-  
   };
 
 }

@@ -4,17 +4,18 @@
 
 # module imports
   imports = [
-    #./theme.nix
+    ./theme.nix
     ./alacritty.nix
     ./rofi.nix
     ./waybar.nix
     ./gammastep.nix
-    ./nextcloud-client.nix
+    #./nextcloud-client.nix
     ./vscodium.nix
     ./firefox.nix
   ];
 
   home.packages = with pkgs; [
+    nextcloud-client # nextcloud client
     #eww-wayland # widgets
     swww # animated wallpaper for wayland window managers\
     #swaylock-effects # wayland screenlock application

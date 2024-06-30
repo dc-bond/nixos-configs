@@ -4,11 +4,9 @@
   
 # module imports
   imports = [
-    #home-manager.nixosModules.home-manager # imported from flake input
     ./modules/gnupg.nix
     ./modules/neovim.nix
     ./modules/shell.nix
-    ./modules/theme.nix
     ./modules/hyprland.nix
   ];
 
