@@ -5,7 +5,7 @@
 # module imports
   imports = [
     ./hardware-configuration.nix
-    ./login.nix
+    ./modules/login.nix
     ./modules/yubikey.nix
     ./modules/networking.nix
     ./modules/wireguard.nix
