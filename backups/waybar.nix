@@ -76,9 +76,8 @@
         "interface" = "wg0";
         "format" = "󰴳";
         "format-disconnected" = "󰦞";
-        "format-linked" = "󰦞"; # this is a bug
         "tooltip-format" = "Wireguard: {ipaddr}";
-        "tooltip-format-disconnected" = "Wireguard: Disconnected"; # not working bug
+        "tooltip-format-disconnected" = "Wireguard: Disconnected";
       };
       "network#wifi" = {
         "interface" = "wlan0";
@@ -223,7 +222,22 @@
           color: #ffffff;
           padding: 1px 10px 1px 10px;
       }
-      #network {
+      #network.wireguard {
+          color: #00ff00;
+          font-size: 14px;
+          padding: 1px 10px 1px 10px;
+      }
+      #network.wifi {
+          color: #00ff00;
+          font-size: 14px;
+          padding: 1px 10px 1px 10px;
+      }
+      #network.ethernet {
+          color: #00ff00;
+          font-size: 14px;
+          padding: 1px 10px 1px 10px;
+      }
+      #network.ethernet-dock {
           color: #00ff00;
           font-size: 14px;
           padding: 1px 10px 1px 10px;
@@ -234,11 +248,6 @@
           padding: 1px 10px 1px 10px;
       }
       #network.disabled {
-          color: #77767b;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      #network.linked {
           color: #77767b;
           font-size: 14px;
           padding: 1px 10px 1px 10px;
