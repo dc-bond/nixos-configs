@@ -5,7 +5,7 @@
 # packages needed
   home.packages = with pkgs; [
     pinentry-all
-    pinentry-rofi
+    #pinentry-rofi # broken
   ];
 
 # gnupg 
@@ -47,8 +47,8 @@
     enable = true; # this setting adds export GPG_TTY lines to user's .zshrc
     enableSshSupport = true; # this setting adds 'gpg-connect-agent updatestartuptty /bye' to user's .zshrc
     enableZshIntegration = true;
-    #pinentryPackage = pkgs.pinentry-gtk2;
-    pinentryPackage = pkgs.pinentry-rofi; # when enabling rofi in a compositor
+    pinentryPackage = pkgs.pinentry-gtk2;
+    #pinentryPackage = pkgs.pinentry-rofi; # when enabling rofi in a compositor # broken
     #enableScDaemon = true; # defaults to true
   };
 
