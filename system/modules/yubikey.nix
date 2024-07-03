@@ -14,6 +14,9 @@
 # enable smartcard reader tool
   services.pcscd.enable = true;
 
+# enable udev rules for yubikey
+  hardware.gpgSmartcards.enable = true;
+
 # nixos pcsclite packages don't include user group to access card when polkit enabled (automatically with hyprland) so workaround to grant access - https://github.com/NixOS/nixpkgs/issues/121121
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
