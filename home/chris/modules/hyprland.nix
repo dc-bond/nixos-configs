@@ -43,7 +43,8 @@
 
   wayland.windowManager.hyprland = {
     enable = true;
-    extraConfig = ''
+    extraConfig = 
+    ''
       device {
         name=razer-proclickm
         sensitivity=-0.6

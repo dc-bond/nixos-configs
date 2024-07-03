@@ -54,11 +54,11 @@
         user = "xixor";
         port = 39800;
       };
-      "cypress" = {
-        hostname = "172.232.31.44";
-        user = "root";
-        port = 22;
-      };
+      #"cypress" = {
+      #  hostname = "172.232.31.44";
+      #  user = "root";
+      #  port = 22;
+      #};
       "github" = {
         hostname = "github.com";
         user = "dc-bond";
