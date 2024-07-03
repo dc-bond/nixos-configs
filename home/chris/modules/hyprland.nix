@@ -16,14 +16,13 @@
 
   home.packages = with pkgs; [
     nextcloud-client # nextcloud client
-    #eww-wayland # widgets
     swww # animated wallpaper for wayland window managers\
     #swaylock-effects # wayland screenlock application
     #wlogout # wayland logout application
     #nwg-look # gtk settings manager for wayland
     pwvucontrol # pipewire audio volume control app
     pywal # color theme changer
-    #dunst # notification daemon
+    dunst # notification daemon
     #polkit-kde-agent # kde gui authentication agent
     #libnotify # library to support notification daemons
     #xfce.xfce4-power-manager # laptop power manager
@@ -38,6 +37,8 @@
     #autorandr # automatically select a display configuration based on connected devices
     #ddcutil # query and change monitor settings using DDC/CI and USB
     #bleachbit # disk cleaner
+    wl-clipboard # wayland clipboard
+    cliphist # wayland clipboard manager 
   ];
 
   wayland.windowManager.hyprland = {
@@ -56,13 +57,15 @@
       "$mod" = "Alt";
       exec-once = [
         "swww-daemon"
-        #"dunst"
+        "dunst"
         "~/nixos-configs/home/chris/dotfiles/hypr/pywal-swww.sh"
+        "wl-paste --type text --watch cliphist store"
       ];      
       bind = [
         "$mod, RETURN, exec, alacritty"
 	      "$mod, D, exec, rofi -show combi -combi-modes drun,run,ssh -modes combi"
 	      "$mod, C, exec, rofi -show calc -modi calc -no-show-match -no-sort" # not working
+	      "$mod, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
         "$mod, S, exec, systemctl suspend"
         "$mod, Q, killactive"
         "$mod, F, fullscreen"

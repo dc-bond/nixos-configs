@@ -32,11 +32,6 @@
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     brightnessctl # screen brightness application
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
-    #(pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
-    #  fonts = [
-    #    "SourceCodePro"
-    #  ];
-    #})
   ];
 
 # nix package manager related
