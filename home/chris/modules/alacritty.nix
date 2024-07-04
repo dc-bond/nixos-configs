@@ -7,7 +7,15 @@
     settings = {
       live_config_reload = true;
       cursor = {
-        style = "Block";
+        style = {
+          shape = "Beam";
+          blinking = "On";
+        };
+        vi_mode_style = {
+          shape = "Block";
+          blinking = "On";
+        };
+        blink_interval = 500;
       };
       debug = {
         log_level = "DEBUG";

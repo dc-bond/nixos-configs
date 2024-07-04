@@ -16,22 +16,31 @@
     ];
     userSettings = {
       "files.autoSave" = "off";
+      "redhat.telemetry.enabled" = false;
+      "window.restoreWindows" = "one";
+      "explorer.confirmDragAndDrop" = false;
       "extensions.experimental.affinity" = {
         "asvetliakov.vscode-neovim" = 1;
       };      
-      "workbench.colorTheme" = "Nord";
-      "workbench.iconTheme" = "material-icon-theme";
-      "redhat.telemetry.enabled" = false;
-      "git.enableSmartCommit" = true;
-      "git.confirmSync" = false;
-      "workbench.startupEditor" = "none";
-      "window.restoreWindows" = "one";
-      "git.autofetch" = true;
-      "explorer.confirmDragAndDrop" = false;
-      "terminal.integrated.fontFamily" = "SauceCodePro NF";
-      "editor.fontFamily" = "\"SauceCodePro NF\"";
-      "editor.fontSize" = 15;
-      "editor.fontLigatures" = false;
+      "workbench" = {
+        "colorTheme" = "Nord";
+        "iconTheme" = "material-icon-theme";
+        "startupEditor" = "none";
+      };
+      "git" = {
+        "enableSmartCommit" = true;
+        "confirmSync" = false;
+        "autofetch" = true;
+      };
+      "terminal.integrated" = {
+        "fontFamily" = "SauceCodePro NF";
+        "copyOnSelection" = true;
+      };
+      "editor" = {
+        "fontFamily" = "\"SauceCodePro NF\"";
+        "fontSize" = 15;
+        "fontLigatures" = false;
+      };
     };
   };
 
