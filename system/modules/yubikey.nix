@@ -32,10 +32,10 @@
     });
   '';
 
-# udev package for yubikey
-  services.udev.packages = with pkgs; [
-    yubikey-personalization
-  ];
+## udev package for yubikey
+#  services.udev.packages = with pkgs; [
+#    yubikey-personalization
+#  ];
   
 }
 
