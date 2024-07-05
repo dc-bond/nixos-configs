@@ -32,6 +32,9 @@
         "confirmSync" = false;
         "autofetch" = true;
       };
+      "github" = {
+        "gitProtocol" = "ssh";
+      };
       "terminal.integrated" = {
         "fontFamily" = "SauceCodePro NF";
         "copyOnSelection" = true;
