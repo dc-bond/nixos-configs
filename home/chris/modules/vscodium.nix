@@ -18,7 +18,7 @@
       "files.autoSave" = "off";
       "redhat.telemetry.enabled" = false;
       "window.restoreWindows" = "one";
-      "explorer = {
+      "explorer" = {
         "confirmDragAndDrop" = false;
         "confirmDelete" = false;
       };
