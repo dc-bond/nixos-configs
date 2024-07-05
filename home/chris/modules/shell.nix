@@ -2,12 +2,10 @@
 
 {
 
-# z-shell
   programs.zsh = {
     enable = true;
-    enableCompletion = true;
-    #autocd = true; # move to directory without using cd
-    initExtra = # added to zsh interactive shell (.zshrc)
+    autocd = true; # move to directory without using cd
+    #initExtra = # added to zsh interactive shell (.zshrc)
     ''
       pfetch
     '';
@@ -25,16 +23,14 @@
     zplug = {
       enable = true;
       plugins = [
-        { name = "zsh-users/zsh-autosuggestions"; }
-        { name = "marlonrichert/zsh-autocomplete"; }
+        { name = "zsh-users/zsh-autosuggestions"; } # shadow text suggested completions ahead of typing
+        { name = "marlonrichert/zsh-autocomplete"; } # show list of possible completions as typing
       ];
     };
     history.size = 5000;
     history.path = "${config.xdg.dataHome}/zsh/history";
   };
 
-# starship prompt for shell
-# https://starship.rs/config/#prompt
   programs.starship = {
     enable = true;
     enableZshIntegration = true;
