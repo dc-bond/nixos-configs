@@ -9,13 +9,13 @@
       cursor = {
         style = {
           shape = "Beam";
-          blinking = "On";
+          blinking = "Off";
         };
         vi_mode_style = {
           shape = "Block";
-          blinking = "On";
+          blinking = "Off";
         };
-        blink_interval = 500;
+        #blink_interval = 500;
       };
       debug = {
         log_level = "DEBUG";
