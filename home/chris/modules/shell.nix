@@ -5,7 +5,7 @@
   programs.zsh = {
     enable = true;
     autocd = true; # move to directory without using cd
-    #initExtra = # added to zsh interactive shell (.zshrc)
+    initExtra = # added to zsh interactive shell (.zshrc)
     ''
       pfetch
     '';
