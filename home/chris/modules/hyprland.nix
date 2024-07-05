@@ -120,12 +120,12 @@
         "DP-5, 2560x1440@100, 0x0, 1"
         "DP-6, 2560x1440@100, 0x0, 1"
       ];
-      environment = [
-        #"XCURSOR_SIZE,16"
-        "EDITOR,nvim"
-        "VISUAL=nvim"
-        "TERM=xterm-256color"
-      ];
+      #environment = [
+      #  #"XCURSOR_SIZE,16"
+      #  "EDITOR,nvim"
+      #  "VISUAL=nvim"
+      #  "TERM=xterm-256color"
+      #];
       #source = [
       #  "~/.cache/wal/colors-hyprland.conf" # not working
       #];

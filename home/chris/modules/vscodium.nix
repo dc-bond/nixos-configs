@@ -35,11 +35,14 @@
       "terminal.integrated" = {
         "fontFamily" = "SauceCodePro NF";
         "copyOnSelection" = true;
+        "cursorStyle" = "line";
+        "cursorBlinking" = false;
       };
       "editor" = {
         "fontFamily" = "\"SauceCodePro NF\"";
         "fontSize" = 15;
         "fontLigatures" = false;
+        "cursorBlinking" = "solid";
       };
     };
   };

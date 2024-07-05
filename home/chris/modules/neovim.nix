@@ -43,6 +43,12 @@
       set mouse=nicr
       set mouse=a
 
+      " reset cursor to default beam on exiting back to terminal
+      augroup RestoreCursorShapeOnExit
+        autocmd!
+        autocmd VimLeave * set guicursor=a:ver25
+      augroup END
+
       " fix sizing bug with alacritty terminal
       autocmd VimEnter * :silent exec "!kill -s SIGWINCH $PPID"
     '';
