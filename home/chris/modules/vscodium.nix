@@ -18,7 +18,10 @@
       "files.autoSave" = "off";
       "redhat.telemetry.enabled" = false;
       "window.restoreWindows" = "one";
-      "explorer.confirmDragAndDrop" = false;
+      "explorer = {
+        "confirmDragAndDrop" = false;
+        "confirmDelete" = false;
+      };
       "extensions.experimental.affinity" = {
         "asvetliakov.vscode-neovim" = 1;
       };      

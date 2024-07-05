@@ -1,9 +1,0 @@
-hello world
-
-
-NEOVIM - yank to firefox
-NEOVIM - yank to vscode
-NEOVIM - yank to different neovim
-NEOVIM - visual ctrl-c to firefox
-NEOVIM - visual ctrl-c to vscode
-NEOVIM - visual ctrl-c to different neovim
