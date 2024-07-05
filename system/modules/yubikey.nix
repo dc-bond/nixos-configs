@@ -4,9 +4,8 @@
 
 # system packages
   environment.systemPackages = with pkgs; [
-    yubikey-personalization # tool required to make changes to yubikeys
-    yubikey-manager
-    yubioath-flutter # gui authenticator app for yubikeys
+    yubikey-manager # provides ykman cli tool to manage settings on yubikey
+    yubioath-flutter # gui authenticator app/tool for yubikeys
     pcsclite # smartcard reader tool
     #pcscliteWithPolkit # smartcard reader tool
   ];
