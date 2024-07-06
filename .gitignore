@@ -1,2 +1,2 @@
 *.decrypted~*
-.decrypted~secrets.sops.yml
+.decrypted~secrets.yaml
