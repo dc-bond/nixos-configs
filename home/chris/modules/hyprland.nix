@@ -15,7 +15,6 @@
   ];
 
   home.packages = with pkgs; [
-    #nextcloud-client # nextcloud client
     swww # animated wallpaper for wayland window managers\
     #wlogout # wayland logout application
     pwvucontrol # pipewire audio volume control app
