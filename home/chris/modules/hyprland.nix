@@ -10,6 +10,7 @@
     ./gammastep.nix
     ./nextcloud-client.nix
     ./swaylock.nix
+    #./wlogout.nix
     ./vscodium.nix
     ./firefox.nix
   ];
@@ -57,7 +58,7 @@
       exec-once = [
         "swww-daemon"
         "dunst"
-        "~/nixos-configs/home/chris/dotfiles/hypr/pywal-swww.sh"
+        "~/nixos-configs/home/chris/dotfiles/hypr/pywal-swww.sh" # change to built-in script?
         "wl-paste --type text --watch cliphist store"
       ];      
       bind = [
