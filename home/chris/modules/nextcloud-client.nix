@@ -1,11 +1,10 @@
-{ config, pkgs, ... }: 
+{ pkgs, ... }: 
 
 {
 
-# nextcloud-client
   services.nextcloud-client = {
     enable = true;
-    startInBackground = false;
+    startInBackground = true;
   };
 
 }

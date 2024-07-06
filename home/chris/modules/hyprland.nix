@@ -2,24 +2,22 @@
 
 {
 
-# module imports
   imports = [
     ./theme.nix
     ./alacritty.nix
     ./rofi.nix
     ./waybar.nix
     ./gammastep.nix
-    #./nextcloud-client.nix
+    ./nextcloud-client.nix
+    ./swaylock.nix
     ./vscodium.nix
     ./firefox.nix
   ];
 
   home.packages = with pkgs; [
-    nextcloud-client # nextcloud client
+    #nextcloud-client # nextcloud client
     swww # animated wallpaper for wayland window managers\
-    #swaylock-effects # wayland screenlock application
     #wlogout # wayland logout application
-    #nwg-look # gtk settings manager for wayland
     pwvucontrol # pipewire audio volume control app
     pywal # color theme changer
     dunst # notification daemon
