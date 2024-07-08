@@ -2,13 +2,11 @@
 
 {
 
-# packages needed
   home.packages = with pkgs; [
     pinentry-all
     pinentry-rofi # broken
   ];
 
-# gnupg 
   programs.gpg = {
     enable = true;
     homedir = "${config.home.homeDirectory}/.gnupg";

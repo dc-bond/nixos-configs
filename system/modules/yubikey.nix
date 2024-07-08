@@ -7,14 +7,14 @@
     yubikey-manager # provides ykman cli tool to manage settings on yubikey
     yubioath-flutter # gui authenticator app/tool for yubikeys
     pcsclite # smartcard reader tool
-    #pcscliteWithPolkit # smartcard reader tool
+    libfido2 # provides library functionality for FIDO 2.0, including communication with a device over USB
   ];
 
 # enable smartcard reader tool
   services.pcscd.enable = true;
 
-# enable udev rules for yubikey
-  hardware.gpgSmartcards.enable = true;
+## enable udev rules for yubikey
+#  hardware.gpgSmartcards.enable = true;
 
 # nixos pcsclite packages don't include user group to access card when polkit enabled (automatically with hyprland) so workaround to grant access - https://github.com/NixOS/nixpkgs/issues/121121
   security.polkit.extraConfig = ''
@@ -32,11 +32,6 @@
     });
   '';
 
-## udev package for yubikey
-#  services.udev.packages = with pkgs; [
-#    yubikey-personalization
-#  ];
-  
 }
 
 # NOTE IF USING MULTIPLE YUBIKEYS WITH SAME PRIVATE KEYS LOADED USE FOLLOWING TO SWITCH TO NEW YUBIKEY

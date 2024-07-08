@@ -4,7 +4,7 @@
   
 # module imports
   imports = [
-    ./modules/gnupg.nix
+    #./modules/gnupg.nix
     ./modules/neovim.nix
     ./modules/shell.nix
     ./modules/hyprland.nix
@@ -63,6 +63,7 @@
         hostname = "github.com";
         user = "dc-bond";
         port = 22;
+        identityFile = "~/.ssh/yubikey-321-ed25519.key";
       };
     };
   };
