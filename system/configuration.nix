@@ -32,6 +32,8 @@
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     brightnessctl # screen brightness application
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
+    ddcutil # query and change monitor settings using DDC/CI and USB
+    i2c-tools # hardware interface tools required by ddcutil
   ];
 
 # nix package manager related
@@ -68,6 +70,9 @@
     };
     kernel.sysctl = { "vm.swappiness" = 30;};
   };
+
+# enable i2c kernel module for ddcutil functionality
+  hardware.i2c.enable = true;
 
 # bluetooth
   services.blueman.enable = true; # terminal-based bluetooth connection tool
@@ -108,7 +113,10 @@
   users.users = {
     chris = {
       initialPassword = "changeme";
-      extraGroups = ["wheel"];
+      extraGroups = [
+        "wheel" 
+        "i2c" # for controlling i2c/ddcutil
+      ];
       isNormalUser = true;
       shell = pkgs.zsh; # user-specific z-shell configs in home.nix
       openssh.authorizedKeys.keys = [ 

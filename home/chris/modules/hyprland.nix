@@ -33,7 +33,6 @@
     ##ffmpegthumbnailer
     #wlr-randr # wayland display setting tool for external monitors
     #autorandr # automatically select a display configuration based on connected devices
-    #ddcutil # query and change monitor settings using DDC/CI and USB
     #bleachbit # disk cleaner
     wl-clipboard # wayland clipboard
     cliphist # wayland clipboard manager 
@@ -75,6 +74,9 @@
         "$mod, right, movefocus, r"
         "$mod, up, movefocus, u"
         "$mod, down, movefocus, d"
+        "$mod, F1, exec, ddcutil -d 1 setvcp 60 0x11" # switch monitor input to HDMI1 (work computer)
+        "$mod, F2, exec, ddcutil -d 1 setvcp 60 0x12" # switch monitor input to HDMI2 (thinkpad)
+        "$mod, F3, exec, ddcutil -d 1 setvcp 60 0x0f" # switch monitor input to DP1(opticon)
         "$mod, F8, exec, rfkill toggle wlan"
         "$mod, F10, exec, rfkill toggle bluetooth"
         "$mod, F5, exec, brightnessctl set 10%-"
