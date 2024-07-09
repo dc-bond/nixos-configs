@@ -2,7 +2,6 @@
 
 {
 
-# rofi
   home.file."${config.xdg.configHome}/rofi" = {
     source = ../dotfiles/rofi;
     recursive = true;
