@@ -50,6 +50,7 @@
         "fontLigatures" = false;
         "cursorBlinking" = "solid";
       };
+      "remote.SSH.showLoginTerminal" = true;
     };
   };
 
