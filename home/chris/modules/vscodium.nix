@@ -51,6 +51,7 @@
         "cursorBlinking" = "solid";
       };
       "remote.SSH.showLoginTerminal" = true;
+      "remote.SSH.useLocalServer" = false;
     };
   };
 
