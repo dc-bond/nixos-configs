@@ -68,6 +68,8 @@
       };
     };
   };
+  #enable ssh-agent to cache private key
+  services.ssh-agent.enable = true;
 
 # git
   programs.git = {
