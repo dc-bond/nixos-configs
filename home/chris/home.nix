@@ -53,6 +53,7 @@
         hostname = "vpn.opticon.dev";
         user = "xixor";
         port = 39800;
+        identityFile = "~/.ssh/id_ed25519_sk";
       };
       #"cypress" = {
       #  hostname = "172.232.31.44";
@@ -63,7 +64,7 @@
         hostname = "github.com";
         user = "dc-bond";
         port = 22;
-        identityFile = "~/.ssh/yubikey-321-ed25519.key";
+        identityFile = "~/.ssh/id_ed25519_sk";
       };
     };
   };
