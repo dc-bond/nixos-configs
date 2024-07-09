@@ -53,23 +53,17 @@
         hostname = "vpn.opticon.dev";
         user = "xixor";
         port = 39800;
-        identityFile = "~/.ssh/id_ed25519_sk";
+        #identityFile = "~/.ssh/id_ed25519_sk";
       };
-      #"cypress" = {
-      #  hostname = "172.232.31.44";
-      #  user = "root";
-      #  port = 22;
-      #};
       "github" = {
         hostname = "github.com";
         user = "dc-bond";
         port = 22;
-        identityFile = "~/.ssh/id_ed25519_sk";
+        #identityFile = "~/.ssh/id_ed25519_sk";
       };
     };
   };
-  #enable ssh-agent to cache private key
-  services.ssh-agent.enable = true;
+  services.ssh-agent.enable = false;
 
 # git
   programs.git = {
