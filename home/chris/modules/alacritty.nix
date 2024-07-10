@@ -8,7 +8,7 @@
       live_config_reload = true;
       cursor = {
         style = {
-          shape = "Beam";
+          shape = "Block";
           blinking = "Off";
         };
         vi_mode_style = {

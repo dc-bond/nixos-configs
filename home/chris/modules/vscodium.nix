@@ -42,17 +42,18 @@
       "terminal.integrated" = {
         "fontFamily" = "SauceCodePro NF";
         "copyOnSelection" = true;
-        "cursorStyle" = "line";
+        "cursorStyle" = "block";
         "cursorBlinking" = false;
       };
       "editor" = {
         "fontFamily" = "\"SauceCodePro NF\"";
         "fontSize" = 15;
         "fontLigatures" = false;
+        "cursorStyle" = "block";
         "cursorBlinking" = "solid";
       };
-      "remote.SSH.showLoginTerminal" = true;
-      "remote.SSH.useLocalServer" = false;
+      #"remote.SSH.showLoginTerminal" = true;
+      #"remote.SSH.useLocalServer" = false;
     };
   };
 
