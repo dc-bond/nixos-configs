@@ -65,7 +65,7 @@
 	      "$mod, D, exec, rofi -show combi -combi-modes drun,run,ssh -modes combi"
 	      "$mod, C, exec, rofi -show calc -modi calc -no-show-match -no-sort" # not working
 	      "$mod, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
-        "$mod, S, exec, systemctl suspend"
+        "$mod, S, exec, ddcutil -d 1 setvcp D6 05 && systemctl suspend"
         "$mod, Q, killactive"
         "$mod, F, fullscreen"
         "$mod, T, togglefloating"

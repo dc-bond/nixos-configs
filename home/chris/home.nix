@@ -4,7 +4,7 @@
   
 # module imports
   imports = [
-    #./modules/gnupg.nix
+    ./modules/gnupg.nix
     ./modules/neovim.nix
     ./modules/shell.nix
     ./modules/hyprland.nix
@@ -53,13 +53,13 @@
         hostname = "vpn.opticon.dev";
         user = "xixor";
         port = 39800;
-        #identityFile = "~/.ssh/id_ed25519_sk";
+        identityFile = "~/.ssh/id_ed25519_sk";
       };
       "github" = {
         hostname = "github.com";
         user = "dc-bond";
         port = 22;
-        #identityFile = "~/.ssh/id_ed25519_sk";
+        identityFile = "~/.ssh/id_ed25519_sk";
       };
     };
   };
