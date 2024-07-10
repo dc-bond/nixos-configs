@@ -53,13 +53,15 @@
         hostname = "vpn.opticon.dev";
         user = "xixor";
         port = 39800;
-        identityFile = "~/.ssh/id_ed25519_sk";
+        #identityFile = "~/.ssh/id_ed25519_sk";
+        identityFile = "~/.ssh/yubikey-321-ssh.key";
       };
       "github" = {
         hostname = "github.com";
         user = "dc-bond";
         port = 22;
-        identityFile = "~/.ssh/id_ed25519_sk";
+        #identityFile = "~/.ssh/id_ed25519_sk";
+        identityFile = "~/.ssh/yubikey-321-ssh.key";
       };
     };
   };
