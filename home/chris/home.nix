@@ -54,11 +54,11 @@
         user = "xixor";
         port = 39800;
       };
-      #"github" = {
-      #  hostname = "github.com";
-      #  user = "dc-bond";
-      #  port = 22;
-      #};
+      "github" = {
+        hostname = "github.com";
+        user = "git";
+        port = 22;
+      };
     };
   };
 
