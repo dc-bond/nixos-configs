@@ -32,6 +32,7 @@
       };
       "git" = {
         "enableSmartCommit" = true;
+        #"enableCommitSigning" = true;
         "confirmSync" = false;
         "autofetch" = true;
       };
