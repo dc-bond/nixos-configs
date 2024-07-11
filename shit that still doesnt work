@@ -4,6 +4,7 @@ termius ssh
 systemd-networkd wait online error
 switch to built-in nix script for pywal-swww
 automatically clone pass repo
+printing
 
 
 disk impermanence
