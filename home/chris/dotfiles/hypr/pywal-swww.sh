@@ -20,5 +20,5 @@ swww img $wallpaper --transition-step 20 --transition-fps=20
 pkill waybar
 waybar
 
-## send notification
-#dunstify "wallpaper updated with image $newwall"
+# send notification
+dunstify "wallpaper updated with image $newwall"

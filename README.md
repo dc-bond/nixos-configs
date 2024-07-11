@@ -1,1 +1,1 @@
-This is the root directory for my linux operating system configuration. It contains an ansible script to setup LUKS-based drive encryption and formatting on a virtual machine and my Lenovo T490 laptop in preparation for a flake-based NixOS install.
+This directory contains the entire declarative configuration for my NixOS-based linux operating system.
