@@ -28,12 +28,15 @@
 # system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [
     (import ../scripts/hello-world.nix { inherit pkgs config; })
+    (import ../scripts/rebuild-diff.nix { inherit pkgs config; })
     age # encryption tool
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     brightnessctl # screen brightness application
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
     ddcutil # query and change monitor settings using DDC/CI and USB
     i2c-tools # hardware interface tools required by ddcutil
+    nvd # package version diff info for nix build operations
+    nix-tree # table view of package dependencies
   ];
 
 # nix package manager related

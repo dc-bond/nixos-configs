@@ -32,7 +32,7 @@
   home.packages = with pkgs; [
     eza # modern replacement for 'ls'
     pfetch # system info displayed on shell startup
-    htop # system monitor
+    btop # system monitor
     glances # another system monitor
     nmap # network scanning
   ];
