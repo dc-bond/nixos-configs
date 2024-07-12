@@ -86,7 +86,7 @@
         history = 2048;
         multiplier = 3;
       };
-      window.opacity = 0.8;
+      window.opacity = 0.9;
       
     };
   };
