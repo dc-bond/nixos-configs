@@ -53,8 +53,11 @@
         "cursorStyle" = "block";
         "cursorBlinking" = "solid";
       };
-      "remote.SSH.showLoginTerminal" = true;
-      "remote.SSH.useLocalServer" = false;
+      "remote.SSH" = {
+        "showLoginTerminal" = true;
+        "useLocalServer" = false;
+        "configFile" = "/home/chris/.ssh/config";
+      };
     };
   };
 
