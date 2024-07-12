@@ -2,9 +2,9 @@
 
 {
 
-  home.packages = with pkgs; [
-    pinentry-rofi
-  ];
+  #home.packages = with pkgs; [
+  #  pinentry-rofi
+  #];
 
   programs.gpg = {
     enable = true;
@@ -37,15 +37,16 @@
   };
 
   services.ssh-agent.enable = false; # disable ssh-agent
-  services.gpg-agent = {
-    enable = true; # this setting adds export GPG_TTY lines to user's .zshrc
-    enableSshSupport = true; # this setting adds 'gpg-connect-agent updatestartuptty /bye' to user's .zshrc
-    sshKeys = [ # adds keygrip identifier to .gnupg/sshcontrol file
-      "DB9ADBBE6FBD1F0E694AF25D012321D46E090E61"
-    ];
-    enableZshIntegration = true;
-    pinentryPackage = pkgs.pinentry-rofi; # when enabling rofi in a compositor
-    enableScDaemon = true;
-  };
+  
+  #services.gpg-agent = {
+  #  enable = true; # this setting adds export GPG_TTY lines to user's .zshrc
+  #  enableSshSupport = true; # this setting adds 'gpg-connect-agent updatestartuptty /bye' to user's .zshrc
+  #  sshKeys = [ # adds keygrip identifier to .gnupg/sshcontrol file
+  #    "DB9ADBBE6FBD1F0E694AF25D012321D46E090E61"
+  #  ];
+  #  enableZshIntegration = true;
+  #  pinentryPackage = pkgs.pinentry-rofi; # when enabling rofi in a compositor
+  #  enableScDaemon = true;
+  #};
 
 }
