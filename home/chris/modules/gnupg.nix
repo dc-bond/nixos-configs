@@ -36,7 +36,8 @@
     };
   };
 
-  services.ssh-agent.enable = false; # disable ssh-agent
+  #programs.ssh.addKeysToAgent = true; # add private keys to ssh-agent when used for authentication
+  services.ssh-agent.enable = true; 
   
   #services.gpg-agent = {
   #  enable = true; # this setting adds export GPG_TTY lines to user's .zshrc
