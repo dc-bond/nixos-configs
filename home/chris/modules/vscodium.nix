@@ -35,8 +35,8 @@
         "enableSmartCommit" = true;
         #"enableCommitSigning" = true;
         "confirmSync" = false;
-        "autofetch" = true;
-        "useIntegratedAskPass" = false;
+        "autofetch" = false;
+        "useIntegratedAskPass" = true;
       };
       "github" = {
         "gitProtocol" = "ssh";
