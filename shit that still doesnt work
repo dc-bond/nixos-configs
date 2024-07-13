@@ -12,6 +12,8 @@ can't decrypt in vscode without pinenetry - move gpg wizardry to .zprofile inste
 
 
 
+
+
 disk impermanence
 LUKS full disk encryption with yubikey
 PAM U2F with yubikey
