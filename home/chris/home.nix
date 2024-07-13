@@ -50,13 +50,13 @@
     enable = true;
     matchBlocks = {
       "*" = {
-        identityFile = "~/.ssh/chris-ed25519-yubikey321.key";
+        identityFile = "~/.ssh/github-ed25519-yubikey321.key";
       };
       "opticon" = {
         hostname = "vpn.opticon.dev";
         user = "xixor";
         port = 39800;
-        identityFile = "~/.ssh/chris-ed25519-yubikey321.key";
+        #identityFile = "~/.ssh/chris-ed25519-yubikey321.key";
       };
       #"git@github.com" = {
       #  hostname = "github.com";
