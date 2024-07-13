@@ -55,7 +55,7 @@
         port = 39800;
         identityFile = "~/.ssh/chris-ed25519-yubikey321.key";
       };
-      "github" = {
+      "git@github.com" = {
         hostname = "github.com";
         user = "git";
         port = 22;
