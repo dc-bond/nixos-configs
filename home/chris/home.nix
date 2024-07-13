@@ -57,10 +57,11 @@
         user = "xixor";
         port = 39800;
         #identityFile = "~/.ssh/chris-ed25519.key";
-        identityFile = "~/.ssh/chris-gpgauth-yubikey321.pub";
+        #identityFile = "~/.ssh/chris-gpgauth-yubikey321.pub";
       };
       "github.com"= { # vscodium looks at ~/.ssh/config file and sees this entry to specify correct ssh private key to use when using its integrated git feature
-        identityFile = "~/.ssh/github-ed25519-yubikey321.key";
+        #identityFile = "~/.ssh/github-ed25519-yubikey321.key";
+        identityFile = "~/.ssh/chris-ed25519.key";
       };
     };
   };
