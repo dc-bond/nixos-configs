@@ -49,6 +49,9 @@
   programs.ssh = {
     enable = true;
     matchBlocks = {
+      "*" = {
+        identityFile = "~/.ssh/chris-ed25519-yubikey321.key";
+      };
       "opticon" = {
         hostname = "vpn.opticon.dev";
         user = "xixor";
