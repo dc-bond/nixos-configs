@@ -58,7 +58,7 @@
         port = 39800;
         identityFile = "~/.ssh/chris-ed25519-yubikey321.key";
       };
-      "git@github.com"= {
+      "github.com"= {
         identityFile = "~/.ssh/github-ed25519-yubikey321.key";
       };
     };
