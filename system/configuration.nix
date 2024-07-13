@@ -31,6 +31,7 @@
     (import ../scripts/rebuild.nix { inherit pkgs config; })
     age # encryption tool
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
+    wget # download tool
     brightnessctl # screen brightness application
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
     ddcutil # query and change monitor settings using DDC/CI and USB
