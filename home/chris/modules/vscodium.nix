@@ -56,7 +56,7 @@
       };
       "remote.SSH" = {
         "showLoginTerminal" = true;
-        "useLocalServer" = false;
+        "useLocalServer" = true;
         "configFile" = "/home/chris/.ssh/config";
       };
     };
