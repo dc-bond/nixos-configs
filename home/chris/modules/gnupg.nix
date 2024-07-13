@@ -36,7 +36,6 @@
     };
   };
 
-  #programs.ssh.addKeysToAgent = true; # add private keys to ssh-agent when used for authentication
   services.ssh-agent.enable = false; 
   
   #services.gpg-agent = {
