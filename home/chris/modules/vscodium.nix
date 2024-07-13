@@ -36,6 +36,7 @@
         #"enableCommitSigning" = true;
         "confirmSync" = false;
         "autofetch" = true;
+        "useIntegratedAskPass" = false;
       };
       "github" = {
         "gitProtocol" = "ssh";
