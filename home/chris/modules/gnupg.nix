@@ -2,9 +2,9 @@
 
 {
 
-  #home.packages = with pkgs; [
-  #  pinentry-rofi
-  #];
+  home.packages = with pkgs; [
+    pinentry-rofi
+  ];
 
   programs.gpg = {
     enable = true;
@@ -38,15 +38,24 @@
 
   services.ssh-agent.enable = false; 
   
-  #services.gpg-agent = {
-  #  enable = true; # this setting adds export GPG_TTY lines to user's .zshrc
-  #  enableSshSupport = true; # this setting adds 'gpg-connect-agent updatestartuptty /bye' to user's .zshrc
-  #  sshKeys = [ # adds keygrip identifier to .gnupg/sshcontrol file
-  #    "DB9ADBBE6FBD1F0E694AF25D012321D46E090E61"
-  #  ];
-  #  enableZshIntegration = true;
-  #  pinentryPackage = pkgs.pinentry-rofi; # when enabling rofi in a compositor
-  #  enableScDaemon = true;
+  services.gpg-agent = {
+    enable = true; # this setting adds export GPG_TTY lines to user's .zshrc
+    enableSshSupport = true; # this setting adds 'gpg-connect-agent updatestartuptty /bye' to user's .zshrc
+    sshKeys = [ # adds keygrip identifier to .gnupg/sshcontrol file
+      "DB9ADBBE6FBD1F0E694AF25D012321D46E090E61"
+    ];
+    enableZshIntegration = true;
+    pinentryPackage = pkgs.pinentry-rofi; # when enabling rofi in a compositor
+    enableScDaemon = true;
+  };
+
+  #programs.zsh = {
+  #  profileExtra = # added to zsh login/global shell (.zprofile)
+  #  ''
+  #    GPG_TTY="$(tty)"
+  #    export GPG_TTY
+  #    /nix/store/94sh4d6iv54y6zwdqjzdrs77zj1pzsq1-gnupg-2.4.5/bin/gpg-connect-agent updatestartuptty /bye > /dev/null
+  #  '';
   #};
 
 }
