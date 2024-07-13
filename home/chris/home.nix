@@ -58,12 +58,12 @@
         port = 39800;
         identityFile = "~/.ssh/chris-ed25519-yubikey321.key";
       };
-      "git@github.com" = {
-        hostname = "github.com";
-        user = "git";
-        port = 22;
-        identityFile = "~/.ssh/chris-ed25519-yubikey321.key";
-      };
+      #"git@github.com" = {
+      #  hostname = "github.com";
+      #  user = "git";
+      #  port = 22;
+      #  identityFile = "~/.ssh/chris-ed25519-yubikey321.key";
+      #};
     };
   };
 
