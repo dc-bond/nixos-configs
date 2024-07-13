@@ -13,7 +13,6 @@
       pkief.material-icon-theme
       signageos.signageos-vscode-sops
       ms-python.python
-      ms-vscode-remote.remote-ssh
     ];
     userSettings = {
       "files.autoSave" = "off";
