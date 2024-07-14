@@ -6,6 +6,8 @@ switch to built-in nix script for pywal-swww
 automatically clone pass repo
 printing
 
+
+passkeys?
 disk impermanence
 LUKS full disk encryption with yubikey
 PAM U2F with yubikey
