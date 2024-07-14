@@ -5,14 +5,6 @@ systemd-networkd wait online error
 switch to built-in nix script for pywal-swww
 automatically clone pass repo
 printing
-can't decrypt in vscode without pinenetry - move gpg wizardry to .zprofile instead of .zshrc for global application?
-
-
-
-
-
-
-
 
 disk impermanence
 LUKS full disk encryption with yubikey
