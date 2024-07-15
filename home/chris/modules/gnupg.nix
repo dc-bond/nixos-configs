@@ -2,10 +2,6 @@
 
 {
 
-  home.packages = with pkgs; [
-    pinentry-rofi
-  ];
-
   programs.gpg = {
     enable = true;
     homedir = "${config.home.homeDirectory}/.gnupg";
@@ -45,7 +41,7 @@
       "DB9ADBBE6FBD1F0E694AF25D012321D46E090E61"
     ];
     enableZshIntegration = true;
-    pinentryPackage = pkgs.pinentry-rofi; # when enabling rofi in a compositor
+    pinentryPackage = pkgs.pinentry-rofi; # when enabling rofi in a compositor, requires rofi.nix module active
     enableScDaemon = true;
   };
 
