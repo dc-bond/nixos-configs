@@ -58,7 +58,6 @@
         "swww-daemon"
         "dunst"
         "desktopReload"
-        #"~/nixos-configs/home/chris/dotfiles/hypr/pywal-swww.sh" # change to built-in script?
         "wl-paste --type text --watch cliphist store"
       ];      
       bind = [
@@ -94,7 +93,6 @@
         "$mod, 0, workspace, 10"
         "$mod, mouse_down, workspace, e+1"
         "$mod, mouse_up, workspace, e-1"
-        #"$mod SHIFT, R, exec, ~/nixos-configs/home/chris/dotfiles/hypr/pywal-swww.sh"
         "$mod SHIFT, R, exec, desktopReload"
         "$mod SHIFT, 1, movetoworkspace, 1"
         "$mod SHIFT, 2, movetoworkspace, 2"
