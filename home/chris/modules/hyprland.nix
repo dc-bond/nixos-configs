@@ -57,7 +57,8 @@
       exec-once = [
         "swww-daemon"
         "dunst"
-        "~/nixos-configs/home/chris/dotfiles/hypr/pywal-swww.sh" # change to built-in script?
+        "desktopReload"
+        #"~/nixos-configs/home/chris/dotfiles/hypr/pywal-swww.sh" # change to built-in script?
         "wl-paste --type text --watch cliphist store"
       ];      
       bind = [
@@ -93,7 +94,8 @@
         "$mod, 0, workspace, 10"
         "$mod, mouse_down, workspace, e+1"
         "$mod, mouse_up, workspace, e-1"
-        "$mod SHIFT, R, exec, ~/nixos-configs/home/chris/dotfiles/hypr/pywal-swww.sh"
+        #"$mod SHIFT, R, exec, ~/nixos-configs/home/chris/dotfiles/hypr/pywal-swww.sh"
+        "$mod SHIFT, R, exec, desktopReload"
         "$mod SHIFT, 1, movetoworkspace, 1"
         "$mod SHIFT, 2, movetoworkspace, 2"
         "$mod SHIFT, 3, movetoworkspace, 3"
@@ -193,12 +195,14 @@
         ];
       };
       dwindle = {
-        pseudotile = true;
-        preserve_split = true;
+        force_split = 2;
+        #pseudotile = true;
+        #preserve_split = true;
       };
       master = {
+        orientation = "left";
         allow_small_split = true;
-        new_on_top = false;
+        new_on_top = true;
       };
       gestures = {
         workspace_swipe = false;

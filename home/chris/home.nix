@@ -30,6 +30,7 @@
 
 # user-specific packages
   home.packages = with pkgs; [
+    (import ../../scripts/desktopReload.nix { inherit pkgs config; })
     eza # modern replacement for 'ls'
     pfetch # system info displayed on shell startup
     btop # system monitor
