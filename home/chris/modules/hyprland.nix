@@ -16,14 +16,13 @@
   ];
 
   home.packages = with pkgs; [
-    swww # animated wallpaper for wayland window managers\
-    #wlogout # wayland logout application
+    swww # animated wallpaper for wayland window managers
     pwvucontrol # pipewire audio volume control app
     pywal # color theme changer
     dunst # notification daemon
     #polkit-kde-agent # kde gui authentication agent
     #libnotify # library to support notification daemons
-    #xfce.xfce4-power-manager # laptop power manager
+    #xfce.xfce4-power-manager # laptop power manager - broken?
     #grim # wayland screenshot tool
     #slurp # wayland region selector
     #scrot # screenshot tool
@@ -33,7 +32,6 @@
     ##ffmpegthumbnailer
     #wlr-randr # wayland display setting tool for external monitors
     #autorandr # automatically select a display configuration based on connected devices
-    #bleachbit # disk cleaner
     wl-clipboard # wayland clipboard
     cliphist # wayland clipboard manager 
     wl-clip-persist # persist clipboard history after closing window
@@ -57,13 +55,12 @@
       exec-once = [
         "swww-daemon"
         "dunst"
-        "desktopReload"
+        "desktopReload" # nix script
         "wl-paste --type text --watch cliphist store"
       ];      
       bind = [
         "$mod, RETURN, exec, alacritty"
 	      "$mod, D, exec, rofi -show combi -combi-modes drun,run,ssh -modes combi"
-	      "$mod, C, exec, rofi -show calc -modi calc -no-show-match -no-sort" # not working
 	      "$mod, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
         "$mod, S, exec, ddcutil -d 1 setvcp D6 05 && systemctl suspend"
         "$mod, Q, killactive"
