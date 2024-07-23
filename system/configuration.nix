@@ -38,6 +38,8 @@
     i2c-tools # hardware interface tools required by ddcutil
     nvd # package version diff info for nix build operations
     nix-tree # table view of package dependencies
+    ethtool # network tools
+    unzip # utility to unzip directories
   ];
 
 # nix package manager related
@@ -98,20 +100,20 @@
     };
   };
 
-# enable and install fonts 
-  fonts = {
-    fontDir.enable = true;
-    packages = with pkgs; [
-      source-code-pro
-      source-sans-pro
-      (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
-        fonts = [
-          "SourceCodePro"
-          "DroidSansMono"
-        ];
-      })
-    ];
-  };
+## enable and install fonts 
+#  fonts = {
+#    fontDir.enable = true;
+#    packages = with pkgs; [
+#      source-code-pro
+#      source-sans-pro
+#      (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
+#        fonts = [
+#          "SourceCodePro"
+#          "DroidSansMono"
+#        ];
+#      })
+#    ];
+#  };
 
 # user setup
   users.users = {

@@ -36,6 +36,23 @@
     btop # system monitor
     glances # another system monitor
     nmap # network scanning
+    # fonts - 
+    source-code-pro
+    source-sans-pro
+    font-awesome
+    (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
+      fonts = [
+        "SourceCodePro"
+        "DroidSansMono"
+      ];
+    })
+    #fira-code
+    #fira-code-symbols
+    #liberation_ttf
+    #mplus-outline-fonts.githubRelease
+    #noto-fonts
+    #noto-fonts-emoji
+    #proggyfonts
   ];
 
 # pass

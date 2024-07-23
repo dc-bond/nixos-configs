@@ -150,7 +150,7 @@
     ''
       @import 'colors-waybar.css';
       * {
-          font-family: SauceCodePro Nerd Font;
+          font-family: "SauceCodePro Nerd Font", "Font Awesome 6 Free";
           border: none;
           min-height: 0;
       }

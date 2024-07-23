@@ -5,7 +5,7 @@ pkgs.writeShellScriptBin "desktopReload"
   # select random wallpaper and create color scheme
   wal -s -t -q -i ~/nixos-configs/home/chris/wallpaper/
   
-  ## load current pywal color scheme
+  # load current pywal color scheme
   source "$HOME/.cache/wal/colors.sh"
   
   # copy color file to waybar folder

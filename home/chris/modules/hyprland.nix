@@ -8,7 +8,7 @@
     ./rofi.nix
     ./waybar.nix
     ./gammastep.nix
-    #./nextcloud-client.nix
+    ./nextcloud-client.nix
     ./swaylock.nix
     #./wlogout.nix
     ./vscodium.nix
