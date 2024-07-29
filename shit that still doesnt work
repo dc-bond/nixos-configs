@@ -1,9 +1,13 @@
+cups docker printing
+automatically clone pass repo
+photo script on opticon requires yubikey?
+collabora docker
+yubikey updates
+
 git signing using gpg/yubikey
 vscodium no pinentry prompt
 termius ssh
 systemd-networkd wait online error
-automatically clone pass repo
-printing
 passkeys?
 disk impermanence
 LUKS full disk encryption with yubikey
