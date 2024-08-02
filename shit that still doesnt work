@@ -1,9 +1,12 @@
+bitwarden secrets?
 cups docker printing
-automatically clone pass repo
 photo script on opticon requires yubikey?
+overhaul nextcloud
 collabora docker
-yubikey updates
 
+yubikey not automatically being picked up on reboot
+screenlocker
+logout utility
 git signing using gpg/yubikey
 vscodium no pinentry prompt
 termius ssh
