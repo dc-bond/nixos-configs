@@ -4,8 +4,7 @@
 
 # system packages
   environment.systemPackages = with pkgs; [
-    yubikey-manager # provides ykman cli tool to manage settings on yubikey
-    yubioath-flutter # gui authenticator app/tool for yubikeys
+    yubikey-manager # provides 'ykman' cli tool to manage settings on yubikey
     pcsclite # smartcard reader tool
     libfido2 # provides library functionality for FIDO 2.0, including communication with a device over USB - required for websites to interface with the yubikey
   ];
