@@ -75,6 +75,10 @@
       efi.canTouchEfiVariables = true;
     };
     kernel.sysctl = { "vm.swappiness" = 30;};
+    initrd.preLVMCommands = 
+    ''
+      ${pkgs.kbd}/bin/setleds +num
+    '';
   };
 
 # enable i2c kernel module for ddcutil functionality

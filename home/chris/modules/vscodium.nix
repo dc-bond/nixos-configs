@@ -57,6 +57,8 @@
         "showLoginTerminal" = true;
         "useLocalServer" = false;
         "configFile" = "/home/chris/.ssh/config";
+        "autoForwardPorts" = false;
+        "autoForwardPortsSource" = "hybrid";
       };
     };
   };

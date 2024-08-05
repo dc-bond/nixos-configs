@@ -35,6 +35,7 @@
     wl-clipboard # wayland clipboard
     cliphist # wayland clipboard manager 
     wl-clip-persist # persist clipboard history after closing window
+    kcalc # calculator
   ];
 
   wayland.windowManager.hyprland = {
