@@ -28,6 +28,8 @@
     download = "${config.home.homeDirectory}/downloads";
   };
 
+  services.gnome-keyring.enable = true;
+
 # user-specific packages
   home.packages = with pkgs; [
     (import ../../scripts/desktopReload.nix { inherit pkgs config; })
@@ -36,6 +38,7 @@
     btop # system monitor
     glances # another system monitor
     nmap # network scanning
+    seahorse # frontend to gnome keyring
     # fonts - 
     source-code-pro
     source-sans-pro
