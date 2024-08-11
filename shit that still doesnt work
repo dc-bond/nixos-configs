@@ -1,10 +1,8 @@
-printing
 nextcloud client icon in waybar
 system keyring to store nextcloud-client login
 overhaul nextcloud
 collabora docker
 piKVM
-numlock on boot
 yubikey not automatically being picked up on reboot
 screenlocker
 logout utility
@@ -15,3 +13,4 @@ systemd-networkd wait online error
 disk impermanence
 LUKS full disk encryption with yubikey
 PAM U2F with yubikey
+printing color mode?

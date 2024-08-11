@@ -159,6 +159,27 @@
 # disable suspend on laptop lid close
   services.logind.lidSwitch = "ignore";
 
+# enable local printserver
+  services.printing = {
+    enable = true;
+    browsing = true;
+    drivers = [ pkgs.canon-cups-ufr2 ]; # provides canon printer drivers
+  };
+  hardware.printers = {
+    ensurePrinters = [
+      {
+        name = "Canon-MF741C743C"; # must manually set color mode to black & white?
+        location = "3rd Floor";
+        deviceUri = "socket://192.168.4.17";
+        model = "CNRCUPSMF741CZK.ppd";
+        ppdOptions = {
+          PageSize = "Letter";
+        };
+      }
+    ];
+    ensureDefaultPrinter = "Canon-MF741C743C";
+  };
+
 # set systemd file limit
   systemd.extraConfig = "DefaultLimitNOFILE=2048"; # defaults to 1024 if unset
 
