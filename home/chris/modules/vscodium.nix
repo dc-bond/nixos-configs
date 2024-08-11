@@ -53,6 +53,9 @@
         "cursorStyle" = "block";
         "cursorBlinking" = "solid";
       };
+      "remote" = {
+        "autoForwardPortsSource" = "hybrid";
+      };
       "remote.SSH" = {
         "showLoginTerminal" = true;
         "useLocalServer" = false;
