@@ -8,7 +8,7 @@
     ./rofi.nix
     ./waybar.nix
     ./gammastep.nix
-    ./nextcloud-client.nix
+    #./nextcloud-client.nix
     ./swaylock.nix
     #./wlogout.nix
     ./vscodium.nix
@@ -36,6 +36,7 @@
     cliphist # wayland clipboard manager 
     wl-clip-persist # persist clipboard history after closing window
     kcalc # calculator
+    nextcloud-client # nextcloud client
   ];
 
   wayland.windowManager.hyprland = {
@@ -58,6 +59,7 @@
         "dunst"
         "desktopReload" # nix script
         "wl-paste --type text --watch cliphist store"
+        "sleep 10 && nextcloud"
       ];      
       bind = [
         "$mod, RETURN, exec, alacritty"

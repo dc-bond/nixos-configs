@@ -28,7 +28,8 @@
     download = "${config.home.homeDirectory}/downloads";
   };
 
-  services.gnome-keyring.enable = true;
+## gnome keyring
+#  services.gnome-keyring.enable = true;
 
 # user-specific packages
   home.packages = with pkgs; [
@@ -38,7 +39,7 @@
     btop # system monitor
     glances # another system monitor
     nmap # network scanning
-    seahorse # frontend to gnome keyring
+    #seahorse # frontend to gnome keyring
     # fonts - 
     source-code-pro
     source-sans-pro
@@ -49,13 +50,6 @@
         "DroidSansMono"
       ];
     })
-    #fira-code
-    #fira-code-symbols
-    #liberation_ttf
-    #mplus-outline-fonts.githubRelease
-    #noto-fonts
-    #noto-fonts-emoji
-    #proggyfonts
   ];
 
 # pass

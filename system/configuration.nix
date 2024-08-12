@@ -40,6 +40,7 @@
     nix-tree # table view of package dependencies
     ethtool # network tools
     unzip # utility to unzip directories
+    #libsecret # secrets library for gnome keyring
   ];
 
 # nix package manager related
@@ -158,6 +159,9 @@
 
 # disable suspend on laptop lid close
   services.logind.lidSwitch = "ignore";
+
+## unlock gnome keyring for hyprland
+#  security.pam.services.hyprland.enableGnomeKeyring = true;
 
 # enable local printserver
   services.printing = {
