@@ -2,13 +2,13 @@
 
 {
 
-  imports = [
-    inputs.hyprland.nixosModules.default # imported from flake inputs
-  ];
+  #imports = [
+  #  inputs.hyprland.nixosModules.default # imported from flake inputs
+  #];
 
   programs.hyprland = {
     enable = true;
-    xwayland.enable = true; # defaults to true
+    #xwayland.enable = true; # defaults to true
   };
 
 }

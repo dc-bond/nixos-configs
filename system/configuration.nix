@@ -8,11 +8,11 @@
     ./modules/login.nix
     ./modules/yubikey.nix
     ./modules/networking.nix
-    ./modules/wireguard.nix
+    #./modules/wireguard.nix
     ./modules/sops.nix
     ./modules/sshd.nix
     ./modules/hyprland.nix
-    #./modules/printing.nix
+    ./modules/printing.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
@@ -53,8 +53,8 @@
       flake-registry = "";
       nix-path = config.nix.nixPath; # workaround for https://github.com/NixOS/nix/issues/9574
       # cachix for hyprland?
-      substituters = ["https://hyprland.cachix.org"];
-      trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
+      #substituters = ["https://hyprland.cachix.org"];
+      #trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
     };
     channel.enable = false; # disable channels because using flake
     registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs; # make flake registry match flake inputs
@@ -162,27 +162,6 @@
 
 ## unlock gnome keyring for hyprland
 #  security.pam.services.hyprland.enableGnomeKeyring = true;
-
-# enable local printserver
-  services.printing = {
-    enable = true;
-    browsing = true;
-    drivers = [ pkgs.canon-cups-ufr2 ]; # provides canon printer drivers
-  };
-  hardware.printers = {
-    ensurePrinters = [
-      {
-        name = "Canon-MF741C743C"; # must manually set color mode to black & white?
-        location = "3rd Floor";
-        deviceUri = "socket://192.168.4.17";
-        model = "CNRCUPSMF741CZK.ppd";
-        ppdOptions = {
-          PageSize = "Letter";
-        };
-      }
-    ];
-    ensureDefaultPrinter = "Canon-MF741C743C";
-  };
 
 # set systemd file limit
   systemd.extraConfig = "DefaultLimitNOFILE=2048"; # defaults to 1024 if unset
