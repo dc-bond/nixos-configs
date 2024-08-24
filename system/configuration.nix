@@ -17,8 +17,8 @@
 
 # allow configuration options for packages from the nixpkgs repo
   nixpkgs = {
-    overlays = [ # override default packages in nixpkgs repo, e.g. older versions, custom patched, etc.
-      outputs.overlays.unstable-packages
+    overlays = [
+      outputs.overlays.unstable-packages # import nixpkgs-unstable overlay
     ];
     config = {
       allowUnfree = true; # allow packages marked as proprietary/unfree
