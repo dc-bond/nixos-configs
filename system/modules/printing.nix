@@ -1,8 +1,7 @@
 { 
   pkgs, 
-  pkgs-unstable, 
   ... 
-  }: 
+}: 
 
 #let
 #  pkgs = import (builtins.fetchTarball {
@@ -18,7 +17,9 @@
   services.printing = {
     enable = true;
     browsing = true;
-    drivers = [ pkgs-unstable.canon-cups-ufr2 ]; # provides canon printer drivers
+    drivers = [ 
+      pkgs.unstable.canon-cups-ufr2 # canon printer drivers
+    ];
   };
 
   hardware.printers = {

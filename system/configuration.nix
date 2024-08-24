@@ -12,12 +12,13 @@
     ./modules/sops.nix
     ./modules/sshd.nix
     ./modules/hyprland.nix
-    #./modules/printing.nix
+    ./modules/printing.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
   nixpkgs = {
     overlays = [ # override default packages in nixpkgs repo, e.g. older versions, custom patched, etc.
+      outputs.overlays.unstable-packages
     ];
     config = {
       allowUnfree = true; # allow packages marked as proprietary/unfree
