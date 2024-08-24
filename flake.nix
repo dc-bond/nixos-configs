@@ -3,9 +3,11 @@
 
   inputs = {
     nixpkgs = {
-      #url = "github:NixOS/nixpkgs/nixos-unstable";
       url = "github:nixos/nixpkgs/nixos-24.05";
     };
+    #nixpkgs-unstable = {
+    #  url = "github:NixOS/nixpkgs/nixos-unstable";
+    #};
     home-manager = {
       #url = "github:nix-community/home-manager";
       url = "github:nix-community/home-manager/release-24.05";
@@ -20,13 +22,23 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, sops-nix, ... } @ inputs:
+  outputs = { 
+    self, 
+    nixpkgs, 
+    #nixpkgs-unstable, 
+    #hyprland,
+    home-manager, 
+    sops-nix, 
+    ... 
+    } @ inputs:
   let
     inherit (self) outputs;
   in {
     nixosConfigurations = {
       thinkpad = nixpkgs.lib.nixosSystem {
-        specialArgs = { inherit inputs outputs; };
+        specialArgs = { 
+          inherit inputs outputs;
+        };
         modules = [
           ./system/configuration.nix
           home-manager.nixosModules.home-manager
