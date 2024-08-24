@@ -14,3 +14,7 @@ disk impermanence
 LUKS full disk encryption with yubikey
 PAM U2F with yubikey
 printing color mode?
+
+git log
+git reset --hard <commit-id>
+git push --force # to update remote
