@@ -59,7 +59,7 @@
         "dunst"
         "desktopReload" # nix script
         "wl-paste --type text --watch cliphist store"
-        "sleep 10 && nextcloud"
+        #"sleep 10 && nextcloud"
       ];      
       bind = [
         "$mod, RETURN, exec, alacritty"
@@ -110,15 +110,21 @@
         "$mod SHIFT, down, resizeactive, 0 100"
       ];
       bindl = [
-        ", switch:on:Lid Switch,exec,hyprctl keyword monitor eDP-1, disable"
-        #", switch:off:Lid Switch,exec,hyprctl keyword monitor eDP-1, 1920x1080@60, 1920, 1"
-        ", switch:off:Lid Switch,exec,hyprctl keyword monitor eDP-1, 1920x1080@60, 0x0, 1"
+        ", switch:on:Lid Switch,exec,hyprctl keyword monitor desc:Chimei Innolux Corporation 0x14D4, disable"
+        ", switch:off:Lid Switch,exec,hyprctl keyword monitor desc:Chimei Innolux Corporation 0x14D4, preferred, auto-right, auto"
       ];
+      #monitor = [
+      #  "desc:ASUSTek COMPUTER INC ASUS VG32V 0x0001618C, preferred, 0x0, auto" # main 32" monitor
+      #  "desc:Chimei Innolux Corporation 0x14D4, preferred, auto-right, auto" # laptop screen
+      #  "desc:ASUSTek COMPUTER INC ASUS VG277Q1A S6LMTF106538, preferred, auto-left, auto, transform, 1" # secondary 27" vertical monitor
+      #];
       monitor = [
-        #"eDP-1, 1920x1080@60, 1920x0, 1"
-        "eDP-1, 1920x1080@60, 0x0, 1"
-        "DP-5, 2560x1440@100, 0x0, 1"
-        "DP-6, 2560x1440@100, 0x0, 1"
+        "desc:ASUSTek COMPUTER INC ASUS VG32V 0x0001618C, 2560x1440@60, 0x0, 1" # main 32" monitor
+        "desc:Chimei Innolux Corporation 0x14D4, 1920x1080@60, auto-right, 1" # laptop screen
+        "desc:ASUSTek COMPUTER INC ASUS VG277Q1A S6LMTF106538, 1920x1080@60, auto-left, 1, transform, 1" # secondary 27" vertical monitor
+      ];
+      workspace = [
+        "1, monitor:ASUSTek COMPUTER INC ASUS VG277Q1A S6LMTF106538, default:true, persistent:true" # make workspace 1 default to secondary 27" vertical monitor
       ];
       #environment = [
       #  #"XCURSOR_SIZE,16"
