@@ -1,4 +1,9 @@
-{ inputs, config, pkgs, ... }: 
+{ 
+  inputs, 
+  config, 
+  pkgs, 
+  ... 
+}: 
 
 {
   
@@ -7,7 +12,7 @@
     ./modules/gnupg.nix
     ./modules/neovim.nix
     ./modules/shell.nix
-    ./modules/hyprland.nix
+    #./modules/hyprland.nix
   ];
 
 # home-manager module settings
