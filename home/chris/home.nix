@@ -7,12 +7,19 @@
 
 {
   
-# module imports
   imports = [
     ./modules/gnupg.nix
     ./modules/neovim.nix
     ./modules/shell.nix
+    
     #./modules/hyprland.nix
+    ./modules/plasma.nix
+    ./modules/alacritty.nix
+    ./modules/gammastep.nix
+    ./modules/vscodium.nix
+    ./modules/firefox.nix
+    #./modules/rofi.nix
+    
   ];
 
 # home-manager module settings
@@ -44,7 +51,13 @@
     btop # system monitor
     glances # another system monitor
     nmap # network scanning
+
     #seahorse # frontend to gnome keyring
+    pwvucontrol # pipewire audio volume control app
+    dunst # notification daemon
+    xfce.thunar # file manager
+    filelight # disk usage visualizer
+    nextcloud-client # nextcloud local syncronization client
     # fonts - 
     source-code-pro
     source-sans-pro
