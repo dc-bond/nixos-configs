@@ -16,6 +16,11 @@
       "kcminputrc"."Libinput/5426/154/Razer ProClickM"."PointerAcceleration" = "-0.400"; # set mouse speed
       "kcminputrc"."Keyboard"."NumLock" = 0; # set numlock on when logging in
       "kcminputrc"."Keyboard"."RepeatDelay" = 200; # set keyboard repeat delay
+      # set fonts
+      "kdeglobals"."General"."font" = "SauceCodePro Nerd Font,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1";
+      "kdeglobals"."General"."menuFont" = "SauceCodePro Nerd Font,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1";
+      "kdeglobals"."General"."toolBarFont" = "SauceCodePro Nerd Font,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1";
+      "kwalletrc"."Wallet"."First Use" = false; # specify kwallet already has run
     };
     #cursor = {
     #  theme = "Bibata-Modern-Ice";

@@ -41,9 +41,6 @@
     download = "${config.home.homeDirectory}/downloads";
   };
 
-## gnome keyring
-#  services.gnome-keyring.enable = true;
-
 # user-specific packages
   home.packages = with pkgs; [
     (import ../../scripts/desktopReload.nix { inherit pkgs config; })
@@ -52,9 +49,7 @@
     btop # system monitor
     nmap # network scanning
 
-    #seahorse # frontend to gnome keyring
-    pwvucontrol # pipewire audio volume control app
-    dunst # notification daemon
+    #pwvucontrol # pipewire audio volume control app
     filelight # disk usage visualizer
     nextcloud-client # nextcloud local syncronization client
     # fonts - 
