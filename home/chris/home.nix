@@ -8,6 +8,7 @@
 {
   
   imports = [
+    inputs.plasma-manager.homeManagerModules.plasma-manager
     ./modules/gnupg.nix
     ./modules/neovim.nix
     ./modules/shell.nix
@@ -49,13 +50,11 @@
     eza # modern replacement for 'ls'
     pfetch # system info displayed on shell startup
     btop # system monitor
-    glances # another system monitor
     nmap # network scanning
 
     #seahorse # frontend to gnome keyring
     pwvucontrol # pipewire audio volume control app
     dunst # notification daemon
-    xfce.thunar # file manager
     filelight # disk usage visualizer
     nextcloud-client # nextcloud local syncronization client
     # fonts - 
@@ -112,11 +111,6 @@
       #user.signingkey = "~/.ssh/id_ed25519.pub";
     };
   };
-
-# symlink non-module package dotfiles
-  #home.file = {
-  #  #".sops.yaml".source = ./dotfiles/sops/.sops.yaml;
-  #};
 
 # start/re-start services after system rebuild
   systemd.user.startServices = "sd-switch";
