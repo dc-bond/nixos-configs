@@ -52,6 +52,7 @@
     #pwvucontrol # pipewire audio volume control app
     filelight # disk usage visualizer
     nextcloud-client # nextcloud local syncronization client
+    whitesur-cursors # macos cursor theme
     # fonts - 
     source-code-pro
     source-sans-pro
