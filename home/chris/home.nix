@@ -8,19 +8,22 @@
 {
   
   imports = [
-    inputs.plasma-manager.homeManagerModules.plasma-manager
     ./modules/gnupg.nix
     ./modules/neovim.nix
     ./modules/shell.nix
-    
-    #./modules/hyprland.nix
-    ./modules/plasma.nix
+
+    ./modules/hyprland.nix
+    #inputs.plasma-manager.homeManagerModules.plasma-manager
+    #./modules/plasma.nix
     ./modules/alacritty.nix
     ./modules/gammastep.nix
     ./modules/vscodium.nix
     ./modules/firefox.nix
-    #./modules/rofi.nix
-    
+    ./modules/theme.nix
+    ./modules/rofi.nix
+    ./modules/waybar.nix
+    #./modules/swaylock.nix
+    #./modules/wlogout.nix
   ];
 
 # home-manager module settings
@@ -43,16 +46,35 @@
 
 # user-specific packages
   home.packages = with pkgs; [
+    # low-level apps
     (import ../../scripts/desktopReload.nix { inherit pkgs config; })
     eza # modern replacement for 'ls'
     pfetch # system info displayed on shell startup
     btop # system monitor
     nmap # network scanning
 
-    #pwvucontrol # pipewire audio volume control app
+    #swww # animated wallpaper for wayland window managers
+    pywal # color theme changer
+    dunst # notification daemon
+    #polkit-kde-agent # kde gui authentication agent
+    #libnotify # library to support notification daemons
+    #xfce.xfce4-power-manager # laptop power manager - broken?
+    #grim # wayland screenshot tool
+    #slurp # wayland region selector
+    #scrot # screenshot tool
+    xfce.thunar # file manager
+    filelight # disk usage visualizer
+    #mupdf # pdf viewer
+    ##ffmpegthumbnailer
+    #wlr-randr # wayland display setting tool for external monitors
+    #autorandr # automatically select a display configuration based on connected devices
+    wl-clipboard # wayland clipboard
+    cliphist # wayland clipboard manager 
+    wl-clip-persist # persist clipboard history after closing window
+    kcalc # calculator
+    pwvucontrol # pipewire audio volume control app
     filelight # disk usage visualizer
     nextcloud-client # nextcloud local syncronization client
-    whitesur-cursors # macos cursor theme
     # fonts - 
     source-code-pro
     source-sans-pro

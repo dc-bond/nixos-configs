@@ -6,43 +6,6 @@
 
 {
 
-  imports = [
-    ./theme.nix
-    ./alacritty.nix
-    ./rofi.nix
-    ./waybar.nix
-    ./gammastep.nix
-    #./nextcloud-client.nix
-    #./swaylock.nix
-    #./wlogout.nix
-    ./vscodium.nix
-    ./firefox.nix
-  ];
-
-  home.packages = with pkgs; [
-    swww # animated wallpaper for wayland window managers
-    pwvucontrol # pipewire audio volume control app
-    pywal # color theme changer
-    dunst # notification daemon
-    #polkit-kde-agent # kde gui authentication agent
-    #libnotify # library to support notification daemons
-    #xfce.xfce4-power-manager # laptop power manager - broken?
-    #grim # wayland screenshot tool
-    #slurp # wayland region selector
-    #scrot # screenshot tool
-    xfce.thunar # file manager
-    filelight # disk usage visualizer
-    #mupdf # pdf viewer
-    ##ffmpegthumbnailer
-    #wlr-randr # wayland display setting tool for external monitors
-    #autorandr # automatically select a display configuration based on connected devices
-    wl-clipboard # wayland clipboard
-    cliphist # wayland clipboard manager 
-    wl-clip-persist # persist clipboard history after closing window
-    kcalc # calculator
-    nextcloud-client # nextcloud client
-  ];
-
   wayland.windowManager.hyprland = {
     enable = true;
     extraConfig = 
@@ -135,10 +98,10 @@
       #source = [
       #  "~/.cache/wal/colors-hyprland.conf" # not working
       #];
-      windowrule = [
-        "float,^(pavucontrol)$"
-        "float,^(blueman-manager)$" # not working
-      ];
+      #windowrule = [
+      #  "float,^(pavucontrol)$"
+      #  "float,^(blueman-manager)$" # not working
+      #];
       input = {
         kb_layout = "us";
         numlock_by_default = true;
