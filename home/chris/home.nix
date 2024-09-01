@@ -68,8 +68,8 @@
     #wl-clipboard # wayland clipboard
     #cliphist # wayland clipboard manager 
     #wl-clip-persist # persist clipboard history after closing window
-    #kcalc # calculator
     #pwvucontrol # pipewire audio volume control app
+    whitesur-cursors # macos cursor theme
     nextcloud-client # nextcloud local syncronization client
     # fonts - 
     source-code-pro
