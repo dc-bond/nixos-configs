@@ -60,7 +60,7 @@
     #slurp # wayland region selector
     #scrot # screenshot tool
     #xfce.thunar # file manager
-    filelight # disk usage visualizer
+    #filelight # disk usage visualizer
     #mupdf # pdf viewer
     ##ffmpegthumbnailer
     #wlr-randr # wayland display setting tool for external monitors
