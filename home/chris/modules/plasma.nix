@@ -63,7 +63,8 @@
       lookAndFeel = "org.kde.breezedark.desktop";
     };
     configFile = {
-      #"kcminputrc"."Libinput/5426/154/Razer ProClickM"."PointerAcceleration" = "-0.400"; # set mouse speed
+      "kcminputrc"."Libinput/5426/154/Razer ProClickM"."PointerAcceleration" = "-0.400"; # set mouse speed
+      "kwinrc"."Windows"."Placement" = "Maximizing"; # automatically open all windows maximized by default
     };
     #iconTheme = "Papirus-Dark";
     };
