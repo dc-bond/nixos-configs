@@ -14,20 +14,20 @@
         repeatRate = 25.0;
         numlockOnStartup = "on";
       };
-      mice = [
-        {
-          acceleration = -0.5;
-          accelerationProfile = "default";
-          enable = true;
-          leftHanded = false;
-          middleButtonEmulation = false;
-          name = "Razer ProClickM";
-          naturalScroll = false;
-          productId = "009a";
-          scrollSpeed = 1;
-          vendorId = "1532";
-        }
-      ];
+      #mice = [
+      #  {
+      #    acceleration = -0.5;
+      #    accelerationProfile = "default";
+      #    enable = true;
+      #    leftHanded = false;
+      #    middleButtonEmulation = false;
+      #    name = "Razer ProClickM";
+      #    naturalScroll = false;
+      #    productId = "009a";
+      #    scrollSpeed = 1;
+      #    vendorId = "1532";
+      #  }
+      #];
     };
     kwin = {
       nightLight = {
