@@ -14,20 +14,20 @@
         repeatRate = 25.0;
         numlockOnStartup = "on";
       };
-      #mice = [
-      #  {
-      #    acceleration = 0.5;
-      #    accelerationProfile = "none";
-      #    enable = true;
-      #    leftHanded = false;
-      #    middleButtonEmulation = false;
-      #    name = "Logitech G403 HERO Gaming Mouse";
-      #    naturalScroll = false;
-      #    productId = "c08f";
-      #    scrollSpeed = 1;
-      #    vendorId = "046d";
-      #  }
-      #]
+      mice = [
+        {
+          acceleration = -0.5;
+          accelerationProfile = "default";
+          enable = true;
+          leftHanded = false;
+          middleButtonEmulation = false;
+          name = "Razer ProClickM";
+          naturalScroll = false;
+          productId = "009a";
+          scrollSpeed = 1;
+          vendorId = "1532";
+        }
+      ];
     };
     kwin = {
       nightLight = {
@@ -63,11 +63,7 @@
       lookAndFeel = "org.kde.breezedark.desktop";
     };
     configFile = {
-      "kcminputrc"."Libinput/5426/154/Razer ProClickM"."PointerAcceleration" = "-0.400"; # set mouse speed
-      "kdeglobals"."General"."font" = "SauceCodePro Nerd Font,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1";
-      "kdeglobals"."General"."menuFont" = "SauceCodePro Nerd Font,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1";
-      "kdeglobals"."General"."toolBarFont" = "SauceCodePro Nerd Font,10,-1,5,400,0,0,0,0,0,0,0,0,0,0,1";
-      "kwalletrc"."Wallet"."First Use" = false; # specify kwallet already has run
+      #"kcminputrc"."Libinput/5426/154/Razer ProClickM"."PointerAcceleration" = "-0.400"; # set mouse speed
     };
     #iconTheme = "Papirus-Dark";
     };

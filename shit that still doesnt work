@@ -1,20 +1,13 @@
 printing color mode?
-nextcloud client icon in waybar
-system keyring to store nextcloud-client login
 overhaul nextcloud
 collabora docker
 piKVM
 yubikey not automatically being picked up on reboot
-screenlocker
-logout utility
 git signing using gpg/yubikey
-vscodium no pinentry prompt
-termius ssh
 systemd-networkd wait online error
 disk impermanence
 LUKS full disk encryption with yubikey
 PAM U2F with yubikey
-printing color mode?
 
 git log
 git reset --hard <commit-id>
