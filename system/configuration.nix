@@ -11,14 +11,14 @@
   
   imports = [
     ./hardware-configuration.nix
-    #./modules/login.nix
+    ./modules/login.nix
     ./modules/yubikey.nix
     ./modules/networking.nix
     #./modules/wireguard.nix
     ./modules/sops.nix
     ./modules/sshd.nix
-    #./modules/hyprland.nix
-    ./modules/plasma.nix
+    ./modules/hyprland.nix
+    #./modules/plasma.nix
     ./modules/printing.nix
   ];
 

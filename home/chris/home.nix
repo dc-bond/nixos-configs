@@ -11,16 +11,16 @@
     ./modules/gnupg.nix
     ./modules/neovim.nix
     ./modules/shell.nix
-    #./modules/hyprland.nix
-    inputs.plasma-manager.homeManagerModules.plasma-manager
-    ./modules/plasma.nix
+    ./modules/hyprland.nix
+    #inputs.plasma-manager.homeManagerModules.plasma-manager
+    #./modules/plasma.nix
     ./modules/alacritty.nix
-    #./modules/gammastep.nix
+    ./modules/gammastep.nix
     ./modules/vscodium.nix
     ./modules/firefox.nix
-    #./modules/theme.nix
-    #./modules/rofi.nix
-    #./modules/waybar.nix
+    ./modules/theme.nix
+    ./modules/rofi.nix
+    ./modules/waybar.nix
     #./modules/swaylock.nix
     #./modules/wlogout.nix
   ];
@@ -45,7 +45,7 @@
 
 # user-specific packages
   home.packages = with pkgs; [
-    #(import ../../scripts/desktopReload.nix { inherit pkgs config; }) # for hyprland
+    (import ../../scripts/desktopReload.nix { inherit pkgs config; }) # for hyprland
     eza # modern replacement for 'ls'
     pfetch # system info displayed on shell startup
     btop # system monitor

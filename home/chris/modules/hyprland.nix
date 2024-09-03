@@ -81,13 +81,8 @@
         ", switch:off:Lid Switch,exec,hyprctl keyword monitor desc:Chimei Innolux Corporation 0x14D4, 1920x1080@60, auto-right, 1" # when laptop lid is open, enable laptop screen and put it to the right of 32" external monitor
       ];
       monitor = [
-        "desc:ASUSTek COMPUTER INC ASUS VG32V 0x0001618C, 2560x1440@60, 0x0, 1" # main 32" monitor
-        #"desc:ASUSTek COMPUTER INC ASUS VG32V 0x0001618C, 2560x1440@100, 0x0, 1" # main 32" monitor
+        "desc:ASUSTek COMPUTER INC ASUS VG32V 0x0001618C, 2560x1440@100, 0x0, 1" # main 32" monitor
         "desc:Chimei Innolux Corporation 0x14D4, 1920x1080@60, auto-right, 1" # laptop screen
-        "desc:ASUSTek COMPUTER INC ASUS VG277Q1A S6LMTF106538, 1920x1080@60, auto-left, 1, transform, 1" # secondary 27" vertical monitor
-      ];
-      workspace = [
-        "1, monitor:ASUSTek COMPUTER INC ASUS VG277Q1A S6LMTF106538, default:true, persistent:true" # make workspace 1 default to secondary 27" vertical monitor
       ];
       #environment = [
       #  #"XCURSOR_SIZE,16"
