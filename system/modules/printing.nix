@@ -23,6 +23,7 @@
         model = "CNRCUPSMF741CZK.ppd";
         ppdOptions = {
           PageSize = "Letter";
+          CNColorMode = "mono"; # set default to black/white, other option is "color"
         };
       }
     ];
