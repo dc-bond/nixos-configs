@@ -19,6 +19,7 @@
         "hyprland/workspaces"
       ];
       "modules-right" = [
+        "tray"
 	      "temperature"
 	      "backlight" # not working
 	      "cpu"
@@ -51,6 +52,10 @@
           "9" = "9";
           "10" = "10";
         };
+      };
+      "tray" = {
+        "icon_size" = 18;
+	      "spacing" = 10;
       };
       "clock" = {
         "timezone" = "America/New_York";
@@ -290,6 +295,11 @@
           background-color: #000000;
       }
       #backlight {
+          color: #ffffff;
+          font-size: 14px;
+          padding: 1px 10px 1px 10px;
+      }
+      #tray {
           color: #ffffff;
           font-size: 14px;
           padding: 1px 10px 1px 10px;
