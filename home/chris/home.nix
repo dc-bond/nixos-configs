@@ -50,16 +50,16 @@
     pfetch # system info displayed on shell startup
     btop # system monitor
     nmap # network scanning
-    #swww # animated wallpaper for wayland window managers
-    #pywal # color theme changer
-    #dunst # notification daemon
+    swww # animated wallpaper for wayland window managers
+    pywal # color theme changer
+    dunst # notification daemon
     #polkit-kde-agent # kde gui authentication agent
     #libnotify # library to support notification daemons
     #xfce.xfce4-power-manager # laptop power manager - broken?
     #grim # wayland screenshot tool
     #slurp # wayland region selector
     #scrot # screenshot tool
-    #xfce.thunar # file manager
+    xfce.thunar # file manager
     #filelight # disk usage visualizer
     #mupdf # pdf viewer
     ##ffmpegthumbnailer
