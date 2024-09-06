@@ -87,11 +87,8 @@
         "desc:ASUSTek COMPUTER INC ASUS VG32V 0x0001618C, 2560x1440@100, 0x0, 1" # main 32" monitor
         "desc:Chimei Innolux Corporation 0x14D4, 1920x1080@60, auto-right, 1" # laptop screen
       ];
-      environment = [
-        "SSH_AUTH_SOCK=/run/user/1000/gnupg/S.gpg-agent.ssh"
-      #  "EDITOR,nvim"
-      #  "VISUAL=nvim"
-      #  "TERM=xterm-256color"
+      env = [
+        "SSH_AUTH_SOCK,/run/user/1000/gnupg/S.gpg-agent.ssh"
       ];
       #source = [
       #  "~/.cache/wal/colors-hyprland.conf" # not working
