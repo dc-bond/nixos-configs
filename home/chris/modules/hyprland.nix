@@ -26,7 +26,10 @@
         "dunst"
         "desktopReload" # nix script
         "wl-paste --type text --watch cliphist store"
-        #"sleep 10 && nextcloud"
+        #"workspace 1 silent firefox"
+        #"workspace 2 silent alacritty"
+        #"workspace 3 silent codium" 
+        #"workspace 10 silent nextcloud"
       ];      
       bind = [
         "$mod, RETURN, exec, alacritty"
