@@ -61,7 +61,7 @@
     #scrot # screenshot tool
     xfce.thunar # file manager
     #filelight # disk usage visualizer
-    #mupdf # pdf viewer
+    zathura # barebones pdf viewer
     ##ffmpegthumbnailer
     #wlr-randr # wayland display setting tool for external monitors
     #autorandr # automatically select a display configuration based on connected devices
