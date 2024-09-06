@@ -24,12 +24,12 @@
       exec-once = [
         "swww-daemon"
         "dunst"
+        "sleep 1 && firefox"
+        "sleep 2 && alacritty"
+        #"sleep 3 && codium"
+        #"sleep 4 && nextcloud"
         "desktopReload" # nix script
-        "wl-paste --type text --watch cliphist store"
-        #"workspace 1 silent firefox"
-        #"workspace 2 silent alacritty"
-        #"workspace 3 silent codium" 
-        #"workspace 10 silent nextcloud"
+        #"wl-paste --type text --watch cliphist store"
       ];      
       bind = [
         "$mod, RETURN, exec, alacritty"
@@ -87,19 +87,25 @@
         "desc:ASUSTek COMPUTER INC ASUS VG32V 0x0001618C, 2560x1440@100, 0x0, 1" # main 32" monitor
         "desc:Chimei Innolux Corporation 0x14D4, 1920x1080@60, auto-right, 1" # laptop screen
       ];
-      #environment = [
-      #  #"XCURSOR_SIZE,16"
+      environment = [
+        "SSH_AUTH_SOCK=/run/user/1000/gnupg/S.gpg-agent.ssh"
       #  "EDITOR,nvim"
       #  "VISUAL=nvim"
       #  "TERM=xterm-256color"
-      #];
+      ];
       #source = [
       #  "~/.cache/wal/colors-hyprland.conf" # not working
       #];
-      #windowrule = [
-      #  "float,^(pavucontrol)$"
-      #  "float,^(blueman-manager)$" # not working
-      #];
+      windowrulev2 = [
+        #"bordercolor rgb(FF0000) rgb(880808), fullscreen:1" # set bordercolor to red if window is fullscreen
+      ];
+      windowrule = [
+        "workspace 1 silent, firefox"
+        "workspace 2 silent, alacritty"
+        #"workspace 3 silent, codium"
+        #"workspace 10 silent, nextcloud"
+        #"float, ^(blueman-manager)$" # not working
+      ];
       input = {
         kb_layout = "us";
         numlock_by_default = true;
