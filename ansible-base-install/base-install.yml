@@ -112,12 +112,12 @@
     - name: turn on swap
       ansible.builtin.command: swapon /mnt/.swapfile
 
-    - name: clone repository
-      ansible.builtin.git:
-        repo: https://github.com/dc-bond/nixos-configs.git
-        dest: /mnt/nixos-configs
-        clone: yes
-        update: yes
+#    - name: clone repository
+#      ansible.builtin.git:
+#        repo: https://github.com/dc-bond/nixos-configs.git
+#        dest: /mnt/nixos-configs
+#        clone: yes
+#        update: yes
 
 #    - name: run installation
 #      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad
