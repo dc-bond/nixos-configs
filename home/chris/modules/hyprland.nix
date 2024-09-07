@@ -34,16 +34,15 @@
       bind = [
         "$mod, RETURN, exec, alacritty"
 	      "$mod, D, exec, rofi -show combi -combi-modes drun,run,ssh -modes combi"
-	      "$mod, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+	      #"$mod, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
         "$mod, S, exec, ddcutil -d 1 setvcp D6 05 && systemctl suspend"
         "$mod, Q, killactive"
         "$mod, F, fullscreen"
         "$mod, T, togglefloating"
-        "$mod, J, togglesplit"
-        "$mod, left, movefocus, l"
-        "$mod, right, movefocus, r"
-        "$mod, up, movefocus, u"
-        "$mod, down, movefocus, d"
+        "$mod, h, movefocus, l"
+        "$mod, l, movefocus, r"
+        "$mod, k, movefocus, u"
+        "$mod, j, movefocus, d"
         "$mod, F1, exec, ddcutil -d 1 setvcp 60 0x11" # switch monitor input to HDMI1 (work computer)
         "$mod, F2, exec, ddcutil -d 1 setvcp 60 0x12" # switch monitor input to HDMI2 (thinkpad)
         "$mod, F3, exec, ddcutil -d 1 setvcp 60 0x0f" # switch monitor input to DP1(opticon)
@@ -78,6 +77,14 @@
         "$mod SHIFT, left, resizeactive, -100 0"
         "$mod SHIFT, up, resizeactive, 0 -100"
         "$mod SHIFT, down, resizeactive, 0 100"
+        "$mod SHIFT, h, movewindow, l"
+        "$mod SHIFT, l, movewindow, r"
+        "$mod SHIFT, k, movewindow, u"
+        "$mod SHIFT, j, movewindow, d"
+      ];
+      bindm = [
+        "$mod, mouse:272, movewindow"
+        "$mod, mouse:273, resizewindow"
       ];
       bindl = [
         ", switch:on:Lid Switch,exec,hyprctl keyword monitor desc:Chimei Innolux Corporation 0x14D4, disable" # when laptop lid is closed, disable laptop screen
@@ -95,12 +102,16 @@
       #];
       windowrulev2 = [
         #"bordercolor rgb(FF0000) rgb(880808), fullscreen:1" # set bordercolor to red if window is fullscreen
+        "size 1154 706, class:(com.saivert.pwvucontrol)"
+        "size 451 607, class:(org.gnome.Calculator)"
       ];
       windowrule = [
         "workspace 1 silent, firefox"
         "workspace 2 silent, alacritty"
         #"workspace 3 silent, codium" # opening on workspace 2 for some reason
-        #"float, ^(blueman-manager)$" # not working
+        "float, ^(com.saivert.pwvucontrol)$"
+        "float, ^(org.gnome.Calculator)$"
+        "float, ^(com.nextcloud.desktopclient.nextcloud)$"
       ];
       input = {
         kb_layout = "us";
