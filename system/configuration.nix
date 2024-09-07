@@ -12,6 +12,7 @@
   imports = [
     ./hardware-configuration.nix
     #./modules/login.nix
+    ./modules/audio.nix
     ./modules/yubikey.nix
     ./modules/networking.nix
     #./modules/wireguard.nix
@@ -100,19 +101,6 @@
   hardware.bluetooth = {
     enable = true;
     powerOnBoot = true;
-  };
-
-# sound
-  security.rtkit.enable = true; # RealtimeKit system service, which hands out realtime scheduling priority to user processes on demand
-  services.pipewire = {
-    enable = true;
-    audio.enable = true;
-    pulse.enable = true;
-    wireplumber.enable = true;
-    alsa = {
-      enable = true;
-      support32Bit = true;
-    };
   };
 
 ## enable and install fonts 

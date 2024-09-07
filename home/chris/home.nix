@@ -53,15 +53,14 @@
     swww # animated wallpaper for wayland window managers
     pywal # color theme changer
     dunst # notification daemon
-    #polkit-kde-agent # kde gui authentication agent
     #libnotify # library to support notification daemons
-    #xfce.xfce4-power-manager # laptop power manager - broken?
     #grim # wayland screenshot tool
     #slurp # wayland region selector
     #scrot # screenshot tool
     xfce.thunar # file manager
     gnome.gnome-calculator # calculator
-    #filelight # disk usage visualizer
+    loupe # image viewer
+    filelight # disk usage visualizer
     zathura # barebones pdf viewer
     ##ffmpegthumbnailer
     #wlr-randr # wayland display setting tool for external monitors
@@ -69,7 +68,6 @@
     #wl-clipboard # wayland clipboard
     #cliphist # wayland clipboard manager 
     #wl-clip-persist # persist clipboard history after closing window
-    #pwvucontrol # pipewire audio volume control app
     whitesur-cursors # macos cursor theme
     nextcloud-client # nextcloud local syncronization client
     # fonts - 
