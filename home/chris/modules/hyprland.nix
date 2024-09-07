@@ -99,8 +99,7 @@
       windowrule = [
         "workspace 1 silent, firefox"
         "workspace 2 silent, alacritty"
-        #"workspace 3 silent, codium"
-        #"workspace 10 silent, nextcloud"
+        #"workspace 3 silent, codium" # opening on workspace 2 for some reason
         #"float, ^(blueman-manager)$" # not working
       ];
       input = {

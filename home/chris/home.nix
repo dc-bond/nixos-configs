@@ -60,6 +60,7 @@
     #slurp # wayland region selector
     #scrot # screenshot tool
     xfce.thunar # file manager
+    gnome.gnome-calculator # calculator
     #filelight # disk usage visualizer
     zathura # barebones pdf viewer
     ##ffmpegthumbnailer
