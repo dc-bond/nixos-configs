@@ -70,16 +70,15 @@
     #wl-clip-persist # persist clipboard history after closing window
     whitesur-cursors # macos cursor theme
     nextcloud-client # nextcloud local syncronization client
-    # fonts - 
-    source-code-pro
-    source-sans-pro
-    font-awesome
-    (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
-      fonts = [
-        "SourceCodePro"
-        "DroidSansMono"
-      ];
-    })
+    #source-code-pro
+    #source-sans-pro
+    #font-awesome
+    #(pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
+    #  fonts = [
+    #    "SourceCodePro"
+    #    "DroidSansMono"
+    #  ];
+    #})
   ];
 
 # pass

@@ -13,6 +13,7 @@
     ./hardware-configuration.nix
     #./modules/login.nix
     ./modules/audio.nix
+    ./modules/fonts.nix
     ./modules/yubikey.nix
     ./modules/networking.nix
     #./modules/wireguard.nix
@@ -102,21 +103,6 @@
     enable = true;
     powerOnBoot = true;
   };
-
-## enable and install fonts 
-#  fonts = {
-#    fontDir.enable = true;
-#    packages = with pkgs; [
-#      source-code-pro
-#      source-sans-pro
-#      (pkgs.nerdfonts.override { # override installing the entire nerdfonts repo and only install specified fonts from the nerdfonts repo
-#        fonts = [
-#          "SourceCodePro"
-#          "DroidSansMono"
-#        ];
-#      })
-#    ];
-#  };
 
 # user setup
   users.users = {
