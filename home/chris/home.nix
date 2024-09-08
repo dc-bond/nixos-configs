@@ -18,6 +18,7 @@
     ./modules/gammastep.nix
     ./modules/vscodium.nix
     ./modules/firefox.nix
+    ./modules/thunar.nix
     ./modules/theme.nix
     ./modules/rofi.nix
     ./modules/waybar.nix
@@ -56,7 +57,6 @@
     #grim # wayland screenshot tool
     #slurp # wayland region selector
     #scrot # screenshot tool
-    xfce.thunar # file manager
     gnome.gnome-calculator # calculator
     loupe # image viewer
     filelight # disk usage visualizer
