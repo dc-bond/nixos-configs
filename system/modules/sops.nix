@@ -14,10 +14,6 @@
     defaultSopsFile = ../../secrets.yaml;
     defaultSopsFormat = "yaml";
     validateSopsFiles = false;
-    #gnupg = {
-    #  home = "~/.gnupg";
-    #  sshKeyPaths = [ ];
-    #};
     age = {
       sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
       generateKey = true; # automatically generate age keypair if doesn't exist in above location

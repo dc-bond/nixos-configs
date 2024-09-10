@@ -11,3 +11,5 @@ creation_rules: # when sops creates/edits a secrets.yaml file it encrypts using 
         - *chris 
         age:
         - *thinkpad
+
+# host-specific age keys (derived from ssh key in /etc/ssh) are stale after new installation, so must 1) re-run ssh-to-age on new host ssh public key, 2) copy new age public key into this .sops.yaml file, and 3) run 'sops updatekeys secrets.yaml' on the encrypted secrets file to update with new host encryption
