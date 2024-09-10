@@ -17,6 +17,7 @@
     ./modules/users.nix
     ./modules/networking.nix
     ./modules/wireguard.nix
+    ./modules/keyring.nix
     ./modules/sops.nix
     ./modules/sshd.nix
     ./modules/thunar.nix
@@ -126,9 +127,6 @@
 
 # disable suspend on laptop lid close
   services.logind.lidSwitch = "ignore";
-
-## unlock gnome keyring for hyprland
-#  security.pam.services.hyprland.enableGnomeKeyring = true;
 
 # set systemd file limit
   systemd.extraConfig = "DefaultLimitNOFILE=2048"; # defaults to 1024 if unset

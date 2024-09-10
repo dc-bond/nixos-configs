@@ -18,6 +18,8 @@ in
     package = pkgs.unstable.hyprland;
   };
 
+  #security.pam.services.hyprland.enableGnomeKeyring = true;
+
   services.greetd = {
     enable = true;
     settings = {

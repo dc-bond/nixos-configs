@@ -6,17 +6,13 @@
 
 {
 
-  sops = {
-    secrets = {
-      chris-passwd = {};
-    };
-  };
+  sops.secrets.chris-passwd.neededForUsers = true;
 
   users.users = {
     chris = {
       isNormalUser = true;
       #initialPassword = "changeme";
-      hashedPasswordFile = config.sops.secrets.chris-passwd.path;
+      hashedPasswordFile = config.sops.secrets.chris-passwd.path; # create hashed password with 'echo "changeme" | mkpasswd -s'
       extraGroups = [
         "wheel" 
         "i2c" # for controlling i2c/ddcutil
