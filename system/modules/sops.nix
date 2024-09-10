@@ -19,9 +19,9 @@
     #  sshKeyPaths = [ ];
     #};
     age = {
-      #sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ]; # sops picks this up by default automatically
-      keyFile = "/home/chris/.config/sops/age/keys.txt"; # sops/age will use private age key in this location to decrypt secrets.yaml that had previously been encrypted with age using its corresponding public age key
-      #generateKey = true; # automatically generate age keypair if doesn't exist in above location
+      sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+      generateKey = true; # automatically generate age keypair if doesn't exist in above location
+      #keyFile = ""; # sops/age will use private age key in this location to decrypt secrets.yaml that had previously been encrypted with age using its corresponding public age key
     };
     secrets = { # output to /run/secrets/...
       test = {};
