@@ -1,0 +1,9 @@
+keys:
+  - &chris: age1v8f2gdg7937aw8je7ct8f0kg34f7fnuzf254vvvrmefh0yhrjawqq8y35n # public age key for chris
+
+creation_rules:
+  - path_regex: secrets.(yaml|json|env|ini)$ # for any files in the same directory where this .sops.yaml file is located, which are named 'secrets.yaml/json/env/ini', than --
+    key_groups:
+      - age: 
+        - *chris # -- encrypt said file so that only chris' public age key can decrypt (but how does it know to use chris' private age key file???) 
+

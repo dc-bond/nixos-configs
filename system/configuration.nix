@@ -17,7 +17,7 @@
     ./modules/yubikey.nix
     ./modules/networking.nix
     #./modules/wireguard.nix
-    ./modules/sops.nix
+    #./modules/sops.nix
     ./modules/sshd.nix
     ./modules/thunar.nix
     ./modules/hyprland.nix
