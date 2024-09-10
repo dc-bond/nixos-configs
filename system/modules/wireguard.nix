@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }: 
+{ 
+  lib, 
+  config, 
+  pkgs, 
+  ... 
+}: 
 
 let
   wgIpv4 = "172.22.1.6/32";
