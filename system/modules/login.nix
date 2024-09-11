@@ -11,12 +11,10 @@ in
 
 {
 
-  #security.pam.services.login.enableGnomeKeyring = true;
-
   services.greetd = {
     enable = true;
     settings = {
-      #initial_session = {
+      #initial_session = { # this bit automatically logs in, but breaks automatic unlocking of gnome-keyring
       #  command = "${session}";
       #  user = "${username}";
       #};

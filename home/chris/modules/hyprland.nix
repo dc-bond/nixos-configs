@@ -22,13 +22,14 @@
     settings = {
       "$mod" = "Alt";
       exec-once = [
+        "desktopReload" # nix script
         "swww-daemon"
         "dunst"
-        "sleep 1 && firefox"
-        "sleep 2 && alacritty"
-        "sleep 3 && codium"
-        "sleep 4 && nextcloud"
-        "desktopReload" # nix script
+        "[workspace 1 silent] firefox"
+        "[workspace 2 silent] alacritty"
+        #"[workspace 3 silent] codium"
+        "[workspace 3 silent] ${pkgs.vscodium}/bin/codium"
+        "sleep 5 && nextcloud"
         #"wl-paste --type text --watch cliphist store"
       ];      
       bind = [
@@ -63,6 +64,7 @@
         "$mod, mouse_down, workspace, e+1"
         "$mod, mouse_up, workspace, e-1"
         "$mod SHIFT, R, exec, desktopReload"
+        "$mod SHIFT, Q, exec, ${pkgs.wlogout}/bin/wlogout"
         "$mod SHIFT, 1, movetoworkspace, 1"
         "$mod SHIFT, 2, movetoworkspace, 2"
         "$mod SHIFT, 3, movetoworkspace, 3"
@@ -106,9 +108,6 @@
         "size 451 607, class:(org.gnome.Calculator)"
       ];
       windowrule = [
-        "workspace 1 silent, firefox"
-        "workspace 2 silent, alacritty"
-        #"workspace 3 silent, codium" # opening on workspace 2 for some reason
         "float, ^(com.saivert.pwvucontrol)$"
         "float, ^(org.gnome.Calculator)$"
         "float, ^(com.nextcloud.desktopclient.nextcloud)$"
