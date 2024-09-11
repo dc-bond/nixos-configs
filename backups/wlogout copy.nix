@@ -13,6 +13,7 @@ in
     enable = true;
     layout = [
      { label = "lock"; action = lockAction; text = "Lock"; keybind = "l"; }
+     { label = "hibernate"; action = "${lockAction} & systemctl hibernate"; text = "Hibernate"; keybind = "h";  }
      { label = "logout"; action = "hyprctl dispatch exit"; text = "Logout"; keybind = "x"; }
      { label = "shutdown"; action = "systemctl poweroff"; text = "Shutdown"; keybind = "s"; }
      { label = "suspend"; action = "${lockAction} & hyprctl dispatch dpms off"; text = "Screen Off"; keybind = "u"; }
@@ -60,7 +61,7 @@ in
       
       button:hover#lock {
           border-radius: 10px;
-          margin : 5px 0px 5px 0px;
+          margin : 5px 0px 5px 6px;
       }
       
       button:hover#logout {
@@ -78,9 +79,14 @@ in
           margin : 5px 0px 5px 0px;
       }
       
-      button:hover#reboot {
+      button:hover#hibernate {
           border-radius: 10px;
           margin : 5px 0px 5px 0px;
+      }
+      
+      button:hover#reboot {
+          border-radius: 10px;
+          margin : 5px 6px 5px 0px;
       }
       
       button:focus,
@@ -105,6 +111,12 @@ in
       #suspend {
         background-image: image(
           url("${pkgs.wlogout}/share/wlogout/icons/suspend.png")
+        );
+      }
+      
+      #hibernate {
+        background-image: image(
+          url("${pkgs.wlogout}/share/wlogout/icons/hibernate.png")
         );
       }
       

@@ -18,6 +18,7 @@
     ./modules/gammastep.nix
     ./modules/vscodium.nix
     ./modules/firefox.nix
+    ./modules/qutebrowser.nix
     ./modules/theme.nix
     ./modules/rofi.nix
     ./modules/waybar.nix
