@@ -4,9 +4,8 @@ pkgs,
 }: 
 
 let
-  #tuigreet = "${pkgs.greetd.tuigreet}/bin/tuigreet";
-  greeter = "${pkgs.greetd.wlgreet}/bin/wlgreet";
-  #session = "${pkgs.hyprland}/bin/Hyprland";
+  greeter = "${pkgs.greetd.tuigreet}/bin/tuigreet";
+  session = "${pkgs.hyprland}/bin/Hyprland";
   username = "chris";
 in
 
@@ -22,9 +21,8 @@ in
       #  user = "${username}";
       #};
       default_session = {
-        #command = "${greeter} --greeting 'Welcome to NixOS!' --asterisks --remember --remember-user-session --time -cmd ${session}";
-        command = "${greeter}";
-        user = "username";
+        command = "${greeter} --theme 'border=magenta;text=cyan;prompt=green;time=red;action=blue;button=yellow;container=black;input=red' --greeting 'access is restricted to authorized personnel' --asterisks --remember --remember-user-session --time -cmd ${session}";
+        user = "greeter";
       };
     };
   };
