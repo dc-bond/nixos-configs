@@ -14,6 +14,7 @@
     ./modules/audio.nix
     ./modules/fonts.nix
     ./modules/yubikey.nix
+    ./modules/login.nix
     ./modules/users.nix
     ./modules/networking.nix
     ./modules/wireguard.nix
