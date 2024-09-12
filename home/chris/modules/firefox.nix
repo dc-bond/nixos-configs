@@ -13,7 +13,7 @@
       default = {
         id = 0;
         name = "chris";
-        path = "jribdwmn.default"
+        path = "jribdwmn.default";
         isDefault = true;
         #settings = {
         #  "browser.startup.homepage" = "https://searx.aicampground.com";
