@@ -58,7 +58,7 @@
     }; # profiles
     policies = {
       BackgroundAppUpdate = false; 
-      #DisableBuiltinPDFViewer = false; # enabling potential security liability?
+      DisableBuiltinPDFViewer = false; # enabling potential security liability?
       DisableFirefoxStudies = true;
       DisableFirefoxAccounts = true; # firefox sync
       #DisableFirefoxScreenshots = true; # No screenshots?
@@ -106,10 +106,10 @@
       };
       NoDefaultBookmarks = true;
       PasswordManagerEnabled = false; # managed by bitwarden
-      #PDFjs = {
-      #  Enabled = false; # security liability
-      #  EnablePermissions = false;
-      #};
+      PDFjs = {
+        Enabled = false; # security liability
+        EnablePermissions = false;
+      };
       Permissions = {
         Camera = {
           #Allow = [https =//example.org,https =//example.org =1234];
@@ -142,21 +142,21 @@
         #  Locked = true;
         #};
       };
-      #Handlers = {
-      #  mimeTypes."application/pdf".action = "saveToDisk";
-      #};
-      #extensions = {
-      #  pdf = {
-      #    action = "useHelperApp";
-      #	  ask = true;
-      #	  handlers = [
-      #	  {
-      #      name = "Zathura PDF Viewer";
-      #      path = "${pkgs.zathura}/bin/zathura";
-      #    }
-      #		];
-      #	};
-      #};
+      Handlers = {
+        #mimeTypes."application/pdf".action = "saveToDisk";
+        extensions = {
+          pdf = {
+            action = "useHelperApp";
+        	  ask = true;
+        	  handlers = [
+        	  {
+              name = "Zathura PDF Viewer";
+              path = "${pkgs.zathura}/bin/zathura";
+            }
+        		];
+        	};
+        };
+      };
       PictureInPicture = {
         Enabled = true;
         Locked = true;
