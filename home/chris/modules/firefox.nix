@@ -8,6 +8,7 @@
 
   programs.firefox = {
     enable = true;
+    package = pkgs.firefox-esr;
     profiles = {
 
       default = {
@@ -57,7 +58,7 @@
     }; # profiles
     policies = {
       BackgroundAppUpdate = false; 
-      DisableBuiltinPDFViewer = false; # enabling potential security liability?
+      #DisableBuiltinPDFViewer = false; # enabling potential security liability?
       DisableFirefoxStudies = true;
       DisableFirefoxAccounts = true; # firefox sync
       #DisableFirefoxScreenshots = true; # No screenshots?
@@ -105,10 +106,10 @@
       };
       NoDefaultBookmarks = true;
       PasswordManagerEnabled = false; # managed by bitwarden
-      PDFjs = {
-        Enabled = false; # security liability
-        EnablePermissions = false;
-      };
+      #PDFjs = {
+      #  Enabled = false; # security liability
+      #  EnablePermissions = false;
+      #};
       Permissions = {
         Camera = {
           #Allow = [https =//example.org,https =//example.org =1234];
@@ -141,21 +142,100 @@
         #  Locked = true;
         #};
       };
-      Handlers = {
-        mimeTypes."application/pdf".action = "saveToDisk";
+      #Handlers = {
+      #  mimeTypes."application/pdf".action = "saveToDisk";
+      #};
+      #extensions = {
+      #  pdf = {
+      #    action = "useHelperApp";
+      #	  ask = true;
+      #	  handlers = [
+      #	  {
+      #      name = "Zathura PDF Viewer";
+      #      path = "${pkgs.zathura}/bin/zathura";
+      #    }
+      #		];
+      #	};
+      #};
+      PictureInPicture = {
+        Enabled = true;
+        Locked = true;
       };
-      extensions = {
-        pdf = {
-          action = "useHelperApp";
-      	  ask = true;
-      	  handlers = [
-      	  {
-            name = "Zathura PDF Viewer";
-            path = "${pkgs.zathura}/bin/zathura";
+      PromptForDownloadLocation = true;
+      #Proxy = {
+      #	Mode = "system"; # none | system | manual | autoDetect | autoConfig;
+      #	Locked = true;
+      #	# HTTPProxy = hostname;
+      #	# UseHTTPProxyForAllProtocols = true;
+      #	# SSLProxy = hostname;
+      #	# FTPProxy = hostname;
+      #	SOCKSProxy = "127.0.0.1:9050"; # Tor
+      #	SOCKSVersion = 5; # 4 | 5
+      #	#Passthrough = <local>;
+      #	# AutoConfigURL = URL_TO_AUTOCONFIG;
+      #	# AutoLogin = true;
+      #	UseProxyForDNS = true;
+      #};
+      SanitizeOnShutdown = {
+        Cache = true;
+        Cookies = false;
+        Downloads = true;
+        FormData = true;
+        History = false;
+        Sessions = false;
+        SiteSettings = false;
+        OfflineApps = true;
+        Locked = true;
+      };
+      SearchEngines = {
+        PreventInstalls = true;
+        Add = [
+          {
+            Name = "BondSearch";
+            URLTemplate = "https://search.opticon.dev";
+            Method = "GET"; # GET | POST
+            IconURL = "http://searx3aolosaf3urwnhpynlhuokqsgz47si4pzz5hvb7uuzyjncl2tid.onion/favicon.ico";
+            # Alias = example;
+            Description = "Bond SearXNG Instance";
+            #PostData = name=value&q={searchTerms};
+            #SuggestURLTemplate = https =//www.example.org/suggestions/q={searchTerms}
           }
-      		];
-      	};
+        ];
+        Remove = [
+          "Amazon.com"
+          "Bing"
+          "Google"
+          "DuckDuckGo"
+          "eBay"
+          "Wikipedia (en)"
+        ];
+        Default = "BondSearch";
       };
+      SearchSuggestEnabled = false;
+      ShowHomeButton = false; # home button on the toolbar
+      #SSLVersionMax = tls1 | tls1.1 | tls1.2 | tls1.3;
+      #SSLVersionMin = tls1 | tls1.1 | tls1.2 | tls1.3;
+      SSLVersionMin = "tls1.3";
+      #SupportMenu = {
+      #Title = Support Menu;
+      #URL = http =//example.com/support;
+      #AccessKey = S
+      #};
+      StartDownloadsInTempDirectory = true; # for speed? May fuck up the system on low ram
+      UserMessaging = {
+        ExtensionRecommendations = false; # Don’t recommend extensions while the user is visiting web pages
+          FeatureRecommendations = false; # Don’t recommend browser features
+          Locked = true; # Prevent the user from changing user messaging preferences
+          MoreFromMozilla = false; # Don’t show the “More from Mozilla” section in Preferences
+          SkipOnboarding = true; # Don’t show onboarding messages on the new tab page
+          UrlbarInterventions = false; # Don’t offer suggestions in the URL bar
+          WhatsNew = false; # Remove the “What’s New” icon and menuitem
+      };
+      UseSystemPrintDialog = true;
+      #WebsiteFilter = {
+        #Block = [<all_urls>];
+        #Exceptions = [http =//example.org/*]
+      #};
 
     }; # policies
     
