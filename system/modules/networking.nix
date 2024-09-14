@@ -53,7 +53,7 @@
         Enabled = false;
         };
         Settings = {
-          AutoConnect = true;
+          AutoConnect = false;
           AlwaysRandomizeAddress = false;
         };
       };
