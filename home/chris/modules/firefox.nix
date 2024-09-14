@@ -193,7 +193,7 @@
         Add = [
           {
             Name = "SearXNG";
-            URLTemplate = "https://search.opticon.dev"; # accessible through vpn only
+            URLTemplate = "https://search.opticon.dev/?q="; # accessible through vpn only
             Method = "GET"; # GET | POST
             IconURL = "http://searx3aolosaf3urwnhpynlhuokqsgz47si4pzz5hvb7uuzyjncl2tid.onion/favicon.ico";
             # Alias = example;
@@ -203,9 +203,9 @@
           }
         ];
         Remove = [
+          "Google"
           "Amazon.com"
           "Bing"
-          "Google"
           "DuckDuckGo"
           "eBay"
           "Wikipedia (en)"
