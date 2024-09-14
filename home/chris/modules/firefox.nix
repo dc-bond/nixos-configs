@@ -193,13 +193,9 @@
         Add = [
           {
             Name = "SearXNG";
-            URLTemplate = "https://search.opticon.dev/?q="; # accessible through vpn only
+            URLTemplate = "https://search.opticon.dev/?q={searchTerms}"; # accessible through vpn only
             Method = "GET"; # GET | POST
-            IconURL = "http://searx3aolosaf3urwnhpynlhuokqsgz47si4pzz5hvb7uuzyjncl2tid.onion/favicon.ico";
-            # Alias = example;
             Description = "Self-Hosted SearXNG Instance";
-            #PostData = name=value&q={searchTerms};
-            #SuggestURLTemplate = https =//www.example.org/suggestions/q={searchTerms}
           }
         ];
         Remove = [
