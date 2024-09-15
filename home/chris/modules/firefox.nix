@@ -20,6 +20,20 @@
           "browser.startup.homepage" = "https://search.opticon.dev";
           "browser.search.defaultenginename" = "Opticon-SearXNG";
           "browser.search.order.1" = "Opticon-SearXNG";
+			    #"privacy.resistFingerprinting" = true;
+			    #"privacy.resistFingerprinting.letterboxing" = true;
+			    #"privacy.globalprivacycontrol.enabled" = true;
+			    #"privacy.donottrackheader.enabled" = true;
+			    #"privacy.clearOnShutdown.history" = true;
+			    #"privacy.clearOnShutdown.downloads" = true;
+			    #"webgl.disabled" = true;
+			    #"browser.preferences.defaultPerformanceSettings.enabled" = false;
+			    #"browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+			    #"browser.sessionstore.resume_from_crash" = true;
+			    #"layers.acceleration.disabled" = true;
+			    #"network.trr.mode" = 3;
+			    #"network.dns.disableIPv6" = true;
+			    #"media.autoplay.blocking_policy" = 2;
         };
         search = {
           force = true;
