@@ -16,6 +16,10 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    firefox-addons = {
+      url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     #plasma-manager = {
     #  url = "github:nix-community/plasma-manager";
     #  inputs.nixpkgs.follows = "nixpkgs";
@@ -24,10 +28,11 @@
   };
 
   outputs = { 
-    self, 
-    nixpkgs, 
-    home-manager, 
-    sops-nix, 
+    self,
+    nixpkgs,
+    home-manager,
+    sops-nix,
+    firefox-addons,
     #plasma-manager,
     ... 
     } @ inputs:
