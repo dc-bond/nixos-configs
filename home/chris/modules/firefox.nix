@@ -57,15 +57,8 @@ in
             };
           };
         };
-        #bookmarks = [
-        #  {
-        #    name = "Bookmarks Toolbar"
-        #  }          
-        #];
-
-      }; # default
-
-    }; # profiles
+      };
+    }; 
     policies = {
       BackgroundAppUpdate = false; 
       DisableFirefoxStudies = true;
@@ -90,7 +83,7 @@ in
       OfferToSaveLogins = false;
       AutofillAddressEnabled = false;
       AutofillCreditCardEnabled = false;
-      #OverrideFirstRunPage = ""; # breaks firefox if no profile folder exists in filesystem
+      #OverrideFirstRunPage = ""; # breaks firefox if no profile folder exists in filesystem?
 	  	EnableTrackingProtection = {
         Value = true;
         Locked = true;
@@ -99,23 +92,22 @@ in
         EmailTracking = true;
         # Exceptions = ["https://example.com"]
       };
-	  	Cookies = {
+      Cookies = {
         Behavior = "reject-tracker-and-partition-foreign";
+        Locked = true;
       };
       Preferences = {
         "browser.startup.homepage" = "https://search.opticon.dev";
-        "browser.newtabpage.activity-stream.feeds.section.topstories" = false;
-        "browser.newtabpage.activity-stream.feeds.topsites" = false;
-        "browser.newtabpage.activity-stream.section.highlights.includePocket" = false;
         "browser.urlbar.suggest.quicksuggest.sponsored" = false;
         "browser.urlbar.suggest.openpage" = false;
+        "browser.urlbar.suggest.recentsearches" = false;
         "browser.urlbar.placeholderName" = "Opticon-SearXNG";
         "browser.search.defaultenginename" = "Opticon-SearXNG";
-        "browser.aboutConfig.showWarning" = false; # No warning when going to config
+        "browser.aboutConfig.showWarning" = false; # no warning when going to config
         "browser.topsites.contile.enabled" = "lock-false";
-        "browser.compactmode.show" = true;
+        "browser.compactmode.show" = true; # show compact mode as an option in the customize toolbar menu
+        "browser.uidensity" = 1; # set compact mode layout density
         "browser.cache.disk.enable" = false; # be kind to hard drive
-        "browser.tabs.tabMinWidth" = 50; # make tabs able to be smaller to prevent scrolling
         "browser.tabs.loadInBackground" = true; # load tabs automaticlaly
         "browser.tabs.hoverPreview.enabled" = true; # enable new preview tabs feature as of 129.0
         "browser.newtabpage.pinned" = "lock-false";
@@ -124,90 +116,61 @@ in
         "browser.newtabpage.activity-stream.showSponsoredTopSites" = "lock-false";
         "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.addons" = "lock-false";
         "browser.newtabpage.activity-stream.asrouter.userprefs.cfr.features" = "lock-false";
+        "browser.newtabpage.activity-stream.feeds.section.topstories" = false;
+        "browser.newtabpage.activity-stream.feeds.topsites" = false;
         "browser.newtabpage.activity-stream.feeds.snippets" = "lock-false";
+        "browser.newtabpage.activity-stream.section.highlights.includePocket" = false;
         "browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts.havePinned" = "";
         "browser.newtabpage.activity-stream.improvesearch.topSiteSearchShortcuts.searchEngines" = "";
         "browser.download.autohideButton" = false; # never hide downloads button
         "browser.bookmarks.restore_default_bookmarks" = false;
-        #"browser.discovery.enabled" = false;
-        #"browser.laterrun.enabled" = false;
-        #"browser.protections_panel.infoMessage.seen" = true;
-        #"browser.quitShortcut.disabled" = true;
-        #"browser.ssb.enabled" = true;
-			  #"browser.preferences.defaultPerformanceSettings.enabled" = false;
 			  "browser.sessionstore.resume_from_crash" = true;
-        #"browser.download.useDownloadDir" = false; # Don't ask where to download things
-        #"media.videocontrols.picture-in-picture.video-toggle.enabled" = false; # Disable picture in picture;
         "services.sync.engine.addons" = false; # don't sync addons
         "services.sync.engine.prefs" = false; # don't sync settings
         "services.sync.engine.prefs.modified" = false; # don't sync more settings
         "services.sync.engine.bookmarks" = true; # sync bookmarks
-        "services.sync.declinedEngines" = "prefs,bookmarks,addons"; # decline everything more
-        "mousewheel.system_scroll_override" = true; # SCROLL NORMALLY FFS
+        "services.sync.declinedEngines" = "prefs,addons"; # decline more
+        "mousewheel.system_scroll_override" = true;
         "extensions.autoDisableScopes" = 0; # automatically enable extensions
-			  #"webgl.disabled" = true;
-			  #"layers.acceleration.disabled" = true;
-			  #"network.trr.mode" = 3;
-			  #"network.dns.disableIPv6" = true;
-			  #"media.autoplay.blocking_policy" = 2;
-        #"signon.rememberSignons" = false;
-        #"gfx.webrender.all" = true; # force enable GPU acceleration
-        #"media.ffmpeg.vaapi.enabled" = true;
-        #"widget.dmabuf.force-enabled" = true;
-        #"widget.use-xdg-desktop-portal.file-picker" = 1;
-        #"reader.parse-on-load.force-enabled" = true; # reader functionality force on
-        #"privacy.webrtc.legacyGlobalIndicator" = false; # hide sharing indicator for webrtc
-        #"app.shield.optoutstudies.enabled" = false;
-        #"app.update.auto" = false;
-        #"datareporting.policy.dataSubmissionEnable" = false;
-        #"datareporting.policy.dataSubmissionPolicyAcceptedVersion" = 2;
-        #"dom.security.https_only_mode" = true;
-        #"dom.security.https_only_mode_ever_enabled" = true;
-        #"extensions.getAddons.showPane" = false;
-        #"extensions.htmlaboutaddons.recommendations.enabled" = false;
-        #"extensions.pocket.enabled" = false;
-        #"identity.fxaccounts.enabled" = false;
-        #"privacy.trackingprotection.enabled" = true;
-        #"privacy.trackingprotection.socialtracking.enabled" = true;
-			  #"privacy.resistFingerprinting" = true;
+        "privacy.trackingprotection.enabled" = true;
+        "privacy.trackingprotection.socialtracking.enabled" = true;
+			  "privacy.resistFingerprinting" = true;
 			  #"privacy.resistFingerprinting.letterboxing" = true;
-			  #"privacy.globalprivacycontrol.enabled" = true;
-			  #"privacy.donottrackheader.enabled" = true;
-			  #"privacy.clearOnShutdown.history" = true;
-			  #"privacy.clearOnShutdown.downloads" = true;
-        "browser.uiCustomization.state" =
-        ''
-          {
-            "placements":
-            {
-              "widget-overflow-fixed-list":[],
-              "unified-extensions-area":
-              [
-                "ublock0_raymondhill_net-browser-action"
-              ],
-              "nav-bar":
-              [
-                "back-button",
-                "forward-button",
-                "stop-reload-button",
-                "urlbar-container",
-                "downloads-button",
-                "fxa-toolbar-menu-button",
-                "unified-extensions-button"
-              ],
-              "toolbar-menubar":["menubar-items"],
-              "TabsToolbar":
-              [
-                "firefox-view-button",
-                "tabbrowser-tabs",
-                "new-tab-button"
-              ],
-              "PersonalToolbar":["personal-bookmarks"]
-            },
-            "currentVersion":20,
-            "newElementCount":3
-          }
-        '';
+			  "privacy.globalprivacycontrol.enabled" = true;
+			  "privacy.donottrackheader.enabled" = true;
+        #"browser.uiCustomization.state" =
+        #''
+        #  {
+        #    "placements":
+        #    {
+        #      "widget-overflow-fixed-list":[],
+        #      "unified-extensions-area":
+        #      [
+        #        "ublock0_raymondhill_net-browser-action"
+        #      ],
+        #      "nav-bar":
+        #      [
+        #        "back-button",
+        #        "forward-button",
+        #        "stop-reload-button",
+        #        "urlbar-container",
+        #        "downloads-button",
+        #        "fxa-toolbar-menu-button",
+        #        "unified-extensions-button"
+        #      ],
+        #      "toolbar-menubar":["menubar-items"],
+        #      "TabsToolbar":
+        #      [
+        #        "firefox-view-button",
+        #        "tabbrowser-tabs",
+        #        "new-tab-button"
+        #      ],
+        #      "PersonalToolbar":["personal-bookmarks"]
+        #    },
+        #    "currentVersion":20,
+        #    "newElementCount":3
+        #  }
+        #'';
       };
       EncryptedMediaExtensions = {
         Enabled = true;
@@ -347,11 +310,6 @@ in
       #SSLVersionMax = tls1 | tls1.1 | tls1.2 | tls1.3;
       #SSLVersionMin = tls1 | tls1.1 | tls1.2 | tls1.3;
       SSLVersionMin = "tls1.2";
-      #SupportMenu = {
-      #Title = Support Menu;
-      #URL = http =//example.com/support;
-      #AccessKey = S
-      #};
       StartDownloadsInTempDirectory = true; # for speed, may cause issues if low memory
       UserMessaging = {
         ExtensionRecommendations = false;
@@ -363,13 +321,7 @@ in
         WhatsNew = false;
       };
       UseSystemPrintDialog = false; # use firefox print-preview instead of system print popup dialogue
-      #WebsiteFilter = {
-        #Block = [<all_urls>];
-        #Exceptions = [http =//example.org/*]
-      #};
-
-    }; # policies
-    
-  }; # programs.firefox
+    };
+  }; 
   
 }
