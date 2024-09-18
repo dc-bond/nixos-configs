@@ -260,20 +260,20 @@ in
         Locked = true;
       };
       PromptForDownloadLocation = true;
-      #Proxy = {
-      #	Mode = "system"; # none | system | manual | autoDetect | autoConfig;
-      #	Locked = true;
-      #	# HTTPProxy = hostname;
-      #	# UseHTTPProxyForAllProtocols = true;
-      #	# SSLProxy = hostname;
-      #	# FTPProxy = hostname;
-      #	SOCKSProxy = "127.0.0.1:9050"; # Tor
-      #	SOCKSVersion = 5; # 4 | 5
-      #	#Passthrough = <local>;
-      #	# AutoConfigURL = URL_TO_AUTOCONFIG;
-      #	# AutoLogin = true;
-      #	UseProxyForDNS = true;
-      #};
+      Proxy = {
+      	Mode = "manual"; # none | system | manual | autoDetect | autoConfig;
+      	Locked = false;
+      	HTTPProxy = "192.168.1.2:3128"; # server running squid proxy
+      	UseHTTPProxyForAllProtocols = true;
+      	#SSLProxy = hostname;
+      	#FTPProxy = hostname;
+      	#SOCKSProxy = "127.0.0.1:9050"; # Tor
+      	#SOCKSVersion = 5; # 4 | 5
+      	#Passthrough = <local>;
+      	#AutoConfigURL = URL_TO_AUTOCONFIG;
+      	#AutoLogin = true;
+      	#UseProxyForDNS = true;
+      };
       SanitizeOnShutdown = {
         Cache = true;
         Cookies = true;
