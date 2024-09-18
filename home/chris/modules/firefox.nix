@@ -276,12 +276,12 @@ in
       #};
       SanitizeOnShutdown = {
         Cache = true;
-        Cookies = false;
+        Cookies = true;
         Downloads = true;
         FormData = true;
-        History = false;
-        Sessions = false;
-        SiteSettings = false;
+        History = true;
+        Sessions = true;
+        SiteSettings = true;
         OfflineApps = true;
         Locked = true;
       };
