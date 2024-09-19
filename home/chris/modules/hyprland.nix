@@ -138,18 +138,18 @@
         border_size = 1;
         #col.active_border = "0xffffffff"; # broken?
         #col.inactive_border = "0xff444444"; # broken?
-        layout = "master"; # see settings below
+        layout = "dwindle"; # see settings below
       };
-      master = {
-        orientation = "left";
-        allow_small_split = true;
-        new_on_top = false;
-      };
-      #dwindle = {
-      #  force_split = 2;
-      #  pseudotile = true;
-      #  preserve_split = true;
+      #master = {
+      #  orientation = "left";
+      #  allow_small_split = true;
+      #  new_on_top = false;
       #};
+      dwindle = {
+        force_split = 2;
+        pseudotile = true;
+        preserve_split = true;
+      };
       decoration = {
         rounding = "5";
         active_opacity = "0.9";
