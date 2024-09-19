@@ -133,18 +133,28 @@
       #  sensitivity = "-0.5";
       #};
       general = {
-        gaps_in = 0;
-        gaps_out = 0;
+        gaps_in = 2;
+        gaps_out = 5;
         border_size = 1;
-        #col.active_border = "$color11";
-        #col.inactive_border = "rgba(ffffffff)";
-        layout = "dwindle";
+        #col.active_border = "0xffffffff"; # broken?
+        #col.inactive_border = "0xff444444"; # broken?
+        layout = "master"; # see settings below
       };
+      master = {
+        orientation = "left";
+        allow_small_split = true;
+        new_on_top = false;
+      };
+      #dwindle = {
+      #  force_split = 2;
+      #  pseudotile = true;
+      #  preserve_split = true;
+      #};
       decoration = {
         rounding = "5";
-        active_opacity = "1.0";
-        inactive_opacity = "0.8";
-        fullscreen_opacity = "1.0";
+        active_opacity = "0.9";
+        inactive_opacity = "0.7";
+        fullscreen_opacity = "0.9";
         drop_shadow = true;
         shadow_range = "30";
         shadow_render_power = "3";
@@ -170,16 +180,6 @@
           "fade, 1, 7, default"
           "workspaces, 1, 6, default"
         ];
-      };
-      dwindle = {
-        force_split = 2;
-        #pseudotile = true;
-        #preserve_split = true;
-      };
-      master = {
-        orientation = "left";
-        allow_small_split = true;
-        new_on_top = true;
       };
       gestures = {
         workspace_swipe = false;

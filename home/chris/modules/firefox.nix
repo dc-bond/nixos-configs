@@ -269,7 +269,7 @@ in
       	#FTPProxy = hostname;
       	#SOCKSProxy = "127.0.0.1:9050"; # Tor
       	#SOCKSVersion = 5; # 4 | 5
-      	#Passthrough = <local>;
+      	Passthrough = "192.168.1.2"; # homeassistant and possibly other containers not setup for proxy through vpn
       	#AutoConfigURL = URL_TO_AUTOCONFIG;
       	#AutoLogin = true;
       	#UseProxyForDNS = true;
