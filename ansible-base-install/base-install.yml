@@ -33,7 +33,6 @@
 
     - name: load encrypted variables # sops requires gpg key on machine running ansible to decrypt secrets file (also requires yubikey to unlock gpg key)
       community.sops.load_vars:
-        #file: secrets.yaml
         file: ../secrets.yaml
 
     - name: abort if the host is not booted from the nixos install media
@@ -112,26 +111,25 @@
     - name: turn on swap
       ansible.builtin.command: swapon /mnt/.swapfile
 
+#    - name: run installation
+#      ansible.builtin.command: nixos-install --no-root-passwd --no-write-lock-file --flake github:dc-bond/nixos-configs#thinkpad
+#      args:
+#        chdir: /mnt
+
 #    - name: clone repository
 #      ansible.builtin.git:
 #        repo: https://github.com/dc-bond/nixos-configs.git
 #        dest: /mnt/nixos-configs
 #        clone: yes
 #        update: yes
-
+#
 #    - name: run installation
 #      ansible.builtin.command: nixos-install --no-root-passwd --flake .#thinkpad
 #      args:
 #        chdir: /mnt/nixos-configs
 
-#    - name: run installation
-#      ansible.builtin.command: nixos-install --no-root-passwd --no-write-lock-file --flake github:dc-bond/nixos-configs#thinkpad
-#      args:
-#        chdir: /mnt
-
 #    - name: shutdown
 #      shell: /run/current-system/sw/bin/shutdown now
 
-# change password
 # delete cloned repo from root directory
 # clone repo (using github ssh url) into home directory
