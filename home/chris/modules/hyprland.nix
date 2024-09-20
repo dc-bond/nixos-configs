@@ -83,6 +83,7 @@
         "$mod SHIFT, l, movewindow, r"
         "$mod SHIFT, k, movewindow, u"
         "$mod SHIFT, j, movewindow, d"
+        " , PRINT, exec, hyprshot -m region output --clipboard-only" # screenshot a mouse region selection to clipboard
       ];
       bindm = [
         "$mod, mouse:272, movewindow"
