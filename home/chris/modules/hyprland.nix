@@ -200,31 +200,40 @@
     settings = {
       general = {
         disable_loading_bar = true;
-        grace = 300;
+        grace = 0;
         hide_cursor = true;
         no_fade_in = false;
+        no_fade_out = false;
       };
       background = [
         {
-          path = "screenshot";
+          path = "/home/chris/nixos-configs/home/chris/wallpaper/wallpaper-1.jpg";
           blur_passes = 3;
-          blur_size = 8;
+          contrast = 1;
+          brightness = 0.5;
+          vibrancy = 0.2;
+          vibrancy_darkness = 0.2;
         }
       ];
       input-field = [
         {
-          size = "200, 50";
-          position = "0, -80";
           monitor = "";
+          size = "350, 60";
+          outline_thickness = 2;
+          dots_size = 0.2; # Scale of input-field height, 0.2 - 0.8
+          dots_spacing = 0.35; # Scale of dots' absolute size, 0.0 - 1.0
           dots_center = true;
+          outer_color = "rgba(0, 0, 0, 0)";
+          inner_color = "rgba(0, 0, 0, 0.2)";
+          #font_color = "##cdd6f4";
           fade_on_empty = false;
-          font_color = "rgb(202, 211, 245)";
-          inner_color = "rgb(91, 96, 120)";
-          outer_color = "rgb(24, 25, 38)";
-          outline_thickness = 5;
-          #placeholder_text = '\'<span foreground="##cad3f5">Password...</span>'\';
-          placeholder_text = "Password";
-          shadow_passes = 2;
+          rounding = -1;
+          check_color = "rgb(204, 136, 34)";
+          placeholder_text = "<b><span foreground='##cdd6f4'>AUTHENTICATION REQUIRED</span></b>";
+          hide_input = false;
+          position = "0, -200";
+          halign = "center";
+          valign = "center";
         }
       ];
     };
