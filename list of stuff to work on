@@ -1,11 +1,15 @@
 vscode opening on workspace 2 instead of 3
-overhaul nextcloud
-collabora docker
-piKVM
 git signing using gpg/yubikey
 systemd-networkd wait online error
 LUKS full disk encryption with yubikey
-PAM U2F with yubikey
+impermanance?
+
+
+
+
+
+
+
 
 git log
 git reset --hard <commit-id>
