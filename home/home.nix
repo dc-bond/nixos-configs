@@ -19,6 +19,9 @@
     ./modules/theme.nix
     ./modules/rofi.nix
     ./modules/waybar.nix
+    ./modules/pass.nix
+    ./modules/git.nix
+    ./modules/ssh.nix
     #./modules/plasma.nix
     ./modules/wlogout.nix
   ];
@@ -53,42 +56,6 @@
     zathura # barebones pdf viewer
     nextcloud-client # nextcloud local syncronization client
   ];
-
-# pass
-  programs.password-store = {
-    enable = true;
-    settings = {
-      PASSWORD_STORE_DIR = "${config.home.homeDirectory}/.password-store";
-    };
-  };
-
-# outgoing ssh
-  programs.ssh = {
-    enable = true;
-    matchBlocks = {
-      "opticon" = {
-        hostname = "vpn.opticon.dev";
-        user = "xixor";
-        port = 39800;
-        #identityFile = "~/.ssh/chris-ed25519.key";
-        #identityFile = "~/.ssh/chris-gpgauth-yubikey321.pub";
-      };
-    };
-  };
-
-# git
-  programs.git = {
-    enable = true;
-    userName  = "dc-bond";
-    userEmail = "chris@dcbond.com";
-    extraConfig = {
-      init.defaultBranch = "main";
-      #commit.gpgsign = true;
-      #gpg.format = "ssh";
-      #gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
-      #user.signingkey = "~/.ssh/id_ed25519.pub";
-    };
-  };
 
 # start/re-start services after system rebuild
   systemd.user.startServices = "sd-switch";
