@@ -12,13 +12,10 @@
     ./modules/neovim.nix
     ./modules/shell.nix
     ./modules/hyprland.nix
-    #inputs.plasma-manager.homeManagerModules.plasma-manager
-    #./modules/plasma.nix
     ./modules/alacritty.nix
     ./modules/gammastep.nix
     ./modules/vscodium.nix
     ./modules/firefox.nix
-    ./modules/qutebrowser.nix
     ./modules/theme.nix
     ./modules/rofi.nix
     ./modules/waybar.nix
@@ -53,7 +50,7 @@
     gnome.gnome-calculator # calculator
     loupe # image viewer
     zathura # barebones pdf viewer
-    whitesur-cursors # macos cursor theme
+    #whitesur-cursors # macos cursor theme
     nextcloud-client # nextcloud local syncronization client
   ];
 
