@@ -67,11 +67,10 @@
       };
     };
     extraConfig = {
-      display-combi = "Combination Mode";
-      display-run = "Shell Scripts";
-      display-drun = "Applications";
+      #display-combi = "Combination Mode";
+      display-run = "Launch";
+      #display-drun = "Applications";
       display-ssh = "SSH";
-      display-calc = "Calculator";
     };
   };
 

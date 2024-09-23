@@ -22,20 +22,17 @@
     settings = {
       "$mod" = "Alt";
       exec-once = [
-        "desktopReload" # nix script
+        "desktopReload" # nix script to load wallpaper, launch waybar, etc.
         "swww-daemon"
         "dunst"
         "[workspace 1 silent] firefox"
         "[workspace 2 silent] alacritty"
-        #"[workspace 3 silent] codium"
         "[workspace 3 silent] ${pkgs.vscodium}/bin/codium"
         "sleep 5 && nextcloud"
-        #"wl-paste --type text --watch cliphist store"
       ];      
       bind = [
         "$mod, RETURN, exec, alacritty"
-	      "$mod, D, exec, rofi -show combi -combi-modes drun,run,ssh -modes combi"
-	      #"$mod, V, exec, cliphist list | rofi -dmenu | cliphist decode | wl-copy"
+	      "$mod, D, exec, rofi -modes run,ssh -show run"
         "$mod, S, exec, ddcutil -d 1 setvcp D6 05 && systemctl suspend"
         "$mod, Q, killactive"
         "$mod, F, fullscreen"

@@ -1,1 +1,1 @@
-This directory contains the entire declarative configuration for my NixOS-based linux operating system.
+This repository contains the entire declarative configuration for my NixOS linux operating system.
