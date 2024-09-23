@@ -50,7 +50,6 @@
     gnome.gnome-calculator # calculator
     loupe # image viewer
     zathura # barebones pdf viewer
-    #whitesur-cursors # macos cursor theme
     nextcloud-client # nextcloud local syncronization client
   ];
 
