@@ -6,6 +6,10 @@
 
 {
 
+  home.packages = with pkgs; [
+    (import ../../../scripts/desktopReload.nix { inherit pkgs config; })
+  ];
+
   wayland.windowManager.hyprland = {
     enable = true;
     extraConfig = 

@@ -28,9 +28,6 @@
 # home-manager module settings
   programs.home-manager.enable = true;
 
-# enable user fonts
-  fonts.fontconfig.enable = true;
-
 # define username and home directory
   home = {
     username = "chris";
@@ -41,11 +38,11 @@
   xdg.userDirs = {
     enable = true;
     download = "${config.home.homeDirectory}/downloads";
+    desktop = null;
   };
 
 # user-specific packages
   home.packages = with pkgs; [
-    (import ../../scripts/desktopReload.nix { inherit pkgs config; }) # for hyprland
     eza # modern replacement for 'ls'
     pfetch # system info displayed on shell startup
     btop # system monitor
@@ -55,10 +52,7 @@
     dunst # notification daemon
     gnome.gnome-calculator # calculator
     loupe # image viewer
-    filelight # disk usage visualizer
     zathura # barebones pdf viewer
-    #cliphist # wayland clipboard manager 
-    #wl-clip-persist # persist clipboard history after closing window
     whitesur-cursors # macos cursor theme
     nextcloud-client # nextcloud local syncronization client
   ];
@@ -75,9 +69,6 @@
   programs.ssh = {
     enable = true;
     matchBlocks = {
-      #"*" = {
-      #  identityFile = "~/.ssh/github-ed25519-yubikey321.key";
-      #};
       "opticon" = {
         hostname = "vpn.opticon.dev";
         user = "xixor";
@@ -85,10 +76,6 @@
         #identityFile = "~/.ssh/chris-ed25519.key";
         #identityFile = "~/.ssh/chris-gpgauth-yubikey321.pub";
       };
-      #"github.com"= { # vscodium looks at ~/.ssh/config file and sees this entry to specify correct ssh private key to use when using its integrated git feature
-      #  #identityFile = "~/.ssh/github-ed25519-yubikey321.key";
-      #  #identityFile = "~/.ssh/chris-ed25519.key";
-      #};
     };
   };
 

@@ -131,5 +131,8 @@
 #    - name: shutdown
 #      shell: /run/current-system/sw/bin/shutdown now
 
-# delete cloned repo from root directory
-# clone repo (using github ssh url) into home directory
+# login ssh as user
+# clone repo (using github ssh url) into home directory as user
+# reboot
+# firefox manual setup
+# vscode manual extension setup
