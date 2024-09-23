@@ -57,11 +57,15 @@ in
       }
       
       window {
+        font-family: Fira Code Regular Nerd Font Complete Mono, monospace;
+        font-size: 12pt;
+        color: #cad3f5; 
       	background-color: rgba(12, 12, 12, 0.9);
       }
-      
+
       button {
-        border-radius: 0;
+        margin: 10px;
+        border-radius: 15px;
         border-color: black;
       	text-decoration-color: #FFFFFF;
         color: #FFFFFF;
@@ -71,13 +75,23 @@ in
       	background-repeat: no-repeat;
       	background-position: center;
       	background-size: 25%;
+        box-shadow: none;
+        text-shadow: none;
+        animation: gradient_f 20s ease-in infinite;
       }
       
-      button:focus, button:active, button:hover {
-      	background-color: #3700B3;
-      	outline-style: none;
+      button:focus {
+        background-color: #3700B3;
+        background-size: 15%;
+        border-radius: 15px;
       }
 
+      button:hover {
+        background-color: #3700B3;
+        background-size: 15%;
+        border-radius: 15px;
+      }
+      
       #lock {
         background-image: image(
           url("${pkgs.wlogout}/share/wlogout/icons/lock.png")

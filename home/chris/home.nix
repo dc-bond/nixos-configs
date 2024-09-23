@@ -53,18 +53,10 @@
     swww # animated wallpaper for wayland window managers
     pywal # color theme changer
     dunst # notification daemon
-    #libnotify # library to support notification daemons
-    #grim # wayland screenshot tool
-    #slurp # wayland region selector
-    #scrot # screenshot tool
     gnome.gnome-calculator # calculator
     loupe # image viewer
     filelight # disk usage visualizer
     zathura # barebones pdf viewer
-    ##ffmpegthumbnailer
-    #wlr-randr # wayland display setting tool for external monitors
-    #autorandr # automatically select a display configuration based on connected devices
-    #wl-clipboard # wayland clipboard
     #cliphist # wayland clipboard manager 
     #wl-clip-persist # persist clipboard history after closing window
     whitesur-cursors # macos cursor theme
