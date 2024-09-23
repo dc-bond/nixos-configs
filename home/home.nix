@@ -19,6 +19,7 @@
     ./modules/theme.nix
     ./modules/rofi.nix
     ./modules/waybar.nix
+    #./modules/plasma.nix
     ./modules/wlogout.nix
   ];
 

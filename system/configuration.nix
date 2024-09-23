@@ -42,8 +42,6 @@
   environment.systemPackages = with pkgs; [
     (import ../scripts/hello-world.nix { inherit pkgs config; })
     (import ../scripts/rebuild.nix { inherit pkgs config; })
-    (import ../scripts/hdmi1.nix { inherit pkgs config; })
-    (import ../scripts/hdmi2.nix { inherit pkgs config; })
     age # encryption tool
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     wget # download tool
