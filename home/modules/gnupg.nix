@@ -10,7 +10,7 @@
     enable = true;
     homedir = "${config.home.homeDirectory}/.gnupg";
     publicKeys = [ 
-      { source = ./DB9ADBBE6FBD1F0E694AF25D012321D46E090E61.pub; trust = 5; }
+      { source = ../DB9ADBBE6FBD1F0E694AF25D012321D46E090E61.pub; trust = 5; }
     ];
     settings = { 
       no-greeting = true;
