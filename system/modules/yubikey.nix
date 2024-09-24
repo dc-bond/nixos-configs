@@ -5,7 +5,6 @@
 
 {
 
-# system packages
   environment.systemPackages = with pkgs; [
     yubikey-manager # provides 'ykman' cli tool to manage settings on yubikey
     pcsclite # smartcard reader tool

@@ -15,11 +15,14 @@ in
 
   sops = {
     secrets = {
-      wg-key = {
+      wgKey = {
         owner = "${config.users.users.systemd-network.name}";
         group = "${config.users.users.systemd-network.group}";
         mode = "0440";
       };
+      wgServer = {};
+      wgPort = {};
+      wgDns = {};
     };
   };
 
@@ -67,7 +70,7 @@ in
           MTUBytes = "1420";
         };
         wireguardConfig = {
-          PrivateKeyFile = "${config.sops.secrets.wg-key.path}";
+          PrivateKeyFile = "${config.sops.secrets.wgKey.path}";
           ListenPort = 9918;
           FirewallMark = wgFwMark;
           RouteTable = "off";
@@ -81,7 +84,7 @@ in
                 "0.0.0.0/0" 
                 "::/0"
               ];
-              Endpoint = "vpn.opticon.dev:51820"; # wireguard server address
+              Endpoint = "${config.sops.secrets.wgServer.path}:${config.sops.secrets.wgPort.path}"; # wireguard server address
               PersistentKeepalive = 25;
               RouteTable = "off";
             };
@@ -95,7 +98,7 @@ in
         #      "0.0.0.0/0" 
         #      "::/0"
         #    ];
-        #    Endpoint = "vpn.opticon.dev:51820"; # wireguard server address
+        #    Endpoint = "${config.sops.secrets.wgServer.path}:${config.sops.secrets.wgPort.path}"; # wireguard server address
         #    PersistentKeepalive = 25;
         #    RouteTable = "off";
         #  }
@@ -108,7 +111,8 @@ in
         matchConfig.Name = "wg0";
         networkConfig = {
           Address = "${wgIpv4}";
-          DNS = "192.168.1.2";
+          #DNS = "192.168.1.2";
+          DNS = "${config.sops.secrets.wgDns.path}";
           DNSDefaultRoute = true; # make wireguard tunnel the default route for all DNS requests
           Domains = "~."; # default DNS route for all domains
         };
