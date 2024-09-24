@@ -135,5 +135,6 @@
 # clone repo (using github ssh url) into home directory as user
 # reboot
 # sops machine key update
+# git clone pass repo
 # firefox manual setup
 # vscode manual extension setup
