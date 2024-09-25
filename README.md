@@ -1,1 +1,1 @@
-This repository contains the entire declarative configuration for my NixOS linux operating system.
+This repository contains the entire declarative configuration for my NixOS linux operating systems. Or said another way - here is the current state of my descent into the ninth circle of hell that is trying to learn nix.
