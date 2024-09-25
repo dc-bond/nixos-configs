@@ -38,26 +38,35 @@
     } @ inputs:
   let
     inherit (self) outputs;
-    systems = [
-      "x86_64-linux"
-    ];
-    forAllSystems = nixpkgs.lib.genAttrs systems;
+    #systems = [
+    #  "x86_64-linux"
+    #  #"i686-linux"
+    #  #"aarch64-linux"
+    #];
+    #forAllSystems = nixpkgs.lib.genAttrs systems;
+    forAllSystems = nixpkgs.lib.genAttrs;
   in {
+    #packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
+    #formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
     overlays = import ./overlays {inherit inputs;}; # custom packages and mods exported as overlays
+    #nixosModules = import ./modules/nixos;
+    #homeManagerModules = import ./modules/home-manager;
     nixosConfigurations = {
       thinkpad = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux"; # alternatively could be in hardware-configuration.nix
         specialArgs = { 
-          inherit inputs outputs;
+          inherit inputs outputs; # passes flake inputs (e.g. nixpkgs, sops-nix, etc.) and outputs (e.g. overlays?) to modules defined below (e.g. configuration.nix)
         };
         modules = [
           ./system/configuration.nix
+          sops-nix.nixosModules.sops
           home-manager.nixosModules.home-manager
           {
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
               users.chris = import ./home/home.nix;
-              extraSpecialArgs = { inherit inputs outputs; };
+              extraSpecialArgs = { inherit inputs outputs; }; # passes flake inputs and outputs to home-manager modules?
             };
           }
         ];

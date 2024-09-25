@@ -88,7 +88,7 @@
       efi.canTouchEfiVariables = true;
     };
     kernel.sysctl = { "vm.swappiness" = 30;};
-    initrd.preLVMCommands = 
+    initrd.preLVMCommands = # turn on keyboard num-lock automatically during boot process
     ''
       ${pkgs.kbd}/bin/setleds +num
     '';
