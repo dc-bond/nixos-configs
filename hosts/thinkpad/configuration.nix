@@ -12,6 +12,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../nixos-system/common/audio.nix
+    ../../nixos-system/common/boot.nix
     ../../nixos-system/common/zsh.nix
     ../../nixos-system/common/nixpkgs.nix
     ../../nixos-system/common/fonts.nix
@@ -46,21 +47,21 @@
     unzip # utility to unzip directories
   ];
 
-# boot configs
-  boot = {
-    loader = {
-      systemd-boot = {
-        enable = true;
-        configurationLimit = 10; # only display last 10 generations
-      };
-      efi.canTouchEfiVariables = true;
-    };
-    kernel.sysctl = { "vm.swappiness" = 30;};
-    initrd.preLVMCommands = # turn on keyboard num-lock automatically during boot process
-    ''
-      ${pkgs.kbd}/bin/setleds +num
-    '';
-  };
+## boot configs
+#  boot = {
+#    loader = {
+#      systemd-boot = {
+#        enable = true;
+#        configurationLimit = 10; # only display last 10 generations
+#      };
+#      efi.canTouchEfiVariables = true;
+#    };
+#    kernel.sysctl = { "vm.swappiness" = 30;};
+#    initrd.preLVMCommands = # turn on keyboard num-lock automatically during boot process
+#    ''
+#      ${pkgs.kbd}/bin/setleds +num
+#    '';
+#  };
 
 # enable i2c kernel module for ddcutil functionality
   hardware.i2c.enable = true;
@@ -78,14 +79,7 @@
     keyMap = "us";
   };
 
-# z-shell
-  #programs.zsh = {
-  #  enable = true; # z-shell enabled system-wide to source necessary files for users
-  #};
-  #environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
-
-# disable suspend on laptop lid close
-  services.logind.lidSwitch = "ignore";
+  services.logind.lidSwitch = "ignore"; # disable suspend on laptop lid close
 
 # set systemd file limit
   systemd.extraConfig = "DefaultLimitNOFILE=2048"; # defaults to 1024 if unset
