@@ -6,19 +6,25 @@
 
 {
 
-  sops = {
-    secrets = {
-      opticonUrl = {};
-      opticonSshPort = {};
-    };
-  };
+  #sops = {
+  #  secrets = {
+  #    opticonUrl = {};
+  #    opticonSshPort = {};
+  #  };
+  #  #templates = {
+  #  #  template1.content = 
+  #  #    ''
+  #  #    ${config.sops.secrets."opticonUrl"};
+  #  #    '';
+  #  #  #"template2".content = ''${config.sops.placeholder."secret2"}'';       
+  #  #};
+  #};
 
   programs.ssh = {
     enable = true;
     matchBlocks = {
       "opticon" = {
         hostname = "vpn.opticon.dev";
-        #hostname = "cat ${config.sops.secrets.opticonUrl.path}";
         user = "xixor";
         port = 39800;
         #port = "cat ${config.sops.secrets.opticonSshPort.path}";

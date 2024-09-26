@@ -23,7 +23,7 @@
     ./common/git.nix
     ./common/ssh.nix
     ./common/wlogout.nix
-    ./host-specific/thinkpad/sops.nix
+    #./host-specific/thinkpad/sops.nix
   ];
 
 # home-manager module settings

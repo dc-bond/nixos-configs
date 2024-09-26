@@ -32,8 +32,8 @@
 
 # system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [
-    (import ../../scripts/hello-world.nix { inherit pkgs config; })
-    (import ../../scripts/rebuild.nix { inherit pkgs config; })
+    (import ../../scripts/common/hello-world.nix { inherit pkgs config; })
+    (import ../../scripts/host-specific/thinkpad/rebuild.nix { inherit pkgs config; })
     age # encryption tool
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     wget # download tool

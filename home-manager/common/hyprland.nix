@@ -7,7 +7,7 @@
 {
 
   home.packages = with pkgs; [
-    (import ../../scripts/desktopReload.nix { inherit pkgs config; })
+    (import ../../scripts/common/desktopReload.nix { inherit pkgs config; })
   ];
 
   wayland.windowManager.hyprland = {
