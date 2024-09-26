@@ -6,12 +6,12 @@
 
 {
 
-  #sops = {
-  #  secrets = {
-  #    opticonUrl = {};
-  #    opticonSshPort = {};
-  #  };
-  #};
+  sops = {
+    secrets = {
+      opticonUrl = {};
+      opticonSshPort = {};
+    };
+  };
 
   programs.ssh = {
     enable = true;
