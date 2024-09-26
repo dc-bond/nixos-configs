@@ -84,7 +84,8 @@ in
                 "0.0.0.0/0" 
                 "::/0"
               ];
-              Endpoint = "${config.sops.secrets.opticonUrl.path}:${config.sops.secrets.opticonVpnPort.path}"; # wireguard server address
+              Endpoint = "vpn.opticon.dev:51820"; # wireguard server address
+              #Endpoint = "${config.sops.secrets.opticonUrl.path}:${config.sops.secrets.opticonVpnPort.path}"; # wireguard server address
               PersistentKeepalive = 25;
               RouteTable = "off";
             };
@@ -111,7 +112,8 @@ in
         matchConfig.Name = "wg0";
         networkConfig = {
           Address = "${wgIpv4}";
-          DNS = "${config.sops.secrets.opticonInternalIp.path}";
+          DNS = "192.168.1.2";
+          #DNS = "${config.sops.secrets.opticonInternalIp.path}";
           DNSDefaultRoute = true; # make wireguard tunnel the default route for all DNS requests
           Domains = "~."; # default DNS route for all domains
         };
