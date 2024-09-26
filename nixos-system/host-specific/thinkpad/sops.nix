@@ -11,7 +11,7 @@
   ];
   
   sops = {
-    defaultSopsFile = ../../../hosts/thinkpad/secrets.yaml;
+    defaultSopsFile = ./secrets.yaml;
     defaultSopsFormat = "yaml";
     validateSopsFiles = false;
     age = {
