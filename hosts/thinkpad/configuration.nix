@@ -24,7 +24,7 @@
     ../../nixos-system/common/thunar.nix
     ../../nixos-system/common/hyprland.nix
     ../../nixos-system/common/printing.nix
-    ../../nixos-system/host-specific/thinkpad/sops.nix
+    ../../nixos-system/common/sops.nix
     ../../nixos-system/host-specific/thinkpad/bluetooth.nix
     ../../nixos-system/host-specific/thinkpad/networking.nix
     ../../nixos-system/host-specific/thinkpad/wireguard.nix

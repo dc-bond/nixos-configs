@@ -23,8 +23,8 @@
     ../../common/git.nix
     ../../common/ssh.nix
     ../../common/wlogout.nix
+    ../../common/sops.nix
     ./aliases.nix
-    ./sops.nix
   ];
 
 # home-manager module settings
