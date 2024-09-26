@@ -12,6 +12,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../nixos-system/common/audio.nix
+    ../../nixos-system/common/zsh.nix
     ../../nixos-system/common/nixpkgs.nix
     ../../nixos-system/common/fonts.nix
     ../../nixos-system/common/yubikey.nix
@@ -27,17 +28,6 @@
     ../../nixos-system/host-specific/thinkpad/sops.nix
     ../../nixos-system/host-specific/thinkpad/bluetooth.nix
   ];
-
-# allow configuration options for packages from the nixpkgs repo
-  #nixpkgs = {
-  #  overlays = [
-  #    outputs.overlays.unstable-packages # import nixpkgs-unstable overlay
-  #  ];
-  #  config = {
-  #    allowUnfree = true; # allow packages marked as proprietary/unfree
-  #    allowBroken = false; # do not allow packages marked as broken
-  #  };
-  #};
 
 # system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [
@@ -55,26 +45,6 @@
     ethtool # network tools
     unzip # utility to unzip directories
   ];
-
-# nix package manager related
-  nix = 
-  let
-    flakeInputs = lib.filterAttrs (_: lib.isType "flake") inputs;
-  in {
-    settings = {
-      experimental-features = "nix-command flakes";
-      flake-registry = "";
-      nix-path = config.nix.nixPath; # workaround for https://github.com/NixOS/nix/issues/9574
-    };
-    channel.enable = false; # disable channels because using flake
-    registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs; # make flake registry match flake inputs
-    nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs; # make nix path match flake inputs
-    gc = { # on a weekly basis, delete any generations older than 7 days then garbage-collect unreferenced programs and symlinks
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 7d";
-    };
-  };
 
 # boot configs
   boot = {
@@ -109,10 +79,10 @@
   };
 
 # z-shell
-  programs.zsh = {
-    enable = true; # z-shell enabled system-wide to source necessary files for users
-  };
-  environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
+  #programs.zsh = {
+  #  enable = true; # z-shell enabled system-wide to source necessary files for users
+  #};
+  #environment.pathsToLink = [ "/share/zsh" ]; # to enable z-shell completion for system packages like systemd
 
 # disable suspend on laptop lid close
   services.logind.lidSwitch = "ignore";
