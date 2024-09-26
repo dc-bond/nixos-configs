@@ -60,7 +60,7 @@
         };
         modules = [
           ./system/configuration.nix
-          sops-nix.nixosModules.sops
+          #./hosts/thinkpad/configuration.nix # when moving to host directory
           home-manager.nixosModules.home-manager
           {
             home-manager = {
@@ -73,25 +73,25 @@
         ];
       };
 
-      vm1 = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { 
-          inherit inputs outputs;
-        };
-        modules = [
-          ./system/configuration.nix
-          sops-nix.nixosModules.sops
-          home-manager.nixosModules.home-manager
-          {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              users.chris = import ./home/home.nix;
-              extraSpecialArgs = { inherit inputs outputs; }; # passes flake inputs and outputs to home-manager modules?
-            };
-          }
-        ];
-      };
+      #vm1 = nixpkgs.lib.nixosSystem {
+      #  system = "x86_64-linux";
+      #  specialArgs = { 
+      #    inherit inputs outputs;
+      #  };
+      #  modules = [
+      #    ./system/configuration.nix
+      #    sops-nix.nixosModules.sops
+      #    home-manager.nixosModules.home-manager
+      #    {
+      #      home-manager = {
+      #        useGlobalPkgs = true;
+      #        useUserPackages = true;
+      #        users.chris = import ./home/home.nix;
+      #        extraSpecialArgs = { inherit inputs outputs; }; # passes flake inputs and outputs to home-manager modules?
+      #      };
+      #    }
+      #  ];
+      #};
 
 
       
