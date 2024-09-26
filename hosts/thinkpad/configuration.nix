@@ -11,20 +11,20 @@
   
   imports = [
     ./hardware-configuration.nix
-    ./modules/audio.nix
-    ./modules/fonts.nix
-    ./modules/yubikey.nix
-    ./modules/login.nix
-    ./modules/users.nix
-    ./modules/networking.nix
-    ./modules/wireguard.nix
-    ./modules/keyring.nix
-    ./modules/sops.nix
-    ./modules/sshd.nix
-    ./modules/thunar.nix
-    ./modules/hyprland.nix
-    #./modules/plasma.nix
-    ./modules/printing.nix
+    ../../nixos-system/common/audio.nix
+    ../../nixos-system/common/fonts.nix
+    ../../nixos-system/common/yubikey.nix
+    ../../nixos-system/common/login.nix
+    ../../nixos-system/common/users.nix
+    ../../nixos-system/common/networking.nix
+    ../../nixos-system/common/wireguard.nix
+    ../../nixos-system/common/keyring.nix
+    ../../nixos-system/common/sshd.nix
+    ../../nixos-system/common/thunar.nix
+    ../../nixos-system/common/hyprland.nix
+    ../../nixos-system/common/printing.nix
+    ../../nixos-system/host-specific/thinkpad/sops.nix
+    ../../nixos-system/host-specific/thinkpad/bluetooth.nix
   ];
 
 # allow configuration options for packages from the nixpkgs repo
@@ -40,8 +40,8 @@
 
 # system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [
-    (import ../scripts/hello-world.nix { inherit pkgs config; })
-    (import ../scripts/rebuild.nix { inherit pkgs config; })
+    (import ../../scripts/hello-world.nix { inherit pkgs config; })
+    (import ../../scripts/rebuild.nix { inherit pkgs config; })
     age # encryption tool
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     wget # download tool
@@ -96,13 +96,6 @@
 
 # enable i2c kernel module for ddcutil functionality
   hardware.i2c.enable = true;
-
-# bluetooth
-  services.blueman.enable = true; # terminal-based bluetooth connection tool
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-  };
 
 # set timezone & locale
   time.timeZone = "America/New_York"; # set timezone

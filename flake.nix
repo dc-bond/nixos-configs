@@ -1,5 +1,5 @@
 {
-  description = "thinkpad laptop system configuration flake";
+  description = "Chris' NixOS Configurations Flake";
 
   inputs = {
     nixpkgs = {
@@ -38,13 +38,25 @@
     } @ inputs:
   let
     inherit (self) outputs;
-    #systems = [
-    #  "x86_64-linux"
-    #  #"i686-linux"
-    #  #"aarch64-linux"
-    #];
+    #inherit (nixpkgs) lib;
+    #configVars = import ./vars { inherit inputs lib; };
+    #configLib = import ./lib { inherit lib; };
+    forAllSystems = nixpkgs.lib.genAttrs [
+      "x86_64-linux"
+      #"i686-linux"
+      #"aarch64-linux"
+    ];
     #forAllSystems = nixpkgs.lib.genAttrs systems;
-    forAllSystems = nixpkgs.lib.genAttrs;
+    #forAllSystems = nixpkgs.lib.genAttrs;
+    specialArgs = {
+      inherit
+        inputs
+        outputs
+        #configVars
+        #configLib
+        #nixpkgs
+        ;
+    };
   in {
     #packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
     #formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
@@ -54,20 +66,23 @@
     nixosConfigurations = {
 
       thinkpad = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux"; # alternatively could be in hardware-configuration.nix
-        specialArgs = { 
-          inherit inputs outputs; # passes flake inputs (e.g. nixpkgs, sops-nix, etc.) and outputs (e.g. overlays?) to modules defined below (e.g. configuration.nix)
-        };
+        system = "x86_64-linux"; # alternatively could be in hardware-configuration.nix?
+        #specialArgs = { 
+        #  inherit inputs outputs;
+        #};
+        inherit specialArgs; # passes flake inputs and outputs to modules defined below
         modules = [
-          ./system/configuration.nix
-          #./hosts/thinkpad/configuration.nix # when moving to host directory
+          #./system/configuration.nix
+          ./hosts/thinkpad/configuration.nix # when moving to host directory, picks up default.nix (i.e. configuration.nix) automatically
           home-manager.nixosModules.home-manager
           {
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              users.chris = import ./home/home.nix;
-              extraSpecialArgs = { inherit inputs outputs; }; # passes flake inputs and outputs to home-manager modules?
+              #users.chris = import ./home/home.nix;
+              users.chris = import ./home-manager/home.nix;
+              #extraSpecialArgs = { inherit inputs outputs; };
+              extraSpecialArgs = specialArgs; # passes flake inputs and outputs to home-manager modules?
             };
           }
         ];
