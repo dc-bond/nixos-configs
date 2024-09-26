@@ -8,22 +8,22 @@
 {
   
   imports = [
-    ./common/gnupg.nix
-    ./common/neovim.nix
-    ./common/shell.nix
-    ./common/hyprland.nix
-    ./common/alacritty.nix
-    ./common/gammastep.nix
-    ./common/vscodium.nix
-    ./common/firefox.nix
-    ./common/theme.nix
-    ./common/rofi.nix
-    ./common/waybar.nix
-    ./common/pass.nix
-    ./common/git.nix
-    ./common/ssh.nix
-    ./common/wlogout.nix
-    #./host-specific/thinkpad/sops.nix
+    ../../common/gnupg.nix
+    ../../common/neovim.nix
+    ../../common/shell.nix
+    ../../common/hyprland.nix
+    ../../common/alacritty.nix
+    ../../common/gammastep.nix
+    ../../common/vscodium.nix
+    ../../common/firefox.nix
+    ../../common/theme.nix
+    ../../common/rofi.nix
+    ../../common/waybar.nix
+    ../../common/pass.nix
+    ../../common/git.nix
+    ../../common/ssh.nix
+    ../../common/wlogout.nix
+    ./aliases.nix
   ];
 
 # home-manager module settings

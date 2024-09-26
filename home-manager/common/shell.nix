@@ -11,7 +11,6 @@
     enable = true;
     autocd = true; # move to directory without using cd
     defaultKeymap = "viins";
-    #zprof.enable = true; # show a table of items initialized on shell startup
     initExtra = # added to zsh interactive shell (.zshrc)
     ''
       pfetch     
@@ -23,7 +22,7 @@
       wgdn = "sudo networkctl down wg0";
       wglogon = "echo module wireguard +p | sudo tee /sys/kernel/debug/dynamic_debug/control";
       wglogs = "journalctl -ekf";
-      networks = "iwctl station wlan0 get-networks";
+      #networks = "iwctl station wlan0 get-networks";
     };
     zplug = {
       enable = true;
