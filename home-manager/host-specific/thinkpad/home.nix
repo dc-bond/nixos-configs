@@ -24,6 +24,7 @@
     ../../common/ssh.nix
     ../../common/wlogout.nix
     ./aliases.nix
+    ./sops.nix
   ];
 
 # home-manager module settings
