@@ -12,6 +12,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../nixos-system/common/audio.nix
+    ../../nixos-system/common/nixpkgs.nix
     ../../nixos-system/common/fonts.nix
     ../../nixos-system/common/yubikey.nix
     ../../nixos-system/common/login.nix
@@ -28,15 +29,15 @@
   ];
 
 # allow configuration options for packages from the nixpkgs repo
-  nixpkgs = {
-    overlays = [
-      outputs.overlays.unstable-packages # import nixpkgs-unstable overlay
-    ];
-    config = {
-      allowUnfree = true; # allow packages marked as proprietary/unfree
-      allowBroken = false; # do not allow packages marked as broken
-    };
-  };
+  #nixpkgs = {
+  #  overlays = [
+  #    outputs.overlays.unstable-packages # import nixpkgs-unstable overlay
+  #  ];
+  #  config = {
+  #    allowUnfree = true; # allow packages marked as proprietary/unfree
+  #    allowBroken = false; # do not allow packages marked as broken
+  #  };
+  #};
 
 # system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [
@@ -64,9 +65,6 @@
       experimental-features = "nix-command flakes";
       flake-registry = "";
       nix-path = config.nix.nixPath; # workaround for https://github.com/NixOS/nix/issues/9574
-      # cachix for hyprland?
-      #substituters = ["https://hyprland.cachix.org"];
-      #trusted-public-keys = ["hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="];
     };
     channel.enable = false; # disable channels because using flake
     registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs; # make flake registry match flake inputs
