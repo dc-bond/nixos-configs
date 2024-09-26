@@ -33,7 +33,7 @@
 
     - name: load encrypted variables # sops requires gpg key on machine running ansible to decrypt secrets file (also requires yubikey to unlock gpg key)
       community.sops.load_vars:
-        file: ../secrets.yaml
+        file: ./secrets.yaml
 
     - name: abort if the host is not booted from the nixos install media
       fail:
