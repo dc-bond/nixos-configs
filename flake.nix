@@ -46,8 +46,6 @@
       #"i686-linux"
       #"aarch64-linux"
     ];
-    #forAllSystems = nixpkgs.lib.genAttrs systems;
-    #forAllSystems = nixpkgs.lib.genAttrs;
     specialArgs = {
       inherit
         inputs
@@ -58,31 +56,21 @@
         ;
     };
   in {
-    #packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
-    #formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
     overlays = import ./overlays {inherit inputs;}; # custom packages and mods exported as overlays
-    #nixosModules = import ./modules/nixos;
-    #homeManagerModules = import ./modules/home-manager;
     nixosConfigurations = {
 
       thinkpad = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux"; # alternatively could be in hardware-configuration.nix?
-        #specialArgs = { 
-        #  inherit inputs outputs;
-        #};
         inherit specialArgs; # passes flake inputs and outputs to modules defined below
         modules = [
-          #./system/configuration.nix
-          ./hosts/thinkpad/configuration.nix # when moving to host directory, picks up default.nix (i.e. configuration.nix) automatically
+          ./hosts/thinkpad/configuration.nix
           home-manager.nixosModules.home-manager
           {
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              #users.chris = import ./home/home.nix;
               users.chris = import ./home-manager/home.nix;
-              #extraSpecialArgs = { inherit inputs outputs; };
-              extraSpecialArgs = specialArgs; # passes flake inputs and outputs to home-manager modules?
+              extraSpecialArgs = specialArgs; # passes flake inputs and outputs to home-manager module
             };
           }
         ];
