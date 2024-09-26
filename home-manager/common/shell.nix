@@ -22,7 +22,6 @@
       wgdn = "sudo networkctl down wg0";
       wglogon = "echo module wireguard +p | sudo tee /sys/kernel/debug/dynamic_debug/control";
       wglogs = "journalctl -ekf";
-      #networks = "iwctl station wlan0 get-networks";
     };
     zplug = {
       enable = true;
