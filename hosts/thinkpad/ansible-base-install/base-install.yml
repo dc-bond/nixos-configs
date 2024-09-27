@@ -69,7 +69,7 @@
         state: "opened"
         name: cryptroot
         type: luks2
-        passphrase: "{{ crypt-passwd }}"
+        passphrase: "{{ cryptPasswd }}"
 
     - name: create FAT32 filesystem in boot partition
       filesystem:
