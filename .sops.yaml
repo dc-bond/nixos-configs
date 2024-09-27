@@ -2,7 +2,8 @@ keys:
   - &users:
     - &chris DB9ADBBE6FBD1F0E694AF25D012321D46E090E61 # public gpg key fingerprint
   - &hosts:
-    - &thinkpad age15grsyjcq5m0c4a4na9mmt94jxkq5annfq4ck8vs8nrq8ef87pu3sapha9j # public age key converted from ssh public ed25519 key in /etc/ssh
+    #- &thinkpad age15grsyjcq5m0c4a4na9mmt94jxkq5annfq4ck8vs8nrq8ef87pu3sapha9j # public age key converted from ssh public ed25519 key in /etc/ssh
+    - &thinkpad age1xdp3rwum0jjunk9l4vgp9k8w3fm685z70u0fx84gxpgj5mjdhg3s77v4mp
 
 creation_rules: # when sops creates/edits a secrets.yaml file it encrypts using both gpg and age public keys and one or the other corresponding private keys will be required to decrypt
   - path_regex: secrets.(yaml|json|env|ini)$ 

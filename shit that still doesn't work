@@ -1,4 +1,5 @@
 vscode opening on workspace 2 instead of 3
+sops password for user
 git signing using gpg/yubikey
 systemd-networkd wait online error
 LUKS full disk encryption with yubikey
