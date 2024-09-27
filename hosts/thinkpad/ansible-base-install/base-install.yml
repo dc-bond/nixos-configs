@@ -136,5 +136,6 @@
 # reboot
 # sops machine key update
 # git clone pass repo
+# nextcloud-client setup
 # firefox manual setup
 # vscode manual extension setup
