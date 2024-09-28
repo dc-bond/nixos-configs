@@ -14,15 +14,16 @@
     defaultSopsFile = ../../../secrets.yaml;
     defaultSopsFormat = "yaml";
     validateSopsFiles = false;
-    #gnupg = {
-    #  sshKeyPaths = [];
-    #};
+    gnupg = {
+      sshKeyPaths = [];
+    };
     age = {
-      sshKeyPaths = [ 
-        "/etc/ssh/ssh_host_ed25519_key" 
-      ];
+      sshKeyPaths = [];
+      #sshKeyPaths = [ 
+      #  "/etc/ssh/ssh_host_ed25519_key" 
+      #];
       #generateKey = false; # automatically generate age keypair if doesn't exist in above location
-      #keyFile = "/sops/thinkpad-keys.txt"; # sops/age will use private age key in this location to decrypt secrets.yaml that had previously been encrypted with age using its corresponding public age key
+      keyFile = "/sops/thinkpad-keys.txt"; # sops/age will use private age key in this location to decrypt secrets.yaml that had previously been encrypted with age using its corresponding public age key
     };
     secrets = { # output to /run/secrets/...
       test = {};

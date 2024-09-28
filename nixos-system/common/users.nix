@@ -12,7 +12,7 @@
     chris = {
       isNormalUser = true;
       initialPassword = "changeme";
-      #hashedPasswordFile = config.sops.secrets.chris-passwd.path; # create hashed password with 'echo "changeme" | mkpasswd -s'
+      #hashedPasswordFile = config.sops.secrets.chrisPasswd.path; # create hashed password with 'echo "changeme" | mkpasswd -s'
       extraGroups = [
         "wheel" 
         "i2c" # for controlling i2c/ddcutil

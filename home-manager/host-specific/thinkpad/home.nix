@@ -23,7 +23,7 @@
     ../../common/git.nix
     ../../common/ssh.nix
     ../../common/wlogout.nix
-    ../../common/sops.nix
+    #../../common/sops.nix
     ./aliases.nix
   ];
 
