@@ -68,6 +68,7 @@
         system = "x86_64-linux"; # alternatively could be in hardware-configuration.nix?
         inherit specialArgs; # passes flake inputs and outputs to modules defined below
         modules = [
+          #disko.nixosModules.disko
           ./hosts/thinkpad/configuration.nix
           home-manager.nixosModules.home-manager
           {
@@ -81,23 +82,23 @@
         ];
       };
 
-      vm1 = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        inherit specialArgs;
-        modules = [
-          disko.nixosModules.disko
-          ./hosts/vm1/configuration.nix
-          home-manager.nixosModules.home-manager
-          {
-            home-manager = {
-              useGlobalPkgs = true;
-              useUserPackages = true;
-              users.chris = import ./home-manager/host-specific/vm1/home.nix;
-              extraSpecialArgs = specialArgs;
-            };
-          }
-        ];
-      };
+      #vm1 = nixpkgs.lib.nixosSystem {
+      #  system = "x86_64-linux";
+      #  inherit specialArgs;
+      #  modules = [
+      #    disko.nixosModules.disko
+      #    ./hosts/vm1/configuration.nix
+      #    home-manager.nixosModules.home-manager
+      #    {
+      #      home-manager = {
+      #        useGlobalPkgs = true;
+      #        useUserPackages = true;
+      #        users.chris = import ./home-manager/host-specific/vm1/home.nix;
+      #        extraSpecialArgs = specialArgs;
+      #      };
+      #    }
+      #  ];
+      #};
 
 
       
