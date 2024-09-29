@@ -22,7 +22,7 @@
     #../../nixos-system/common/hyprland.nix
     #../../nixos-system/common/printing.nix
     ../../nixos-system/host-specific/vm1/users.nix
-    ../../nixos-system/host-specific/vm1/login.nix
+    #../../nixos-system/host-specific/vm1/login.nix
     ../../nixos-system/host-specific/vm1/keyring.nix
     ../../nixos-system/host-specific/vm1/sshd.nix
     ../../nixos-system/host-specific/vm1/sops.nix

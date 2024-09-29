@@ -14,14 +14,14 @@
 
   networking = {
     useDHCP = false; # disable defaut dhcpcd networking backend in favor of systemd-networkd enabled below
-    hostName = "thinkpad";
+    hostName = "vm1";
     firewall = {
       enable = false; # disable default iptables
     };
     nftables = {
       enable = true; # use nftables instead of default iptables
       tables = {
-        thinkpad-firewall = {
+        vm1-firewall = {
           name = "vm1-firewall";
           family = "inet";
           enable = true;
@@ -36,7 +36,7 @@
             		iif != lo ip6 daddr ::1/128 counter drop comment "drop connections to loopback not coming from loopback"
             		ip protocol icmp counter accept comment "accept all ICMP types"
             		meta l4proto ipv6-icmp counter accept comment "accept all ICMP types"
-            		tcp dport 28764 counter accept comment "accept SSH"
+            		tcp dport 28765 counter accept comment "accept SSH"
             		counter comment "count dropped packets"
             	}
             	chain forward {

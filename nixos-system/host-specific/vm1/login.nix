@@ -5,7 +5,7 @@ pkgs,
 
 let
   greeter = "${pkgs.greetd.tuigreet}/bin/tuigreet";
-  #session = "${pkgs.hyprland}/bin/Hyprland";
+  session = "${pkgs.hyprland}/bin/Hyprland";
   username = "chris";
 in
 

@@ -6,13 +6,13 @@
 
 {
 
-  #sops.secrets.chrisPasswd.neededForUsers = true;
+  sops.secrets.chrisPasswd.neededForUsers = true;
 
   users.users = {
     chris = {
       isNormalUser = true;
-      initialPassword = "changeme";
-      #hashedPasswordFile = config.sops.secrets.chrisPasswd.path; # create hashed password with 'echo "changeme" | mkpasswd -s'
+      #initialPassword = "changeme";
+      hashedPasswordFile = config.sops.secrets.chrisPasswd.path; # create hashed password with 'echo "changeme" | mkpasswd -s'
       extraGroups = [
         "wheel" 
       ];
