@@ -6,8 +6,9 @@ LUKS full disk encryption with yubikey
 impermanance?
 pass git actions
 
-
-test
+update ip address in deploy script
+update device name
+update network interface
 
 
 

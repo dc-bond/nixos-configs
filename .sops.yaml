@@ -1,9 +1,9 @@
 keys:
-  - &users:
-    - &chris DB9ADBBE6FBD1F0E694AF25D012321D46E090E61 # public gpg key fingerprint
-  - &hosts:
-    - &thinkpad age1xdp3rwum0jjunk9l4vgp9k8w3fm685z70u0fx84gxpgj5mjdhg3s77v4mp # thinkpad age public key
-    #- &thinkpad age15grsyjcq5m0c4a4na9mmt94jxkq5annfq4ck8vs8nrq8ef87pu3sapha9j # age key converted from ssh host key
+  - &users: # public user gpg fingerprints
+    - &chris DB9ADBBE6FBD1F0E694AF25D012321D46E090E61
+  - &hosts: # public age host keys
+    - &thinkpad age1xdp3rwum0jjunk9l4vgp9k8w3fm685z70u0fx84gxpgj5mjdhg3s77v4mp
+    - &vm1 age1h07t74u3eq9zsddn0pruzwmjpuuawtnpr7x722nfsen2qu0ege5qdje5xu 
 
 creation_rules: # when sops creates/edits a secrets.yaml file it encrypts using both gpg and age public keys and one or the other corresponding private keys will be required to decrypt
   - path_regex: secrets.(yaml|json|env|ini)$ 
@@ -12,8 +12,6 @@ creation_rules: # when sops creates/edits a secrets.yaml file it encrypts using 
         - *chris 
         age:
         - *thinkpad
+        - *vm1
 
-# host-specific age keys (derived from ssh key in /etc/ssh) are stale after new installation, so must 
-# 1) re-run ssh-to-age on new host ssh public key using 'nix-shell -p ssh-to-age --run 'cat /etc/ssh/ssh_host_ed25519_key.pub | ssh-to-age'', 
-# 2) copy new age public key into this .sops.yaml file, and 
-# 3) run 'sops updatekeys /home/chris/nixos-configs/secrets.yaml' on the encrypted secrets file to update with new host encryption
+# run 'sops updatekeys /home/chris/nixos-configs/secrets.yaml' on the encrypted secrets file to update with new user or host encryption keys when added above
