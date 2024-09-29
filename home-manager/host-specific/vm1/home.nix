@@ -8,7 +8,6 @@
 {
   
   imports = [
-    ../../common/gnupg.nix
     ../../common/neovim.nix
     ../../common/shell.nix
     #../../common/hyprland.nix
@@ -24,6 +23,7 @@
     ../../common/ssh.nix
     #../../common/wlogout.nix
     #../../common/sops.nix
+    ./gnupg.nix
   ];
 
 # home-manager module settings
