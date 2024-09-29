@@ -16,6 +16,10 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    disco = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     firefox-addons = {
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,6 +36,7 @@
     nixpkgs,
     home-manager,
     sops-nix,
+    disco,
     firefox-addons,
     #plasma-manager,
     ... 
@@ -76,25 +81,23 @@
         ];
       };
 
-      #vm1 = nixpkgs.lib.nixosSystem {
-      #  system = "x86_64-linux";
-      #  specialArgs = { 
-      #    inherit inputs outputs;
-      #  };
-      #  modules = [
-      #    ./system/configuration.nix
-      #    sops-nix.nixosModules.sops
-      #    home-manager.nixosModules.home-manager
-      #    {
-      #      home-manager = {
-      #        useGlobalPkgs = true;
-      #        useUserPackages = true;
-      #        users.chris = import ./home/home.nix;
-      #        extraSpecialArgs = { inherit inputs outputs; }; # passes flake inputs and outputs to home-manager modules?
-      #      };
-      #    }
-      #  ];
-      #};
+      vm1 = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        inherit specialArgs;
+        modules = [
+          disko.nixosModules.disko
+          ./hosts/vm1/configuration.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              users.chris = import ./home-manager/host-specific/vm1/home.nix;
+              extraSpecialArgs = specialArgs;
+            };
+          }
+        ];
+      };
 
 
       

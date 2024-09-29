@@ -1,4 +1,7 @@
-{ lib, pkgs, config, ... }: 
+{ 
+  pkgs, 
+  ... 
+}: 
 
 {
 

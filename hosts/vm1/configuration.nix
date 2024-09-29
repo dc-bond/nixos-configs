@@ -10,9 +10,9 @@
 {
   
   imports = [
-    #./disco-config.nix
+    ./disco-config.nix
     ./hardware-configuration.nix
-    ../../nixos-system/common/audio.nix
+    #../../nixos-system/common/audio.nix
     ../../nixos-system/common/boot.nix
     ../../nixos-system/common/zsh.nix
     ../../nixos-system/common/nixpkgs.nix
@@ -23,33 +23,29 @@
     ../../nixos-system/common/keyring.nix
     ../../nixos-system/common/thunar.nix
     ../../nixos-system/common/hyprland.nix
-    ../../nixos-system/common/printing.nix
-    ../../nixos-system/host-specific/thinkpad/sshd.nix
-    ../../nixos-system/host-specific/thinkpad/sops.nix
-    ../../nixos-system/host-specific/thinkpad/bluetooth.nix
-    ../../nixos-system/host-specific/thinkpad/networking.nix
-    ../../nixos-system/host-specific/thinkpad/wireguard.nix
+    #../../nixos-system/common/printing.nix
+    ../../nixos-system/host-specific/vm1/sshd.nix
+    ../../nixos-system/host-specific/vm1/sops.nix
+    ../../nixos-system/host-specific/vm1/networking.nix
+    #../../nixos-system/host-specific/vm1/wireguard.nix
   ];
 
-# system-wide packages installed (that aren't installed via their own program modules enabled below)
+# system-wide packages
   environment.systemPackages = with pkgs; [
     (import ../../scripts/common/hello-world.nix { inherit pkgs config; })
-    (import ../../scripts/host-specific/thinkpad/rebuild.nix { inherit pkgs config; })
+    (import ../../scripts/host-specific/vm1/rebuild.nix { inherit pkgs config; })
     age # encryption tool
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     wget # download tool
-    brightnessctl # screen brightness application
+    #brightnessctl # screen brightness application
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
-    ddcutil # query and change monitor settings using DDC/CI and USB
-    i2c-tools # hardware interface tools required by ddcutil
+    #ddcutil # query and change monitor settings using DDC/CI and USB
+    #i2c-tools # hardware interface tools required by ddcutil
     nvd # package version diff info for nix build operations
     nix-tree # table view of package dependencies
     ethtool # network tools
     unzip # utility to unzip directories
   ];
-
-# enable i2c kernel module for ddcutil functionality
-  hardware.i2c.enable = true;
 
 # set timezone & locale
   time.timeZone = "America/New_York"; # set timezone
@@ -59,12 +55,8 @@
   console = {
     earlySetup = true;
     font = "Lat2-Terminus16";
-    #font = "${pkgs.source-code-pro}/share/consolefonts/???.gz"; # need to fix
-    #packages = with pkgs; [ source-code-pro ];
     keyMap = "us";
   };
-
-  services.logind.lidSwitch = "ignore"; # disable suspend on laptop lid close
 
 # set systemd file limit
   systemd.extraConfig = "DefaultLimitNOFILE=2048"; # defaults to 1024 if unset

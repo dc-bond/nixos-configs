@@ -1,6 +1,5 @@
 { 
   pkgs, 
-  config 
 }:
 
 pkgs.writeShellScriptBin "thinkpadDeploy" 
@@ -23,6 +22,6 @@ pkgs.writeShellScriptBin "thinkpadDeploy"
   # set the correct permissions
   chmod 600 "$temp/etc/age/thinkpad-age.key"
   
-  # install NixOS
-  nixos-anywhere --extra-files "$temp" --flake '.#your-host' root@yourip
+  # install
+  nixos-anywhere --extra-files "$temp" --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/thinkpad/crypt-passwd) --flake '.#thinkpad' root@yourip
 ''
