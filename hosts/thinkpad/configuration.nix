@@ -10,6 +10,7 @@
 {
   
   imports = [
+    #./disco-config.nix
     ./hardware-configuration.nix
     ../../nixos-system/common/audio.nix
     ../../nixos-system/common/boot.nix
