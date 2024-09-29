@@ -18,12 +18,12 @@
     ../../nixos-system/common/nixpkgs.nix
     ../../nixos-system/common/fonts.nix
     ../../nixos-system/common/yubikey.nix
-    ../../nixos-system/common/login.nix
-    ../../nixos-system/common/users.nix
-    ../../nixos-system/common/keyring.nix
     ../../nixos-system/common/thunar.nix
     ../../nixos-system/common/hyprland.nix
     ../../nixos-system/common/printing.nix
+    ../../nixos-system/host-specific/thinkpad/login.nix
+    ../../nixos-system/host-specific/thinkpad/users.nix
+    ../../nixos-system/host-specific/thinkpad/keyring.nix
     ../../nixos-system/host-specific/thinkpad/sshd.nix
     ../../nixos-system/host-specific/thinkpad/sops.nix
     ../../nixos-system/host-specific/thinkpad/bluetooth.nix

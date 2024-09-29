@@ -6,7 +6,7 @@
 
 {
 
-  #sops.secrets.chris-passwd.neededForUsers = true;
+  #sops.secrets.chrisPasswd.neededForUsers = true;
 
   users.users = {
     chris = {

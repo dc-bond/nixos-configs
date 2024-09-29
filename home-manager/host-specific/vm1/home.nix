@@ -11,18 +11,18 @@
     ../../common/gnupg.nix
     ../../common/neovim.nix
     ../../common/shell.nix
-    ../../common/hyprland.nix
+    #../../common/hyprland.nix
     ../../common/alacritty.nix
-    ../../common/gammastep.nix
-    ../../common/vscodium.nix
-    ../../common/firefox.nix
-    ../../common/theme.nix
-    ../../common/rofi.nix
-    ../../common/waybar.nix
+    #../../common/gammastep.nix
+    #../../common/vscodium.nix
+    #../../common/firefox.nix
+    #../../common/theme.nix
+    #../../common/rofi.nix
+    #../../common/waybar.nix
     ../../common/pass.nix
     ../../common/git.nix
     ../../common/ssh.nix
-    ../../common/wlogout.nix
+    #../../common/wlogout.nix
     #../../common/sops.nix
   ];
 
@@ -48,12 +48,12 @@
     pfetch # system info displayed on shell startup
     btop # system monitor
     nmap # network scanning
-    swww # animated wallpaper for wayland window managers
-    pywal # color theme changer
-    dunst # notification daemon
-    gnome.gnome-calculator # calculator
-    loupe # image viewer
-    zathura # barebones pdf viewer
+    #swww # animated wallpaper for wayland window managers
+    #pywal # color theme changer
+    #dunst # notification daemon
+    #gnome.gnome-calculator # calculator
+    #loupe # image viewer
+    #zathura # barebones pdf viewer
     #nextcloud-client # nextcloud local syncronization client
   ];
 
