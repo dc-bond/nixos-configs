@@ -24,6 +24,9 @@ pkgs.writeShellScriptBin "vm1Deploy"
   chmod 600 "$temp/etc/age/vm1-age.key"
   
   # install
-  nix run github:nix-community/nixos-anywhere -- --generate-hardware-config nixos-generate-config ./hardware-configuration.nix --extra-files "$temp" --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/vm1/crypt-passwd) --flake '.#vm1' nixos@192.168.1.228
+  nix run github:nix-community/nixos-anywhere -- \
+  #--generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
+  --extra-files "$temp" --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/vm1/crypt-passwd) \
+  --flake '.#vm1' nixos@192.168.1.229
 ''
 #  nix run github:nix-community/nixos-anywhere --extra-files "$temp" --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/vm1/crypt-passwd) --flake '.#vm1' nixos@192.168.1.237
