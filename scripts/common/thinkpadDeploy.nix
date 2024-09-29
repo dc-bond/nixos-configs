@@ -1,5 +1,6 @@
 { 
   pkgs, 
+  config
 }:
 
 pkgs.writeShellScriptBin "thinkpadDeploy" 
