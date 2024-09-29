@@ -10,7 +10,7 @@
     enable = true;
     homedir = "${config.home.homeDirectory}/.gnupg";
     publicKeys = [ 
-      { source = ../chrisGpgKey.pub; trust = 5; }
+      { source = ../../chrisGpgKey.pub; trust = 5; }
     ];
     settings = { 
       no-greeting = true;
