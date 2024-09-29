@@ -16,10 +16,10 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    #disco = {
-    #  url = "github:nix-community/disko";
-    #  inputs.nixpkgs.follows = "nixpkgs";
-    #};
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     firefox-addons = {
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -36,7 +36,7 @@
     nixpkgs,
     home-manager,
     sops-nix,
-    #disco,
+    disko,
     firefox-addons,
     #plasma-manager,
     ... 
@@ -68,7 +68,6 @@
         system = "x86_64-linux"; # alternatively could be in hardware-configuration.nix?
         inherit specialArgs; # passes flake inputs and outputs to modules defined below
         modules = [
-          #disko.nixosModules.disko
           ./hosts/thinkpad/configuration.nix
           home-manager.nixosModules.home-manager
           {
@@ -86,7 +85,6 @@
         system = "x86_64-linux";
         inherit specialArgs;
         modules = [
-          #disko.nixosModules.disko
           ./hosts/vm1/configuration.nix
           home-manager.nixosModules.home-manager
           {
