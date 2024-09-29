@@ -23,7 +23,7 @@
                 type = "luks";
                 name = "cryptroot";
                 settings.allowDiscards = true;
-                passwordFile = "/tmp/thinkpadCryptPasswd.key";
+                passwordFile = "/tmp/crypt-passwd.txt";
                 content = {
                   type = "filesystem";
                   format = "ext4";
