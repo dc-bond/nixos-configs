@@ -208,7 +208,7 @@
       };
       background = [
         {
-          path = "/home/chris/nixos-configs/home/wallpaper/wallpaper-1.jpg";
+          path = "/home/chris/nixos-configs/home-manager/wallpaper/wallpaper-1.jpg";
           blur_passes = 3;
           contrast = 1;
           brightness = 0.5;
