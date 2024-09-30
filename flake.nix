@@ -43,9 +43,9 @@
     } @ inputs:
   let
     inherit (self) outputs;
-    #inherit (nixpkgs) lib;
+    inherit (nixpkgs) lib;
     #configVars = import ./vars { inherit inputs lib; };
-    #configLib = import ./lib { inherit lib; };
+    configLib = import ./lib { inherit lib; };
     forAllSystems = nixpkgs.lib.genAttrs [
       "x86_64-linux"
       #"i686-linux"
@@ -56,8 +56,8 @@
         inputs
         outputs
         #configVars
-        #configLib
-        #nixpkgs
+        configLib
+        nixpkgs
         ;
     };
   in {

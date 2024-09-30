@@ -2,34 +2,59 @@
   inputs, 
   outputs, 
   lib, 
+  configLib,
   config, 
   pkgs, 
   ... 
 }: 
 
 {
-  
+
   imports = [
-    #./disk-config.nix
-    ./hardware-configuration.nix
-    ../../nixos-system/common/audio.nix
-    ../../nixos-system/common/boot.nix
-    ../../nixos-system/common/zsh.nix
-    ../../nixos-system/common/nixpkgs.nix
-    ../../nixos-system/common/fonts.nix
-    ../../nixos-system/common/yubikey.nix
-    ../../nixos-system/common/thunar.nix
-    ../../nixos-system/common/hyprland.nix
-    ../../nixos-system/common/printing.nix
-    ../../nixos-system/host-specific/thinkpad/login.nix
-    ../../nixos-system/host-specific/thinkpad/users.nix
-    ../../nixos-system/host-specific/thinkpad/keyring.nix
-    ../../nixos-system/host-specific/thinkpad/sshd.nix
-    ../../nixos-system/host-specific/thinkpad/sops.nix
-    ../../nixos-system/host-specific/thinkpad/bluetooth.nix
-    ../../nixos-system/host-specific/thinkpad/networking.nix
-    ../../nixos-system/host-specific/thinkpad/wireguard.nix
+    (map configLib.relativeToRoot [
+      #"hosts/thinkpad/disk-config.nix"
+      "hosts/thinkpad/hardware-configuration.nix"
+      "nixos-system/common/audio.nix"
+      "nixos-system/common/boot.nix"
+      "nixos-system/common/zsh.nix"
+      "nixos-system/common/nixpkgs.nix"
+      "nixos-system/common/fonts.nix"
+      "nixos-system/common/yubikey.nix"
+      "nixos-system/common/thunar.nix"
+      "nixos-system/common/hyprland.nix"
+      "nixos-system/common/printing.nix"
+      "nixos-system/host-specific/thinkpad/login.nix"
+      "nixos-system/host-specific/thinkpad/users.nix"
+      "nixos-system/host-specific/thinkpad/keyring.nix"
+      "nixos-system/host-specific/thinkpad/sshd.nix"
+      "nixos-system/host-specific/thinkpad/sops.nix"
+      "nixos-system/host-specific/thinkpad/bluetooth.nix"
+      "nixos-system/host-specific/thinkpad/networking.nix"
+      "nixos-system/host-specific/thinkpad/wireguard.nix"
+    ])
   ];
+
+  #imports = [
+  #  #./disk-config.nix
+  #  ./hardware-configuration.nix
+  #  ../../nixos-system/common/audio.nix
+  #  ../../nixos-system/common/boot.nix
+  #  ../../nixos-system/common/zsh.nix
+  #  ../../nixos-system/common/nixpkgs.nix
+  #  ../../nixos-system/common/fonts.nix
+  #  ../../nixos-system/common/yubikey.nix
+  #  ../../nixos-system/common/thunar.nix
+  #  ../../nixos-system/common/hyprland.nix
+  #  ../../nixos-system/common/printing.nix
+  #  ../../nixos-system/host-specific/thinkpad/login.nix
+  #  ../../nixos-system/host-specific/thinkpad/users.nix
+  #  ../../nixos-system/host-specific/thinkpad/keyring.nix
+  #  ../../nixos-system/host-specific/thinkpad/sshd.nix
+  #  ../../nixos-system/host-specific/thinkpad/sops.nix
+  #  ../../nixos-system/host-specific/thinkpad/bluetooth.nix
+  #  ../../nixos-system/host-specific/thinkpad/networking.nix
+  #  ../../nixos-system/host-specific/thinkpad/wireguard.nix
+  #];
 
 # system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [
