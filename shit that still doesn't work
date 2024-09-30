@@ -1,5 +1,4 @@
 vscode opening on workspace 2 instead of 3
-sops password for user
 git signing using gpg/yubikey
 systemd-networkd wait online error
 LUKS full disk encryption with yubikey
@@ -17,3 +16,9 @@ update network interface
 git log
 git reset --hard <commit-id>
 git push --force # to update remote
+
+additional manual setups:
+clone nixos-configs and pass repos using ssh
+nextcloud-client setup
+firefox manual setup
+vscode manual extension setup
