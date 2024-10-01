@@ -10,7 +10,7 @@
 
 {
 
-  imports = [
+  imports = lib.flatten [
     (map configLib.relativeToRoot [
       #"hosts/thinkpad/disk-config.nix"
       "hosts/thinkpad/hardware-configuration.nix"
@@ -34,34 +34,11 @@
     ])
   ];
 
-  #imports = [
-  #  #./disk-config.nix
-  #  ./hardware-configuration.nix
-  #  ../../nixos-system/common/audio.nix
-  #  ../../nixos-system/common/boot.nix
-  #  ../../nixos-system/common/zsh.nix
-  #  ../../nixos-system/common/nixpkgs.nix
-  #  ../../nixos-system/common/fonts.nix
-  #  ../../nixos-system/common/yubikey.nix
-  #  ../../nixos-system/common/thunar.nix
-  #  ../../nixos-system/common/hyprland.nix
-  #  ../../nixos-system/common/printing.nix
-  #  ../../nixos-system/host-specific/thinkpad/login.nix
-  #  ../../nixos-system/host-specific/thinkpad/users.nix
-  #  ../../nixos-system/host-specific/thinkpad/keyring.nix
-  #  ../../nixos-system/host-specific/thinkpad/sshd.nix
-  #  ../../nixos-system/host-specific/thinkpad/sops.nix
-  #  ../../nixos-system/host-specific/thinkpad/bluetooth.nix
-  #  ../../nixos-system/host-specific/thinkpad/networking.nix
-  #  ../../nixos-system/host-specific/thinkpad/wireguard.nix
-  #];
-
-# system-wide packages installed (that aren't installed via their own program modules enabled below)
   environment.systemPackages = with pkgs; [
-    (import ../../scripts/common/hello-world.nix { inherit pkgs config; })
-    (import ../../scripts/common/thinkpadDeploy.nix { inherit pkgs config; })
-    (import ../../scripts/common/vm1Deploy.nix { inherit pkgs config; })
-    (import ../../scripts/host-specific/thinkpad/rebuild.nix { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/common/hello-world.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/common/thinkpadDeploy.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/common/vm1Deploy.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/host-specific/thinkpad/rebuild.nix") { inherit pkgs config; })
     age # encryption tool
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     wget # download tool

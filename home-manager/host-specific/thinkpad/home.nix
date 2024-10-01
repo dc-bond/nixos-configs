@@ -1,6 +1,7 @@
 { 
   inputs, 
-  config, 
+  config,
+  configVars,
   pkgs, 
   ... 
 }: 
@@ -32,8 +33,10 @@
 
 # define username and home directory
   home = {
-    username = "chris";
-    homeDirectory = "/home/chris";
+    username = configVars.username;
+    homeDirectory = "/home/${configVars.username}";
+    #username = "chris";
+    #homeDirectory = "/home/chris";
   };
 
 # define default folders in home directory
