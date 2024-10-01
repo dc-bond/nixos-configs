@@ -1,6 +1,8 @@
 { 
   inputs, 
   config,
+  lib,
+  configLib,
   configVars,
   pkgs, 
   ... 
@@ -8,24 +10,26 @@
 
 {
   
-  imports = [
-    ../../common/neovim.nix
-    ../../common/shell.nix
-    ../../common/hyprland.nix
-    ../../common/alacritty.nix
-    ../../common/gammastep.nix
-    ../../common/vscodium.nix
-    ../../common/firefox.nix
-    ../../common/theme.nix
-    ../../common/rofi.nix
-    ../../common/waybar.nix
-    ../../common/pass.nix
-    ../../common/git.nix
-    ../../common/ssh.nix
-    ../../common/wlogout.nix
-    #../../common/sops.nix
-    ./aliases.nix
-    ./gnupg.nix
+  #imports = [
+  imports = lib.flatten [
+    (map configLib.relativeToRoot [
+      "home-manager/common/neovim.nix"
+      "home-manager/common/shell.nix"
+      "home-manager/common/hyprland.nix"
+      "home-manager/common/alacritty.nix"
+      "home-manager/common/gammastep.nix"
+      "home-manager/common/vscodium.nix"
+      "home-manager/common/firefox.nix"
+      "home-manager/common/theme.nix"
+      "home-manager/common/rofi.nix"
+      "home-manager/common/waybar.nix"
+      "home-manager/common/pass.nix"
+      "home-manager/common/git.nix"
+      "home-manager/common/ssh.nix"
+      "home-manager/common/wlogout.nix"
+      "home-manager/host-specific/thinkpad/aliases.nix"
+      "home-manager/host-specific/thinkpad/gnupg.nix"
+    ])
   ];
 
 # home-manager module settings
@@ -35,8 +39,6 @@
   home = {
     username = configVars.username;
     homeDirectory = "/home/${configVars.username}";
-    #username = "chris";
-    #homeDirectory = "/home/chris";
   };
 
 # define default folders in home directory
