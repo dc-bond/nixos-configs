@@ -29,8 +29,8 @@
     #  inputs.nixpkgs.follows = "nixpkgs";
     #  inputs.home-manager.follows = "home-manager";
     #};
-    #nix-secrets = {
-    #  url = "git+ssh://git@github.com/dc-bond/nix-secrets.git?ref=main&shallow=1";
+    #nixos-secrets = {
+    #  url = "git+ssh://git@github.com/dc-bond/nixos-secrets.git?ref=main&shallow=1";
     #  inputs = { };
     #};
   };

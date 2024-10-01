@@ -4,6 +4,10 @@
   ... 
 }: 
 
+#let
+#  secretsPath = builtins.toString inputs.nixos-secrets;
+#in
+
 {
 
   imports = [
@@ -11,6 +15,7 @@
   ];
   
   sops = {
+    #defaultSopsFile = "${secretsPath}/secrets.yaml";
     defaultSopsFile = ../../../secrets.yaml;
     defaultSopsFormat = "yaml";
     validateSopsFiles = false;
