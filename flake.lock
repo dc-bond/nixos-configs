@@ -79,6 +79,24 @@
         "type": "github"
       }
     },
+    "nixos-secrets": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1727804758,
+        "narHash": "sha256-ZEeMKNB5WELtCI9btLABaQMg/tJgwEsfCV6jPlsniTw=",
+        "ref": "main",
+        "rev": "b1001b24ed4ce11c90c57612cd62029ba702a26e",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/dc-bond/nixos-secrets.git"
+      },
+      "original": {
+        "ref": "main",
+        "shallow": true,
+        "type": "git",
+        "url": "ssh://git@github.com/dc-bond/nixos-secrets.git"
+      }
+    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1727264057,
@@ -132,6 +150,7 @@
         "disko": "disko",
         "firefox-addons": "firefox-addons",
         "home-manager": "home-manager",
+        "nixos-secrets": "nixos-secrets",
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "sops-nix": "sops-nix"
