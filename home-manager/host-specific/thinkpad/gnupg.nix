@@ -1,5 +1,6 @@
 { 
-  config, 
+  config,
+  configLib,
   pkgs, 
   ... 
 }: 
