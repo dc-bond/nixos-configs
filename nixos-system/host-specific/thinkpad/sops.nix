@@ -1,12 +1,9 @@
 { 
   inputs, 
   config, 
+  configLib,
   ... 
 }: 
-
-#let
-#  secretsPath = builtins.toString inputs.nixos-secrets;
-#in
 
 {
 
@@ -15,8 +12,7 @@
   ];
   
   sops = {
-    #defaultSopsFile = "${secretsPath}/secrets.yaml";
-    defaultSopsFile = ../../../secrets.yaml;
+    defaultSopsFile = configLib.relativeToRoot "secrets.yaml";
     defaultSopsFormat = "yaml";
     validateSopsFiles = false;
     gnupg = {
@@ -28,8 +24,6 @@
     };
     secrets = { # output to /run/secrets/...
       test = {};
-      #opticonUrl = {};
-      #opticonSshPort = {};
     };
   };
 

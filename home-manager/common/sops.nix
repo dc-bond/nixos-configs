@@ -1,6 +1,7 @@
 { 
   inputs, 
   config, 
+  configLib,
   ... 
 }: 
 
@@ -11,13 +12,15 @@
   ];
   
   sops = {
-    defaultSopsFile = ../../secrets.yaml;
+    defaultSopsFile = configLib.relativeToRoot "secrets.yaml";
     defaultSopsFormat = "yaml";
     validateSopsFiles = false;
+    gnupg = {
+      home = "/home/chris/.gnupg"; # sops will use gnupg key at this location to decrypt secrets.yaml
+      sshKeyPaths = [];
+    };
     age = {
-      sshKeyPaths = [ 
-        "/etc/ssh/ssh_host_ed25519_key" 
-      ];
+      sshKeyPaths = [];
     };
     defaultSymlinkPath = "/run/user/1000/secrets";
     defaultSecretsMountPoint = "/run/user/1000/secrets.d";
