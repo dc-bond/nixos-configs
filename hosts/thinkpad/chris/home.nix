@@ -46,21 +46,6 @@
     desktop = null;
   };
 
-# user-specific packages
-  home.packages = with pkgs; [
-    eza # modern replacement for 'ls'
-    pfetch # system info displayed on shell startup
-    btop # system monitor
-    nmap # network scanning
-    swww # animated wallpaper for wayland window managers
-    pywal # color theme changer
-    dunst # notification daemon
-    gnome.gnome-calculator # calculator
-    loupe # image viewer
-    zathura # barebones pdf viewer
-    nextcloud-client # nextcloud local syncronization client
-  ];
-
 # start/re-start services after system rebuild
   systemd.user.startServices = "sd-switch";
 

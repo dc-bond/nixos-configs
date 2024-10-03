@@ -9,6 +9,14 @@
 
   home.packages = with pkgs; [
     (import (configLib.relativeToRoot "scripts/common/desktopReload.nix") { inherit pkgs config; })
+    swww # animated wallpaper for wayland window managers
+    pywal # color theme changer
+    dunst # notification daemon
+    gnome.gnome-calculator # calculator
+    loupe # image viewer
+    zathura # barebones pdf viewer
+    nextcloud-client # nextcloud local syncronization client
+    wl-clipboard # wayland system clipboard
   ];
 
   wayland.windowManager.hyprland = {
