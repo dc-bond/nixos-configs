@@ -16,10 +16,6 @@
     #  package = pkgs.rofi-pass-wayland;
     #  stores = [ "${config.home.homeDirectory}/.password-store" ];
     #};
-    #plugins = with pkgs; [ # plugins don't work with wayland
-    #  rofi-power-menu
-    #  rofi-calc
-    #];
     theme = 
     let
       inherit (config.lib.formats.rasi) mkLiteral;
