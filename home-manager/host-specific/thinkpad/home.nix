@@ -26,6 +26,7 @@
       "home-manager/common/pass.nix"
       "home-manager/common/git.nix"
       "home-manager/common/ssh.nix"
+      "home-manager/common/sops.nix"
       "home-manager/common/wlogout.nix"
       "home-manager/host-specific/thinkpad/aliases.nix"
       "home-manager/host-specific/thinkpad/gnupg.nix"
