@@ -6,7 +6,7 @@
 pkgs.writeShellScriptBin "desktopReload" 
 ''
   # select random wallpaper and create color scheme
-  wal -s -t -q -i ~/nixos-configs/home-manager/wallpaper/
+  wal -s -t -q -i ~/nixos-configs/wallpaper/
   
   # load current pywal color scheme
   source "$HOME/.cache/wal/colors.sh"
@@ -16,7 +16,7 @@ pkgs.writeShellScriptBin "desktopReload"
   cp $wallpaper ~/.cache/current_wallpaper.jpg
   
   # get wallpaper image name
-  newwall=$(echo $wallpaper | sed "s|~/nixos-configs/home-manager/wallpaper/||g")
+  newwall=$(echo $wallpaper | sed "s|~/nixos-configs/wallpaper/||g")
   
   # set the new wallpaper
   swww img $wallpaper --transition-step 20 --transition-fps=20
