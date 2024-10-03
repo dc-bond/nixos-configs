@@ -26,8 +26,8 @@
       "home-manager/common/git.nix"
       "home-manager/common/ssh.nix"
       "home-manager/common/wlogout.nix"
-      "home-manager/host-specific/thinkpad/aliases.nix"
-      "home-manager/host-specific/thinkpad/gnupg.nix"
+      "home-manager/host-specific/thinkpad/chris/aliases.nix"
+      "home-manager/host-specific/thinkpad/chris/gnupg.nix"
     ])
   ];
 
