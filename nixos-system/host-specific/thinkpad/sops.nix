@@ -20,7 +20,7 @@
     };
     age = {
       sshKeyPaths = [];
-      keyFile = "/etc/age/thinkpad-age.key"; # sops/age will use private age key in this location to decrypt secrets.yaml that had previously been encrypted with age using its corresponding public age key
+      keyFile = "/etc/age/thinkpad-age.key"; # sops/age will use private age key in this location to decrypt secrets.yaml
     };
     secrets = { # output to /run/secrets/...
       test = {};

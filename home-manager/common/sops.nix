@@ -16,11 +16,11 @@
     defaultSopsFormat = "yaml";
     validateSopsFiles = false;
     gnupg = {
-      home = "/home/chris/.gnupg"; # sops will use gnupg key at this location to decrypt secrets.yaml
       sshKeyPaths = [];
     };
     age = {
       sshKeyPaths = [];
+      keyFile = "/etc/age/thinkpad-age.key"; # sops/age will use private age key in this location to decrypt secrets.yaml
     };
     defaultSymlinkPath = "/run/user/1000/secrets";
     defaultSecretsMountPoint = "/run/user/1000/secrets.d";
