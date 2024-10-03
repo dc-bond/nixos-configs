@@ -10,7 +10,6 @@
 
 {
   
-  #imports = [
   imports = lib.flatten [
     (map configLib.relativeToRoot [
       "home-manager/common/neovim.nix"
@@ -26,14 +25,12 @@
       "home-manager/common/pass.nix"
       "home-manager/common/git.nix"
       "home-manager/common/ssh.nix"
-      "home-manager/common/sops.nix"
       "home-manager/common/wlogout.nix"
       "home-manager/host-specific/thinkpad/aliases.nix"
       "home-manager/host-specific/thinkpad/gnupg.nix"
     ])
   ];
 
-# home-manager module settings
   programs.home-manager.enable = true;
 
 # define username and home directory

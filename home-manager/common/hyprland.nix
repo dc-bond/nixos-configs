@@ -1,5 +1,6 @@
 { 
-  config, 
+  config,
+  configLib,
   pkgs, 
   ... 
 }: 
@@ -7,7 +8,7 @@
 {
 
   home.packages = with pkgs; [
-    (import ../../scripts/common/desktopReload.nix { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/common/desktopReload.nix") { inherit pkgs config; })
   ];
 
   wayland.windowManager.hyprland = {
@@ -26,13 +27,13 @@
     settings = {
       "$mod" = "Alt";
       exec-once = [
-        "desktopReload" # nix script to load wallpaper, launch waybar, etc.
         "swww-daemon"
         "dunst"
-        "[workspace 1 silent] firefox"
-        "[workspace 2 silent] alacritty"
-        "[workspace 3 silent] ${pkgs.vscodium}/bin/codium"
-        "sleep 5 && nextcloud"
+        #"[workspace 1 silent] firefox"
+        #"[workspace 2 silent] alacritty"
+        #"[workspace 3 silent] ${pkgs.vscodium}/bin/codium"
+        "sleep 2 & desktopReload" # nix script to load wallpaper, launch waybar, etc.
+        "sleep 3 && nextcloud"
       ];      
       bind = [
         "$mod, RETURN, exec, alacritty"

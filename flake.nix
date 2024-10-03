@@ -79,7 +79,7 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              users.chris = import ./home-manager/host-specific/thinkpad/home.nix;
+              users.chris = import ./hosts/thinkpad/chris/home.nix;
               extraSpecialArgs = specialArgs; # passes flake inputs and outputs to home-manager module
             };
           }
