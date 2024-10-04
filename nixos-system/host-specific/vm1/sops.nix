@@ -1,12 +1,9 @@
 { 
   inputs, 
   config, 
+  configLib,
   ... 
 }: 
-
-let
-  secretsDirectory = builtins.toString inputs.nixos-secrets;
-in
 
 {
 
@@ -15,7 +12,7 @@ in
   ];
   
   sops = {
-    defaultSopsFile = "${secretsDirectory}/secrets.yaml";
+    defaultSopsFile = configLib.relativeToRoot "secrets.yaml";
     defaultSopsFormat = "yaml";
     validateSopsFiles = false;
     gnupg = {
@@ -23,7 +20,7 @@ in
     };
     age = {
       sshKeyPaths = [];
-      keyFile = "/etc/age/vm1-age.key"; # sops/age will use private age key in this location to decrypt secrets.yaml that had previously been encrypted with age using its corresponding public age key
+      keyFile = "/etc/age/vm1-age.key"; # sops/age will use private age key in this location to decrypt secrets.yaml
     };
     secrets = { # output to /run/secrets/...
       test = {};
