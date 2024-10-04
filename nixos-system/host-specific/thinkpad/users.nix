@@ -20,7 +20,7 @@
       openssh.authorizedKeys.keys = [ 
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDJZBJOhg+DeRoH1UljG6FniW66qtYVmJNYtreg54WL3 chris@dcbond.com"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA+A1i8WE8o6dA4mtJo+6qe8BcLl7mYq/zkd0TOx7lGI xixor@termius"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMygYvn0WaeJZ4CtaFvOli7hePJFsqWbPYlrMpj92A4F chris@vm1"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOjjAo9m/rrJ2DsHAWQO4lNnLmbtMyQhV1LevHzXVf7j chris@vm1"
       ];
     };
     root = {

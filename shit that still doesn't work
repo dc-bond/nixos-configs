@@ -18,6 +18,10 @@ git reset --hard <commit-id>
 git push --force # to update remote
 
 additional manual setups:
+
+create new ssh key on new host
+pipe newly-created public key to github and 
+
 clone nixos-configs and pass repos using ssh
 nextcloud-client setup
 firefox manual setup
