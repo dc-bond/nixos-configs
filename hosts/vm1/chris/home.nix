@@ -15,6 +15,7 @@
       "home-manager/common/neovim.nix"
       "home-manager/common/shell.nix"
       "home-manager/common/git.nix"
+      "home-manager/common/gnupg.nix"
       "home-manager/host-specific/vm1/chris/ssh.nix"
     ])
   ];
