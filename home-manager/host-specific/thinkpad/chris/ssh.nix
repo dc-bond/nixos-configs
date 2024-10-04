@@ -15,6 +15,11 @@
         port = 39800;
         #identityFile = "~/.ssh/chris-ed25519.key";
       };
+      "vm1" = {
+        hostname = "192.168.1.237";
+        user = "chris";
+        port = 28765;
+      };
     };
   };
   
