@@ -97,7 +97,7 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              users.chris = import ./hosts/vm1/root/home.nix;
+              users.chris = import ./hosts/vm1/chris/home.nix;
               users.root = import ./hosts/vm1/root/home.nix;
               extraSpecialArgs = specialArgs;
             };
