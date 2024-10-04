@@ -14,10 +14,10 @@
         user = "xixor";
         port = 39800;
       };
-      "vm1" = {
-        hostname = "192.168.1.237";
+      "thinkpad-dock" = {
+        hostname = "192.168.1.62";
         user = "chris";
-        port = 28765;
+        port = 28764;
       };
     };
   };
