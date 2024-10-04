@@ -14,14 +14,12 @@
     (map configLib.relativeToRoot [
       "home-manager/common/neovim.nix"
       "home-manager/common/shell.nix"
-      #"home-manager/host-specific/vm1/root/ssh.nix"
+      "home-manager/host-specific/vm1/root/ssh.nix"
     ])
   ];
 
 # home-manager module settings
   programs.home-manager.enable = true;
-
-  services.ssh-agent.enable = true; # ensure ssh-agent is running
 
 # define username and home directory
   home = {

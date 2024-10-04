@@ -13,6 +13,7 @@
   imports = lib.flatten [
     (map configLib.relativeToRoot [
       "home-manager/common/neovim.nix"
+      "home-manager/common/gnupg.nix"
       "home-manager/common/shell.nix"
       "home-manager/common/hyprland.nix"
       "home-manager/common/alacritty.nix"
@@ -24,10 +25,9 @@
       "home-manager/common/waybar.nix"
       "home-manager/common/pass.nix"
       "home-manager/common/git.nix"
-      "home-manager/common/ssh.nix"
       "home-manager/common/wlogout.nix"
       "home-manager/host-specific/thinkpad/chris/aliases.nix"
-      "home-manager/host-specific/thinkpad/chris/gnupg.nix"
+      "home-manager/host-specific/thinkpad/chris/ssh.nix"
     ])
   ];
 

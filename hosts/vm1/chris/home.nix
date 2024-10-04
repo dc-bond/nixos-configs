@@ -14,9 +14,7 @@
     (map configLib.relativeToRoot [
       "home-manager/common/neovim.nix"
       "home-manager/common/shell.nix"
-      "home-manager/common/pass.nix"
       "home-manager/common/git.nix"
-      "home-manager/host-specific/vm1/chris/gnupg.nix"
       "home-manager/host-specific/vm1/chris/ssh.nix"
     ])
   ];
