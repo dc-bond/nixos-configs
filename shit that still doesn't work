@@ -1,3 +1,6 @@
+home-manager sops module
+
+
 vscode opening on workspace 2 instead of 3
 git signing using gpg/yubikey
 systemd-networkd wait online error
@@ -5,9 +8,7 @@ LUKS full disk encryption with yubikey
 impermanance?
 pass git actions
 
-update ip address in deploy script
-update device name
-update network interface
+update ip address of live iso in deploy script
 
 
 
@@ -18,9 +19,6 @@ git reset --hard <commit-id>
 git push --force # to update remote
 
 additional manual setups:
-
-create new ssh key on new host
-pipe newly-created public key to github and 
 
 clone nixos-configs and pass repos using ssh
 nextcloud-client setup
