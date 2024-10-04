@@ -14,7 +14,6 @@
     (map configLib.relativeToRoot [
       "home-manager/common/neovim.nix"
       "home-manager/common/shell.nix"
-      "home-manager/host-specific/thinkpad/root/ssh.nix"
     ])
   ];
 
