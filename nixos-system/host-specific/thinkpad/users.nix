@@ -9,6 +9,7 @@
   sops.secrets.chrisPasswd.neededForUsers = true;
 
   users.users = {
+    
     chris = {
       isNormalUser = true;
       hashedPasswordFile = config.sops.secrets.chrisPasswd.path; # create hashed password with 'echo "password" | mkpasswd -s'
@@ -23,9 +24,11 @@
         #"ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA+A1i8WE8o6dA4mtJo+6qe8BcLl7mYq/zkd0TOx7lGI xixor@termius"
       ];
     };
+
     root = {
       shell = pkgs.zsh;
     };
+
   };
 
 }

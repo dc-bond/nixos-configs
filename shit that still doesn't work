@@ -1,6 +1,3 @@
-home-manager sops module
-
-
 vscode opening on workspace 2 instead of 3
 git signing using gpg/yubikey
 systemd-networkd wait online error
