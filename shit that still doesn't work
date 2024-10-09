@@ -5,11 +5,6 @@ LUKS full disk encryption with yubikey
 impermanance?
 pass git actions
 
-update ip address of live iso in deploy script
-
-
-
-
 
 git log
 git reset --hard <commit-id>
