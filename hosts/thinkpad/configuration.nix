@@ -12,7 +12,7 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      #"hosts/thinkpad/disk-config-btrfs-luks.nix"
+      "hosts/thinkpad/disk-config-btrfs-luks.nix"
       "hosts/thinkpad/hardware-configuration.nix"
       "nixos-system/common/audio.nix"
       "nixos-system/common/boot.nix"
