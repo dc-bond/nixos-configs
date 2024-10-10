@@ -22,6 +22,9 @@ pkgs.writeShellScriptBin "thinkpadDeploy"
   
   # set the correct permissions
   chmod 600 "$temp/etc/age/thinkpad-age.key"
+
+  # move to correct directory to generate hardware-configuration.nix
+  cd /home/chris/nixos-configs/hosts/thinkpad
   
   # install
   nix run github:nix-community/nixos-anywhere -- \
