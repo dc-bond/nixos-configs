@@ -12,7 +12,7 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/vm1/disk-config-btrfs.nix"
+      "hosts/vm1/disk-config-ext4.nix"
       "hosts/vm1/hardware-configuration.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/boot.nix"

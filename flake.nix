@@ -105,7 +105,22 @@
         ];
       };
 
-
+      aspen = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        inherit specialArgs;
+        modules = [
+          ./hosts/aspen/configuration.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              users.chris = import ./hosts/aspen/chris/home.nix;
+              extraSpecialArgs = specialArgs;
+            };
+          }
+        ];
+      };
       
     };
   };

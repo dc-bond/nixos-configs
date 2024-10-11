@@ -42,6 +42,7 @@
     (import (configLib.relativeToRoot "scripts/getPassRepo.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuildLocalThinkpad.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuildRemoteVm1.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/rebuildRemoteAspen.nix") { inherit pkgs config; })
     age # encryption tool
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     wget # download tool

@@ -30,5 +30,5 @@ pkgs.writeShellScriptBin "aspenDeploy"
   nix run github:nix-community/nixos-anywhere -- \
   --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
   --extra-files "$temp" \
-  --flake '.#aspen' nixos@192.168.1.
+  --flake '.#aspen' nixos@192.168.1.254
 ''
