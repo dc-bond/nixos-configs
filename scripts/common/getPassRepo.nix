@@ -5,10 +5,9 @@
 
 pkgs.writeShellScriptBin "getPassRepo" 
 ''
-cd ~
-git clone git@github.com:dc-bond/.password-store.git
-cd .password-store/.git/hooks
-cat >> .password-store/.git/hooks/post-commit << 'END'
+git clone git@github.com:dc-bond/.password-store.git ~
+touch .password-store/.git/hooks/post-commit
+cat >> ~/.password-store/.git/hooks/post-commit << 'END'
 #!/bin/sh
 set -x
 git pull --rebase # get edits by other hosts
