@@ -41,7 +41,7 @@
         "enableSmartCommit" = true;
         #"enableCommitSigning" = true;
         "confirmSync" = false;
-        "autofetch" = false;
+        "autofetch" = true;
         "useIntegratedAskPass" = true;
       };
       "github" = {
