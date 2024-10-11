@@ -5,8 +5,9 @@
 
 pkgs.writeShellScriptBin "getPassRepo" 
 ''
-git clone git@github.com:dc-bond/.password-store.git ~
-touch .password-store/.git/hooks/post-commit
+cd ~
+git clone git@github.com:dc-bond/.password-store.git
+touch ~/.password-store/.git/hooks/post-commit
 cat >> ~/.password-store/.git/hooks/post-commit << 'END'
 #!/bin/sh
 set -x
