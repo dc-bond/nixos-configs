@@ -14,4 +14,5 @@ set -x
 git pull --rebase # get edits by other hosts
 git push # push the latest commit
 END
+chmod +x ~/.password-store/.git/hooks/post-commit
 ''
