@@ -22,10 +22,9 @@
       "nixos-system/common/thunar.nix"
       "nixos-system/common/hyprland.nix"
       "nixos-system/common/printing.nix"
-      "nixos-system/common/packages.nix"
       "nixos-system/common/misc.nix"
+      "nixos-system/common/nixpkgs.nix"
       "nixos-system/host-specific/thinkpad/login.nix"
-      "nixos-system/host-specific/thinkpad/nixpkgs.nix"
       "nixos-system/host-specific/thinkpad/users.nix"
       "nixos-system/host-specific/thinkpad/keyring.nix"
       "nixos-system/host-specific/thinkpad/sshd.nix"
@@ -33,8 +32,34 @@
       "nixos-system/host-specific/thinkpad/bluetooth.nix"
       "nixos-system/host-specific/thinkpad/networking.nix"
       "nixos-system/host-specific/thinkpad/wireguard.nix"
-      "nixos-system/host-specific/thinkpad/packages.nix"
     ])
+  ];
+
+  environment.systemPackages = with pkgs; [
+    (import (configLib.relativeToRoot "scripts/common/hello-world.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/common/aspenDeploy.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/common/vm1Deploy.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/common/getPassRepo.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/host-specific/thinkpad/rebuild.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/host-specific/thinkpad/vm1Rebuild.nix") { inherit pkgs config; })
+    age # encryption tool
+    sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
+    wget # download tool
+    usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
+    nvd # package version diff info for nix build operations
+    nix-tree # table view of package dependencies
+    ethtool # network tools
+    unzip # utility to unzip directories
+    git # git
+    eza # modern replacement for 'ls'
+    pfetch # system info displayed on shell startup
+    btop # system monitor
+    nmap # network scanning
+    brightnessctl # screen brightness application
+    ddcutil # query and change monitor settings using DDC/CI and USB
+    i2c-tools # hardware interface tools required by ddcutil
+    libreoffice-still # office suite
+    #element-desktop-wayland # matrix chat app
   ];
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality

@@ -20,6 +20,11 @@
         user = "chris";
         port = 28765;
       };
+      #"aspen" = {
+      #  hostname = "";
+      #  user = "chris";
+      #  port = 28766;
+      #};
     };
   };
   
