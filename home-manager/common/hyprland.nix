@@ -8,7 +8,7 @@
 {
 
   home.packages = with pkgs; [
-    (import (configLib.relativeToRoot "scripts/common/desktopReload.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/desktopReload.nix") { inherit pkgs config; })
     swww # animated wallpaper for wayland window managers
     pywal # color theme changer
     dunst # notification daemon
