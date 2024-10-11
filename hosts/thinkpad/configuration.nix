@@ -36,12 +36,12 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    (import (configLib.relativeToRoot "scripts/common/hello-world.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/common/aspenDeploy.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/common/vm1Deploy.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/common/getPassRepo.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/host-specific/thinkpad/rebuild.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/host-specific/thinkpad/vm1Rebuild.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/hello-world.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/deployAspen.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/deployVm1.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/getPassRepo.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/rebuildLocalThinkpad.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/rebuildRemoteVm1.nix") { inherit pkgs config; })
     age # encryption tool
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     wget # download tool

@@ -3,7 +3,7 @@
   config 
 }:
 
-pkgs.writeShellScriptBin "vm1Rebuild" 
+pkgs.writeShellScriptBin "rebuildRemoteVm1" 
 ''
   nixos_old_gen=$(ssh vm1 'readlink -f /run/current-system')
   nixos-rebuild \

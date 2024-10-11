@@ -18,6 +18,7 @@
       "home-manager/common/gnupg.nix"
       "home-manager/common/pass.nix"
       "home-manager/host-specific/vm1/chris/ssh.nix"
+      "home-manager/host-specific/vm1/chris/aliases.nix"
     ])
   ];
 

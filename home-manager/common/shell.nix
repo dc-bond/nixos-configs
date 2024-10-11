@@ -17,11 +17,6 @@
     '';
     shellAliases = {
       ls = "eza -all --long -g -h --color=always --group-directories-first --git";
-      update = "sudo nix flake update ~/nixos-configs && rebuild";
-      wgup = "sudo networkctl up wg0";
-      wgdn = "sudo networkctl down wg0";
-      wglogon = "echo module wireguard +p | sudo tee /sys/kernel/debug/dynamic_debug/control";
-      wglogs = "journalctl -ekf";
     };
     zplug = {
       enable = true;
