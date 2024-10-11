@@ -3,7 +3,7 @@
   config
 }:
 
-pkgs.writeShellScriptBin "vm1Deploy" 
+pkgs.writeShellScriptBin "deployVm1" 
 ''
   # create a temporary directory
   temp=$(mktemp -d)

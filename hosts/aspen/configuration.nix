@@ -12,8 +12,8 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/vm1/disk-config-ext4.nix"
-      "hosts/vm1/hardware-configuration.nix"
+      "hosts/aspen/disk-config-ext4.nix"
+      "hosts/aspen/hardware-configuration.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/boot.nix"
       "nixos-system/common/zsh.nix"
@@ -30,6 +30,7 @@
     age # encryption tool
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     wget # download tool
+    git # git
     nvd # package version diff info for nix build operations
     eza # modern replacement for 'ls'
     pfetch # system info displayed on shell startup

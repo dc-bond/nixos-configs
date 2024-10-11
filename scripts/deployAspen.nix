@@ -3,7 +3,7 @@
   config
 }:
 
-pkgs.writeShellScriptBin "aspenDeploy" 
+pkgs.writeShellScriptBin "deployAspen" 
 ''
   # create a temporary directory
   temp=$(mktemp -d)

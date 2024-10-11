@@ -3,7 +3,7 @@
   config
 }:
 
-pkgs.writeShellScriptBin "thinkpadDeploy" 
+pkgs.writeShellScriptBin "deployThinkpad" 
 ''
   # create a temporary directory
   temp=$(mktemp -d)
