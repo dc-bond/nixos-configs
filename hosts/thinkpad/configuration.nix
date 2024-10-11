@@ -60,6 +60,7 @@
     i2c-tools # hardware interface tools required by ddcutil
     libreoffice-still # office suite
     #element-desktop-wayland # matrix chat app
+    cowsay
   ];
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
