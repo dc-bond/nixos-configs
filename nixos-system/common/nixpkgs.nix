@@ -25,6 +25,7 @@
   in {
     settings = {
       experimental-features = "nix-command flakes";
+      trusted-users = [ "chris" ]; # allow remote builds?
       warn-dirty = false;
       flake-registry = "";
       nix-path = config.nix.nixPath; # workaround for https://github.com/NixOS/nix/issues/9574
