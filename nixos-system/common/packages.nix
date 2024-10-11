@@ -11,6 +11,7 @@
     (import (configLib.relativeToRoot "scripts/common/hello-world.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/common/thinkpadDeploy.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/common/vm1Deploy.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/common/getPassRepo.nix") { inherit pkgs config; })
     age # encryption tool
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     wget # download tool
