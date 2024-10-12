@@ -30,5 +30,7 @@ pkgs.writeShellScriptBin "deployAspen"
   nix run github:nix-community/nixos-anywhere -- \
   --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
   --extra-files "$temp" \
-  --flake '.#aspen' nixos@192.168.1.254
+  --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/aspen/crypt-passwd) \
+  --flake '.#aspen' \
+  nixos@192.168.1.254
 ''

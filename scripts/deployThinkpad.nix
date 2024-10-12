@@ -29,6 +29,8 @@ pkgs.writeShellScriptBin "deployThinkpad"
   # install
   nix run github:nix-community/nixos-anywhere -- \
   --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
-  --extra-files "$temp" --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/thinkpad/crypt-passwd) \
-  --flake '.#thinkpad' nixos@192.168.1.62
+  --extra-files "$temp" \
+  --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/thinkpad/crypt-passwd) \
+  --flake '.#thinkpad' \
+  nixos@192.168.1.62
 ''
