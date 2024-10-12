@@ -19,7 +19,7 @@
           type = "gpt";
           partitions = {
             ESP = {
-              size = "1024M";
+              size = "100M";
               type = "EF00";
               content = {
                 type = "filesystem";
@@ -56,7 +56,7 @@
                     };
                     "/swap" = {
                       mountpoint = "/swap";
-                      swap.swapfile.size = "16M"; # double system memory
+                      swap.swapfile.size = "16000M"; # double system memory
                     };
                   };
                 };

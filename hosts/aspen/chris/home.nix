@@ -10,12 +10,11 @@
 
 {
   
-  imports = lib.flatten [
-    (map configLib.relativeToRoot [
-      "home-manager/common/neovim.nix"
-      "home-manager/common/shell.nix"
-    ])
-  ];
+  #imports = lib.flatten [
+  #  (map configLib.relativeToRoot [
+  #    "home-manager/common/neovim.nix"
+  #  ])
+  #];
 
 # home-manager module settings
   programs.home-manager.enable = true;
