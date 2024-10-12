@@ -27,8 +27,16 @@ pkgs.writeShellScriptBin "deployVm1"
   cd /home/chris/nixos-configs/hosts/vm1
 
   # install
-  nix run github:nix-community/nixos-anywhere -- \
+  
+  #nix run github:nix-community/nixos-anywhere -- \
   #--generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
-  --extra-files "$temp" --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/vm1/crypt-passwd) \
-  --flake 'github:dc-bond/nixos-configs#vm1' nixos@192.168.1.199
+  #--extra-files "$temp" --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/vm1/crypt-passwd) \
+  #--flake 'github:dc-bond/nixos-configs#vm1' nixos@192.168.1.199
+
+  nix run github:nix-community/nixos-anywhere -- \
+  --extra-files "$temp" \
+  --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/vm1/crypt-passwd) \
+  --flake 'github:dc-bond/nixos-configs#vm1' \
+  nixos@192.168.1.199
+
 ''
