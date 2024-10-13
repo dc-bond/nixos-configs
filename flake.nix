@@ -24,6 +24,10 @@
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    compose2nix = {
+      url = "github:aksiksi/compose2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     #plasma-manager = {
     #  url = "github:nix-community/plasma-manager";
     #  inputs.nixpkgs.follows = "nixpkgs";
