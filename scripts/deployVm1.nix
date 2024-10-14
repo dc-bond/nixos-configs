@@ -5,6 +5,7 @@
 
 let
   host = "vm1";
+  ipv4 = "192.168.1.199"
 in
 
 pkgs.writeShellScriptBin "deployVm1" 
@@ -35,5 +36,5 @@ pkgs.writeShellScriptBin "deployVm1"
   --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
   --extra-files "$temp" \
   --flake '.#${host}' \
-  nixos@192.168.1.199
+  nixos@${ipv4}
 ''

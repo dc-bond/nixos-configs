@@ -1,9 +1,14 @@
 { 
-  pkgs, 
+  pkgs,
   config
 }:
 
-pkgs.writeShellScriptBin "deployThinkpad" 
+let
+  host = "thinkpad";
+  ipv4 = "192.168.1.62"
+in
+
+pkgs.writeShellScriptBin "deploy${host}" 
 ''
   # create a temporary directory
   temp=$(mktemp -d)
@@ -14,23 +19,23 @@ pkgs.writeShellScriptBin "deployThinkpad"
   }
   trap cleanup EXIT
   
-  # create the directory where sops expects to find the age host key
+  # create directory where sops expects to find the age host key
   install -d -m755 "$temp/etc/age"
   
   # decrypt private key from the password store and copy it to the temporary directory
-  pass hosts/thinkpad/age/private > "$temp/etc/age/thinkpad-age.key"
+  pass hosts/${host}/age/private > "$temp/etc/age/${host}-age.key"
   
   # set the correct permissions
-  chmod 600 "$temp/etc/age/thinkpad-age.key"
+  chmod 600 "$temp/etc/age/${host}-age.key"
 
   # move to correct directory to generate hardware-configuration.nix
-  cd /home/chris/nixos-configs/hosts/thinkpad
-  
+  cd /home/chris/nixos-configs/hosts/${host}
+
   # install
   nix run github:nix-community/nixos-anywhere -- \
   --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
   --extra-files "$temp" \
-  --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/thinkpad/crypt-passwd) \
-  --flake '.#thinkpad' \
-  nixos@192.168.1.62
+  --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/${host}/crypt-passwd) \
+  --flake '.#${host}' \
+  nixos@${ipv4}
 ''
