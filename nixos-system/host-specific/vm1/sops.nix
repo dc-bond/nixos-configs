@@ -11,6 +11,10 @@
     inputs.sops-nix.nixosModules.sops
   ];
   
+  home-manager.sharedModules = [
+    inputs.sops-nix.homeManagerModules.sops # also import home-manager sops module so user level secrets also work
+  ];
+
   sops = {
     defaultSopsFile = configLib.relativeToRoot "hosts/vm1/secrets.yaml";
     defaultSopsFormat = "yaml";
