@@ -13,6 +13,7 @@
       };
       efi.canTouchEfiVariables = true;
     };
+    #supportedFilesystems = lib.mkForce ["btrfs"];
     supportedFilesystems = {
       btrfs = true;
       ext4 = true;

@@ -37,7 +37,7 @@
       exec-once = [
         "swww-daemon"
         "dunst"
-        "[workspace 1 silent] firefox"
+        #"[workspace 1 silent] firefox"
         "[workspace 2 silent] alacritty"
         #"[workspace 3 silent] ${pkgs.vscodium}/bin/codium"
         "sleep 2 & desktopReload" # nix script to load wallpaper, launch waybar, etc.
