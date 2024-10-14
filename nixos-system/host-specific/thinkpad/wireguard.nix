@@ -20,9 +20,6 @@ in
         group = "${config.users.users.systemd-network.group}";
         mode = "0440";
       };
-      opticonUrl = {};
-      opticonVpnPort = {};
-      opticonInternalIp = {};
     };
   };
 
