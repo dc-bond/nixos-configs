@@ -19,7 +19,7 @@
       "home-manager/common/pass.nix"
       "home-manager/host-specific/vm1/chris/ssh.nix"
       "home-manager/host-specific/vm1/chris/aliases.nix"
-      "home-manager/host-specific/vm1/chris/sops.nix"
+      #"home-manager/host-specific/vm1/chris/sops.nix"
     ])
   ];
 

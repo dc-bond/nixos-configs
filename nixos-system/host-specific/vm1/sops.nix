@@ -2,6 +2,7 @@
   inputs, 
   config, 
   configLib,
+  configVars,
   ... 
 }: 
 
@@ -28,6 +29,11 @@
     };
     secrets = { # output to /run/secrets/...
       test = {};
+      homeTest = {
+        owner = "${config.users.users.${username}.name}";
+        group = "${config.users.users.${username}.group}";
+        mode = "0440";
+      };
     };
   };
 
