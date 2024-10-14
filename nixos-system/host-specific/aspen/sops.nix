@@ -12,7 +12,7 @@
   ];
   
   sops = {
-    defaultSopsFile = configLib.relativeToRoot "secrets.yaml";
+    defaultSopsFile = configLib.relativeToRoot "hosts/aspen/secrets.yaml";
     defaultSopsFormat = "yaml";
     validateSopsFiles = false;
     gnupg = {

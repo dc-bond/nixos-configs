@@ -12,7 +12,7 @@
   ];
   
   sops = {
-    defaultSopsFile = configLib.relativeToRoot "secrets.yaml";
+    defaultSopsFile = configLib.relativeToRoot "hosts/vm1/secrets.yaml";
     defaultSopsFormat = "yaml";
     validateSopsFiles = false;
     gnupg = {

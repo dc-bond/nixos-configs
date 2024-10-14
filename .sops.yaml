@@ -7,13 +7,31 @@ keys:
     - &aspen age1zeavlllujxttwxegdtae4yqmj5gc4prp8xdu8m9xwn49qml4s3eq2c2ck6 
 
 creation_rules: # when sops creates/edits a secrets.yaml file it encrypts using both gpg and age public keys and one or the other corresponding private keys will be required to decrypt
-  - path_regex: secrets.(yaml|json|env|ini)$ 
+  #- path_regex: secrets.(yaml|json|env|ini)$ 
+  #  key_groups:
+  #    - pgp:
+  #      - *chris 
+  #      age:
+  #      - *thinkpad
+  #      - *vm1
+  #      - *aspen
+  - path_regex: hosts/thinkpad/secrets.(yaml|json|env|ini)$
     key_groups:
       - pgp:
         - *chris 
         age:
         - *thinkpad
+  - path_regex: hosts/vm1/secrets.(yaml|json|env|ini)$
+    key_groups:
+      - pgp:
+        - *chris 
+        age:
         - *vm1
+  - path_regex: hosts/aspen/secrets.(yaml|json|env|ini)$
+    key_groups:
+      - pgp:
+        - *chris 
+        age:
         - *aspen
 
-# run 'sops updatekeys /home/chris/nixos-configs/secrets.yaml' on the encrypted secrets file to update with new user or host encryption keys when added above
+# run 'sops updatekeys /home/chris/nixos-configs/hosts/[insert]/secrets.yaml' on the encrypted secrets file to update with new user or host encryption keys when added above
