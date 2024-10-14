@@ -12,11 +12,11 @@
     defaultSopsFormat = "yaml";
     validateSopsFiles = false;
     gnupg = {
+      home = "~/.gnupg";
       sshKeyPaths = [];
     };
     age = {
       sshKeyPaths = [];
-      keyFile = "/etc/age/vm1-age.key"; # sops/age will use private age key in this location to decrypt secrets.yaml
     };
     defaultSymlinkPath = "/run/user/1000/secrets";
     defaultSecretsMountPoint = "/run/user/1000/secrets.d";

@@ -9,5 +9,5 @@ in
 
 pkgs.writeShellScriptBin "helloWorldHome" 
 ''
-  echo "Hello World $(cat ${secret})";
+  echo "Hello world $(cat ${secret}).";
 ''

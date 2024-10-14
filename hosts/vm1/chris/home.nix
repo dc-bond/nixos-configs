@@ -20,7 +20,6 @@
       "home-manager/host-specific/vm1/chris/ssh.nix"
       "home-manager/host-specific/vm1/chris/aliases.nix"
       "home-manager/host-specific/vm1/chris/sops.nix"
-      "scripts/helloWorldHome.nix"
     ])
   ];
 

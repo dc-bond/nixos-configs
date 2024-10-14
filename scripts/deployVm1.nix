@@ -5,7 +5,7 @@
 
 let
   host = "vm1";
-  ipv4 = "192.168.1.199"
+  ipv4 = "192.168.1.199";
 in
 
 pkgs.writeShellScriptBin "deployVm1" 

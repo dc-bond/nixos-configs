@@ -5,7 +5,7 @@
 
 let
   host = "aspen";
-  ipv4 = "192.168.1.254"
+  ipv4 = "192.168.1.254";
 in
 
 pkgs.writeShellScriptBin "deploy${host}" 
