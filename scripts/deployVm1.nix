@@ -33,5 +33,4 @@ pkgs.writeShellScriptBin "deployVm1"
   --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/vm1/crypt-passwd) \
   --flake '.#vm1' \
   nixos@192.168.1.199
-
 ''
