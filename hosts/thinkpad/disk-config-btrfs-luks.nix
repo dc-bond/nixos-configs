@@ -35,7 +35,6 @@
                 name = "crypted";
                 settings = {
                   allowDiscards = true;
-                  #keyFile = "/tmp/secret.key";
                 };
                 passwordFile = "/tmp/crypt-passwd.txt"; # interactive login
                 content = {
