@@ -33,11 +33,6 @@
     #  inputs.nixpkgs.follows = "nixpkgs";
     #  inputs.home-manager.follows = "home-manager";
     #};
-    #nixos-secrets = {
-    #  url = "git+ssh://git@github.com/dc-bond/nixos-secrets.git?ref=main&shallow=1";
-    #  flake = false;
-    #  inputs = { };
-    #};
   };
 
   outputs = { 
