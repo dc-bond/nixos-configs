@@ -3,6 +3,10 @@
   config
 }:
 
+let
+  host = "vm1";
+in
+
 pkgs.writeShellScriptBin "deployVm1" 
 ''
   # create a temporary directory
@@ -18,19 +22,18 @@ pkgs.writeShellScriptBin "deployVm1"
   install -d -m755 "$temp/etc/age"
   
   # decrypt private key from the password store and copy it to the temporary directory
-  pass hosts/thinkpad/age/private > "$temp/etc/age/vm1-age.key"
+  pass hosts/${host}/age/private > "$temp/etc/age/${host}-age.key"
   
   # set the correct permissions
-  chmod 600 "$temp/etc/age/vm1-age.key"
+  chmod 600 "$temp/etc/age/${host}-age.key"
 
   # move to correct directory to generate hardware-configuration.nix
-  cd /home/chris/nixos-configs/hosts/vm1
+  cd /home/chris/nixos-configs/hosts/${host}
 
   # install
   nix run github:nix-community/nixos-anywhere -- \
   --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
   --extra-files "$temp" \
-  --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/vm1/crypt-passwd) \
-  --flake '.#vm1' \
+  --flake '.#${host}' \
   nixos@192.168.1.199
 ''
