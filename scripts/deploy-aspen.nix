@@ -5,10 +5,10 @@
 
 let
   host = "aspen";
-  ipv4 = "192.168.1.254";
+  ipv4 = "172.234.24.166";
 in
 
-pkgs.writeShellScriptBin "deploy${host}" 
+pkgs.writeShellScriptBin "deploy-${host}" 
 ''
   # create a temporary directory
   temp=$(mktemp -d)
@@ -36,5 +36,5 @@ pkgs.writeShellScriptBin "deploy${host}"
   --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
   --extra-files "$temp" \
   --flake '.#${host}' \
-  nixos@${ipv4}
+  root@${ipv4}
 ''

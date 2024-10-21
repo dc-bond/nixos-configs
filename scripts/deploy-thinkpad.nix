@@ -4,11 +4,11 @@
 }:
 
 let
-  host = "vm1";
-  ipv4 = "192.168.1.199";
+  host = "thinkpad";
+  ipv4 = "192.168.1.62";
 in
 
-pkgs.writeShellScriptBin "deployVm1" 
+pkgs.writeShellScriptBin "deploy-${host}" 
 ''
   # create a temporary directory
   temp=$(mktemp -d)
@@ -35,6 +35,7 @@ pkgs.writeShellScriptBin "deployVm1"
   nix run github:nix-community/nixos-anywhere -- \
   --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
   --extra-files "$temp" \
+  --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/${host}/crypt-passwd) \
   --flake '.#${host}' \
   nixos@${ipv4}
 ''
