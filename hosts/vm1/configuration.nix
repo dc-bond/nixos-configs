@@ -30,8 +30,8 @@
   environment.systemPackages = with pkgs; [
     (import (configLib.relativeToRoot "scripts/hello-world.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/helloWorldHome.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/deployThinkpad.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/deployAspen.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/deploy-thinkpad.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/deploy-aspen.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/getPassRepo.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuildLocalVm1.nix") { inherit pkgs config; })
     wget # download tool

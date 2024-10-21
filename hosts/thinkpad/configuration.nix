@@ -37,8 +37,8 @@
 
   environment.systemPackages = with pkgs; [
     (import (configLib.relativeToRoot "scripts/hello-world.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/deployAspen.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/deployVm1.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/deploy-aspen.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/deploy-vm1.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/getPassRepo.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuildLocalThinkpad.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuildRemoteVm1.nix") { inherit pkgs config; })
