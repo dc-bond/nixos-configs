@@ -1,33 +1,32 @@
 { pkgs, 
-  lib, 
   ... 
 }:
 
 {
 
-  services = {
-    stirling-pdf = {
-      enable = true;
-      environment = {
-        SERVER_PORT = 16237;
-      };
-    };
-  };
-
-  #virtualisation.oci-containers.containers = {
+  #services = {
   #  stirling-pdf = {
-  #    image = "docker.io/frooodle/s-pdf:0.18.1";
-  #    autoStart = true;
-  #    ports = [
-  #      "16237:8080/tcp"
-  #    ];
+  #    enable = true;
+  #    environment = {
+  #      SERVER_PORT = 16237;
+  #    };
   #  };
-  #  #log-driver = "journald";
-  #  #extraOptions = [
-  #  #  "--network-alias=stirling-pdf"
-  #  #  "--network=backend"
-  #  #];
   #};
+
+  virtualisation.oci-containers.containers = {
+    stirling-pdf = {
+      image = "docker.io/frooodle/s-pdf:0.18.1";
+      autoStart = true;
+      ports = [
+        "16237:8080/tcp"
+      ];
+    };
+    #log-driver = "journald";
+    #extraOptions = [
+    #  "--network-alias=stirling-pdf"
+    #  "--network=backend"
+    #];
+  };
 
   #systemd.services."podman-stirling-pdf" = {
   #  serviceConfig = {
