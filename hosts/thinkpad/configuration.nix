@@ -24,6 +24,7 @@
       "nixos-system/common/printing.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
+      "nixos-system/common/stirling-pdf2.nix"
       "nixos-system/host-specific/thinkpad/login.nix"
       "nixos-system/host-specific/thinkpad/users.nix"
       "nixos-system/host-specific/thinkpad/keyring.nix"
