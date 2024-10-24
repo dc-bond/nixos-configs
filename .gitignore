@@ -1,2 +1,3 @@
 *.decrypted~*
 .decrypted~secrets.yaml
+examples.nix
