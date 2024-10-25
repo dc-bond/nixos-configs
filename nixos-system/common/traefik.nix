@@ -26,6 +26,16 @@
 
       staticConfigOptions = {
         api.dashboard = true;
+        log.level = "INFO";
+        accessLog = {
+          filePath = "/var/lib/traefik/traefik.log";
+          #bufferingSize = 100;
+          #filters.statusCodes = [
+          #  "200-206"
+          #  "400-499"
+          #  "500-599"
+          #];
+        };
         entryPoints = {
           web = {
             address = ":80/tcp";
@@ -58,7 +68,7 @@
             };
             email = "chris@dcbond.com";
             keyType = "RSA4096";
-            certificatesDuration = 90;
+            certificatesDuration = 180;
             storage = "/var/lib/traefik/acme.json"; # where acme certificates live
             caServer = "https://acme-v02.api.letsencrypt.org/directory";
           };
