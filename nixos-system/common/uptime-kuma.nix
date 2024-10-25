@@ -17,8 +17,8 @@
     loadBalancer = {
       servers = [
         {
-          #url = "http://localhost:3001";
-          url = "https://uptime-kuma.professorbond.com:3001";
+          url = "http://localhost:3001";
+          #url = "https://uptime-kuma.professorbond.com:3001";
         }
       ];
     };
