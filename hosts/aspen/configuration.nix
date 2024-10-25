@@ -19,6 +19,7 @@
       "nixos-system/common/podman.nix"
       "nixos-system/common/stirling-pdf.nix"
       "nixos-system/common/nextcloud.nix"
+      "nixos-system/common/traefik.nix"
       "nixos-system/host-specific/aspen/users.nix"
       "nixos-system/host-specific/aspen/boot.nix"
       "nixos-system/host-specific/aspen/sshd.nix"
