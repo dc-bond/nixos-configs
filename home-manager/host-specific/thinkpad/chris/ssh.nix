@@ -21,7 +21,7 @@
         port = 28765;
       };
       "aspen" = {
-        hostname = "192.168.1.254";
+        hostname = "192.168.1.186";
         user = "chris";
         port = 28766;
       };
