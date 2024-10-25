@@ -25,8 +25,9 @@
       enable = true;
 
       staticConfigOptions = {
-        api = true;
-        api.dashboard = true;
+        api = {
+          dashboard = true;
+        };
         entryPoints = {
           web = {
             address = ":80/tcp";
@@ -55,7 +56,7 @@
                 email = "chris@dcbond.com";
                 keyType = "RSA4096";
                 certificatesDuration = 2160;
-                storage = "/var/lib/traefik"; # where acme certificates live
+                storage = "/var/lib/traefik/acme.json"; # where acme certificates live
                 caServer = "https://acme-v02.api.letsencrypt.org/directory";
               };
             };
@@ -81,6 +82,7 @@
             tls-13 = {
               minVersion = "VersionTLS13";
               sniStrict = true;
+              curvePreferences = ["CurveP521" "CurveP384"];
             };
           };
         };
