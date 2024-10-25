@@ -25,20 +25,14 @@
       enable = true;
 
       staticConfigOptions = {
-        api = {
-          dashboard = true;
-        };
+        api.dashboard = true;
         entryPoints = {
           web = {
             address = ":80/tcp";
-            http = {
-              redirections = {
-                entrypoint = {
-                  to = "websecure";
-                  scheme = "https";
-                  permanent = true;
-                };
-              };
+            http.redirections.entrypoint = {
+              to = "websecure";
+              scheme = "https";
+              permanent = true;
             };
           };
           websecure = {
@@ -53,22 +47,20 @@
           };
         };
         certificatesResolvers = {
-          cloudflareDns = {
-            acme = {
-              dnsChallenge = {
-                provider = "cloudflare";
-                resolvers = [
-                  "1.1.1.1:53" 
-                  "1.0.0.1:53"
-                ];
-                delayBeforeCheck = 5;
-              };
-              email = "chris@dcbond.com";
-              keyType = "RSA4096";
-              certificatesDuration = 90;
-              storage = "/var/lib/traefik/acme.json"; # where acme certificates live
-              caServer = "https://acme-v02.api.letsencrypt.org/directory";
+          cloudflareDns.acme = {
+            dnsChallenge = {
+              provider = "cloudflare";
+              resolvers = [
+                "1.1.1.1:53" 
+                "1.0.0.1:53"
+              ];
+              delayBeforeCheck = 5;
             };
+            email = "chris@dcbond.com";
+            keyType = "RSA4096";
+            certificatesDuration = 90;
+            storage = "/var/lib/traefik/acme.json"; # where acme certificates live
+            caServer = "https://acme-v02.api.letsencrypt.org/directory";
           };
         };
       };
@@ -81,9 +73,7 @@
               service = "api@internal";
               rule = "Host(`traefik.professorbond.com`)";
               #middlewares = ["auth" "headers"];
-              tls = {
-                certResolver = "cloudflareDns";
-              };
+              tls.certResolver = "cloudflareDns";
             };
           };
           #middlewares = {
