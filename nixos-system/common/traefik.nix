@@ -26,10 +26,15 @@
 
       staticConfigOptions = {
         api.dashboard = true;
-        log.level = "INFO";
-        accessLog = {
+        log = {
+          level = "INFO";
+          noColor = false;
           filePath = "/var/lib/traefik/traefik.log";
-          #bufferingSize = 100;
+        };
+        accessLog = {
+          filePath = "/var/lib/traefik/traefik-access.log";
+          addInternals = true;
+          bufferingSize = 100;
           #filters.statusCodes = [
           #  "200-206"
           #  "400-499"
@@ -81,7 +86,7 @@
             dashboard = {
               entrypoints = ["websecure"];
               service = "api@internal";
-              rule = "Host(`traefik.professorbond.com`)";
+              rule = "Host(`professorbond.com`)";
               #middlewares = ["auth" "headers"];
               tls.certResolver = "cloudflareDns";
             };
