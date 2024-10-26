@@ -10,12 +10,17 @@
   programs.zsh = {
     enable = true;
     #autocd = true; # move to directory without using cd
-    #syntaxHighlighting.enable = true;
-    enableCompletion = true;
-    autoSuggestion = {
+    syntaxHighlighting = { # highlight valid commands in green and invalid/unknown commands in red
       enable = true;
-      highlight = "fg=#ff00ff,bg=cyan,bold,underline";
-      strategy = ["history"];
+      #patterns = {
+      #  "rm -rf *" = "fg=white,bold,bg=red"; 
+      #};
+    };
+    #enableCompletion = true; # not apparent what this does exactly so disabling
+    autosuggestion = { # shadow text suggested completions ahead of typing command
+      enable = true;
+      #highlight = "";
+      #strategy = ["history"];
     };
     defaultKeymap = "viins";
     initExtra = # added to zsh interactive shell (.zshrc)
@@ -28,8 +33,7 @@
     #zplug = {
     #  enable = true;
     #  plugins = [
-    #    #{ name = "zsh-users/zsh-autosuggestions"; } # shadow text suggested completions ahead of typing
-    #    #{ name = "marlonrichert/zsh-autocomplete"; } # show list of possible completions as typing
+    #    #{ name = "marlonrichert/zsh-autocomplete"; } # 
     #  ];
     #};
     history.size = 5000;
