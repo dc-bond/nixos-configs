@@ -45,6 +45,8 @@
     (import (configLib.relativeToRoot "scripts/rebuildRemoteAspen.nix") { inherit pkgs config; })
     inputs.compose2nix.packages.x86_64-linux.default # compose2nix tool
     age # encryption tool
+    mkpasswd # password hashing tool
+    dig # dns lookup tool
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     wget # download tool
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
@@ -62,7 +64,6 @@
     i2c-tools # hardware interface tools required by ddcutil
     libreoffice-still # office suite
     #element-desktop-wayland # matrix chat app
-    cowsay
   ];
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality

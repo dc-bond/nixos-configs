@@ -8,10 +8,17 @@
 
 {
   
-  sops.secrets.cloudflareApiKey = {
-    owner = config.users.users.traefik.name;
-    group = config.users.users.traefik.group;
-    mode = "0440";
+  sops.secrets = {
+    cloudflareApiKey = {
+      owner = config.users.users.traefik.name;
+      group = config.users.users.traefik.group;
+      mode = "0440";
+    };
+    traefikBasicAuth = {
+      owner = config.users.users.traefik.name;
+      group = config.users.users.traefik.group;
+      mode = "0440";
+    };
   };
 
   systemd.services.traefik.environment = {
@@ -25,7 +32,10 @@
       enable = true;
 
       staticConfigOptions = {
-        api.dashboard = true;
+        api = {
+          dashboard = true;
+          insecure = false;
+        };
         log = {
           level = "INFO";
           noColor = false;
@@ -85,30 +95,38 @@
 
       dynamicConfigOptions = {
         http = {
-          routers = {
-            traefik-dashboard = {
-              entrypoints = ["websecure"];
-              service = "api@internal";
-              rule = "Host(`traefik.professorbond.com`)";
-              #middlewares = ["auth" "headers"];
-              tls = {
-                certResolver = "cloudflareDns";
-                options = "tls-13@file";
-                domains = {
-                  "0" = {
-                    main = "professorbond.com";
-                    sans = "*.professorbond.com";
-                  };
+          routers.traefik-dashboard = {
+            entrypoints = ["websecure"];
+            #rule = "Host(`professorbond.com`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))";
+            rule = "Host(`professorbond.com`)";
+            service = "api@internal";
+            middlewares = [
+              "auth" 
+              #"headers"
+            ];
+            tls = {
+              certResolver = "cloudflareDns";
+              options = "tls-13@file";
+              domains = {
+                "0" = {
+                  main = "professorbond.com";
+                  sans = "*.professorbond.com";
                 };
               };
             };
           };
-          #middlewares = {
-          #  auth = {
-          #    basicAuth = {
-          #      usersFile = "${config.sops.secrets.basic-auth.path}";
-          #    };
+          #services.traefik-dashboard = {
+          #  loadBalancer = {
+          #    passHostHeader = true;
+          #    servers.url = "http://localhost:80";
           #  };
+          #};
+          middlewares = {
+            auth = {
+              basicAuth = {
+                usersFile = "${config.sops.secrets.traefikBasicAuth.path}";
+              };
+            };
           #  headers = {
           #    headers = {
           #      browserxssfilter = true;
@@ -123,7 +141,7 @@
           #      stsseconds = "315360000";
           #    };
           #  };
-          #};
+          };
         };
         tls = {
           options = {

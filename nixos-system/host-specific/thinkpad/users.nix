@@ -8,6 +8,8 @@
 
   sops.secrets.chrisPasswd.neededForUsers = true;
 
+  security.sudo.wheelNeedsPassword = false;
+  
   users.users = {
     
     chris = {
