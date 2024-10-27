@@ -19,11 +19,6 @@
       group = config.users.users.traefik.group;
       mode = "0440";
     };
-    traefikBasicAuth2 = {
-      owner = config.users.users.traefik.name;
-      group = config.users.users.traefik.group;
-      mode = "0440";
-    };
   };
 
   systemd.services.traefik.environment = {
@@ -107,7 +102,7 @@
             service = "api@internal";
             middlewares = [
               "auth" 
-              #"headers"
+              "secure-headers"
             ];
             tls = {
               certResolver = "cloudflareDns";
@@ -130,23 +125,29 @@
             auth = {
               basicAuth = {
                 usersFile = "${config.sops.secrets.traefikBasicAuth.path}";
-                #usersFile = "${config.sops.secrets.traefikBasicAuth2.path}";
               };
             };
-          #  headers = {
-          #    headers = {
-          #      browserxssfilter = true;
-          #      contenttypenosniff = true;
-          #      customframeoptionsvalue = "SAMEORIGIN";
-          #      forcestsheader = true;
-          #      framedeny = true;
-          #      sslhost = "firecat53.com";
-          #      sslredirect = true;
-          #      stsincludesubdomains = true;
-          #      stspreload = true;
-          #      stsseconds = "315360000";
-          #    };
-          #  };
+            secure-headers = {
+              headers = {
+               #customResponseHeaders:
+               #  Permissions-Policy: "geolocation=(self), microphone=(), camera=(), fullscreen=*"
+                #sslRedirect: true
+                #accessControlMaxAge: 100
+                stsSeconds = "31536000"; # force browsers to only connect over https
+                stsIncludeSubdomains = true; # force browsers to only connect over https
+                stsPreload = true; # force browsers to only connect over https
+                forceSTSHeader = true; # force browsers to only connect over https
+                contentTypeNosniff = true; # sets x-content-type-options header value to "nosniff", reduces risk of drive-by downloads
+                frameDeny = true; # sets x-frame-options header value to "deny", prevents attacker from spoofing website in order to fool users into clicking something that is not there
+                browserXssFilter = true; # sets x-xss-protection header value to "1; mode=block", which prevents page from loading if detecting a cross-site scripting attack
+                contentSecurityPolicy = [ # sets content-security-policy header to suggested value
+                  "default-src"
+                  "self"
+                ];
+                referrerPolicy = "same-origin";
+                addVaryHeader = true;
+              };
+            };
           };
         };
         tls = {
