@@ -9,14 +9,12 @@
 
   programs.zsh = {
     enable = true;
-    #autocd = true; # move to directory without using cd
     syntaxHighlighting = { # highlight valid commands in green and invalid/unknown commands in red
       enable = true;
       #patterns = {
       #  "rm -rf *" = "fg=white,bold,bg=red"; 
       #};
     };
-    #enableCompletion = true; # not apparent what this does exactly so disabling
     autosuggestion = { # shadow text suggested completions ahead of typing command
       enable = true;
       #highlight = "";

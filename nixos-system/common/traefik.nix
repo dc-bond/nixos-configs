@@ -19,6 +19,11 @@
       group = config.users.users.traefik.group;
       mode = "0440";
     };
+    traefikBasicAuth2 = {
+      owner = config.users.users.traefik.name;
+      group = config.users.users.traefik.group;
+      mode = "0440";
+    };
   };
 
   systemd.services.traefik.environment = {
@@ -125,6 +130,7 @@
             auth = {
               basicAuth = {
                 usersFile = "${config.sops.secrets.traefikBasicAuth.path}";
+                #usersFile = "${config.sops.secrets.traefikBasicAuth2.path}";
               };
             };
           #  headers = {
