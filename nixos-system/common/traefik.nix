@@ -45,11 +45,11 @@
           filePath = "/var/lib/traefik/traefik-access.log";
           addInternals = true;
           bufferingSize = 100;
-          #filters.statusCodes = [
-          #  "200-206"
-          #  "400-499"
-          #  "500-599"
-          #];
+          filters.statusCodes = [
+            "200-206"
+            "400-499"
+            "500-599"
+          ];
         };
         entryPoints = {
           web = {
@@ -62,9 +62,6 @@
           };
           websecure = {
             address = ":443/tcp";
-            #tls = {
-            #  options = "tls-13";
-            #};
             forwardedHeaders = {
               trustedIPs = [
                 "192.168.1.2"
@@ -97,8 +94,7 @@
         http = {
           routers.traefik-dashboard = {
             entrypoints = ["websecure"];
-            #rule = "Host(`professorbond.com`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))";
-            rule = "Host(`professorbond.com`)";
+            rule = "Host(`traefik.professorbond.com`)";
             service = "api@internal";
             middlewares = [
               "auth" 
@@ -115,12 +111,6 @@
               };
             };
           };
-          #services.traefik-dashboard = {
-          #  loadBalancer = {
-          #    passHostHeader = true;
-          #    servers.url = "http://localhost:80";
-          #  };
-          #};
           middlewares = {
             auth = {
               basicAuth = {
@@ -129,10 +119,8 @@
             };
             secure-headers = {
               headers = {
-               #customResponseHeaders:
-               #  Permissions-Policy: "geolocation=(self), microphone=(), camera=(), fullscreen=*"
-                #sslRedirect: true
-                #accessControlMaxAge: 100
+                sslRedirect = true;
+                accessControlMaxAge = "100";
                 stsSeconds = "31536000"; # force browsers to only connect over https
                 stsIncludeSubdomains = true; # force browsers to only connect over https
                 stsPreload = true; # force browsers to only connect over https
@@ -155,19 +143,22 @@
             tls-12 = {
               minVersion = "VersionTLS12";
               sniStrict = true;
-              #cipherSuites = [
-              #  TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
-              #  TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-              #  TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-              #  TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-              #  TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305
-              #  TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305
-              #];
+              cipherSuites = [
+                "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256"
+                "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256"
+                "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384"
+                "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384"
+                "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305"
+                "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305"
+              ];
             };
             tls-13 = {
               minVersion = "VersionTLS13";
               sniStrict = true;
-              curvePreferences = ["CurveP521" "CurveP384"];
+              curvePreferences = [
+                "CurveP521" 
+                "CurveP384"
+              ];
             };
           };
         };
