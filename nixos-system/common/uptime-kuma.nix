@@ -1,23 +1,32 @@
 {
 
   services.uptime-kuma.enable = true; 
-  #services.uptime-kuma = {
-  #  enable = true;
-  #  #loadBalancer.servers.url = "https://uptime-kuma.professorbond.com:3001";
-  #};
 
   services.traefik.dynamicConfigOptions.http = {
     routers.uptime-kuma = {
       entrypoints = ["websecure"];
       rule = "Host(`uptime-kuma.professorbond.com`)";
       service = "uptime-kuma";
-      #middlewares = ["headers"];
-      tls.certResolver = "cloudflareDns";
+      middlewares = [
+        #"auth" 
+        "secure-headers"
+      ];
+      tls = {
+        certResolver = "cloudflareDns";
+        options = "tls-13@file";
+      };
     };
     services.uptime-kuma = {
+      #settings = {
+      #  PORT = "4100";
+      #};
       loadBalancer = {
         passHostHeader = true;
-        servers.url = "http//localhost:3001";
+        servers = [
+        {
+          url = "http://localhost:3001";
+        }
+        ];
       };
     };
   };
