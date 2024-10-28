@@ -1,18 +1,28 @@
 { 
+  #config, 
   pkgs, 
   configVars,
   ... 
-}: 
+}:
+
+let
+  app = "authelia";
+in
 
 {
 
-  services.uptime-kuma.enable = true; 
+  services.${app} = {
+    enable = true; 
+    settings = {
+
+    };
+  }; 
 
   services.traefik.dynamicConfigOptions.http = {
-    routers.uptime-kuma = {
+    routers.${app} = {
       entrypoints = ["websecure"];
-      rule = "Host(`uptime-kuma.${configVars.domain3}`)";
-      service = "uptime-kuma";
+      rule = "Host(`identity.${configVars.domain3}`)";
+      service = ${app};
       middlewares = [
         #"auth" 
         "secure-headers"
@@ -22,10 +32,7 @@
         options = "tls-13@file";
       };
     };
-    services.uptime-kuma = {
-      #settings = {
-      #  PORT = "4100";
-      #};
+    services.${app} = {
       loadBalancer = {
         passHostHeader = true;
         servers = [

@@ -1,8 +1,7 @@
 { 
-  self, 
   config, 
-  lib, 
   pkgs, 
+  configVars,
   ... 
 }: 
 
@@ -22,7 +21,7 @@
   };
 
   systemd.services.traefik.environment = {
-    CF_API_EMAIL = "chris@dcbond.com"; 
+    CF_API_EMAIL = configVars.userEmail; 
     CF_API_KEY_FILE = "${config.sops.secrets.cloudflareApiKey.path}"; 
   };
 
@@ -62,13 +61,24 @@
           };
           websecure = {
             address = ":443/tcp";
-            forwardedHeaders = {
-              trustedIPs = [
-                "192.168.1.2"
-                "192.168.1.62"
-              ];
-            };
-            #forwardedHeaders.trustedIPs = "173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/12,172.64.0.0/13,131.0.72.0/22";
+            #forwardedHeaders.trustedIPs = [
+            #  #"192.168.1.2"
+            #  #"192.168.1.62"
+            #  "173.245.48.0/20"
+            #  "103.21.244.0/22"
+            #  "103.22.200.0/22"
+            #  "103.31.4.0/22"
+            #  "141.101.64.0/18"
+            #  "108.162.192.0/18"
+            #  "190.93.240.0/20"
+            #  "188.114.96.0/20"
+            #  "197.234.240.0/22"
+            #  "198.41.128.0/17"
+            #  "162.158.0.0/15"
+            #  "104.16.0.0/12"
+            #  "172.64.0.0/13"
+            #  "131.0.72.0/22"
+            #];
           };
         };
         certificatesResolvers = {
@@ -81,7 +91,7 @@
               ];
               delayBeforeCheck = 5;
             };
-            email = "chris@dcbond.com";
+            email = configVars.userEmail;
             keyType = "RSA4096";
             certificatesDuration = 180;
             storage = "/var/lib/traefik/acme.json"; # where acme certificates live
@@ -94,7 +104,7 @@
         http = {
           routers.traefik-dashboard = {
             entrypoints = ["websecure"];
-            rule = "Host(`traefik.professorbond.com`)";
+            rule = "Host(`traefik.${configVars.domain3}`)";
             service = "api@internal";
             middlewares = [
               "auth" 
@@ -105,8 +115,8 @@
               options = "tls-13@file";
               domains = {
                 "0" = {
-                  main = "professorbond.com";
-                  sans = "*.professorbond.com";
+                  main = "${configVars.domain3}";
+                  sans = "*.${configVars.domain3}";
                 };
               };
             };

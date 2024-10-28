@@ -6,7 +6,8 @@
 {
 
   username = "chris";
-  #domain = inputs.nix-secrets.domain;
+  userEmail = "chris@dcbond.com";
+  domain3 = "professorbond.com";
   #userFullName = inputs.nix-secrets.full-name;
   #userEmail = inputs.nix-secrets.userEmail;
   #persistFolder = "/persist";

@@ -1,5 +1,6 @@
 { 
-  pkgs, 
+  pkgs,
+  configVars, 
   ... 
 }: 
 
@@ -8,7 +9,7 @@
   programs.git = {
     enable = true;
     userName  = "dc-bond";
-    userEmail = "chris@dcbond.com";
+    userEmail = configVars.userEmail;
     extraConfig = {
       init.defaultBranch = "main";
       #commit.gpgsign = true;
