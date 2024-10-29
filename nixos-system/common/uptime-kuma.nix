@@ -4,15 +4,19 @@
   ... 
 }: 
 
+let
+  app = "uptime-kuma";
+in
+
 {
 
-  services.uptime-kuma.enable = true; 
+  services.${app}.enable = true; 
 
   services.traefik.dynamicConfigOptions.http = {
-    routers.uptime-kuma = {
+    routers.${app} = {
       entrypoints = ["websecure"];
-      rule = "Host(`uptime-kuma.${configVars.domain3}`)";
-      service = "uptime-kuma";
+      rule = "Host(`${app}.${configVars.domain3}`)";
+      service = "${app}";
       middlewares = [
         #"auth" 
         "secure-headers"
@@ -22,7 +26,7 @@
         options = "tls-13@file";
       };
     };
-    services.uptime-kuma = {
+    services.${app} = {
       #settings = {
       #  PORT = "4100";
       #};
