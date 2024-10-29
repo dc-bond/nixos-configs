@@ -20,6 +20,7 @@
       #"nixos-system/common/stirling-pdf.nix"
       #"nixos-system/common/nextcloud.nix"
       "nixos-system/common/traefik.nix"
+      "nixos-system/common/authelia.nix"
       "nixos-system/common/uptime-kuma.nix"
       "nixos-system/host-specific/aspen/users.nix"
       "nixos-system/host-specific/aspen/boot.nix"
