@@ -27,11 +27,11 @@ in
       group = config.users.users."${app}-3".group;
       mode = "0440";
     };
-    autheliaOidcHmacSecret = {
-      owner = config.users.users."${app}-3".name;
-      group = config.users.users."${app}-3".group;
-      mode = "0440";
-    };
+    #autheliaOidcHmacSecret = {
+    #  owner = config.users.users."${app}-3".name;
+    #  group = config.users.users."${app}-3".group;
+    #  mode = "0440";
+    #};
     #autheliaOidcIssuerPrivateKey = {
     #  mode = "0440";
     #};
@@ -87,6 +87,20 @@ in
               ];
               policy = "bypass";
             }
+            {
+              domain = [ # allow certain users to authenticate to any of these subdomains
+                "uptime-kuma.${configVars.domain3}"
+              ];
+              subject = "user:authelia";
+              policy = "one_factor";
+            }
+            {
+              domain = [ # catchall for any remaining subdomains to only allow chris@dcbond.com to authenticate
+                "*.${configVars.domain3}"
+              ];
+              subject = "user:authelia";
+              policy = "one_factor";
+            }
           ];
         };
         session = {
@@ -103,9 +117,14 @@ in
           find_time = "5m";
           ban_time = "15m";
         };
-        #storage = {
-        #  local = {
-        #    path = "/var/lib/authelia-main/db.sqlite3";
+        storage = {
+          local = {
+            path = "/var/lib/${app}-3/sqlite3.db";
+          };
+        };
+        #identity_provider = {
+        #  oidc = {
+        #    clients = "";
         #  };
         #};
         notifier = {
@@ -119,7 +138,7 @@ in
         jwtSecretFile = "${config.sops.secrets.autheliaJwtSecret.path}";
         storageEncryptionKeyFile = "${config.sops.secrets.autheliaStorageEncryptionKey.path}";
         sessionSecretFile = "${config.sops.secrets.autheliaSessionSecret.path}";
-        oidcHmacSecretFile = "${config.sops.secrets.autheliaOidcHmacSecret.path}";
+        #oidcHmacSecretFile = "${config.sops.secrets.autheliaOidcHmacSecret.path}";
         #oidcIssuerPrivateKeyFile = "${config.sops.secrets.autheliaOidcIssuerPrivateKey.path}";
       };
     };
