@@ -1,10 +1,10 @@
-{ 
-  config, 
-  configVars,
-  pkgs, 
-  lib,
-  ... 
-}:
+#{ 
+#  config, 
+#  configVars,
+#  pkgs, 
+#  lib,
+#  ... 
+#}:
 
 #let
 #  app = "uptime-kuma";
@@ -19,7 +19,7 @@
     localAddress = "172.21.1.1";
     #hostAddress6 = "fc00::1";
     #localAddress6 = "fc00::2";
-    config = {config, configVars, pkgs, lib, ...}: {
+    config = {config, pkgs, lib, ...}: {
       services = {
         uptime-kuma.enable = true;
         resolved.enable = true; # use systemd-resolved inside the container
