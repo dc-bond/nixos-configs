@@ -18,12 +18,12 @@
     firewall = {
       enable = false; # disable default iptables
     };
-    #nat = { # allow containers access to outside network
-    #  enable = true;
-    #  internalInterfaces = ["ve-+"];
-    #  externalInterface = "enp0s3";
-    #  enableIPv6 = false;
-    #};
+    nat = { # reach container from outside network
+      enable = true;
+      internalInterfaces = ["ve-+"];
+      externalInterface = "enp0s3";
+      enableIPv6 = false;
+    };
     #nftables = {
     #  enable = true; # use nftables instead of default iptables
     #  tables = {

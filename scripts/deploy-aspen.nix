@@ -1,15 +1,20 @@
 { 
   pkgs,
-  config
+  config,
+  #configVars,
+  ...
 }:
 
 let
   host = "aspen";
   ipv4 = "192.168.1.186";
+  #ipv4 = "${configVars.aspenIp}; # need to figure out how to get working
 in
 
 pkgs.writeShellScriptBin "deploy-${host}" 
 ''
+  #!/usr/bin/env bash
+
   # create a temporary directory
   temp=$(mktemp -d)
   

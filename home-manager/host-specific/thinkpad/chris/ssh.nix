@@ -1,6 +1,7 @@
 { 
   pkgs,
   config,
+  configVars,
   ... 
 }: 
 
@@ -10,19 +11,19 @@
     enable = true;
     matchBlocks = {
       "opticon" = {
-        hostname = "vpn.opticon.dev";
+        hostname = "vpn.${configVars.domain2}";
         user = "xixor";
         port = 39800;
         #identityFile = "~/.ssh/chris-ed25519.key";
       };
       "vm1" = {
-        hostname = "192.168.1.199";
-        user = "chris";
+        hostname = "${configVars.vm1Ip}";
+        user = "${configVars.username}";
         port = 28765;
       };
       "aspen" = {
-        hostname = "192.168.1.186";
-        user = "chris";
+        hostname = "${configVars.aspenIp}";
+        user = "${configVars.username}";
         port = 28766;
       };
     };

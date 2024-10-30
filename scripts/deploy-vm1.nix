@@ -1,6 +1,8 @@
 { 
   pkgs,
-  config
+  config,
+  #configVars,
+  ...
 }:
 
 let
@@ -10,6 +12,8 @@ in
 
 pkgs.writeShellScriptBin "deploy-${host}" 
 ''
+  #!/usr/bin/env bash
+  
   # create a temporary directory
   temp=$(mktemp -d)
   
