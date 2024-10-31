@@ -12,6 +12,8 @@ in
 
 {
 
+  #services.${app}.enable = true;
+
   containers.${app} = {
     autoStart = true;
     ephemeral = true;
@@ -28,8 +30,9 @@ in
       };
       networking = {
         firewall = {
-          enable = true;
-          allowedTCPPorts = [ 3001 ];
+          #enable = true;
+          enable = false;
+          #allowedTCPPorts = [ 3001 ];
         };
         useHostResolvConf = lib.mkForce false; # use systemd-resolved inside the container
       };
@@ -43,7 +46,7 @@ in
       rule = "Host(`${app}.${configVars.domain3}`)";
       service = "${app}";
       middlewares = [
-        "authelia" 
+        #"authelia" 
         "secure-headers"
       ];
       tls = {
@@ -56,10 +59,9 @@ in
         passHostHeader = true;
         servers = [
         {
-          #url = "http://localhost:3001"; # works when uptime-kuma is not running in a container, doesn't work when running in container
-          url = "172.21.1.1:3001"; # 404 not found error in the traefik access log
-          #url = "http://172.21.1.1:3001"; # 500 internal server error in the traefik access log
-          #url = "http://${config.containers.${app}.hostAddress}:3001"; # some cryptic shit chat GPT reccomended but get a 500 error in the traefik access log
+          #url = "http://localhost:3001"; # when uptime-kuma is not running in a container
+          #url = "172.21.1.1:3001"; # 404 not found error in the traefik access log
+          url = "http://172.21.1.1:3001"; # 502 bad gateway error in the traefik access log
         }
         ];
       };

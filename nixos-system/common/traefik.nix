@@ -36,7 +36,7 @@
           insecure = false;
         };
         log = {
-          level = "INFO";
+          level = "DEBUG";
           noColor = false;
           filePath = "/var/lib/traefik/traefik.log";
         };

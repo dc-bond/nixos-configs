@@ -20,7 +20,7 @@
     };
     nat = { # reach container from outside network
       enable = true;
-      internalInterfaces = ["ve-+"];
+      internalInterfaces = ["ve-uptime-kuma"];
       externalInterface = "enp0s3";
       enableIPv6 = false;
     };
