@@ -14,14 +14,13 @@ in
 
   containers.${app} = {
     autoStart = true;
+    ephemeral = true;
     privateNetwork = true;
     hostAddress = "192.168.1.186";
     localAddress = "172.21.1.1";
-    #hostAddress6 = "fc00::1";
-    #localAddress6 = "fc00::2";
     config = {config, pkgs, lib, ...}: {
       services = {
-        uptime-kuma.enable = true;
+        ${app}.enable = true;
         resolved = {
           enable = true; # use systemd-resolved for DNS functionality inside container
           llmnr = "false"; # disable link-local multicast name resolution inside container
@@ -37,7 +36,7 @@ in
       system.stateVersion = "23.11";
     };
   };
-  
+
   services.traefik.dynamicConfigOptions.http = {
     routers.${app} = {
       entrypoints = ["websecure"];
@@ -57,8 +56,10 @@ in
         passHostHeader = true;
         servers = [
         {
-          url = "http://localhost:3001";
-          #url = "172.21.1.1:3001";
+          #url = "http://localhost:3001"; # works when uptime-kuma is not running in a container, doesn't work when running in container
+          url = "172.21.1.1:3001"; # 404 not found error in the traefik access log
+          #url = "http://172.21.1.1:3001"; # 500 internal server error in the traefik access log
+          #url = "http://${config.containers.${app}.hostAddress}:3001"; # some cryptic shit chat GPT reccomended but get a 500 error in the traefik access log
         }
         ];
       };
