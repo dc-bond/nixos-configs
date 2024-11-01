@@ -17,7 +17,7 @@
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
       #"nixos-system/common/podman.nix"
-      "nixos-system/common/stirling-pdf.nix"
+      #"nixos-system/common/stirling-pdf.nix"
       #"nixos-system/common/nextcloud.nix"
       "nixos-system/common/traefik.nix"
       #"nixos-system/common/authelia.nix"
