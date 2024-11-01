@@ -1,43 +1,47 @@
-{ pkgs,
-  config,
+{ 
+  config, 
+  configVars,
+  pkgs, 
+  lib,
   ... 
 }:
 
+let
+  app = "stirling-pdf";
+in
+
 {
 
-  #systemd.services.create-stirling-pdf-network = with config.virtualisation.oci-containers; {
-  #  serviceConfig.Type = "oneshot";
-  #  #wantedBy = [ "podman-stirling-pdf.service" ];
-  #  script = ''
-  #    ${pkgs.podman}/bin/podman network exists stirling || ${pkgs.podman}/bin/podman network create stirling 
-  #    '';
-  #};
-
-  systemd.services.pod-stirling-pdf = {
-    description = "start podman 'stirling-pdf' pod";
-    wants = ["network-online.target"];
-    after = ["network-online.target"];
-    requiredBy = ["podman-stirling-pdf.service"];
-    unitConfig = {
-      RequiresMountsFor = "/run/containers";
-    };
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "-${pkgs.podman}/bin/podman pod create -p 16237:8080 stirling-pdf";
+  services.${app} = {
+    enable = true;
+    environment = {
+      SERVER_PORT = 2000;
     };
   };
 
-  virtualisation.oci-containers.containers = {
-    stirling-pdf = {
-      image = "docker.io/frooodle/s-pdf:0.18.1";
-      autoStart = true;
-      #ports = [
-      #  "16237:8080/tcp"
-      #];
-      extraOptions = [
-        "--pod=stirling-pdf"
+  services.traefik.dynamicConfigOptions.http = {
+    routers.${app} = {
+      entrypoints = ["websecure"];
+      rule = "Host(`${app}.${configVars.domain3}`)";
+      service = "${app}";
+      middlewares = [
+        #"authelia" 
+        "secure-headers"
       ];
-      log-driver = "journald";
+      tls = {
+        certResolver = "cloudflareDns";
+        options = "tls-13@file";
+      };
+    };
+    services.${app} = {
+      loadBalancer = {
+        passHostHeader = true;
+        servers = [
+        {
+          url = "http://localhost:2000";
+        }
+        ];
+      };
     };
   };
 

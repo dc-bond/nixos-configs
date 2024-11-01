@@ -18,12 +18,22 @@
     firewall = {
       enable = false; # disable default iptables
     };
-    nat = { # reach container from outside network
-      enable = true;
-      internalInterfaces = ["ve-uptime-kuma"];
-      externalInterface = "enp0s3";
-      enableIPv6 = false;
-    };
+    #nat = { # allow specific nixos-containers to reach outside network
+    #  enable = true;
+    #  internalInterfaces = ["ve-uptime-kuma"];
+    #  externalInterface = "enp0s3";
+    #  enableIPv6 = false;
+    #};
+    #bridges.br0.interfaces = ["enp0s3"];
+    #interfaces."br0" = {
+    #  useDHCP = true;
+    #  ipv4.addresses = [
+    #    {
+    #    address = "192.168.100.3";
+    #    prefixLength = 24;
+    #    }
+    #  ]; 
+    #};
     #nftables = {
     #  enable = true; # use nftables instead of default iptables
     #  tables = {
