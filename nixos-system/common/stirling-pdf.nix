@@ -14,6 +14,7 @@ in
 
   services.${app} = {
     enable = true;
+    package = pkgs.unstable.stirling-pdf;
     environment = {
       SERVER_PORT = 2000;
     };
