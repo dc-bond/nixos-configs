@@ -5,26 +5,18 @@
 
 {
 
-  #environment.systemPackages = with pkgs; [
-  #  #dive # look into docker image layers
-  #  #podman-tui # status of containers in the terminal
-  #  #podman-compose # start group of containers for dev
-  #];
+  environment.systemPackages = with pkgs; [
+    podman-tui # status of containers in the terminal
+    #podman-compose # start group of containers for dev
+  ];
 
   virtualisation = {
     containers.enable = true;
-    oci-containers.backend = "docker";
-    docker = {
+    oci-containers.backend = "podman";
+    podman = {
       enable = true;
-      storageDriver = "btrfs";
-      rootless = {
-        enable = true;
-        setSocketVariable = true;
-      };
-      #autoPrune.enable = true;
-      #defaultNetwork.settings = {
-      #  dns_enabled = true;
-      #};
+      autoPrune.enable = true;
+      defaultNetwork.settings.dns_enabled = true;
     };
   };
 
