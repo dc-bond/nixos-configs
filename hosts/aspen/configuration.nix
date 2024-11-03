@@ -22,7 +22,7 @@
       "nixos-system/common/traefik.nix"
       "nixos-system/common/jellyseerr.nix"
       #"nixos-system/common/authelia.nix"
-      #"nixos-system/common/uptime-kuma.nix"
+      "nixos-system/common/uptime-kuma.nix"
       "nixos-system/host-specific/aspen/users.nix"
       "nixos-system/host-specific/aspen/boot.nix"
       "nixos-system/host-specific/aspen/sshd.nix"

@@ -29,7 +29,7 @@
     #  useDHCP = true;
     #  ipv4.addresses = [
     #    {
-    #    address = "192.168.100.3";
+    #    address = "172.21.1.1";
     #    prefixLength = 24;
     #    }
     #  ]; 
