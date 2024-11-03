@@ -25,6 +25,8 @@
     CF_API_KEY_FILE = "${config.sops.secrets.cloudflareApiKey.path}"; 
   };
 
+  #users.users.traefik.extraGroups = ["podman"];
+
   services = {
 
     traefik = {
@@ -98,6 +100,12 @@
             caServer = "https://acme-v02.api.letsencrypt.org/directory";
           };
         };
+        #providers = {
+        #  docker = {
+        #    endpoint = "unix:///var/run/podman/podman.sock";
+        #    exposedByDefault = false;
+        #  };
+        #};
       };
 
       dynamicConfigOptions = {

@@ -16,7 +16,8 @@
       "hosts/aspen/hardware-configuration.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
-      "nixos-system/common/oci-containers.nix"
+      #"nixos-system/common/nixos-containers.nix"
+      "nixos-system/common/podman-oci-containers.nix"
       #"nixos-system/common/stirling-pdf.nix" # can't figure out until comes to stable?
       #"nixos-system/common/nextcloud.nix"
       "nixos-system/common/traefik.nix"
