@@ -16,7 +16,8 @@
       hashedPasswordFile = config.sops.secrets.chrisPasswd.path; # create hashed password with 'echo "changeme" | mkpasswd -s'
       extraGroups = [
         "wheel" 
-        "podman"
+        #"podman"
+        "docker"
       ];
       #shell = pkgs.zsh; # user-specific z-shell configs in home.nix
       openssh.authorizedKeys.keys = [ 
