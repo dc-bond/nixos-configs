@@ -1,4 +1,5 @@
 { 
+  pkgs,
   configVars, 
   ... 
 }:
@@ -9,11 +10,8 @@
     oci-containers.backend = "docker";
     docker = {
       enable = true;
-      storageDriver = "btrfs"; # support for btrfs
-      setSocketVariable = true; # run rootless
-      daemon.settings = {
-        data-root = "/home/${configVars.username}/oci-containers/";
-      };
+      #storageDriver = "btrfs"; # support for btrfs
+      rootless.enable = true; # run rootless
     };
   };
 

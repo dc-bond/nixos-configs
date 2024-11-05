@@ -31,6 +31,7 @@
 
     traefik = {
       enable = true;
+      group = "docker";
 
       staticConfigOptions = {
         api = {
@@ -100,12 +101,12 @@
             caServer = "https://acme-v02.api.letsencrypt.org/directory";
           };
         };
-        #providers = {
-        #  docker = {
-        #    endpoint = "unix:///var/run/podman/podman.sock";
-        #    exposedByDefault = false;
-        #  };
-        #};
+        providers = {
+          docker = {
+            endpoint = "unix:///var/run/docker.sock";
+            exposedByDefault = false;
+          };
+        };
       };
 
       dynamicConfigOptions = {

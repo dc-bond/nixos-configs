@@ -12,52 +12,27 @@ in
   virtualisation.oci-containers.containers."${app}" = {
     image = "docker.io/fallenbagel/${app}:2.0.1";
     autoStart = true;
-    #user = "1000:100";
-    #volumes = [
-    #  "/home/chris/oci-containers/${app}:/app/config"
-    #];
-    ports = [
-      "5055:5055"
+    volumes = [
+      "/home/${configVars.username}/${app}:/app/config"
     ];
-    #extraOptions = [
-    #  "--init=true"
-    #  "--label=traefik.enable=true"
-    #  #"--label=traefik.docker.network=traefik"
-    #  "--label=traefik.http.routers.${app}.entrypoints=websecure"
-    #  "--label=traefik.http.routers.${app}.rule=Host(`${app}.${configVars.domain3}`)"
-    #  "--label=traefik.http.routers.${app}.tls=true"
-    #  "--label=traefik.http.routers.${app}.tls.options=tls-13@file"
-    #  "--label=traefik.http.routers.${app}.middlewares=secure-headers@file"
-    #  "--label=traefik.http.services.${app}.loadbalancer.server.port=5055"
-    #];
-  };
-  
-  services.traefik.dynamicConfigOptions.http = {
-    routers.${app} = {
-      entrypoints = ["websecure"];
-      rule = "Host(`${app}.${configVars.domain3}`)";
-      service = "${app}";
-      middlewares = [
-        #"authelia" 
-        "secure-headers"
-      ];
-      tls = {
-        certResolver = "cloudflareDns";
-        options = "tls-13@file";
-      };
-    };
-    services.${app} = {
-      loadBalancer = {
-        passHostHeader = true;
-        servers = [
-        {
-          url = "http://localhost:5055";
-        }
-        ];
-      };
+    extraOptions = [
+      "--network=backend"
+    ];
+    labels = {
+      "traefik.enable" = "true";
+      "traefik.http.routers.${app}.entrypoints" = "websecure";
+      "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain3}`)";
+      "traefik.http.routers.${app}.tls" = "true";
+      "traefik.http.routers.${app}.tls.options" = "tls-13@file";
+      "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
+      "traefik.http.services.${app}.loadbalancer.server.port" = "5055";
     };
   };
 
+  systemd.tmpfiles.rules = [
+    "d /home/${configVars.username}/${app} 0770 ${configVars.username} users -"
+  ];
+  
   #networking.firewall.allowedTCPPorts = [
   #  5055
   #];
