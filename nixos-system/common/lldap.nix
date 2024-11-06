@@ -1,4 +1,6 @@
 {
+  pkgs,
+  lib,
   config,
   configVars,
   ...
@@ -36,19 +38,25 @@ in
     '';
   };
 
+  #systemd.tmpfiles.rules = [
+  #  "d /home/${configVars.userName}/container-data/${app} 0770 ${configVars.userName} users -"
+  #];
+
   virtualisation.oci-containers.containers = {
     "${app}" = {
       image = "docker.io/nitnelave/${app}:2024-01-05";
       autoStart = true;
+      log-driver = "journald";
       ports = [
         "3890:3890" # ldap port
       ]; 
       volumes = [
-        "/home/${configVars.userName}/container-data/${app}/${app}:/data"
+        #"/home/${configVars.userName}/container-data/${app}/${app}:/data"
+        "${app}:/data"
       ];
       environmentFiles = [config.sops.templates."${app}-env".path];
       extraOptions = [
-        "--network=backend"
+        "--network=${app}"
       ];
       dependsOn = ["${db}-${app}"];
       labels = {
@@ -64,22 +72,113 @@ in
     "${db}-${app}" = {
       image = "docker.io/library/${db}:12-alpine";
       autoStart = true;
+      log-driver = "journald";
       volumes = [
-        "/home/${configVars.userName}/container-data/${app}/${db}:/var/lib/postgresql/data"
+        #"/home/${configVars.userName}/container-data/${app}/${db}:/var/lib/postgresql/data"
+        "${db}-${app}:/var/lib/postgresql/data"
       ];
       environmentFiles = [config.sops.templates."${db}-env".path];
       extraOptions = [
-        "--network=backend"
+        "--network=${app}"
+        #"--network=backend"
       ];
     };
   };
 
-  systemd.tmpfiles.rules = [
-    "d /home/${configVars.userName}/container-data/${app} 0770 ${configVars.userName} users -"
-  ];
-  
-  #networking.firewall.allowedTCPPorts = [
-  #  5055
-  #];
+  systemd.services."docker-${app}" = {
+    serviceConfig = {
+      Restart = lib.mkOverride 500 "always";
+      RestartMaxDelaySec = lib.mkOverride 500 "1m";
+      RestartSec = lib.mkOverride 500 "100ms";
+      RestartSteps = lib.mkOverride 500 9;
+    };
+    after = [
+      "docker-network-${app}.service"
+      "docker-volume-${app}.service"
+    ];
+    requires = [
+      "docker-network-${app}.service"
+      "docker-volume-${app}.service"
+    ];
+    partOf = [
+      "docker-${app}-root.target"
+    ];
+    unitConfig.UpheldBy = [
+      "docker-${db}-${app}.service"
+    ];
+    wantedBy = [
+      "docker-${app}-root.target"
+    ];
+  };
+
+  systemd.services."docker-postgres" = {
+    serviceConfig = {
+      Restart = lib.mkOverride 500 "always";
+      RestartMaxDelaySec = lib.mkOverride 500 "1m";
+      RestartSec = lib.mkOverride 500 "100ms";
+      RestartSteps = lib.mkOverride 500 9;
+    };
+    after = [
+      "docker-network-${app}.service"
+      "docker-volume-${db}-${app}.service"
+    ];
+    requires = [
+      "docker-network-${app}.service"
+      "docker-volume-${db}-${app}.service"
+    ];
+    partOf = [
+      "docker-${app}-root.target"
+    ];
+    wantedBy = [
+      "docker-${app}-root.target"
+    ];
+  };
+
+  systemd.services."docker-network-${app}" = {
+    path = [pkgs.docker];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
+    };
+    script = ''
+      docker network inspect ${app} || docker network create ${app}
+    '';
+    partOf = ["docker-${app}-root.target"];
+    wantedBy = ["docker-${app}-root.target"];
+  };
+
+  systemd.services."docker-volume-${app}" = {
+    path = [pkgs.docker];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      docker volume inspect ${app} || docker volume create ${app}
+    '';
+    partOf = ["docker-${app}-root.target"];
+    wantedBy = ["docker-${app}-root.target"];
+  };
+
+  systemd.services."docker-volume-${db}-${app}" = {
+    path = [pkgs.docker];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    script = ''
+      docker volume inspect ${db}-${app} || docker volume create ${db}-${app}
+    '';
+    partOf = ["docker-${app}-root.target"];
+    wantedBy = ["docker-${app}-root.target"];
+  };
+
+  systemd.targets."docker-${app}-root" = {
+    unitConfig = {
+      Description = "root target for docker-${app}";
+    };
+    wantedBy = ["multi-user.target"];
+  };
 
 }
