@@ -24,15 +24,15 @@ in
       UID=1000
       GID=1000
       TZ=America/New_York
-      LLDAP_JWT_SECRET="${config.sops.placeholder.lldapJwtSecret}"
-      LLDAP_LDAP_USER_PASS="${config.sops.placeholder.lldapLdapUserPass}"
-      LLDAP_DATABASE_URL="${config.sops.placeholder.lldapLdapDatabaseUrl}"
+      LLDAP_JWT_SECRET=${config.sops.placeholder.lldapJwtSecret}
+      LLDAP_LDAP_USER_PASS=${config.sops.placeholder.lldapLdapUserPass}
+      LLDAP_DATABASE_URL=${config.sops.placeholder.lldapLdapDatabaseUrl}
       LLDAP_LDAP_BASE_DN=dc=professorbond,dc=com
     '';
     "${db}-env".content = ''
-      POSTGRES_PASSWORD="${config.sops.placeholder.lldapPostgresPasswd}";
-      POSTGRES_USER="${config.sops.placeholder.lldapPostgresUser}"; 
-      POSTGRES_DB="${config.sops.placeholder.lldapPostgresDb}";
+      POSTGRES_PASSWORD=${config.sops.placeholder.lldapPostgresPasswd}
+      POSTGRES_USER=${config.sops.placeholder.lldapPostgresUser}
+      POSTGRES_DB=${config.sops.placeholder.lldapPostgresDb}
     '';
   };
 
@@ -47,15 +47,6 @@ in
         "/home/${configVars.username}/${app}/${app}:/data"
       ];
       environmentFiles = [config.sops.templates."${app}-env".path];
-      #environment = {
-      #  "UID" = "1000";
-      #  "GID" = "1000";
-      #  "TZ" = "America/New_York";
-      #  "LLDAP_JWT_SECRET" = "";
-      #  "LLDAP_LDAP_USER_PASS" = "";
-      #  "LLDAP_LDAP_BASE_DN" = "dc=professorbond,dc=com";
-      #  "LLDAP_DATABASE_URL" = "";
-      #};
       extraOptions = [
         "--network=backend"
       ];
@@ -77,11 +68,6 @@ in
         "/home/${configVars.username}/${db}:/var/lib/postgresql/data"
       ];
       environmentFiles = [config.sops.templates."${db}-env".path];
-      #environment = {
-      #  "POSTGRES_PASSWORD" = "";
-      #  "POSTGRES_USER" = ""; 
-      #  "POSTGRES_DB" = "";
-      #};
       extraOptions = [
         "--network=backend"
       ];
