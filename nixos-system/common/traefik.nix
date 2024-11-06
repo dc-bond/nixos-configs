@@ -167,6 +167,12 @@
                 addVaryHeader = true;
               };
             };
+            auth-chain = {
+              chain.middlewares = [
+                "authelia"
+                "secure-headers" 
+              ];
+            };
           };
         };
         tls = {

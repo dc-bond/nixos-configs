@@ -20,8 +20,7 @@ in
       rule = "Host(`${app}.${configVars.domain3}`)";
       service = "${app}";
       middlewares = [
-        "authelia" 
-        "secure-headers"
+        "auth-chain"
       ];
       tls = {
         certResolver = "cloudflareDns";
