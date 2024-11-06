@@ -47,16 +47,13 @@ in
       image = "docker.io/nitnelave/${app}:2024-01-05";
       autoStart = true;
       log-driver = "journald";
-      ports = [
-        "3890:3890" # ldap port
-      ]; 
       volumes = [
-        #"/home/${configVars.userName}/container-data/${app}/${app}:/data"
         "${app}:/data"
       ];
       environmentFiles = [config.sops.templates."${app}-env".path];
       extraOptions = [
         "--network=${app}"
+        "--ip=${configVars.lldapIp}"
       ];
       dependsOn = ["${db}-${app}"];
       labels = {
@@ -66,7 +63,7 @@ in
         "traefik.http.routers.${app}.tls" = "true";
         "traefik.http.routers.${app}.tls.options" = "tls-13@file";
         "traefik.http.routers.${app}.middlewares" = "auth-chain@file";
-        "traefik.http.services.${app}.loadbalancer.server.port" = "17170"; # web frontend port
+        "traefik.http.services.${app}.loadbalancer.server.port" = "17170"; # web frontend port is 17170, backend ldap port is 3890 for other services to connect
       };
     };
     "${db}-${app}" = {
@@ -74,13 +71,12 @@ in
       autoStart = true;
       log-driver = "journald";
       volumes = [
-        #"/home/${configVars.userName}/container-data/${app}/${db}:/var/lib/postgresql/data"
         "${db}-${app}:/var/lib/postgresql/data"
       ];
       environmentFiles = [config.sops.templates."${db}-env".path];
       extraOptions = [
         "--network=${app}"
-        #"--network=backend"
+        "--ip=${configVars.postgres-lldapIp}"
       ];
     };
   };
@@ -142,7 +138,7 @@ in
       ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
     };
     script = ''
-      docker network inspect ${app} || docker network create ${app}
+      docker network inspect ${app} || docker network create --subnet ${configVars.lldapSubnet} --driver bridge --scope local --attachable ${app}
     '';
     partOf = ["docker-${app}-root.target"];
     wantedBy = ["docker-${app}-root.target"];

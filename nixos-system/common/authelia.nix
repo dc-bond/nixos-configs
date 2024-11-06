@@ -64,7 +64,7 @@ in
           password_reset.disable = true;
           ldap = {
             implementation = "custom";
-            url = "ldap://localhost:3890";
+            url = "ldap://${configVars.lldapIp}:3890";
             timeout = "5s";
             start_tls = false;
             base_dn = "dc=professorbond,dc=com";
