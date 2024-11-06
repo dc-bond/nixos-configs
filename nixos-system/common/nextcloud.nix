@@ -1,21 +1,13 @@
 { 
   self, 
-  config, 
+  config,
+  configVars,
   lib, 
   pkgs, 
   ... 
 }: 
 
 {
-
-  #security.acme = {
-  #  acceptTerms = true;
-  #  defaults = {
-  #    email = "chris@dcbond.com";
-  #    dnsProvider = "cloudflare";
-  #    environmentFile = "/REPLACE/WITH/YOUR/PATH"; # location of CLOUDFLARE_DNS_API_TOKEN
-  #  };
-  #};
 
   sops = {
     secrets = {
@@ -29,23 +21,14 @@
 
   services = {
 
-    #nginx.virtualHosts = {
-    #  "YOUR.DOMAIN.NAME" = {
-    #    forceSSL = true;
-    #    enableACME = true;
-    #    acmeRoot = null; # use dns challenge
-    #  };
-    #};
-     
     nextcloud = {
       enable = true;
-      #hostName = "192.168.1.254";
-      hostName = "professorbond.com";
+      hostName = "cloud.${configVars.domain3}";
       package = pkgs.nextcloud29; # manually increment with upgrades
       database.createLocally = true; # creates database
       configureRedis = true; # creates redis instance
       maxUploadSize = "10G"; # max upload size
-      https = false;
+      https = true;
       autoUpdateApps.enable = true;
       extraAppsEnable = true;
       extraApps = with config.services.nextcloud.package.packages.apps; { # list of nextcloud apps
