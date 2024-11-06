@@ -50,7 +50,7 @@ in
       extraOptions = [
         "--network=backend"
       ];
-      dependsOn = ["${app}-${db}"];
+      dependsOn = ["${db}-${app}"];
       labels = {
         "traefik.enable" = "true";
         "traefik.http.routers.${app}.entrypoints" = "websecure";
