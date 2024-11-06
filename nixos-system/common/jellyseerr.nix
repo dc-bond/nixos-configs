@@ -13,7 +13,7 @@ in
     image = "docker.io/fallenbagel/${app}:2.0.1";
     autoStart = true;
     volumes = [
-      "/home/${configVars.username}/${app}:/app/config"
+      "/home/${configVars.userName}/container-data/${app}:/app/config"
     ];
     extraOptions = [
       "--network=backend"
@@ -30,7 +30,7 @@ in
   };
 
   systemd.tmpfiles.rules = [
-    "d /home/${configVars.username}/${app} 0770 ${configVars.username} users -"
+    "d /home/${configVars.userName}/container-data/${app} 0770 ${configVars.userName} users -"
   ];
   
   #networking.firewall.allowedTCPPorts = [

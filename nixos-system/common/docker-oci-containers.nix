@@ -29,4 +29,8 @@
     '';
   };
 
+  systemd.tmpfiles.rules = [
+    "d /home/${configVars.userName}/container-data 0770 ${configVars.userName} users -"
+  ];
+
 }

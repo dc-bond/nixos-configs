@@ -44,7 +44,7 @@ in
         "3890:3890" # ldap port
       ]; 
       volumes = [
-        "/home/${configVars.username}/${app}/${app}:/data"
+        "/home/${configVars.userName}/container-data/${app}/${app}:/data"
       ];
       environmentFiles = [config.sops.templates."${app}-env".path];
       extraOptions = [
@@ -61,11 +61,11 @@ in
         "traefik.http.services.${app}.loadbalancer.server.port" = "17170"; # web frontend port
       };
     };
-    "${app}-${db}" = {
+    "${db}-${app}" = {
       image = "docker.io/library/${db}:12-alpine";
       autoStart = true;
       volumes = [
-        "/home/${configVars.username}/${db}:/var/lib/postgresql/data"
+        "/home/${configVars.userName}/container-data/${app}/${db}:/var/lib/postgresql/data"
       ];
       environmentFiles = [config.sops.templates."${db}-env".path];
       extraOptions = [
@@ -75,7 +75,7 @@ in
   };
 
   systemd.tmpfiles.rules = [
-    "d /home/${configVars.username}/${app} 0770 ${configVars.username} users -"
+    "d /home/${configVars.userName}/container-data/${app} 0770 ${configVars.userName} users -"
   ];
   
   #networking.firewall.allowedTCPPorts = [

@@ -18,12 +18,12 @@
       };
       "vm1" = {
         hostname = "${configVars.vm1Ip}";
-        user = "${configVars.username}";
+        user = "${configVars.userName}";
         port = 28765;
       };
       "aspen" = {
         hostname = "${configVars.aspenIp}";
-        user = "${configVars.username}";
+        user = "${configVars.userName}";
         port = 28766;
       };
     };

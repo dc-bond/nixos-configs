@@ -5,7 +5,7 @@
 
 {
 
-  username = "chris";
+  userName = "chris";
   userEmail = "chris@dcbond.com";
   aspenIp = "192.168.1.186";
   thinkpadIp = "192.168.1.62";

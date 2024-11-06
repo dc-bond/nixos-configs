@@ -30,8 +30,8 @@
     secrets = { # output to /run/secrets/...
       test = {};
       homeTest = {
-        owner = "${config.users.users.${configVars.username}.name}";
-        group = "${config.users.users.${configVars.username}.group}";
+        owner = "${config.users.users.${configVars.userName}.name}";
+        group = "${config.users.users.${configVars.userName}.group}";
         mode = "0440";
       };
     };
