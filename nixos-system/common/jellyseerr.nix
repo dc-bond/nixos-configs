@@ -1,4 +1,7 @@
 {
+  pkgs,
+  lib,
+  config,
   configVars,
   ...
 }: 
@@ -12,11 +15,13 @@ in
   virtualisation.oci-containers.containers."${app}" = {
     image = "docker.io/fallenbagel/${app}:2.0.1";
     autoStart = true;
+    log-driver = "journald";
     volumes = [
-      "/home/${configVars.userName}/container-data/${app}:/app/config"
+      "${app}:/app/config"
     ];
     extraOptions = [
-      "--network=backend"
+      "--network=${app}"
+      "--ip=${configVars.jellyseerrIp}"
     ];
     labels = {
       "traefik.enable" = "true";
@@ -29,12 +34,62 @@ in
     };
   };
 
-  systemd.tmpfiles.rules = [
-    "d /home/${configVars.userName}/container-data/${app} 0770 ${configVars.userName} users -"
-  ];
-  
-  #networking.firewall.allowedTCPPorts = [
-  #  5055
-  #];
+  systemd = {
+    services = { 
+      "docker-${app}" = {
+        serviceConfig = {
+          Restart = lib.mkOverride 500 "always";
+          RestartMaxDelaySec = lib.mkOverride 500 "1m";
+          RestartSec = lib.mkOverride 500 "100ms";
+          RestartSteps = lib.mkOverride 500 9;
+        };
+        after = [
+          "docker-network-${app}.service"
+          "docker-volume-${app}.service"
+        ];
+        requires = [
+          "docker-network-${app}.service"
+          "docker-volume-${app}.service"
+        ];
+        partOf = [
+          "docker-${app}-root.target"
+        ];
+        wantedBy = [
+          "docker-${app}-root.target"
+        ];
+      };
+      "docker-network-${app}" = {
+        path = [pkgs.docker];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
+        };
+        script = ''
+          docker network inspect ${app} || docker network create --subnet ${configVars.jellyseerrSubnet} --driver bridge --scope local --attachable ${app}
+        '';
+        partOf = ["docker-${app}-root.target"];
+        wantedBy = ["docker-${app}-root.target"];
+      };
+      "docker-volume-${app}" = {
+        path = [pkgs.docker];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        script = ''
+          docker volume inspect ${app} || docker volume create ${app}
+        '';
+        partOf = ["docker-${app}-root.target"];
+        wantedBy = ["docker-${app}-root.target"];
+      };
+    };
+    targets."docker-${app}-root" = {
+      unitConfig = {
+        Description = "root target for docker-${app}";
+      };
+      wantedBy = ["multi-user.target"];
+    };
+  }; 
 
 }

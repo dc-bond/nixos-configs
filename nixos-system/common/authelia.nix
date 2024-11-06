@@ -128,7 +128,7 @@ in
           domain = "${configVars.domain3}";
           same_site = "lax";
           expiration = "1h";
-          inactivity = "15m";
+          inactivity = "5m";
           remember_me_duration = "24h";
           redis.host = "/run/redis-${app}-3/redis.sock";
         };

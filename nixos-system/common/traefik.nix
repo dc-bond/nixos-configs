@@ -6,6 +6,11 @@
 }: 
 
 {
+
+  networking.firewall.allowedTCPPorts = [
+    80
+    443 
+  ];
   
   sops.secrets = {
     cloudflareApiKey = {
@@ -24,8 +29,6 @@
     CF_API_EMAIL = configVars.userEmail; 
     CF_API_KEY_FILE = "${config.sops.secrets.cloudflareApiKey.path}"; 
   };
-
-  #users.users.traefik.extraGroups = ["podman"];
 
   services = {
 

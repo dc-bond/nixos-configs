@@ -18,6 +18,19 @@
   lldapSubnet = "172.21.1.0/25";
   lldapIp = "172.21.1.2";
   postgres-lldapIp = "172.21.1.3";
+  jellyseerrSubnet = "172.22.1.0/25";
+  jellyseerrIp = "172.22.1.2";
+
+
+
+
+
+
+
+
+
+
+  
   #userFullName = inputs.nix-secrets.full-name;
   #userEmail = inputs.nix-secrets.userEmail;
   #persistFolder = "/persist";
