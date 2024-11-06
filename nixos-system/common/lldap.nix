@@ -13,7 +13,7 @@ in
 
   sops.secrets = {
     lldapJwtSecret = {};
-    lldapLdapUserPass = {};
+    lldapLdapUserPasswd = {};
     lldapLdapDatabaseUrl = {};
     lldapPostgresPasswd = {};
     lldapPostgresUser = {};
@@ -25,7 +25,7 @@ in
       GID=1000
       TZ=America/New_York
       LLDAP_JWT_SECRET=${config.sops.placeholder.lldapJwtSecret}
-      LLDAP_LDAP_USER_PASS=${config.sops.placeholder.lldapLdapUserPass}
+      LLDAP_LDAP_USER_PASS=${config.sops.placeholder.lldapLdapUserPasswd}
       LLDAP_DATABASE_URL=${config.sops.placeholder.lldapLdapDatabaseUrl}
       LLDAP_LDAP_BASE_DN=dc=professorbond,dc=com
     '';

@@ -12,6 +12,11 @@ in
 {
 
   sops.secrets = {
+    autheliaLdapUserPasswd = {
+      owner = config.users.users."${app}-3".name;
+      group = config.users.users."${app}-3".group;
+      mode = "0440";
+    };
     autheliaJwtSecret = {
       owner = config.users.users."${app}-3".name;
       group = config.users.users."${app}-3".group;
@@ -55,8 +60,23 @@ in
           port = 9091;
         };
         authentication_backend = {
-          file = {
-            path = "/var/lib/${app}-3/users-database.yml";
+          refresh_interval = "5m";
+          password_reset.disable = true;
+          ldap = {
+            implementation = "custom";
+            url = "ldap://localhost:3890";
+            timeout = "5s";
+            start_tls = false;
+            base_dn = "dc=professorbond,dc=com";
+            username_attribute = "uid";
+            additional_users_dn = "ou=people";
+            users_filter = "(&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=person))"; # allow sign in with username OR email
+            additional_groups_dn = "ou=groups";
+            groups_filter = "(member={dn})";
+            group_name_attribute = "cn";
+            mail_attribute = "mail";
+            display_name_attribute = "displayName";
+            user = "uid=admin,ou=people,dc=professorbond,dc=com"; # admin username, password in env variable below
           };
         };
         access_control = {
@@ -91,14 +111,14 @@ in
               domain = [ # allow certain users to authenticate to any of these subdomains
                 "uptime-kuma.${configVars.domain3}"
               ];
-              subject = "user:authelia";
+              subject = "user:admin";
               policy = "one_factor";
             }
             {
               domain = [ # catchall for any remaining subdomains to only allow chris@dcbond.com to authenticate
                 "*.${configVars.domain3}"
               ];
-              subject = "user:authelia";
+              subject = "user:admin";
               policy = "one_factor";
             }
           ];
@@ -134,6 +154,9 @@ in
           };
         };
       };
+      environmentVariables = {
+        AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE = "${config.sops.secrets.autheliaLdapUserPasswd.path}";
+      };
       secrets = {
         jwtSecretFile = "${config.sops.secrets.autheliaJwtSecret.path}";
         storageEncryptionKeyFile = "${config.sops.secrets.autheliaStorageEncryptionKey.path}";
@@ -158,8 +181,7 @@ in
       rule = "Host(`identity.${configVars.domain3}`)";
       service = "${app}";
       middlewares = [
-        #"auth" 
-        #"secure-headers"
+        "secure-headers"
       ];
       tls = {
         certResolver = "cloudflareDns";
