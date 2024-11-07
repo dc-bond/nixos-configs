@@ -16,7 +16,7 @@
     useDHCP = false; # disable defaut dhcpcd networking backend in favor of systemd-networkd enabled below
     hostName = "aspen";
     firewall = {
-      enable = true;
+      enable = false;
     };
     #nat = { # allow specific nixos-containers to reach outside network
     #  enable = true;

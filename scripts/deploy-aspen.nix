@@ -5,9 +5,11 @@
   ...
 }:
 
+# check ip on installation iso, set root password on installation iso with 'sudo passwd'
+
 let
   host = "aspen";
-  ipv4 = "192.168.1.186";
+  ipv4 = "192.168.1.194";
   #ipv4 = "${configVars.aspenIp}; # need to figure out how to get working
 in
 

@@ -62,7 +62,7 @@ in
         "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain3}`)";
         "traefik.http.routers.${app}.tls" = "true";
         "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-        "traefik.http.routers.${app}.middlewares" = "auth-chain@file";
+        "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
         "traefik.http.services.${app}.loadbalancer.server.port" = "17170"; # web frontend port is 17170, backend ldap port is 3890 for other services to connect
       };
     };
