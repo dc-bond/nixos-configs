@@ -21,6 +21,9 @@
   jellyseerrSubnet = "172.22.1.0/25";
   jellyseerrIp = "172.22.1.2";
 
+  aspenBridgeSubnet = "172.18.1.1";
+  uptime-kumaIp = "172.18.1.2";
+
 
 
 

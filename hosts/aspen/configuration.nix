@@ -16,7 +16,7 @@
       "hosts/aspen/hardware-configuration.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
-      #"nixos-system/common/nixos-containers.nix"
+      "nixos-system/common/nixos-containers.nix"
       "nixos-system/common/docker-oci-containers.nix"
       #"nixos-system/common/nextcloud.nix"
       "nixos-system/common/traefik.nix"
