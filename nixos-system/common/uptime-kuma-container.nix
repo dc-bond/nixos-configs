@@ -16,9 +16,8 @@ in
     autoStart = true;
     ephemeral = true;
     privateNetwork = true;
-    #hostAddress = "${configVars.aspenIp}";
     hostBridge = "br0";
-    #localAddress = "${appContainerIp}";
+    localAddress = "172.18.1.3";
     config = {config, pkgs, lib, ...}: {
       services = {
         ${app}.enable = true;
@@ -32,14 +31,14 @@ in
           enable = true;
           allowedTCPPorts = [3001];
         };
-        interfaces."eth0" = {
-          ipv4.addresses = [
-            {
-            address = "${configVars.uptime-kumaIp}";
-            prefixLength = 24;
-            }
-          ];
-        };
+        #interfaces."eth0" = {
+        #  ipv4.addresses = [
+        #    {
+        #    address = "${configVars.uptime-kumaIp}";
+        #    prefixLength = 24;
+        #    }
+        #  ];
+        #};
         useHostResolvConf = lib.mkForce false; # use systemd-resolved inside the container
       };
       system.stateVersion = "23.11";
