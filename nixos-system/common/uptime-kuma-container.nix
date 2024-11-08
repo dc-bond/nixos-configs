@@ -15,9 +15,9 @@ in
   containers.${app} = {
     autoStart = true;
     ephemeral = true;
-    privateNetwork = false;
-    #hostAddress = "${configVars.uptime-kumaVethIp}";
-    #localAddress = "${configVars.uptime-kumaContainerIp}";
+    privateNetwork = true;
+    hostAddress = "${configVars.uptime-kumaVethIp}";
+    localAddress = "${configVars.uptime-kumaContainerIp}";
     config = {config, pkgs, lib, ...}: {
       services = {
         ${app}.enable = true;
@@ -37,31 +37,29 @@ in
     };
   };
 
-  #services.traefik.dynamicConfigOptions.http = {
-  #  routers.${app} = {
-  #    entrypoints = ["websecure"];
-  #    rule = "Host(`${app}.${configVars.domain3}`)";
-  #    service = "${app}";
-  #    middlewares = [
-  #      "auth-chain"
-  #    ];
-  #    tls = {
-  #      certResolver = "cloudflareDns";
-  #      options = "tls-13@file";
-  #    };
-  #  };
-  #  services.${app} = {
-  #    loadBalancer = {
-  #      passHostHeader = true;
-  #      servers = [
-  #      {
-  #        #url = "http://localhost:3001";
-  #        #url = "http://${configVars.aspenBridgeSubnet}:3001";
-  #        url = "http://${configVars.uptime-kumaContainerIp}:3001";
-  #      }
-  #      ];
-  #    };
-  #  };
-  #};
+  services.traefik.dynamicConfigOptions.http = {
+    routers.${app} = {
+      entrypoints = ["websecure"];
+      rule = "Host(`${app}.${configVars.domain3}`)";
+      service = "${app}";
+      middlewares = [
+        "auth-chain"
+      ];
+      tls = {
+        certResolver = "cloudflareDns";
+        options = "tls-13@file";
+      };
+    };
+    services.${app} = {
+      loadBalancer = {
+        passHostHeader = true;
+        servers = [
+        {
+          url = "http://${configVars.uptime-kumaContainerIp}:3001";
+        }
+        ];
+      };
+    };
+  };
 
 }
