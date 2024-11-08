@@ -16,11 +16,16 @@ in
     autoStart = true;
     ephemeral = true;
     privateNetwork = true;
-    hostAddress = "${configVars.uptime-kumaVethIp}";
+    hostAddress = "${configVars.uptime-kumaContainerIp}";
     localAddress = "${configVars.uptime-kumaContainerIp}";
     config = {config, pkgs, lib, ...}: {
       services = {
-        ${app}.enable = true;
+        ${app} = {
+          enable = true;
+          #settings = {
+          #  UPTIME_KUMA_HOST = "0.0.0.0";
+          #};
+        };
         resolved = {
           enable = true; # use systemd-resolved for DNS functionality inside container
           llmnr = "false"; # disable link-local multicast name resolution inside container
@@ -28,8 +33,8 @@ in
       };
       networking = {
         firewall = {
-          enable = true;
-          allowedTCPPorts = [3001];
+          enable = false;
+          #allowedTCPPorts = [3001];
         };
         useHostResolvConf = lib.mkForce false; # use systemd-resolved inside the container
       };
