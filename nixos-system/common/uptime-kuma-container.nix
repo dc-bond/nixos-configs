@@ -17,8 +17,8 @@ in
     ephemeral = true;
     privateNetwork = true;
     #hostBridge = "br0";
-    hostAddress = "${configVars.aspenBridgeSubnet}";
-    localAddress = "${configVars.uptime-kumaIp}";
+    #hostAddress = "${configVars.aspenBridgeSubnet}";
+    #localAddress = "${configVars.uptime-kumaIp}";
     config = {config, pkgs, lib, ...}: {
       services = {
         ${app}.enable = true;
