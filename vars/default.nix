@@ -21,8 +21,8 @@
   jellyseerrSubnet = "172.22.1.0/25";
   jellyseerrIp = "172.22.1.2";
 
-  aspenBridgeSubnet = "172.18.1.2";
-  uptime-kumaIp = "172.18.1.3";
+  uptime-kumaVethIp = "172.18.1.2";
+  uptime-kumaContainerIp = "172.18.1.3";
 
 
 
@@ -37,6 +37,5 @@
   #userFullName = inputs.nix-secrets.full-name;
   #userEmail = inputs.nix-secrets.userEmail;
   #persistFolder = "/persist";
-  #networking = import ./networking.nix { inherit lib; };
 
 }

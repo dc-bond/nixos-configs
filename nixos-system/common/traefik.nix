@@ -207,4 +207,8 @@
 
   };
 
+  systemd.services.traefik.serviceConfig = {
+    WorkingDirectory = "/var/lib/traefik/";
+  };
+
 }

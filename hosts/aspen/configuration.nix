@@ -16,20 +16,27 @@
       "hosts/aspen/hardware-configuration.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
-      "nixos-system/common/nixos-containers.nix"
-      "nixos-system/common/docker-oci-containers.nix"
-      #"nixos-system/common/nextcloud.nix"
-      "nixos-system/common/traefik.nix"
-      "nixos-system/common/jellyseerr.nix"
-      "nixos-system/common/lldap.nix"
-      "nixos-system/common/authelia.nix"
-      #"nixos-system/common/uptime-kuma.nix"
-      #"nixos-system/common/uptime-kuma-container.nix"
       "nixos-system/host-specific/aspen/users.nix"
       "nixos-system/host-specific/aspen/boot.nix"
       "nixos-system/host-specific/aspen/sshd.nix"
       "nixos-system/host-specific/aspen/sops.nix"
       "nixos-system/host-specific/aspen/networking.nix"
+
+      # systemd-nspawn containers
+      "nixos-system/common/systemd-nspawn-containers.nix"
+      "nixos-system/common/uptime-kuma-container.nix"
+
+      # docker oci containers
+      #"nixos-system/common/docker-oci-containers.nix"
+      #"nixos-system/common/jellyseerr.nix"
+      #"nixos-system/common/lldap.nix"
+
+      # non-container service modules
+      #"nixos-system/common/traefik.nix"
+      #"nixos-system/common/authelia.nix"
+      #"nixos-system/common/uptime-kuma.nix"
+      #"nixos-system/common/nextcloud.nix"
+
     ])
   ];
 

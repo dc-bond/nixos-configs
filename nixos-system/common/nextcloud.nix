@@ -7,13 +7,17 @@
   ... 
 }: 
 
+let
+  app = "nextcloud";
+in
+
 {
 
   sops = {
     secrets = {
       nextcloudAdminPasswd = {
-        owner = "${config.users.users.nextcloud.name}";
-        group = "${config.users.users.nextcloud.group}";
+        owner = "${config.users.users.${app}.name}";
+        group = "${config.users.users.${app}.group}";
         mode = "0440";
       };
     };
@@ -21,13 +25,13 @@
 
   services = {
 
-    nextcloud = {
+    ${app} = {
       enable = true;
       hostName = "cloud.${configVars.domain3}";
       package = pkgs.nextcloud29; # manually increment with upgrades
       database.createLocally = true; # creates database
       configureRedis = true; # creates redis instance
-      maxUploadSize = "10G"; # max upload size
+      maxUploadSize = "20G"; # max upload size
       https = true;
       autoUpdateApps.enable = true;
       extraAppsEnable = true;
@@ -42,7 +46,7 @@
         #};
       };
       settings = {
-        #overwriteProtocol = "https";
+        overwriteProtocol = "https";
         default_phone_region = "US";
       };
       config = {
@@ -56,6 +60,31 @@
     #  enable = true;
     #  startAt = "*-*-* 01:15:00";
     #};
+  };
+  
+  services.traefik.dynamicConfigOptions.http = {
+    routers.${app} = {
+      entrypoints = ["websecure"];
+      rule = "Host(`cloud.${configVars.domain3}`)";
+      service = "${app}";
+      middlewares = [
+        "auth-chain"
+      ];
+      tls = {
+        certResolver = "cloudflareDns";
+        options = "tls-13@file";
+      };
+    };
+    services.${app} = {
+      loadBalancer = {
+        passHostHeader = true;
+        servers = [
+        {
+          url = "http://127.0.0.1:80";
+        }
+        ];
+      };
+    };
   };
 
 }
