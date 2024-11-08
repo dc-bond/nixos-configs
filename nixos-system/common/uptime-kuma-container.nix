@@ -16,8 +16,15 @@ in
     autoStart = true;
     ephemeral = true;
     privateNetwork = true;
-    hostAddress = "${configVars.uptime-kumaContainerIp}";
+    hostAddress = "${configVars.uptime-kumaVethIp}";
     localAddress = "${configVars.uptime-kumaContainerIp}";
+    forwardPorts = [
+    {
+      containerPort = 3001;
+      hostPort = 3001;
+      protocol = "tcp";
+    }
+    ];
     config = {config, pkgs, lib, ...}: {
       services = {
         ${app} = {
@@ -30,8 +37,8 @@ in
       };
       networking = {
         firewall = {
-          enable = false;
-          #allowedTCPPorts = [3001];
+          enable = true;
+          allowedTCPPorts = [3001];
         };
         useHostResolvConf = lib.mkForce false; # use systemd-resolved inside the container
       };
@@ -57,7 +64,7 @@ in
         passHostHeader = true;
         servers = [
         {
-          url = "http://${configVars.uptime-kumaContainerIp}:3001";
+          url = "http://127.0.0.1:3001";
         }
         ];
       };

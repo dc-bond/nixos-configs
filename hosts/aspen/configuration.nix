@@ -23,8 +23,8 @@
       "nixos-system/host-specific/aspen/networking.nix"
 
       # systemd-nspawn containers
-      #"nixos-system/common/systemd-nspawn-containers.nix"
-      #"nixos-system/common/uptime-kuma-container.nix"
+      "nixos-system/common/systemd-nspawn-containers.nix"
+      "nixos-system/common/uptime-kuma-container.nix"
 
       # docker oci containers
       "nixos-system/common/docker-oci-containers.nix"
@@ -35,7 +35,7 @@
       "nixos-system/common/traefik.nix"
       "nixos-system/common/authelia.nix"
       "nixos-system/common/uptime-kuma.nix"
-      "nixos-system/common/nextcloud.nix"
+      #"nixos-system/common/nextcloud.nix"
 
     ])
   ];
