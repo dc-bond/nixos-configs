@@ -42,7 +42,7 @@
           insecure = false;
         };
         log = {
-          level = "DEBUG";
+          level = "WARN";
           noColor = false;
           filePath = "/var/lib/traefik/traefik.log";
         };
@@ -119,7 +119,6 @@
             rule = "Host(`traefik.${configVars.domain3}`)";
             service = "api@internal";
             middlewares = [
-              #"auth" 
               "secure-headers"
             ];
             tls = {
