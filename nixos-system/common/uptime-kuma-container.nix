@@ -18,7 +18,8 @@ in
     privateNetwork = true;
     #hostBridge = "br0";
     #hostAddress = "${configVars.aspenBridgeSubnet}";
-    #localAddress = "${configVars.uptime-kumaIp}";
+    hostAddress = "192.168.1.189";
+    localAddress = "${configVars.uptime-kumaIp}";
     config = {config, pkgs, lib, ...}: {
       services = {
         ${app}.enable = true;
