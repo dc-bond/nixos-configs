@@ -11,7 +11,7 @@ let
 in
 
 {
-  
+
   containers.${app} = {
     autoStart = true;
     ephemeral = true;
@@ -22,9 +22,6 @@ in
       services = {
         ${app} = {
           enable = true;
-          #settings = {
-          #  UPTIME_KUMA_HOST = "0.0.0.0";
-          #};
         };
         resolved = {
           enable = true; # use systemd-resolved for DNS functionality inside container
