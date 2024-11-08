@@ -18,55 +18,6 @@
     firewall = {
       enable = false;
     };
-    #nat = { # allow specific nixos-containers to reach outside network
-    #  enable = true;
-    #  internalInterfaces = ["ve-uptime-kuma"];
-    #  externalInterface = "enp0s3";
-    #  enableIPv6 = false;
-    #};
-    #bridges.br0.interfaces = ["enp0s3"];
-    #interfaces."br0" = {
-    #  useDHCP = true;
-    #  ipv4.addresses = [
-    #    {
-    #    address = "172.21.1.1";
-    #    prefixLength = 24;
-    #    }
-    #  ]; 
-    #};
-    #nftables = {
-    #  enable = true; # use nftables instead of default iptables
-    #  tables = {
-    #    vm1-firewall = {
-    #      name = "aspen-firewall";
-    #      family = "inet";
-    #      enable = true;
-    #      content = 
-    #        ''
-    #        	chain input {
-    #        		type filter hook input priority 0; policy drop;
-    #        		ct state invalid counter drop comment "early drop of invalid packets"
-    #        		ct state {established, related} counter accept comment "accept all connections related to connections made by us"
-    #        		iif lo accept comment "accept loopback"
-    #        		iif != lo ip daddr 127.0.0.1/8 counter drop comment "drop connections to loopback not coming from loopback"
-    #        		iif != lo ip6 daddr ::1/128 counter drop comment "drop connections to loopback not coming from loopback"
-    #        		ip protocol icmp counter accept comment "accept all ICMP types"
-    #        		meta l4proto ipv6-icmp counter accept comment "accept all ICMP types"
-    #        		tcp dport 28766 counter accept comment "accept SSH"
-    #        		counter comment "count dropped packets"
-    #        	}
-    #        	chain forward {
-    #        		type filter hook forward priority 0; policy drop;
-    #        		counter comment "count dropped packets"
-    #        	}
-    #        	chain output {
-    #        		type filter hook output priority 0; policy accept;
-    #        		counter comment "count accepted packets"
-    #        	}
-    #        '';
-    #    };
-    #  };
-    #};
   };
 
   systemd.services.systemd-networkd-wait-online.enable = lib.mkForce false; # for wait-online error - need to find proper solution
