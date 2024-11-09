@@ -12,19 +12,31 @@ in
 
 {
 
+  networking = {
+    #firewall.extraCommands = ''
+    #  iptables -w -t nat -A nixos-nat-post -s ${config.containers.uptime-kuma.localAddress} -j MASQUERADE
+    #'';
+    nat = {
+      enable = true;
+      externalInterface = "enp0s3";
+      internalInterfaces = ["ve-uptime-kuma"];
+      enableIPv6 = false;
+    };
+  };
+
   containers.${app} = {
     autoStart = true;
     ephemeral = true;
     privateNetwork = true;
     hostAddress = "${configVars.uptime-kumaVethIp}";
     localAddress = "${configVars.uptime-kumaContainerIp}";
-    forwardPorts = [
-    {
-      containerPort = 3001;
-      hostPort = 3001;
-      protocol = "tcp";
-    }
-    ];
+    #forwardPorts = [
+    #{
+    #  containerPort = 3001;
+    #  hostPort = 3001;
+    #  protocol = "tcp";
+    #}
+    #];
     config = {config, pkgs, lib, ...}: {
       services = {
         ${app} = {
