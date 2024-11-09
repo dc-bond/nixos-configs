@@ -13,15 +13,7 @@ in
 {
 
   networking = {
-    #firewall.extraCommands = ''
-    #  iptables -w -t nat -A nixos-nat-post -s ${config.containers.uptime-kuma.localAddress} -j MASQUERADE
-    #'';
-    nat = {
-      enable = true;
-      externalInterface = "enp0s3";
-      internalInterfaces = ["ve-uptime-kuma"];
-      enableIPv6 = false;
-    };
+    nat.internalInterfaces = ["ve-${app}"];
   };
 
   containers.${app} = {
@@ -29,7 +21,8 @@ in
     ephemeral = true;
     privateNetwork = true;
     hostAddress = "${configVars.uptime-kumaVethIp}";
-    localAddress = "${configVars.uptime-kumaContainerIp}";
+    #localAddress = "${configVars.uptime-kumaContainerIp}";
+    localAddress = "${app}.${configVars.domain3}";
     #forwardPorts = [
     #{
     #  containerPort = 3001;
@@ -76,7 +69,7 @@ in
         passHostHeader = true;
         servers = [
         {
-          url = "http://127.0.0.1:3001";
+          url = "http://${configVars.uptime-kumaVethIp}:3001";
         }
         ];
       };
