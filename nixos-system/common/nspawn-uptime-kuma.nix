@@ -20,9 +20,9 @@ in
     autoStart = true;
     ephemeral = true;
     privateNetwork = true;
-    hostAddress = "${configVars.uptime-kumaVethIp}";
-    #localAddress = "${configVars.uptime-kumaContainerIp}";
-    localAddress = "${app}.${configVars.domain3}";
+    #hostAddress = "${configVars.uptime-kumaVethIp}";
+    hostBridge = "br0";
+    localAddress = "${configVars.uptime-kumaContainerIp}";
     #forwardPorts = [
     #{
     #  containerPort = 3001;
@@ -69,7 +69,8 @@ in
         passHostHeader = true;
         servers = [
         {
-          url = "http://${configVars.uptime-kumaVethIp}:3001";
+          #url = "http://${config.hostBridge}:3001";
+          url = "http://${configVars.uptime-kumaContainerIp}:3001";
         }
         ];
       };
