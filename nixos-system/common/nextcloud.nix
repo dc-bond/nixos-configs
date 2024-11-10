@@ -88,3 +88,10 @@ in
   };
 
 }
+
+#services = {
+#        traefik.dynamicConfigOptions.http.middlewares.nextcloud-redirectregex.redirectRegex = {
+#          permanent = true;
+#          regex = "https://(.*)/.well-known/(card|cal)dav";
+#          replacement = "https://\${1}/remote.php/dav/";
+#        };
