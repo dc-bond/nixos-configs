@@ -21,8 +21,8 @@
   jellyseerrSubnet = "172.22.1.0/25";
   jellyseerrIp = "172.22.1.2";
 
-  kumaHostVethIp = "172.18.1.2";
-  kumaContainerVethIp = "172.18.1.3";
+  kumaHostVethIp = "fc01::2";
+  kumaContainerVethIp = "fc01::3";
 
 
 

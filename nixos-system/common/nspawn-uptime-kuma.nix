@@ -21,8 +21,8 @@ in
     ephemeral = true;
     privateNetwork = true;
     #hostBridge = "br0";
-    hostAddress = "${configVars.kumaHostVethIp}";
-    localAddress = "${configVars.kumaContainerVethIp}";
+    hostAddress6 = "${configVars.kumaHostVethIp}";
+    localAddress6 = "${configVars.kumaContainerVethIp}";
     #forwardPorts = [
     #{
     #  containerPort = 3001;

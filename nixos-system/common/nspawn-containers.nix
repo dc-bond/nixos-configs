@@ -25,7 +25,7 @@
       enable = true;
       externalInterface = "enp0s3";
       #internalInterfaces = ["ve-uptime-kuma"];
-      enableIPv6 = false;
+      enableIPv6 = true;
     };
   };
 
