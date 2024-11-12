@@ -13,7 +13,8 @@
   services.tailscale = {
     enable = true;
     authKeyFile = "${config.sops.secrets.tailscaleAuthKey.path}";
-    openFirewall = true;
+    useRoutingFeatures = "client";
+    #openFirewall = true;
   };
   
 }
