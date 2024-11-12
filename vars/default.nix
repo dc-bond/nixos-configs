@@ -7,7 +7,7 @@
 
   userName = "chris";
   userEmail = "chris@dcbond.com";
-  aspenIp = "192.168.1.189";
+  aspenIp = "192.168.1.172";
   thinkpadIp = "192.168.1.62";
   opticonIp = "192.168.1.2";
   vm1Ip = "192.168.1.199";
