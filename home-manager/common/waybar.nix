@@ -32,7 +32,7 @@
         #"pulseaudio",
         "battery"
         "bluetooth"
-        "network#wireguard"
+        "network#tailscale"
         "network#wifi"
         "network#ethernet"
         "network#ethernet-dock"
@@ -81,13 +81,13 @@
 	      "format-critical" = "{temperatureC}°C ";
 	      "format" = "{temperatureC}°C ";
       };
-      "network#wireguard" = {
-        "interface" = "wg0";
+      "network#tailscale" = {
+        "interface" = "tailscale0";
         "format" = "󰴳";
         "format-disconnected" = "󰦞";
         "format-linked" = "󰦞"; # this is a bug
-        "tooltip-format" = "Wireguard: {ipaddr}";
-        "tooltip-format-disconnected" = "Wireguard: Disconnected"; # not working bug
+        "tooltip-format" = "Tailscale: {ipaddr}";
+        "tooltip-format-disconnected" = "Tailscale: Disconnected"; # not working bug
       };
       "network#wifi" = {
         "interface" = "wlan0";
