@@ -12,7 +12,6 @@
   };
 
   networking.firewall = {
-    #checkReversePath = "loose";
     trustedInterfaces = [
       "tailscale0"
     ];
@@ -24,13 +23,9 @@
       authKeyFile = "${config.sops.secrets.tailscaleAuthKey.path}";
       useRoutingFeatures = "client";
       extraUpFlags = [
-        #"--accept-dns=false" # disable magic DNS
         "--accept-routes" # autmatically discover and accept subnet routes advertised by other nodes
+        "--exit-node=100.92.225.78"
       ];
-      #extraSetFlags = [
-      #  #"--exit-node=100.92.225.78"
-      #  "--exit-node=opticon"
-      #];
     };
   };
 

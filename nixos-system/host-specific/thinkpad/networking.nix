@@ -16,7 +16,8 @@
     useDHCP = false; # disable defaut dhcpcd networking backend in favor of systemd-networkd enabled below
     hostName = "thinkpad";
     firewall = {
-      enable = false; # disable default iptables
+      enable = true; # enable default iptables
+      #enable = false; # disable default iptables, nftables enabled below
     };
     #nftables = {
     #  enable = true; # use nftables instead of default iptables

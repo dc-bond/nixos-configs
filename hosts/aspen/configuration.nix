@@ -41,6 +41,7 @@
     nvd # package version diff info for nix build operations
     btop # system monitor
     nmap # network scanning
+    ethtool # network tools
   ];
   
 # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
