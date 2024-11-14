@@ -193,7 +193,7 @@ in
         passHostHeader = true;
         servers = [
         {
-          url = "http://localhost:9091";
+          url = "http://127.0.0.1:9091";
         }
         ];
       };
