@@ -6,9 +6,9 @@
 {
 
   services.openssh = {
-    enable = true; # automatically opens ports in firewall
+    enable = true;
     ports = [
-      28766
+      28766 # automatically opens firewall port
     ];
     settings = {
       PasswordAuthentication = false;

@@ -57,7 +57,7 @@ in
         };
         server = {
           host = "127.0.0.1";
-          port = 9091;
+          port = 9091; # automatically opens firewall port
         };
         authentication_backend = {
           refresh_interval = "5m";
