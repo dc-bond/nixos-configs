@@ -21,12 +21,11 @@
     tailscale = {
       enable = true;
       authKeyFile = "${config.sops.secrets.tailscaleAuthKey.path}";
-      #useRoutingFeatures = "server";
-      useRoutingFeatures = "client";
-      #extraUpFlags = [
-      #  #"--advertise-routes=" # advertise subnet routes for other nodes
-      #  "--advertise-exit-node" # advertise as exit node
-      #];
+      useRoutingFeatures = "server";
+      extraUpFlags = [
+        #"--advertise-routes=" # advertise subnet routes for other nodes
+        "--advertise-exit-node" # advertise as exit node
+      ];
     };
     #networkd-dispatcher = {
     #  enable = true;
