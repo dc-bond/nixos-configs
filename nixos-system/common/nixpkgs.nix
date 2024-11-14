@@ -33,9 +33,10 @@
     channel.enable = false; # disable channels because using flake
     registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs; # make flake registry match flake inputs
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs; # make nix path match flake inputs
-    gc = { # on a weekly basis, delete any generations older than 7 days then garbage-collect unreferenced programs and symlinks
+    gc = { # every hour, delete any generations older than 7 days then garbage-collect unreferenced programs and symlinks
       automatic = true;
-      dates = "weekly";
+      randomizedDelaySec = "60m";
+      #dates = "weekly";
       options = "--delete-older-than 7d";
     };
   };
