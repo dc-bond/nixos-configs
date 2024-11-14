@@ -6,7 +6,7 @@
 {
 
   services.printing = {
-    enable = true;
+    enable = true; # automatically opens firewall port 661
     browsing = true;
     drivers = [ 
       #pkgs.canon-cups-ufr2 # canon printer drivers # try when 24.11 stable?
