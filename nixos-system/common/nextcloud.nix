@@ -12,7 +12,7 @@ let
 in
 
 {
-
+  
   sops = {
     secrets = {
       nextcloudAdminPasswd = {
@@ -25,6 +25,8 @@ in
 
   services = {
 
+    nginx.virtualHosts."cloud.${configVars.domain3}".listen = [ { addr = "127.0.0.1"; port = 4411; } ];
+  
     ${app} = {
       enable = true;
       hostName = "cloud.${configVars.domain3}";
@@ -37,13 +39,7 @@ in
       extraAppsEnable = true;
       extraApps = with config.services.nextcloud.package.packages.apps; { # list of nextcloud apps
         # https://github.com/NixOS/nixpkgs/blob/master/pkgs/servers/nextcloud/packages/nextcloud-apps.json
-        inherit calendar contacts notes tasks cookbook qownnotesapi;
-        #socialsharing_telegram = pkgs.fetchNextcloudApp rec { # custom app example
-        #  url =
-        #    "https://github.com/nextcloud-releases/socialsharing/releases/download/v3.0.1/socialsharing_telegram-v3.0.1.tar.gz";
-        #  license = "agpl3";
-        #  sha256 = "sha256-8XyOslMmzxmX2QsVzYzIJKNw6rVWJ7uDhU1jaKJ0Q8k=";
-        #};
+        inherit calendar contacts notes tasks;
       };
       settings = {
         overwriteProtocol = "https";
@@ -56,10 +52,10 @@ in
       };
       phpOptions."opcache.interned_strings_buffer" = "16"; # suggested by nextcloud's health check
     };
-    #postgresqlBackup = { # nightly databse backup
-    #  enable = true;
-    #  startAt = "*-*-* 01:15:00";
-    #};
+    postgresqlBackup = { # nightly database backup
+      enable = true;
+      startAt = "*-*-* 01:15:00";
+    };
   };
   
   services.traefik.dynamicConfigOptions.http = {
@@ -68,19 +64,26 @@ in
       rule = "Host(`cloud.${configVars.domain3}`)";
       service = "${app}";
       middlewares = [
-        "auth-chain"
+        "authelia"
+        "secure-headers"
+        "nextcloud-redirect-regex"
       ];
       tls = {
         certResolver = "cloudflareDns";
         options = "tls-13@file";
       };
     };
+    middlewares.nextcloud-redirect-regex.redirectRegex = {
+      permanent = true;
+      regex = "https://(.*)/.well-known/(card|cal)dav";
+      replacement = "https://\${1}/remote.php/dav/";
+    };
     services.${app} = {
       loadBalancer = {
         passHostHeader = true;
         servers = [
         {
-          url = "http://127.0.0.1:80";
+          url = "http://127.0.0.1:4411";
         }
         ];
       };
@@ -88,10 +91,3 @@ in
   };
 
 }
-
-#services = {
-#        traefik.dynamicConfigOptions.http.middlewares.nextcloud-redirectregex.redirectRegex = {
-#          permanent = true;
-#          regex = "https://(.*)/.well-known/(card|cal)dav";
-#          replacement = "https://\${1}/remote.php/dav/";
-#        };

@@ -73,7 +73,7 @@
             #  "169.254.140.143/16"
             #  #"192.168.1.2"
             #  #"192.168.1.62"
-            
+
             #  "173.245.48.0/20"
             #  "103.21.244.0/22"
             #  "103.22.200.0/22"
@@ -123,6 +123,7 @@
             rule = "Host(`traefik.${configVars.domain3}`)";
             service = "api@internal";
             middlewares = [
+              #"authelia"
               "secure-headers"
             ];
             tls = {
@@ -137,11 +138,11 @@
             };
           };
           middlewares = {
-            auth = {
-              basicAuth = {
-                usersFile = "${config.sops.secrets.traefikBasicAuth.path}";
-              };
-            };
+            #auth = {
+            #  basicAuth = {
+            #    usersFile = "${config.sops.secrets.traefikBasicAuth.path}";
+            #  };
+            #};
             authelia = {
               forwardAuth = {
                 address = "http://127.0.0.1:9091/api/verify?rd=https://identity.${configVars.domain3}";
@@ -173,12 +174,12 @@
                 addVaryHeader = true;
               };
             };
-            auth-chain = {
-              chain.middlewares = [
-                "authelia"
-                "secure-headers" 
-              ];
-            };
+            #auth-chain = {
+            #  chain.middlewares = [
+            #    "authelia"
+            #    "secure-headers" 
+            #  ];
+            #};
           };
         };
         tls = {

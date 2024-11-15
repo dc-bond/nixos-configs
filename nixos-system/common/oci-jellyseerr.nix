@@ -29,7 +29,7 @@ in
       "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain3}`)";
       "traefik.http.routers.${app}.tls" = "true";
       "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-      "traefik.http.routers.${app}.middlewares" = "auth-chain@file";
+      "traefik.http.routers.${app}.middlewares" = "authelia@file,secure-headers@file";
       "traefik.http.services.${app}.loadbalancer.server.port" = "5055";
     };
   };
