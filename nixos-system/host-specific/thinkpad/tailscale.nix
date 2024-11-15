@@ -1,6 +1,7 @@
 { 
   pkgs, 
   config,
+  configVars,
   lib,
   ... 
 }: 
@@ -23,8 +24,9 @@
       authKeyFile = "${config.sops.secrets.tailscaleAuthKey.path}";
       useRoutingFeatures = "client";
       extraUpFlags = [
+        "-ssh"
         "--accept-routes" # autmatically discover and accept subnet routes advertised by other nodes
-        "--exit-node=100.92.225.78"
+        "--exit-node=${configVars.opticonTailscaleIp}"
       ];
     };
   };

@@ -7,10 +7,15 @@
 
   userName = "chris";
   userEmail = "chris@dcbond.com";
-  aspenIp = "192.168.1.172";
-  thinkpadIp = "192.168.1.62";
-  opticonIp = "192.168.1.2";
-  vm1Ip = "192.168.1.199";
+  aspenLanIp = "192.168.1.172";
+
+  aspenTailscaleIp = "100.73.117.29";
+  thinkpadLanIp = "192.168.1.62";
+  thinkpadTailscaleIp = "100.79.41.50";
+  opticonLanIp = "192.168.1.2";
+  opticonTailscaleIp = "100.92.225.78";
+  vm1LanIp = "192.168.1.199";
+  
   domain1 = "dcbond.com";
   domain2 = "opticon.dev";
   domain3 = "professorbond.com";

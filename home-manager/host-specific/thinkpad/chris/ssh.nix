@@ -14,17 +14,26 @@
         hostname = "vpn.${configVars.domain2}";
         user = "xixor";
         port = 39800;
-        #identityFile = "~/.ssh/chris-ed25519.key";
+      };
+      "opticon-tailscale" = {
+        hostname = "${configVars.opticonTailscaleIp}";
+        user = "xixor";
+        port = 22;
       };
       "vm1" = {
-        hostname = "${configVars.vm1Ip}";
+        hostname = "${configVars.vm1LanIp}";
         user = "${configVars.userName}";
         port = 28765;
       };
       "aspen" = {
-        hostname = "${configVars.aspenIp}";
+        hostname = "${configVars.aspenLanIp}";
         user = "${configVars.userName}";
         port = 28766;
+      };
+      "aspen-tailscale" = {
+        hostname = "${configVars.aspenTailscaleIp}";
+        user = "${configVars.userName}";
+        port = 22;
       };
     };
   };

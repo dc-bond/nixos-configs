@@ -25,6 +25,7 @@
       extraUpFlags = [
         #"--advertise-routes=" # advertise subnet routes for other nodes
         "--advertise-exit-node" # advertise as exit node
+        "--ssh" # enable devices on tailnet to ssh into this machine over tailscale on port 22
       ];
     };
     #networkd-dispatcher = {
