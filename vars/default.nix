@@ -8,7 +8,7 @@
   userName = "chris";
   userEmail = "chris@dcbond.com";
 
-  aspenLanIp = "192.168.1.172";
+  aspenLanIp = "192.168.1.189";
   aspenTailscaleIp = "100.73.117.29";
   thinkpadLanIp = "192.168.1.62";
   thinkpadTailscaleIp = "100.79.41.50";
@@ -23,12 +23,12 @@
   lldapSubnet = "172.21.1.0/25";
   lldapIp = "172.21.1.2";
   postgres-lldapIp = "172.21.1.3";
-  
+
   jellyseerrSubnet = "172.21.2.0/25";
   jellyseerrIp = "172.21.2.2";
 
-  kumaHostVethIp = "172.22.1.2";
-  kumaContainerVethIp = "172.22.1.3";
+  #kumaHostVethIp = "172.22.1.2";
+  #kumaContainerVethIp = "172.22.1.3";
 
 
 

@@ -46,7 +46,7 @@ in
         default_phone_region = "US";
       };
       config = {
-        dbtype = "pgsql"; # postgres databse
+        dbtype = "pgsql"; # postgres database
         adminuser = "admin";
         adminpassFile = "${config.sops.secrets.nextcloudAdminPasswd.path}";
       };
@@ -64,7 +64,7 @@ in
       rule = "Host(`cloud.${configVars.domain3}`)";
       service = "${app}";
       middlewares = [
-        "authelia"
+        "authelia-3"
         "secure-headers"
         "nextcloud-redirect-regex"
       ];

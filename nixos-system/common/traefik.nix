@@ -143,18 +143,6 @@
             #    usersFile = "${config.sops.secrets.traefikBasicAuth.path}";
             #  };
             #};
-            authelia = {
-              forwardAuth = {
-                address = "http://127.0.0.1:9091/api/verify?rd=https://identity.${configVars.domain3}";
-                trustForwardHeader = true;
-                authResponseHeaders = [
-                  "Remote-User"
-                  "Remote-Groups"
-                  "Remote-Name"
-                  "Remote-Email"
-                ];
-              };
-            };
             secure-headers = {
               headers = {
                 sslRedirect = true;
