@@ -6,7 +6,7 @@
 {
 
   services.openssh = {
-    enable = true;
+    enable = true; # automatically opens firewall port 22 unless alternate port specified below
     ports = [
       28766 # automatically opens firewall port
     ];
