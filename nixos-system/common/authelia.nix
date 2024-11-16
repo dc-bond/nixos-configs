@@ -32,14 +32,26 @@ in
       group = config.users.users."${app}-3".group;
       mode = "0440";
     };
-    #autheliaOidcHmacSecret = {
-    #  owner = config.users.users."${app}-3".name;
-    #  group = config.users.users."${app}-3".group;
-    #  mode = "0440";
-    #};
-    #autheliaOidcIssuerPrivateKey = {
-    #  mode = "0440";
-    #};
+    autheliaOidcHmacSecret = {
+      owner = config.users.users."${app}-3".name;
+      group = config.users.users."${app}-3".group;
+      mode = "0440";
+    };
+    autheliaOidcJwksKey = {
+      owner = config.users.users."${app}-3".name;
+      group = config.users.users."${app}-3".group;
+      mode = "0440";
+    };
+    autheliaNextcloudOidcClientId = {
+      owner = config.users.users."${app}-3".name;
+      group = config.users.users."${app}-3".group;
+      mode = "0440";
+    };
+    autheliaNextcloudOidcClientSecretDigest = {
+      owner = config.users.users."${app}-3".name;
+      group = config.users.users."${app}-3".group;
+      mode = "0440";
+    };
   };
 
   services.${app}.instances = {
@@ -142,11 +154,33 @@ in
             path = "/var/lib/${app}-3/sqlite3.db";
           };
         };
-        #identity_provider = {
-        #  oidc = {
-        #    clients = "";
-        #  };
-        #};
+        identity_providers = {
+          oidc = {
+            jwks = {
+              key_id = "professorbond";
+              algorithm = "RS256";
+              use = "sig";
+            };
+            clients = {
+              client_id = "${config.sops.secrets.autheliaNextcloudOidcClientId.path}";
+              client_name = "nextcloud";
+              client_secret = "${config.sops.secrets.autheliaNextcloudOidcClientSecretDigest.path}";
+              public = false;
+              authorization_policy = "one_factor";
+              require_pkce = true;
+              pkce_challenge_method = "S256";
+              redirect_uris = "https://cloud.${configVars.domain3}/apps/user_oidc/code";
+              scopes = [
+                "openid"
+                "profile"
+                "email"
+                "groups"
+              ];
+              userinfo_signed_response_alg = "none";
+              token_endpoint_auth_method = "client_secret_basic";
+            };
+          };
+        };
         notifier = {
           disable_startup_check = false;
           filesystem = {
@@ -161,8 +195,8 @@ in
         jwtSecretFile = "${config.sops.secrets.autheliaJwtSecret.path}";
         storageEncryptionKeyFile = "${config.sops.secrets.autheliaStorageEncryptionKey.path}";
         sessionSecretFile = "${config.sops.secrets.autheliaSessionSecret.path}";
-        #oidcHmacSecretFile = "${config.sops.secrets.autheliaOidcHmacSecret.path}";
-        #oidcIssuerPrivateKeyFile = "${config.sops.secrets.autheliaOidcIssuerPrivateKey.path}";
+        oidcHmacSecretFile = "${config.sops.secrets.autheliaOidcHmacSecret.path}";
+        oidcIssuerPrivateKeyFile = "${config.sops.secrets.autheliaOidcJwksKey.path}";
       };
     };
   }; 

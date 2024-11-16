@@ -39,7 +39,7 @@ in
       extraAppsEnable = true;
       extraApps = with config.services.nextcloud.package.packages.apps; { # list of nextcloud apps
         # https://github.com/NixOS/nixpkgs/blob/master/pkgs/servers/nextcloud/packages/nextcloud-apps.json
-        inherit calendar contacts notes tasks;
+        inherit calendar contacts user_oidc notes tasks;
       };
       settings = {
         overwriteProtocol = "https";
