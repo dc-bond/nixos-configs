@@ -57,38 +57,41 @@ in
   services.${app}.instances = {
     "3" = {
       enable = true; 
+      package = pkgs.unstable.authelia;
       settings = {
         theme = "dark";
         default_2fa_method = "webauthn";
-        default_redirection_url = "https://${configVars.domain1}/";
         log = {
-          level = "debug";
+          level = "info";
           format = "text"; 
           file_path = "/var/lib/${app}-3/authelia.log";
           keep_stdout = true;
         };
-        server = {
-          host = "127.0.0.1";
-          port = 9091; # automatically opens firewall port
+        #server.address = "tcp://127.0.0.1:9091";
+        session = {
+          cookies = {
+            domain = "${configVars.domain3}";
+            authelia_url = "https://identity.${configVars.domain3}";
+          };
+          redis.host = "/run/redis-${app}-3/redis.sock";
         };
         authentication_backend = {
           refresh_interval = "5m";
           password_reset.disable = true;
           ldap = {
-            implementation = "custom";
-            url = "ldap://${configVars.lldapIp}:3890";
-            timeout = "5s";
-            start_tls = false;
+            address = "ldap://${configVars.lldapIp}:3890";
             base_dn = "dc=professorbond,dc=com";
-            username_attribute = "uid";
-            additional_users_dn = "ou=people";
-            users_filter = "(&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=person))"; # allow sign in with username OR email
-            additional_groups_dn = "ou=groups";
-            groups_filter = "(member={dn})";
-            group_name_attribute = "cn";
-            mail_attribute = "mail";
-            display_name_attribute = "displayName";
             user = "uid=admin,ou=people,dc=professorbond,dc=com"; # admin username, password in env variable below
+            #attribues = {
+            #  username = "uid";
+            #  group_name = "cn";
+            #  display_name = "displayName";
+            #  mail = "mail";
+            #};
+            #additional_users_dn = "ou=people";
+            users_filter = "(&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=person))"; # allow sign in with username OR email
+            #additional_groups_dn = "ou=groups";
+            groups_filter = "(member={dn})";
           };
         };
         access_control = {
@@ -134,15 +137,6 @@ in
               policy = "one_factor";
             }
           ];
-        };
-        session = {
-          name = "authelia_session";
-          domain = "${configVars.domain3}";
-          same_site = "lax";
-          expiration = "1h";
-          inactivity = "5m";
-          remember_me_duration = "24h";
-          redis.host = "/run/redis-${app}-3/redis.sock";
         };
         regulation = {
           max_retries = 3;
