@@ -12,7 +12,7 @@
     swww # animated wallpaper for wayland window managers
     pywal # color theme changer
     dunst # notification daemon
-    gnome-calculator # calculator
+    gnome.gnome-calculator # calculator
     loupe # image viewer
     zathura # barebones pdf viewer
     nextcloud-client # nextcloud local syncronization client
