@@ -42,6 +42,12 @@
                 content = {
                   type = "btrfs";
                   extraArgs = [ "-L" "nixos" "-f" ];
+                  postCreateHook = ''
+                    mntpoint=$(mktemp -d)
+                    mount "/dev/mapper/cryptroot" "$mntpoint" -o subvol=/
+                    trap 'umount $mntpoint; rm -rf $mntpoint' EXIT
+                    btrfs subvolume snapshot -r $mntpoint/root $mntpoint/root-blank
+                  '';
                   subvolumes = {
                     "/root" = {
                       mountpoint = "/";
