@@ -1,13 +1,13 @@
 { 
   pkgs,
   config,
-  configVars,
+  #configVars,
   ...
 }:
 
 let
   host = "vm1";
-  #ipv4 = "192.168.1.199";
+  ipv4 = "192.168.1.230";
 in
 
 pkgs.writeShellScriptBin "deploy-${host}" 
@@ -41,5 +41,5 @@ pkgs.writeShellScriptBin "deploy-${host}"
   --extra-files "$temp" \
   --disk-encryption-keys /tmp/crypt-passwd.txt <(pass /hosts/${host}/crypt-passwd) \
   --flake '.#${host}' \
-  nixos@${configVars.vm1LanIp}
+  nixos@${ipv4}
 ''
