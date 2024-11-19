@@ -21,6 +21,7 @@
       "nixos-system/common/fonts.nix"
       "nixos-system/common/yubikey.nix"
       "nixos-system/common/nixpkgs.nix"
+      #"nixos-system/host-specific/vm1/impermanence.nix"
       "nixos-system/host-specific/vm1/users.nix"
       "nixos-system/host-specific/vm1/sshd.nix"
       "nixos-system/host-specific/vm1/sops.nix"

@@ -27,14 +27,14 @@
       sshKeyPaths = [];
       keyFile = "/etc/age/vm1-age.key"; # sops/age will use private age key in this location to decrypt secrets.yaml
     };
-    secrets = { # output to /run/secrets/...
-      test = {};
-      homeTest = {
-        owner = "${config.users.users.${configVars.userName}.name}";
-        group = "${config.users.users.${configVars.userName}.group}";
-        mode = "0440";
-      };
-    };
+    #secrets = { # output to /run/secrets/...
+    #  test = {};
+    #  homeTest = {
+    #    owner = "${config.users.users.${configVars.userName}.name}";
+    #    group = "${config.users.users.${configVars.userName}.group}";
+    #    mode = "0440";
+    #  };
+    #};
   };
 
 }
