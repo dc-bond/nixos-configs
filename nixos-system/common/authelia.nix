@@ -57,8 +57,6 @@ in
   services.${app}.instances = {
     "3" = {
       enable = true; 
-      #package = pkgs.unstable.authelia;
-      #settingsFiles = [ "/etc/authelia/config.yml" ];
       settings = {
         theme = "dark";
         default_2fa_method = "webauthn";
@@ -68,19 +66,21 @@ in
           file_path = "/var/lib/${app}-3/authelia.log";
           keep_stdout = true;
         };
-        #server.address = "tcp://127.0.0.1:9091";
+        #server.address = "tcp://127.0.0.1:9091"; # 24.11?
         session = {
-          cookies = {
-            domain = "${configVars.domain3}";
-            authelia_url = "https://identity.${configVars.domain3}";
-          };
+          domain = "${configVars.domain3}";
+          #cookies = { # 24.11?
+          #  domain = "${configVars.domain3}";
+          #  authelia_url = "https://identity.${configVars.domain3}";
+          #};
           redis.host = "/run/redis-${app}-3/redis.sock";
         };
         authentication_backend = {
           refresh_interval = "5m";
           password_reset.disable = true;
           ldap = {
-            address = "ldap://${configVars.lldapIp}:3890";
+            url = "ldap://${configVars.lldapIp}:3890";
+            #address = "ldap://${configVars.lldapIp}:3890"; # 24.11?
             base_dn = "dc=professorbond,dc=com";
             user = "uid=admin,ou=people,dc=professorbond,dc=com"; # admin username, password in env variable below
             #attribues = {
@@ -149,32 +149,32 @@ in
             path = "/var/lib/${app}-3/sqlite3.db";
           };
         };
-        identity_providers = {
-          oidc = {
-            jwks = {
-              key_id = "professorbond";
-              algorithm = "RS256";
-              use = "sig";
-            };
-            clients = {
-              client_id = "${config.sops.secrets.autheliaNextcloudOidcClientId.path}";
-              client_name = "nextcloud";
-              client_secret = "${config.sops.secrets.autheliaNextcloudOidcClientSecretDigest.path}";
-              redirect_uris = "https://cloud.${configVars.domain3}/apps/user_oidc/code";
-              authorization_policy = "one_factor";
-              require_pkce = true;
-              pkce_challenge_method = "S256";
-              scopes = [
-                "openid"
-                "profile"
-                "email"
-                "groups"
-              ];
-              userinfo_signed_response_alg = "none";
-              token_endpoint_auth_method = "client_secret_basic";
-            };
-          };
-        };
+        #identity_providers = {
+        #  oidc = {
+        #    #jwks = {
+        #    #  key_id = "professorbond";
+        #    #  algorithm = "RS256";
+        #    #  use = "sig";
+        #    #};
+        #    clients = {
+        #      client_id = "${config.sops.secrets.autheliaNextcloudOidcClientId.path}";
+        #      client_name = "nextcloud";
+        #      client_secret = "${config.sops.secrets.autheliaNextcloudOidcClientSecretDigest.path}";
+        #      redirect_uris = "https://cloud.${configVars.domain3}/apps/user_oidc/code";
+        #      authorization_policy = "one_factor";
+        #      require_pkce = true;
+        #      pkce_challenge_method = "S256";
+        #      scopes = [
+        #        "openid"
+        #        "profile"
+        #        "email"
+        #        "groups"
+        #      ];
+        #      userinfo_signed_response_alg = "none";
+        #      token_endpoint_auth_method = "client_secret_basic";
+        #    };
+        #  };
+        #};
         notifier = {
           disable_startup_check = false;
           filesystem = {

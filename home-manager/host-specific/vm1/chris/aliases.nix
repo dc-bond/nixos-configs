@@ -7,7 +7,7 @@
 
   programs.zsh = {
     shellAliases = {
-      rbldloc = "rebuildLocalVm1";
+      rbvm1 = "rebuildLocalVm1";
     };
   };
 

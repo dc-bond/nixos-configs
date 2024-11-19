@@ -12,7 +12,8 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/vm1/disk-config-btrfs.nix"
+      #"hosts/vm1/disk-config-btrfs.nix"
+      "hosts/vm1/disk-config-btrfs-luks-impermanence.nix"
       "hosts/vm1/hardware-configuration.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/boot.nix"
@@ -28,10 +29,7 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    (import (configLib.relativeToRoot "scripts/hello-world.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/helloWorldHome.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/deploy-thinkpad.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/deploy-aspen.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/getPassRepo.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuildLocalVm1.nix") { inherit pkgs config; })
     wget # download tool

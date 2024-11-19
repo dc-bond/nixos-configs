@@ -14,7 +14,7 @@
   thinkpadTailscaleIp = "100.79.41.50";
   opticonLanIp = "192.168.1.2";
   opticonTailscaleIp = "100.92.225.78";
-  vm1LanIp = "192.168.1.199";
+  vm1LanIp = "192.168.1.230";
 
   domain1 = "dcbond.com";
   domain2 = "opticon.dev";
