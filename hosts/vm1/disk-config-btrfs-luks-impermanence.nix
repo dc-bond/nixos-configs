@@ -14,7 +14,7 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/nvme0n1";
+        device = "/dev/sda";
         content = {
           type = "gpt";
           partitions = {
@@ -60,7 +60,7 @@
                       mountOptions = [ "subvol=persist" "compress=zstd" "noatime" ];
                     };
                     "/log" = {
-                      mountpoint = "/log";
+                      mountpoint = "/var/log";
                       mountOptions = [ "subvol=log" "compress=zstd" "noatime" ];
                     };
                     "/swap" = {
