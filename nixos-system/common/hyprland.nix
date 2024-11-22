@@ -13,11 +13,7 @@ pkgs,
 
   programs.hyprland = {
     enable = true;
-    package = pkgs.unstable.hyprland;
+    package = pkgs.hyprland;
   };
 
 }
-
-  #imports = [
-  #  inputs.hyprland.nixosModules.default # imported from flake inputs
-  #];

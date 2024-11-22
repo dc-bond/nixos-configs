@@ -43,7 +43,6 @@
     (import (configLib.relativeToRoot "scripts/rebuildLocalThinkpad.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuildRemoteVm1.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuildRemoteAspen.nix") { inherit pkgs config; })
-    inputs.compose2nix.packages.x86_64-linux.default # compose2nix tool
     age # encryption tool
     mkpasswd # password hashing tool
     dig # dns lookup tool
