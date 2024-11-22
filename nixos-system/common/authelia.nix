@@ -42,16 +42,16 @@ in
       group = config.users.users."${app}-3".group;
       mode = "0440";
     };
-    autheliaNextcloudOidcClientId = {
-      owner = config.users.users."${app}-3".name;
-      group = config.users.users."${app}-3".group;
-      mode = "0440";
-    };
-    autheliaNextcloudOidcClientSecretDigest = {
-      owner = config.users.users."${app}-3".name;
-      group = config.users.users."${app}-3".group;
-      mode = "0440";
-    };
+    #autheliaNextcloudOidcClientId = {
+    #  owner = config.users.users."${app}-3".name;
+    #  group = config.users.users."${app}-3".group;
+    #  mode = "0440";
+    #};
+    #autheliaNextcloudOidcClientSecretDigest = {
+    #  owner = config.users.users."${app}-3".name;
+    #  group = config.users.users."${app}-3".group;
+    #  mode = "0440";
+    #};
   };
 
   services.${app}.instances = {
@@ -66,21 +66,21 @@ in
           file_path = "/var/lib/${app}-3/authelia.log";
           keep_stdout = true;
         };
-        #server.address = "tcp://127.0.0.1:9091"; # 24.11?
+        server.address = "tcp://:9091";
         session = {
-          domain = "${configVars.domain3}";
-          #cookies = { # 24.11?
-          #  domain = "${configVars.domain3}";
-          #  authelia_url = "https://identity.${configVars.domain3}";
-          #};
+          cookies = [
+            {
+            domain = "${configVars.domain3}";
+            authelia_url = "https://identity.${configVars.domain3}";
+            }
+          ];
           redis.host = "/run/redis-${app}-3/redis.sock";
         };
         authentication_backend = {
           refresh_interval = "5m";
           password_reset.disable = true;
           ldap = {
-            url = "ldap://${configVars.lldapIp}:3890";
-            #address = "ldap://${configVars.lldapIp}:3890"; # 24.11?
+            address = "ldap://${configVars.lldapIp}:3890";
             base_dn = "dc=professorbond,dc=com";
             user = "uid=admin,ou=people,dc=professorbond,dc=com"; # admin username, password in env variable below
             #attribues = {
@@ -149,32 +149,36 @@ in
             path = "/var/lib/${app}-3/sqlite3.db";
           };
         };
-        #identity_providers = {
-        #  oidc = {
-        #    #jwks = {
-        #    #  key_id = "professorbond";
-        #    #  algorithm = "RS256";
-        #    #  use = "sig";
-        #    #};
-        #    clients = {
-        #      client_id = "${config.sops.secrets.autheliaNextcloudOidcClientId.path}";
-        #      client_name = "nextcloud";
-        #      client_secret = "${config.sops.secrets.autheliaNextcloudOidcClientSecretDigest.path}";
-        #      redirect_uris = "https://cloud.${configVars.domain3}/apps/user_oidc/code";
-        #      authorization_policy = "one_factor";
-        #      require_pkce = true;
-        #      pkce_challenge_method = "S256";
-        #      scopes = [
-        #        "openid"
-        #        "profile"
-        #        "email"
-        #        "groups"
-        #      ];
-        #      userinfo_signed_response_alg = "none";
-        #      token_endpoint_auth_method = "client_secret_basic";
-        #    };
-        #  };
-        #};
+        identity_providers = {
+          oidc = {
+            jwks = {
+              key_id = "professorbond";
+              algorithm = "RS256";
+              use = "sig";
+            };
+            clients = [
+              {
+              #client_id = "${config.sops.secrets.autheliaNextcloudOidcClientId.path}";
+              client_id = "7Au52dmVWwvAGdqvrsLatNjedPoSIfQw~UWRj.M24VWhhlDp8v_tXUtePMvCz9pn~Vt1EVBc";
+              client_name = "nextcloud";
+              #client_secret = "${config.sops.secrets.autheliaNextcloudOidcClientSecretDigest.path}";
+              client_secret = "$pbkdf2-sha512$310000$PLcD7uvNnhfoie42zPQ71w$oZhEWIOtCXk/fOG4ABoRqDCTZmsZoxWKH0ERqz19aHkS7igOULjOQpvSHFxth0cuU3nehFYEYaF3Yo.z7vg./A";
+              redirect_uris = "https://cloud.${configVars.domain3}/apps/user_oidc/code";
+              authorization_policy = "one_factor";
+              require_pkce = true;
+              pkce_challenge_method = "S256";
+              scopes = [
+                "openid"
+                "profile"
+                "email"
+                "groups"
+              ];
+              userinfo_signed_response_alg = "none";
+              token_endpoint_auth_method = "client_secret_basic";
+              }
+            ];
+          };
+        };
         notifier = {
           disable_startup_check = false;
           filesystem = {

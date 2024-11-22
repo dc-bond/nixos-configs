@@ -31,7 +31,7 @@
       "nixos-system/common/oci-lldap.nix"
       # non-container service modules
       "nixos-system/common/traefik.nix"
-      #"nixos-system/common/authelia.nix" # wait until 24.11?
+      "nixos-system/common/authelia.nix"
       "nixos-system/common/uptime-kuma.nix"
       #"nixos-system/common/nextcloud.nix"
     ])
