@@ -64,7 +64,7 @@ in
       rule = "Host(`cloud.${configVars.domain3}`)";
       service = "${app}";
       middlewares = [
-        "authelia-3"
+        #"authelia-3"
         "secure-headers"
         "nextcloud-redirect-regex"
       ];
