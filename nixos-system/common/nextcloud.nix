@@ -50,7 +50,14 @@ in
         adminuser = "admin";
         adminpassFile = "${config.sops.secrets.nextcloudAdminPasswd.path}";
       };
-      phpOptions."opcache.interned_strings_buffer" = "16"; # suggested by nextcloud's health check
+      phpOptions = {
+        "opcache.interned_strings_buffer" = "16"; # suggested by nextcloud's health check
+        "user_oidc" = ''
+          [
+            'use_pkce' => true,
+          ]
+        '';
+      };
     };
     postgresqlBackup = { # nightly database backup
       enable = true;

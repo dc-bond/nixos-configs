@@ -19,6 +19,7 @@
   domain1 = "dcbond.com";
   domain2 = "opticon.dev";
   domain3 = "professorbond.com";
+  domain3Short = "professorbond";
 
   lldapSubnet = "172.21.1.0/25";
   lldapIp = "172.21.1.2";

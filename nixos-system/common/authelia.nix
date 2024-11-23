@@ -13,33 +13,33 @@ in
 
   sops.secrets = {
     autheliaLdapUserPasswd = {
-      owner = config.users.users."${app}-3".name;
-      group = config.users.users."${app}-3".group;
+      owner = config.users.users."${app}-${configVars.domain3Short}".name;
+      group = config.users.users."${app}-${configVars.domain3Short}".group;
       mode = "0440";
     };
     autheliaJwtSecret = {
-      owner = config.users.users."${app}-3".name;
-      group = config.users.users."${app}-3".group;
+      owner = config.users.users."${app}-${configVars.domain3Short}".name;
+      group = config.users.users."${app}-${configVars.domain3Short}".group;
       mode = "0440";
     };
     autheliaStorageEncryptionKey = {
-      owner = config.users.users."${app}-3".name;
-      group = config.users.users."${app}-3".group;
+      owner = config.users.users."${app}-${configVars.domain3Short}".name;
+      group = config.users.users."${app}-${configVars.domain3Short}".group;
       mode = "0440";
     };
     autheliaSessionSecret = {
-      owner = config.users.users."${app}-3".name;
-      group = config.users.users."${app}-3".group;
+      owner = config.users.users."${app}-${configVars.domain3Short}".name;
+      group = config.users.users."${app}-${configVars.domain3Short}".group;
       mode = "0440";
     };
     autheliaOidcHmacSecret = {
-      owner = config.users.users."${app}-3".name;
-      group = config.users.users."${app}-3".group;
+      owner = config.users.users."${app}-${configVars.domain3Short}".name;
+      group = config.users.users."${app}-${configVars.domain3Short}".group;
       mode = "0440";
     };
     autheliaOidcJwksKey = {
-      owner = config.users.users."${app}-3".name;
-      group = config.users.users."${app}-3".group;
+      owner = config.users.users."${app}-${configVars.domain3Short}".name;
+      group = config.users.users."${app}-${configVars.domain3Short}".group;
       mode = "0440";
     };
     #autheliaNextcloudOidcClientId = {
@@ -55,7 +55,7 @@ in
   };
 
   services.${app}.instances = {
-    "3" = {
+    "${configVars.domain3Short}" = {
       enable = true; 
       settings = {
         theme = "dark";
@@ -81,8 +81,8 @@ in
           password_reset.disable = true;
           ldap = {
             address = "ldap://${configVars.lldapIp}:3890";
-            base_dn = "dc=professorbond,dc=com";
-            user = "uid=admin,ou=people,dc=professorbond,dc=com"; # admin username, password in env variable below
+            base_dn = "dc=${configVars.domain3Short},dc=com";
+            user = "uid=admin,ou=people,dc=${configVars.domain3Short},dc=com"; # admin username, password in env variable below
             #attribues = {
             #  username = "uid";
             #  group_name = "cn";
@@ -146,13 +146,13 @@ in
         };
         storage = {
           local = {
-            path = "/var/lib/${app}-3/sqlite3.db";
+            path = "/var/lib/${app}-${configVars.domain3Short}/sqlite3.db";
           };
         };
         identity_providers = {
           oidc = {
             jwks = {
-              key_id = "professorbond";
+              key_id = "${configVars.domain3Short}";
               algorithm = "RS256";
               use = "sig";
             };
@@ -182,7 +182,7 @@ in
         notifier = {
           disable_startup_check = false;
           filesystem = {
-            filename = "/var/lib/${app}-3/notifications.txt";
+            filename = "/var/lib/${app}-${configVars.domain3Short}/notifications.txt";
           };
         };
       };
@@ -199,9 +199,9 @@ in
     };
   }; 
 
-  services.redis.servers."${app}-3" = {
+  services.redis.servers."${app}-${configVars.domain3Short}" = {
     enable = true;
-    user = "${app}-3";   
+    user = "${app}-${configVars.domain3Short}";   
     port = 0;
     unixSocket = "/run/redis-${app}-3/redis.sock";
     unixSocketPerm = 600;
