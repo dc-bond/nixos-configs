@@ -42,16 +42,6 @@ in
       group = config.users.users."${app}-${configVars.domain3Short}".group;
       mode = "0440";
     };
-    #autheliaNextcloudOidcClientId = {
-    #  owner = config.users.users."${app}-3".name;
-    #  group = config.users.users."${app}-3".group;
-    #  mode = "0440";
-    #};
-    #autheliaNextcloudOidcClientSecretDigest = {
-    #  owner = config.users.users."${app}-3".name;
-    #  group = config.users.users."${app}-3".group;
-    #  mode = "0440";
-    #};
   };
 
   services.${app}.instances = {
@@ -63,7 +53,7 @@ in
         log = {
           level = "info";
           format = "text"; 
-          file_path = "/var/lib/${app}-3/authelia.log";
+          file_path = "/var/lib/${app}-${configVars.domain3Short}/authelia.log";
           keep_stdout = true;
         };
         server.address = "tcp://:9091";
@@ -74,7 +64,7 @@ in
             authelia_url = "https://identity.${configVars.domain3}";
             }
           ];
-          redis.host = "/run/redis-${app}-3/redis.sock";
+          redis.host = "/run/redis-${app}-${configVars.domain3Short}/redis.sock";
         };
         authentication_backend = {
           refresh_interval = "5m";
@@ -158,15 +148,14 @@ in
             };
             clients = [
               {
-              #client_id = "${config.sops.secrets.autheliaNextcloudOidcClientId.path}";
               client_id = "7Au52dmVWwvAGdqvrsLatNjedPoSIfQw~UWRj.M24VWhhlDp8v_tXUtePMvCz9pn~Vt1EVBc";
-              client_name = "nextcloud";
-              #client_secret = "${config.sops.secrets.autheliaNextcloudOidcClientSecretDigest.path}";
+              client_name = "Bond Private Nextcloud";
               client_secret = "$pbkdf2-sha512$310000$PLcD7uvNnhfoie42zPQ71w$oZhEWIOtCXk/fOG4ABoRqDCTZmsZoxWKH0ERqz19aHkS7igOULjOQpvSHFxth0cuU3nehFYEYaF3Yo.z7vg./A";
-              redirect_uris = "https://cloud.${configVars.domain3}/apps/user_oidc/code";
+              public = false;
               authorization_policy = "one_factor";
               require_pkce = true;
               pkce_challenge_method = "S256";
+              redirect_uris = "https://cloud.${configVars.domain3}/apps/user_oidc/code";
               scopes = [
                 "openid"
                 "profile"
@@ -174,7 +163,7 @@ in
                 "groups"
               ];
               userinfo_signed_response_alg = "none";
-              token_endpoint_auth_method = "client_secret_basic";
+              token_endpoint_auth_method = "client_secret_post";
               }
             ];
           };
@@ -203,10 +192,11 @@ in
     enable = true;
     user = "${app}-${configVars.domain3Short}";   
     port = 0;
-    unixSocket = "/run/redis-${app}-3/redis.sock";
+    unixSocket = "/run/redis-${app}-${configVars.domain3Short}/redis.sock";
     unixSocketPerm = 600;
   };
 
+  # this creates traefik router, middleware, and service called "authelia" that other apps can point to in their traefik configs, need to determine how this interplays with separate instances of authelia?
   services.traefik.dynamicConfigOptions.http = {
     routers.${app} = {
       entrypoints = ["websecure"];
@@ -221,7 +211,7 @@ in
       };
     };
     middlewares = {
-      authelia-3 = {
+      ${app} = {
         forwardAuth = {
           address = "http://127.0.0.1:9091/api/verify?rd=https://identity.${configVars.domain3}";
           trustForwardHeader = true;
