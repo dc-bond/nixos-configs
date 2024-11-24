@@ -40,13 +40,14 @@ in
       package = pkgs.nextcloud30; # manually increment with upgrades
       database.createLocally = true; # creates database
       configureRedis = true; # creates redis instance
+      caching.redis = true; # load redis into nextcloud php
       maxUploadSize = "20G"; # max upload size
       https = true;
       autoUpdateApps.enable = true;
       extraAppsEnable = true;
       extraApps = with config.services.nextcloud.package.packages.apps; { # list of nextcloud apps
         # https://github.com/NixOS/nixpkgs/blob/master/pkgs/servers/nextcloud/packages/nextcloud-apps.json
-        inherit calendar contacts user_oidc notes tasks;
+        inherit calendar contacts user_oidc tasks;
       };
       settings = {
         trusted_proxies = ["127.0.0.1"];
@@ -64,6 +65,8 @@ in
       };
       config = {
         dbtype = "pgsql"; # postgres database
+        dbname = "nextcloud";
+        dbuser = "nextcloud";
         adminuser = "admin";
         adminpassFile = "${config.sops.secrets.nextcloudAdminPasswd.path}";
       };
@@ -71,10 +74,12 @@ in
         "opcache.interned_strings_buffer" = "16"; # suggested by nextcloud's health check
       };
     };
+
     postgresqlBackup = { # nightly database backup
       enable = true;
       startAt = "*-*-* 01:15:00";
     };
+
   };
   
   services.traefik.dynamicConfigOptions.http = {

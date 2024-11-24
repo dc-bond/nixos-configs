@@ -89,39 +89,22 @@ in
           default_policy = "deny";
           rules = [
             #{
-            #  domain = ["${configVars.domain1}"];
+            #  domain = ["cloud.${configVars.domain3}"];# only allow chris@dcbond.com user to authenticate to nextcloud admin/login 
             #  resources = [
-            #    "^/wp-admin.*$"
-            #    "^/wp-admin/.*$"
+            #    "^/login?direct=1.*$"
+            #    "^/login?direct=1/.*$"
             #  ];
             #  subject = "user:admin";
-            #  policy = "two_factor";
-            #}
-            #{
-            #  domain = ["excursion2025.${configVars.domain1}"];# only allow chris@dcbond.com user to authenticate to admin/login subfolders of excursion2025.dcbond.com (ghost admin page)
-            #  resources = [
-            #    "^/ghost.*$"
-            #    "^/ghost/.*$"
-            #  ];
-            #  subject = "user:admin";
-            #  policy = "two_factor";
+            #  policy = "one_factor";
             #}
             {
-              domain = [ # bypass authelia when connecting to authelia itself or when connecting to domain1
+              domain = [ # bypass authelia when connecting to authelia itself
                 "identity.${configVars.domain3}"
-                #"${configVars.domain1}"
               ];
               policy = "bypass";
             }
             {
-              domain = [ # allow certain users to authenticate to any of these subdomains
-                "uptime-kuma.${configVars.domain3}"
-              ];
-              subject = "user:admin";
-              policy = "one_factor";
-            }
-            {
-              domain = [ # catchall for any remaining subdomains to only allow chris@dcbond.com to authenticate
+              domain = [ # catchall for any remaining subdomains to only allow chris@dcbond.com to authenticate (assuming 'authelia' traefik middleware set on the service)
                 "*.${configVars.domain3}"
               ];
               subject = "user:admin";
@@ -164,6 +147,7 @@ in
               ];
               userinfo_signed_response_alg = "none";
               token_endpoint_auth_method = "client_secret_post";
+              consent_mode = "implicit"; # disable consent screen flow
               }
             ];
           };
