@@ -29,8 +29,8 @@ in
       enable = true;
       recommendedGzipSettings = true;
       recommendedOptimisation = true;
-      #recommendedProxySettings = true;
-      #recommendedTlsSettings = true;
+      recommendedProxySettings = true;
+      recommendedTlsSettings = true;
       virtualHosts."cloud.${configVars.domain3}".listen = [{addr = "127.0.0.1"; port = 4411;}];
     };
 
@@ -49,12 +49,18 @@ in
         inherit calendar contacts user_oidc notes tasks;
       };
       settings = {
+        trusted_proxies = ["127.0.0.1"];
         overwriteProtocol = "https";
         default_phone_region = "US";
         log_type = "file";
         loglevel = 2; # info
         allow_local_remote_servers = true; # required for OIDC
         user_oidc.use_pkce = true; # required for OIDC
+        maintenance_window_start = 1;
+        #allowed_admin_ranges = [
+        #  #"127.0.0.1/8"
+        #  #"192.168.0.0/16"
+        #];
       };
       config = {
         dbtype = "pgsql"; # postgres database

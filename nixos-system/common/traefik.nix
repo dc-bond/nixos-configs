@@ -152,7 +152,8 @@
                 stsPreload = true; # force browsers to only connect over https
                 forceSTSHeader = true; # force browsers to only connect over https
                 contentTypeNosniff = true; # sets x-content-type-options header value to "nosniff", reduces risk of drive-by downloads
-                frameDeny = true; # sets x-frame-options header value to "deny", prevents attacker from spoofing website in order to fool users into clicking something that is not there
+                #frameDeny = true; # sets x-frame-options header value to "deny", prevents attacker from spoofing website in order to fool users into clicking something that is not there
+                customFrameOptionsValue = "SAMEORIGIN"; # suggested by nextcloud, overrides frameDeny
                 browserXssFilter = true; # sets x-xss-protection header value to "1; mode=block", which prevents page from loading if detecting a cross-site scripting attack
                 contentSecurityPolicy = [ # sets content-security-policy header to suggested value
                   "default-src"
