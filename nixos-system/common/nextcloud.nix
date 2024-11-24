@@ -40,7 +40,7 @@ in
       package = pkgs.nextcloud30; # manually increment with upgrades
       database.createLocally = true; # creates database
       configureRedis = true; # creates redis instance
-      caching.redis = true; # load redis into nextcloud php
+      #caching.redis = true; # load redis into nextcloud php, auto enabled if configureRedis is true
       maxUploadSize = "20G"; # max upload size
       https = true;
       autoUpdateApps.enable = true;
@@ -65,8 +65,8 @@ in
       };
       config = {
         dbtype = "pgsql"; # postgres database
-        dbname = "nextcloud";
-        dbuser = "nextcloud";
+        dbname = "${app}";
+        dbuser = "${app}";
         adminuser = "admin";
         adminpassFile = "${config.sops.secrets.nextcloudAdminPasswd.path}";
       };
@@ -77,6 +77,7 @@ in
 
     postgresqlBackup = { # nightly database backup
       enable = true;
+      databases = ["${app}"];
       startAt = "*-*-* 01:15:00";
     };
 
