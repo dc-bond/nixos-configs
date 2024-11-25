@@ -19,3 +19,11 @@ vscode manual extension setup
 
 nextcloud-occ config:app:set --value=0 user_oidc allow_multiple_user_backends
 nextcloud-occ maintenance:repair --include-expensive
+
+# drop nextcloud database
+sudo runuser -u nextcloud -- psql -U nextcloud -c "DROP DATABASE \"nextcloud\";"
+sudo runuser -u nextcloud -- psql -U nextcloud -c "CREATE DATABASE \"nextcloud\";"
+
+# restore nextcloud database
+sudo runuser -u nextcloud -- pg_restore -U nextcloud -d nextcloud nextcloud.sql.gz
+sudo -i nextcloud-occ db:add-missing-indices # maybe?
