@@ -20,14 +20,14 @@
         #  "/nix" 
         #  "/path/to/local/repo" 
         #];
-        repo = "borg@${configVars.thinkpadLanIp}:."; # this automatically picks up the location of the remote borg repository assuming remote is running a nixos borg module
+        repo = "borg@${configVars.thinkpadTailscaleIp}:."; # this automatically picks up the location of the remote borg repository assuming remote is running a nixos borg module
         doInit = true;
         encryption = {
           mode = "repokey-blake2";
           passCommand = "cat ${config.sops.secrets.borgCryptAspenPasswd.path}";
         };
         environment = { 
-          BORG_RSH = "ssh -p 28764 -o StrictHostKeyChecking=no -i /root/.ssh/borg-ed25519"; # requires manual setup of private/public keys
+          BORG_RSH = "ssh -vvv -p 22 -o StrictHostKeyChecking=no -i /root/.ssh/borg-ed25519"; # requires manual setup of private/public keys
         };
         compression = "auto,zstd,8";
         prune.keep = {
