@@ -32,6 +32,7 @@
       "nixos-system/host-specific/thinkpad/bluetooth.nix"
       "nixos-system/host-specific/thinkpad/networking.nix"
       "nixos-system/host-specific/thinkpad/tailscale.nix"
+      "nixos-system/host-specific/thinkpad/borg.nix"
     ])
   ];
 
