@@ -12,7 +12,7 @@
     swww # animated wallpaper for wayland window managers
     pywal # color theme changer
     dunst # notification daemon
-    gnome.gnome-calculator # calculator
+    gnome-calculator # calculator
     loupe # image viewer
     zathura # barebones pdf viewer
     nextcloud-client # nextcloud local syncronization client
@@ -166,9 +166,7 @@
         active_opacity = "0.9";
         inactive_opacity = "0.7";
         fullscreen_opacity = "0.9";
-        drop_shadow = true;
-        shadow_range = "30";
-        shadow_render_power = "3";
+        #shadow_range = "30";
         #col.shadow = "0x66000000";
         blur = {
           enabled = true;
