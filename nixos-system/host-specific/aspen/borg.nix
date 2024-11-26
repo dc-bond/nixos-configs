@@ -7,28 +7,20 @@
 
 {
 
-  #sops = {
-  #  secrets = {
-  #    ??? = {
-  #      #owner = "${config.users.users.${app}.name}";
-  #      #group = "${config.users.users.${app}.group}";
-  #      #mode = "0440";
-  #    };
-  #  };
-  #};
+  sops = {
+    secrets = {
+      chrisSshKey = {
+        owner = "${config.users.users.root.name}";
+        group = "${config.users.users.root.group}";
+        mode = "0600";
+        path = "/home/chris/.ssh/chris-ed25519.key";
+      };
+    };
+  };
 
   services.borgbackup = {
-
-    #repos = {
-    #  borg-aspen = {
-    #    authorizedKeys = [""];
-    #    path = "/home/xixor/borg-aspen";
-    #  };    
-    #};
-
     jobs = {
-
-      web-apps = {
+      aspen = {
         paths = [
           "/var/lib/nextcloud"
           "/var/backup/postgresql"
@@ -37,23 +29,28 @@
         #  "/nix" 
         #  "/path/to/local/repo" 
         #];
-        repo = "xixor@${configVars.domain1}:/home/xixor/borgtestrepo";
+        repo = "xixor@${configVars.domain2}:/home/xixor/hdd2/borg-backups/aspen";
         doInit = true;
         encryption = {
           mode = "none";
-          #passphrase = "secret";
-          #passCommand = "cat /root/borgbackup/passphrase";
           #passCommand = "cat ${config.sops.secrets.???.path}";
         };
         environment = { 
-          BORG_RSH = "ssh -i /home/chris/.ssh/chris-ed25519.key"; 
+          BORG_RSH = "ssh -p 39800 -o StrictHostKeyChecking=no -i /root/.ssh/borg-ed25519"; # requires manual setup of private/public keys
         };
-        compression = "auto,zstd";
+        compression = "auto,zstd,8";
+        prune.keep = {
+          daily = 7; # keep the last seven daily archives
+          monthly = 3; # keep the last three monthly archives
+        };
+        extraCreateArgs = [
+          "--stats"
+          #"--checkpoint-interval 600"
+        ];
         startAt = "hourly";
+        dateFormat = "+%Y.%m.%d-T%H:%M:%S";
       };
-
     };
-
   };
 
 }

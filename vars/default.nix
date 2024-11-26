@@ -9,7 +9,7 @@
   userEmail = "chris@dcbond.com";
 
   aspenLanIp = "192.168.1.189";
-  aspenTailscaleIp = "100.72.71.121";
+  aspenTailscaleIp = "100.108.76.56";
   thinkpadLanIp = "192.168.1.62";
   thinkpadTailscaleIp = "100.79.41.50";
   opticonLanIp = "192.168.1.2";
