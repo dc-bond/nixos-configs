@@ -7,16 +7,7 @@
 
 {
 
-  #sops = {
-  #  secrets = {
-  #    chrisSshKey = {
-  #      owner = "${config.users.users.root.name}";
-  #      group = "${config.users.users.root.group}";
-  #      mode = "0600";
-  #      path = "/home/chris/.ssh/chris-ed25519.key";
-  #    };
-  #  };
-  #};
+  sops.secrets.borgCryptAspenPasswd = {};
 
   services.borgbackup = {
     jobs = {
@@ -29,11 +20,11 @@
         #  "/nix" 
         #  "/path/to/local/repo" 
         #];
-        repo = "chris@${configVars.thinkpadLanIp}:/home/chris/borg-backups/aspen";
+        repo = "borg@${configVars.thinkpadLanIp}:."; # this automatically picks up the location of the remote borg repository assuming remote is running a nixos borg module
         doInit = true;
         encryption = {
-          mode = "none";
-          #passCommand = "cat ${config.sops.secrets.???.path}";
+          mode = "repokey-blake2";
+          passCommand = "cat ${config.sops.secrets.borgCryptAspenPasswd.path}";
         };
         environment = { 
           BORG_RSH = "ssh -p 28764 -o StrictHostKeyChecking=no -i /root/.ssh/borg-ed25519"; # requires manual setup of private/public keys
@@ -47,7 +38,7 @@
           "--stats"
           #"--checkpoint-interval 600"
         ];
-        startAt = "hourly";
+        startAt = "daily";
         dateFormat = "+%Y.%m.%d-T%H:%M:%S";
       };
     };
