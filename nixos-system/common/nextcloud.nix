@@ -75,10 +75,10 @@ in
       };
     };
 
-    postgresqlBackup = { # nightly database backup
+    postgresqlBackup = { # postgres database backup
       enable = true;
       databases = ["${app}"];
-      startAt = "*-*-* 01:00:00";
+      startAt = "*-*-* 01:00:00"; # daily starting at 1:00am
     };
 
   };
