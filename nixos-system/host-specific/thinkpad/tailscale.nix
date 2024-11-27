@@ -21,11 +21,11 @@
       enable = true;
       authKeyFile = "${config.sops.secrets.tailscaleAuthKey.path}";
       useRoutingFeatures = "client";
+      extraDaemonFlags = ["--no-logs-no-support"];
       extraUpFlags = [
         "-ssh"
-        "--accept-routes" # autmatically discover and accept subnet routes advertised by other nodes
-        "--exit-node=${configVars.opticonTailscaleIp}"
-        #"--exit-node-allow-lan-access" # allow client to access its own LAN while connected to an exit-node?
+        #"--accept-routes" # autmatically discover and accept subnet routes advertised by other nodes
+        #"--exit-node=${configVars.opticonTailscaleIp}"
       ];
     };
   };

@@ -78,7 +78,7 @@ in
     postgresqlBackup = { # nightly database backup
       enable = true;
       databases = ["${app}"];
-      startAt = "*-*-* 01:15:00";
+      startAt = "*-*-* 01:00:00";
     };
 
   };
