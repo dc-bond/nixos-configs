@@ -38,7 +38,7 @@ in
       enable = true;
       hostName = "cloud.${configVars.domain3}";
       package = pkgs.nextcloud30; # manually increment with upgrades
-      #database.createLocally = true; # creates database
+      database.createLocally = true; # enables postgres service
       configureRedis = true; # creates redis instance
       #caching.redis = true; # load redis into nextcloud php, auto enabled if configureRedis is true
       maxUploadSize = "20G"; # max upload size
@@ -65,9 +65,9 @@ in
       };
       config = {
         dbtype = "pgsql";
-        dbhost = "/run/postgresql";
-        dbname = "${app}";
-        dbuser = "${app}";
+        #dbhost = "/run/postgresql";
+        #dbname = "${app}";
+        #dbuser = "${app}";
         adminuser = "admin";
         adminpassFile = "${config.sops.secrets.nextcloudAdminPasswd.path}";
       };
@@ -76,16 +76,17 @@ in
       };
     };
 
-    postgresql = {
-      enable = true;
-      ensureDatabases = ["${app}"];
-      ensureUsers = [
-        {
-        name = "${app}";
-        ensureDBOwnership = true;
-        }
-      ];
-    };
+    #postgresql = {
+    #  enable = true;
+    #  ensureDatabases = ["${app}"];
+    #  ensureUsers = [
+    #    {
+    #      name = "${app}";
+    #      ensureDBOwnership = true;
+    #      ensureClauses.createdb = true;
+    #    }
+    #  ];
+    #};
 
     postgresqlBackup = { # postgres database backup
       enable = true;
