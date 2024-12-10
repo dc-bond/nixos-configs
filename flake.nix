@@ -73,18 +73,18 @@
         ];
       };
 
-      vm1 = nixpkgs.lib.nixosSystem {
+      cypress = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         inherit specialArgs;
         modules = [
-          ./hosts/vm1/configuration.nix
+          ./hosts/cypress/configuration.nix
           home-manager.nixosModules.home-manager
           {
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              users.chris = import ./hosts/vm1/chris/home.nix;
-              users.root = import ./hosts/vm1/root/home.nix;
+              users.chris = import ./hosts/cypress/chris/home.nix;
+              users.root = import ./hosts/cypress/root/home.nix;
               extraSpecialArgs = specialArgs;
             };
           }

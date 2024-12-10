@@ -39,10 +39,10 @@
   environment.systemPackages = with pkgs; [
     (import (configLib.relativeToRoot "scripts/hello-world.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/deploy-aspen.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/deploy-vm1.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/deploy-cypress.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/getPassRepo.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuildLocalThinkpad.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/rebuildRemoteVm1.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/rebuild-remote-cypress.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuildRemoteAspen.nix") { inherit pkgs config; })
     age # encryption tool
     mkpasswd # password hashing tool

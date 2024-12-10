@@ -20,8 +20,8 @@
         user = "xixor";
         port = 22;
       };
-      "vm1" = {
-        hostname = "${configVars.vm1LanIp}";
+      "cypress" = {
+        hostname = "${configVars.cypressLanIp}";
         user = "${configVars.userName}";
         port = 28765;
       };

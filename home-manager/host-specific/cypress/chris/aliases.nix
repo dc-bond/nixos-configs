@@ -7,7 +7,7 @@
 
   programs.zsh = {
     shellAliases = {
-      rbvm1 = "rebuildLocalVm1";
+      rbcypress = "rebuild-local-cypress";
     };
   };
 

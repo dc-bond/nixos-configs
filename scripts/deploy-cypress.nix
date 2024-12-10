@@ -6,8 +6,8 @@
 }:
 
 let
-  host = "vm1";
-  ipv4 = "192.168.1.230";
+  host = "cypress";
+  ipv4 = "192.168.1.89";
 in
 
 pkgs.writeShellScriptBin "deploy-${host}" 

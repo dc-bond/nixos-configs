@@ -14,15 +14,15 @@
 
   networking = {
     useDHCP = false; # disable defaut dhcpcd networking backend in favor of systemd-networkd enabled below
-    hostName = "vm1";
+    hostName = "cypress";
     firewall = {
       enable = false; # disable default iptables
     };
     nftables = {
       enable = true; # use nftables instead of default iptables
       tables = {
-        vm1-firewall = {
-          name = "vm1-firewall";
+        cypress-firewall = {
+          name = "cypress-firewall";
           family = "inet";
           enable = true;
           content = 

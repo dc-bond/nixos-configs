@@ -3,7 +3,7 @@ keys:
     - &chris DB9ADBBE6FBD1F0E694AF25D012321D46E090E61 
   - &hosts: # public age host keys
     - &thinkpad age1xdp3rwum0jjunk9l4vgp9k8w3fm685z70u0fx84gxpgj5mjdhg3s77v4mp
-    - &vm1 age1h07t74u3eq9zsddn0pruzwmjpuuawtnpr7x722nfsen2qu0ege5qdje5xu 
+    - &cypress age1h07t74u3eq9zsddn0pruzwmjpuuawtnpr7x722nfsen2qu0ege5qdje5xu 
     - &aspen age1zeavlllujxttwxegdtae4yqmj5gc4prp8xdu8m9xwn49qml4s3eq2c2ck6 
 creation_rules: # when sops creates/edits a secrets.yaml file it encrypts using both gpg and age public keys and one or the other corresponding private keys will be required to decrypt
   - path_regex: hosts/thinkpad/secrets.(yaml|json|env|ini)$
@@ -12,12 +12,12 @@ creation_rules: # when sops creates/edits a secrets.yaml file it encrypts using 
         - *chris 
         age:
         - *thinkpad
-  - path_regex: hosts/vm1/secrets.(yaml|json|env|ini)$
+  - path_regex: hosts/cypress/secrets.(yaml|json|env|ini)$
     key_groups:
       - pgp:
         - *chris 
         age:
-        - *vm1
+        - *cypress
   - path_regex: hosts/aspen/secrets.(yaml|json|env|ini)$
     key_groups:
       - pgp:

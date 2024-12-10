@@ -12,27 +12,27 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      #"hosts/vm1/disk-config-btrfs.nix"
-      "hosts/vm1/disk-config-btrfs-luks-impermanence.nix"
-      "hosts/vm1/hardware-configuration.nix"
+      #"hosts/cypress/disk-config-btrfs.nix"
+      "hosts/cypress/disk-config-btrfs-luks-impermanence.nix"
+      "hosts/cypress/hardware-configuration.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/zsh.nix"
       "nixos-system/common/fonts.nix"
       "nixos-system/common/yubikey.nix"
       "nixos-system/common/nixpkgs.nix"
-      #"nixos-system/host-specific/vm1/impermanence.nix"
-      "nixos-system/host-specific/vm1/boot.nix"
-      "nixos-system/host-specific/vm1/users.nix"
-      "nixos-system/host-specific/vm1/sshd.nix"
-      "nixos-system/host-specific/vm1/sops.nix"
-      "nixos-system/host-specific/vm1/networking.nix"
+      #"nixos-system/host-specific/cypress/impermanence.nix"
+      "nixos-system/host-specific/cypress/boot.nix"
+      "nixos-system/host-specific/cypress/users.nix"
+      "nixos-system/host-specific/cypress/sshd.nix"
+      "nixos-system/host-specific/cypress/sops.nix"
+      "nixos-system/host-specific/cypress/networking.nix"
     ])
   ];
 
   environment.systemPackages = with pkgs; [
     (import (configLib.relativeToRoot "scripts/deploy-thinkpad.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/getPassRepo.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/rebuildLocalVm1.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/rebuild-local-cypress.nix") { inherit pkgs config; })
     wget # download tool
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
     nvd # package version diff info for nix build operations
