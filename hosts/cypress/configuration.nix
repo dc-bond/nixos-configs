@@ -19,6 +19,7 @@
       "nixos-system/common/zsh.nix"
       "nixos-system/common/fonts.nix"
       "nixos-system/common/nixpkgs.nix"
+      "nixos-system/common/home-assistant.nix"
       "nixos-system/host-specific/cypress/users.nix"
       "nixos-system/host-specific/cypress/sshd.nix"
       "nixos-system/host-specific/cypress/sops.nix"
