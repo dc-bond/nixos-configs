@@ -8,7 +8,7 @@
 {
 
   home.packages = with pkgs; [
-    (import (configLib.relativeToRoot "scripts/desktopReload.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/desktop-reload.nix") { inherit pkgs config; })
     swww # animated wallpaper for wayland window managers
     pywal # color theme changer
     dunst # notification daemon
@@ -40,7 +40,7 @@
         #"[workspace 1 silent] firefox"
         "[workspace 2 silent] alacritty"
         #"[workspace 3 silent] ${pkgs.vscodium}/bin/codium"
-        "sleep 2 & desktopReload" # nix script to load wallpaper, launch waybar, etc.
+        "sleep 2 & desktop-reload" # nix script to load wallpaper, launch waybar, etc.
         "sleep 3 && nextcloud"
       ];      
       bind = [
@@ -73,7 +73,7 @@
         "$mod, 0, workspace, 10"
         "$mod, mouse_down, workspace, e+1"
         "$mod, mouse_up, workspace, e-1"
-        "$mod SHIFT, R, exec, desktopReload"
+        "$mod SHIFT, R, exec, desktop-reload"
         "$mod SHIFT, Q, exec, ${pkgs.wlogout}/bin/wlogout"
         "$mod SHIFT, 1, movetoworkspace, 1"
         "$mod SHIFT, 2, movetoworkspace, 2"

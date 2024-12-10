@@ -8,7 +8,7 @@
   services.openssh = {
     enable = true;
     ports = [
-      28765
+      28761
     ];
     settings = {
       PasswordAuthentication = false;

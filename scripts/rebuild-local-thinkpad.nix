@@ -3,7 +3,7 @@
   config 
 }:
 
-pkgs.writeShellScriptBin "rebuildLocalThinkpad" 
+pkgs.writeShellScriptBin "rebuild-local-thinkpad" 
 ''
   nixos_old_gen=$(readlink -f /run/current-system)
   sudo nixos-rebuild switch --flake ~/nixos-configs#thinkpad

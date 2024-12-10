@@ -6,6 +6,10 @@
   ... 
 }: 
 
+let
+  host = "cypress";
+in
+
 {
 
   imports = [
@@ -17,7 +21,7 @@
   ];
 
   sops = {
-    defaultSopsFile = configLib.relativeToRoot "hosts/cypress/secrets.yaml";
+    defaultSopsFile = configLib.relativeToRoot "hosts/${host}/secrets.yaml";
     defaultSopsFormat = "yaml";
     validateSopsFiles = false;
     gnupg = {
@@ -25,7 +29,7 @@
     };
     age = {
       sshKeyPaths = [];
-      keyFile = "/etc/age/cypress-age.key"; # sops/age will use private age key in this location to decrypt secrets.yaml
+      keyFile = "/etc/age/${host}-age.key"; # sops/age will use private age key in this location to decrypt secrets.yaml
     };
     #secrets = { # output to /run/secrets/...
     #  test = {};

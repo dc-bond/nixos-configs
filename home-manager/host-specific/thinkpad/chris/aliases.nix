@@ -7,7 +7,7 @@
 
   programs.zsh = {
     shellAliases = {
-      rbthink = "rebuildLocalThinkpad";
+      rbthink = "rebuild-local-thinkpad";
       rbcypress = "rebuildRemotecypress";
       rbaspen = "rebuildRemoteAspen";
       getnets = "iwctl station wlan0 get-networks";

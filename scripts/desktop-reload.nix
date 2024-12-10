@@ -3,7 +3,7 @@
   config 
 }:
 
-pkgs.writeShellScriptBin "desktopReload" 
+pkgs.writeShellScriptBin "desktop-reload" 
 ''
   # select random wallpaper and create color scheme
   wal -s -t -q -i ~/nixos-configs/wallpaper/

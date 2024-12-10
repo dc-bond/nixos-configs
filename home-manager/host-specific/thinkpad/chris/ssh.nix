@@ -11,7 +11,7 @@
     enable = true;
     matchBlocks = {
       "opticon" = {
-        hostname = "vpn.${configVars.domain2}";
+        hostname = "${configVars.domain2}";
         user = "xixor";
         port = 39800;
       };
@@ -23,7 +23,12 @@
       "cypress" = {
         hostname = "${configVars.cypressLanIp}";
         user = "${configVars.userName}";
-        port = 28765;
+        port = 28761;
+      };
+      "cypress-tailscale" = {
+        hostname = "${configVars.cypressTailscaleIp}";
+        user = "${configVars.userName}";
+        port = 22;
       };
       "aspen" = {
         hostname = "${configVars.aspenLanIp}";

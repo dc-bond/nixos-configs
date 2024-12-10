@@ -16,40 +16,7 @@
     useDHCP = false; # disable defaut dhcpcd networking backend in favor of systemd-networkd enabled below
     hostName = "cypress";
     firewall = {
-      enable = false; # disable default iptables
-    };
-    nftables = {
-      enable = true; # use nftables instead of default iptables
-      tables = {
-        cypress-firewall = {
-          name = "cypress-firewall";
-          family = "inet";
-          enable = true;
-          content = 
-            ''
-            	chain input {
-            		type filter hook input priority 0; policy drop;
-            		ct state invalid counter drop comment "early drop of invalid packets"
-            		ct state {established, related} counter accept comment "accept all connections related to connections made by us"
-            		iif lo accept comment "accept loopback"
-            		iif != lo ip daddr 127.0.0.1/8 counter drop comment "drop connections to loopback not coming from loopback"
-            		iif != lo ip6 daddr ::1/128 counter drop comment "drop connections to loopback not coming from loopback"
-            		ip protocol icmp counter accept comment "accept all ICMP types"
-            		meta l4proto ipv6-icmp counter accept comment "accept all ICMP types"
-            		tcp dport 28765 counter accept comment "accept SSH"
-            		counter comment "count dropped packets"
-            	}
-            	chain forward {
-            		type filter hook forward priority 0; policy drop;
-            		counter comment "count dropped packets"
-            	}
-            	chain output {
-            		type filter hook output priority 0; policy accept;
-            		counter comment "count accepted packets"
-            	}
-            '';
-        };
-      };
+      enable = true;
     };
   };
 
@@ -63,7 +30,7 @@
         linkConfig.RequiredForOnline = "no";
       };    
       "10-ethernet" = {
-        matchConfig.Name = "enp0s3";
+        matchConfig.Name = "enp1s0";
         networkConfig.DHCP = "ipv4";
         dhcpV4Config.RouteMetric = 300;
         dhcpV6Config.RouteMetric = 300;

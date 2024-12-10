@@ -9,7 +9,7 @@
     loader = {
       systemd-boot = {
         enable = true;
-        configurationLimit = 10; # only display last 10 generations
+        configurationLimit = 5; # only display last 5 generations
       };
       efi.canTouchEfiVariables = true;
       #grub = {
