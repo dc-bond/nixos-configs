@@ -28,8 +28,6 @@
   ];
 
   environment.systemPackages = with pkgs; [
-    (import (configLib.relativeToRoot "scripts/deploy-thinkpad.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
     wget # download tool
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
     nvd # package version diff info for nix build operations

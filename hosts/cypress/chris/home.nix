@@ -15,9 +15,6 @@
       "home-manager/common/neovim.nix"
       "home-manager/common/zsh.nix"
       "home-manager/common/starship.nix"
-      "home-manager/common/git.nix"
-      "home-manager/common/gnupg.nix"
-      "home-manager/common/pass.nix"
       "home-manager/host-specific/cypress/chris/ssh.nix"
     ])
   ];
