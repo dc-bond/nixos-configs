@@ -14,11 +14,11 @@
     (map configLib.relativeToRoot [
       "hosts/cypress/disk-config-btrfs.nix"
       "hosts/cypress/hardware-configuration.nix"
+      "nixos-system/common/boot.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/zsh.nix"
       "nixos-system/common/fonts.nix"
       "nixos-system/common/nixpkgs.nix"
-      "nixos-system/host-specific/cypress/boot.nix"
       "nixos-system/host-specific/cypress/users.nix"
       "nixos-system/host-specific/cypress/sshd.nix"
       "nixos-system/host-specific/cypress/sops.nix"

@@ -25,11 +25,11 @@
         user = "${configVars.userName}";
         port = 28761;
       };
-      "cypress-tailscale" = {
-        hostname = "${configVars.cypressTailscaleIp}";
-        user = "${configVars.userName}";
-        port = 22;
-      };
+      #"cypress-tailscale" = {
+      #  hostname = "${configVars.cypressTailscaleIp}";
+      #  user = "${configVars.userName}";
+      #  port = 22;
+      #};
       "aspen" = {
         hostname = "${configVars.aspenLanIp}";
         user = "${configVars.userName}";
