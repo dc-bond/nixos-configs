@@ -29,6 +29,9 @@
   jellyseerrSubnet = "172.21.2.0/25";
   jellyseerrIp = "172.21.2.2";
 
+  homeAssistantSubnet = "172.21.3.0/25";
+  homeAssistantIp = "172.21.3.2";
+
   #kumaHostVethIp = "172.22.1.2";
   #kumaContainerVethIp = "172.22.1.3";
 

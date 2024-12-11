@@ -32,12 +32,13 @@
         frontend = {
           themes = "!include_dir_merge_named themes";
         };
-        homeassistant = {
-          name = "Fort Hemingway";
-          temperature_unit = "F";
-          time_zone = "America/New_York";
-          unit_system = "metric";
-        };
+        configWritable = true;
+        #homeassistant = {
+        #  name = "Fort Hemingway";
+        #  temperature_unit = "F";
+        #  time_zone = "America/New_York";
+        #  unit_system = "metric";
+        #};
       };
     };
   };
