@@ -11,7 +11,7 @@
     docker = {
       enable = true;
       autoPrune.enable = true;
-      #storageDriver = "btrfs"; # support for btrfs
+      storageDriver = "btrfs"; # support for btrfs
       rootless.enable = true; # run rootless
     };
   };

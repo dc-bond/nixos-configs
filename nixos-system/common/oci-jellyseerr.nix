@@ -19,6 +19,7 @@ in
     volumes = [
       "${app}:/app/config"
     ];
+    #ports = [ "5055:5055/tcp" ];
     extraOptions = [
       "--network=${app}"
       "--ip=${configVars.jellyseerrIp}"

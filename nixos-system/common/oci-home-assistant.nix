@@ -13,13 +13,11 @@ in
 {
 
   virtualisation.oci-containers.containers."${app}" = {
-    image = "ghcr.io/${app}/${app}:2024.1.0";
+    image = "ghcr.io/${app}/${app}:2024.12.2";
     autoStart = true;
     log-driver = "journald";
-    ports = ["127.0.0.1:8123:8123"];
-    volumes = [
-      "${app}:/config"
-    ];
+    ports = [ "8123:8123/tcp" ];
+    volumes = [ "${app}:/config" ];
     extraOptions = [
       "--network=${app}"
       "--ip=${configVars.homeAssistantIp}"
