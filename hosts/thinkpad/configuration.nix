@@ -43,7 +43,7 @@
     (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuild-local-thinkpad.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuild-remote-cypress.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/rebuildRemoteAspen.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/rebuild-remote-aspen.nix") { inherit pkgs config; })
     age # encryption tool
     mkpasswd # password hashing tool
     dig # dns lookup tool

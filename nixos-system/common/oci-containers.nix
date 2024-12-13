@@ -12,26 +12,20 @@
       enable = true;
       autoPrune.enable = true;
       storageDriver = "btrfs"; # support for btrfs
-      rootless.enable = true; # run rootless
+      rootless = {
+        enable = true; # run rootless
+        setSocketVariable = true; # set DOCKER_HOST variable to the rootless docker instance for normal users by default
+      };
+      daemon.settings = {
+        userland-proxy = false;
+        experimental = true;
+        metrics-addr = "0.0.0.0:9323";
+        ipv6 = false;
+        #fixed-cidr-v6 = "fd00::/80";
+      };
     };
   };
 
-  #systemd.services.init-docker-network-backend = {
-  #  description = "create network bridge backend for oci docker containers";
-  #  after = [ "network.target" ];
-  #  wantedBy = [ "multi-user.target" ];
-  #  serviceConfig.Type = "oneshot";
-  #  script = ''
-  #    check=$(${pkgs.docker}/bin/docker network ls | grep "backend" || true)
-  #    if [ -z "$check" ];
-  #      then ${pkgs.docker}/bin/docker network create --subnet 172.21.2.0/25 --driver bridge --scope local --attachable backend 
-  #      else echo "docker network bridge backend already exists"
-  #    fi
-  #  '';
-  #};
-
-  #systemd.tmpfiles.rules = [
-  #  "d /home/${configVars.userName}/container-data 0770 ${configVars.userName} users -"
-  #];
+  users.users.${configVars.userName}.extraGroups = [ "docker" ];
 
 }

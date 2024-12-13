@@ -3,7 +3,7 @@
   config 
 }:
 
-pkgs.writeShellScriptBin "rebuildRemoteAspen" 
+pkgs.writeShellScriptBin "rebuild-remote-aspen" 
 ''
   nixos_old_gen=$(ssh aspen 'readlink -f /run/current-system')
   nixos-rebuild \

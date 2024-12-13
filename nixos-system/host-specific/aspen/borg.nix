@@ -31,16 +31,17 @@
         };
         compression = "auto,zstd,8";
         paths = [
-          "/var/lib/traefik"
-          "/var/lib/nextcloud"
-          "/var/lib/uptime-kuma"
+          "/var/lib/hass"
+          #"/var/lib/traefik"
+          #"/var/lib/nextcloud"
+          #"/var/lib/uptime-kuma"
           #"/var/lib/redis-nextcloud"
           #"/var/lib/redis-authelia-professorbond"
-          "/var/lib/nextcloud"
-          "/var/lib/docker/volumes/jellyseerr"
-          "/var/lib/docker/volumes/lldap"
-          "/var/lib/docker/volumes/postgres-lldap"
-          "/var/backup/postgresql"
+          #"/var/lib/nextcloud"
+          #"/var/lib/docker/volumes/jellyseerr"
+          #"/var/lib/docker/volumes/lldap"
+          #"/var/lib/docker/volumes/postgres-lldap"
+          #"/var/backup/postgresql"
         ];
         #exclude = [ 
         #  "/nix" 

@@ -9,7 +9,7 @@
     shellAliases = {
       rbthink = "rebuild-local-thinkpad";
       rbcypress = "rebuildRemotecypress";
-      rbaspen = "rebuildRemoteAspen";
+      rbaspen = "rebuild-remote-aspen";
       getnets = "iwctl station wlan0 get-networks";
       flakeupdate = "sudo nix flake update --flake --verbose ~/nixos-configs";
     };
