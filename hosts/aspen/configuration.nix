@@ -17,7 +17,7 @@
       "nixos-system/common/boot.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
-      #"nixos-system/host-specific/aspen/tailscale.nix"
+      "nixos-system/host-specific/aspen/tailscale.nix"
       "nixos-system/host-specific/aspen/users.nix"
       "nixos-system/host-specific/aspen/sshd.nix"
       "nixos-system/host-specific/aspen/sops.nix"
