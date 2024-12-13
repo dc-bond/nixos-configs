@@ -10,41 +10,23 @@
   #networking.firewall.allowedTCPPorts = [ 8123 ];
 
   services = {
+
     home-assistant = {
       enable = true;
-      #openFirewall = true;
+      #package = (pkgs.home-assistant.override {
+      #  extraPackages = py: with py; [ psycopg2 ];
+      #}).overrideAttrs (oldAttrs: {
+      #  doInstallCheck = false;
+      #});
       extraComponents = [
         "default_config"
         "esphome"
         "met"
         "radio_browser"
       ];
-      #defaultIntegrations = [
-      #  "application_credentials"
-      #  "frontend"
-      #  "hardware"
-      #  "logger"
-      #  "network"
-      #  "system_health"
-      #  "automation"
-      #  "person"
-      #  "scene"
-      #  "script"
-      #  "tag"
-      #  "zone"
-      #  "counter"
-      #  "input_boolean"
-      #  "input_button"
-      #  "input_datetime"
-      #  "input_number"
-      #  "input_select"
-      #  "input_text"
-      #  "schedule"
-      #  "timer"
-      #  "backup"
-      #];
       config = {
         http.server_port = 8123;
+        #recorder.db_url = "postgresql://@/homeassistant";
         #frontend = {
         #  themes = "!include_dir_merge_named themes";
         #};
@@ -56,6 +38,25 @@
         #};
       };
     };
+
+    #postgresql = {
+    #  enable = true;
+    #  ensureDatabases = [ "homeassistant" ];
+    #  ensureUsers = [
+    #    {
+    #      name = "homeassistant";
+    #      ensureDBOwnership = true;
+    #      #ensureClauses.createdb = true;
+    #    }
+    #  ];
+    #};
+
+    #postgresqlBackup = { # postgres database backup
+    #  enable = true;
+    #  databases = [ "homeassistant" ];
+    #  startAt = "*-*-* 01:00:00"; # daily starting at 1:00am
+    #};
+
   };
 
 }
