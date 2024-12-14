@@ -1,5 +1,6 @@
 { 
-  config, 
+  config,
+  lib,
   pkgs, 
   configVars,
   ... 
@@ -21,22 +22,22 @@ in
   };
 
   virtualisation.oci-containers.containers."${app}" = {
-    image = "docker.io/zwavejs/zwave-js-ui:9.6.2";
+    image = "docker.io/${app}/zwave-js-ui:9.28.0"; # https://hub.docker.com/r/zwavejs/zwave-js-ui/tags
     autoStart = true;
-    tty = true;
-    stop_signal = "SIGINT";
-    environment = [
-      "SESSION_SECRET" = "${config.sops.secrets.zwavejsSessionSecret.path}";
-      "ZWAVEJS_EXTERNAL_CONFIG" = "/usr/src/app/store/.config-db";
-      "TZ" = "America/New_York";
-    ];
+    environment = {
+      SESSION_SECRET = "${config.sops.secrets.zwavejsSessionSecret.path}";
+      ZWAVEJS_EXTERNAL_CONFIG = "/usr/src/app/store/.config-db";
+      TZ = "America/New_York";
+    };
     log-driver = "journald";
     ports = [ "8091:8091/tcp" ];
     volumes = [ "${app}:/usr/src/app/store" ];
-    devices = [ "/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_d677b47b5594eb11ba3436703d98b6d1-if00-port0:/dev/zwave" ];
     extraOptions = [
       "--network=${app}"
       "--ip=${configVars.zwaveJsIp}"
+      "--tty=true"
+      "--stop-signal=SIGINT"
+      "--device=/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_d677b47b5594eb11ba3436703d98b6d1-if00-port0:/dev/zwave"
     ];
     #labels = {
     #  "traefik.enable" = "true";
