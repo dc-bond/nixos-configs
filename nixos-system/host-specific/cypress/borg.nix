@@ -36,7 +36,8 @@
         compression = "auto,zstd,8";
         paths = [
           "/var/lib/hass"
-          #"/var/lib/mosquitto"
+          "/var/lib/mosquitto"
+          "/var/lib/docker/volumes/zwavejs"
         ];
         prune.keep = {
           daily = 7; # keep the last seven daily archives
