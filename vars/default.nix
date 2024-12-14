@@ -32,6 +32,9 @@
   homeAssistantSubnet = "172.21.3.0/25";
   homeAssistantIp = "172.21.3.2";
 
+  zwaveJsSubnet = "172.21.4.0/25";
+  zwaveJsIp = "172.21.4.2";
+
   #kumaHostVethIp = "172.22.1.2";
   #kumaContainerVethIp = "172.22.1.3";
 
