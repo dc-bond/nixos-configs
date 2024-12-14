@@ -21,7 +21,7 @@
       "nixos-system/common/nixpkgs.nix"
       "nixos-system/common/home-assistant.nix"
       "nixos-system/common/oci-containers.nix"
-      "nixos-system/common/oci-zwavejs.nix"
+      #"nixos-system/common/oci-zwavejs.nix"
       "nixos-system/common/mosquitto.nix"
       "nixos-system/host-specific/cypress/users.nix"
       "nixos-system/host-specific/cypress/sshd.nix"
