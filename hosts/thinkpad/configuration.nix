@@ -42,6 +42,7 @@
     (import (configLib.relativeToRoot "scripts/deploy-aspen.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/deploy-cypress.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/setup-borg-sshkeys.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuild-local-thinkpad.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuild-remote-cypress.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuild-remote-aspen.nix") { inherit pkgs config; })

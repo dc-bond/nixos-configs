@@ -26,7 +26,7 @@
       ];
       config = {
         http.server_port = 8123;
-        recorder.db_url = "postgresql://@/homeassistant";
+        recorder.db_url = "postgresql://@/hass";
         #frontend = {
         #  themes = "!include_dir_merge_named themes";
         #};
@@ -35,10 +35,10 @@
 
     postgresql = {
       enable = true;
-      ensureDatabases = [ "homeassistant" ];
+      ensureDatabases = [ "hass" ];
       ensureUsers = [
         {
-          name = "homeassistant";
+          name = "hass";
           ensureDBOwnership = true;
           #ensureClauses.createdb = true;
         }
@@ -47,7 +47,7 @@
 
     postgresqlBackup = { # postgres database backup
       enable = true;
-      databases = [ "homeassistant" ];
+      databases = [ "hass" ];
       startAt = "*-*-* 01:00:00"; # daily starting at 1:00am
     };
 

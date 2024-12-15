@@ -31,12 +31,12 @@
           passCommand = "cat ${config.sops.secrets.borgCryptPasswd.path}";
         };
         environment = { 
-          BORG_RSH = "ssh -p 28764 -o StrictHostKeyChecking=no -i /root/.ssh/borg-ed25519"; # requires manual creation and transfer of private/public keys (see below)
+          BORG_RSH = "ssh -p 28764 -o StrictHostKeyChecking=no -i /root/.ssh/borg-ed25519-cypress"; # requires manual creation and transfer of private/public keys (see script)
         };
         compression = "auto,zstd,8";
         paths = [
           "/var/lib/hass"
-          "/var/backup/postgres/homeassistant.sql.gz"
+          "/var/backup/postgresql/homeassistant.sql.gz"
           "/var/lib/mosquitto"
           "/var/lib/docker/volumes/zwavejs"
         ];
@@ -49,7 +49,3 @@
   };
 
 }
-
-# ssh-keygen -N '' -t ed25519 -f ./borg-ed25519
-# scp borg-ed25519 chris@cypress-tailscale:/tmp && ssh chris@cypress-tailscale "sudo mv /tmp/borg-ed25519 /root/.ssh/ && sudo chmod 600 /root/.ssh/borg-ed25519 && sudo chown root:root /root/.ssh/borg-ed25519"
-# copy pubkey to repo host borg config
