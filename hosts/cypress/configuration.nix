@@ -36,6 +36,7 @@
     wget # download tool
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
     nvd # package version diff info for nix build operations
+    rsync # sync tool
     git # git
     eza # modern replacement for 'ls'
     pfetch # system info displayed on shell startup

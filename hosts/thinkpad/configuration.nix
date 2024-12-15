@@ -38,6 +38,7 @@
 
   environment.systemPackages = with pkgs; [
     (import (configLib.relativeToRoot "scripts/hello-world.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/borg-restore.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/deploy-aspen.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/deploy-cypress.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
@@ -49,6 +50,7 @@
     dig # dns lookup tool
     sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
     wget # download tool
+    rsync # sync tool
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
     nvd # package version diff info for nix build operations
     nix-tree # table view of package dependencies

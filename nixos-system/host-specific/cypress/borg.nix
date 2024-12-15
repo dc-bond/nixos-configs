@@ -36,6 +36,7 @@
         compression = "auto,zstd,8";
         paths = [
           "/var/lib/hass"
+          "/var/backup/postgres/homeassistant.sql.gz"
           "/var/lib/mosquitto"
           "/var/lib/docker/volumes/zwavejs"
         ];
