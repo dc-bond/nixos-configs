@@ -20,9 +20,6 @@
         });
       extraComponents = [
         "default_config"
-        "esphome"
-        "met"
-        "radio_browser"
       ];
       config = {
         http.server_port = 8123;
@@ -35,10 +32,11 @@
 
     postgresql = {
       enable = true;
+      package = pkgs.postgresql_17;
       ensureDatabases = [ "hass" ];
       ensureUsers = [
         {
-          name = "hass";
+          name = "hass"; # hass user on host must have access
           ensureDBOwnership = true;
           #ensureClauses.createdb = true;
         }
