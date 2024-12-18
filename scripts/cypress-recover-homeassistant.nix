@@ -13,6 +13,8 @@ pkgs.writeShellScriptBin "cypress-recover-homeassistant"
 ''
   ssh cypress-tailscale 'sudo systemctl stop home-assistant.service'
   ssh cypress-tailscale 'sudo systemctl stop postgresql.service'
+  ssh cypress-tailscale 'sudo rm -rf /var/lib/hass'
+  ssh cypress-tailscale 'sudo rm -rf /var/lib/postgresql'
   
   nixos_old_gen=$(ssh cypress 'readlink -f /run/current-system')
   nixos-rebuild \
@@ -41,6 +43,7 @@ pkgs.writeShellScriptBin "cypress-recover-homeassistant"
   ssh cypress-tailscale 'sudo gunzip -c /tmp/hass.sql.gz > /tmp/hass.sql'
   ssh cypress-tailscale 'sudo chown postgres:postgres /tmp/hass.sql'
   ssh cypress-tailscale 'sudo mv /tmp/hass.sql /var/lib/postgresql'
+  ssh cypress-tailscale 'sudo rm -rf /tmp/hass.sql.gz'
   ssh cypress-tailscale 'sudo -u postgres psql -U postgres -d template1 -c "DROP DATABASE \"hass\";"'
   ssh cypress-tailscale 'sudo -u postgres psql -U postgres -d template1 -c "CREATE DATABASE \"hass\" OWNER \"hass\";"'
   ssh cypress-tailscale 'sudo -u postgres psql -U postgres -d hass -f /var/lib/postgresql/hass.sql'
