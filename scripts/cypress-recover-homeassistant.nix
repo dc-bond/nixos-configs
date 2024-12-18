@@ -31,7 +31,7 @@ pkgs.writeShellScriptBin "cypress-recover-homeassistant"
   sudo chown -R chris:users ${borgRestoreDir}/hass
   ssh cypress-tailscale 'sudo systemctl stop home-assistant.service'
   ssh cypress-tailscale 'sudo rm -rf /var/lib/hass'
-  rsync --progress -avzh hass cypress-tailscale:/tmp  
+  rsync --progress -avzh ${borgRestoreDir}/hass cypress-tailscale:/tmp  
   ssh cypress-tailscale 'sudo mv /tmp/hass /var/lib'
   ssh cypress-tailscale 'sudo chown -R hass:hass /var/lib/hass'
   sudo rm -rf ${borgRestoreDir}/hass

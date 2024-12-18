@@ -11,15 +11,7 @@ let
 in
 
 {
-  sops = {
-    secrets = {
-      zwavejsSessionSecret = {
-        #owner = "${config.users.users.${app}.name}";
-        #group = "${config.users.users.${app}.group}";
-        #mode = "0440";
-      };
-    };
-  };
+  sops.secrets.zwavejsSessionSecret = {};
 
   virtualisation.oci-containers.containers."${app}" = {
     image = "docker.io/${app}/zwave-js-ui:9.28.0"; # https://hub.docker.com/r/zwavejs/zwave-js-ui/tags
@@ -30,7 +22,10 @@ in
       TZ = "America/New_York";
     };
     log-driver = "journald";
-    ports = [ "8091:8091/tcp" ];
+    ports = [ 
+      "8091:8091/tcp" # for browser interface
+      "3000:3000/tcp" # for websocket server
+    ];
     volumes = [ "${app}:/usr/src/app/store" ];
     extraOptions = [
       "--network=${app}"

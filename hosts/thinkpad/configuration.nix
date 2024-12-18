@@ -39,6 +39,7 @@
   environment.systemPackages = with pkgs; [
     (import (configLib.relativeToRoot "scripts/hello-world.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/cypress-recover-homeassistant.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/cypress-recover-zwavejs.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/deploy-aspen.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/deploy-cypress.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
