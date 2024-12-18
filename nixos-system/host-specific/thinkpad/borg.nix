@@ -12,12 +12,12 @@
     borgCypressRepo = lib.mkOption {
       type = lib.types.path;
       default = "/var/lib/borg-backups/cypress";
-      description = "path to the cypress borg backup repository.";
+      description = "path to the cypress borg backup repository";
     };
     borgRestoreDir = lib.mkOption {
       type = lib.types.path;
       default = "/var/lib/borg-backups";
-      description = "path to the directory for restoring borg backups.";
+      description = "path to the directory for restoring borg backups";
     };
   };
 

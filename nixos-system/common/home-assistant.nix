@@ -1,7 +1,6 @@
 { 
   config, 
   pkgs, 
-  configVars,
   ... 
 }: 
 
@@ -24,9 +23,6 @@
       config = {
         http.server_port = 8123;
         recorder.db_url = "postgresql://@/hass";
-        #frontend = {
-        #  themes = "!include_dir_merge_named themes";
-        #};
       };
     };
 
