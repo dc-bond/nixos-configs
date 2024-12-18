@@ -19,6 +19,9 @@
         });
       extraComponents = [
         "default_config"
+        "mqtt"
+        "zwave_js"
+        "hue"
       ];
       config = {
         http.server_port = 8123;
