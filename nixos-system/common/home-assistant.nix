@@ -22,11 +22,13 @@
         "mqtt"
         "zwave_js"
         "hue"
+        "mobile_app"
       ];
       config = {
         http.server_port = 8123;
         recorder.db_url = "postgresql://@/hass";
         automation = "!include automations.yaml";
+        mobile_app = "";
       };
     };
 
