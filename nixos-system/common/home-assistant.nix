@@ -26,6 +26,7 @@
       config = {
         http.server_port = 8123;
         recorder.db_url = "postgresql://@/hass";
+        automation = "!include automations.yaml";
       };
     };
 
