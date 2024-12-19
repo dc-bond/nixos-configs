@@ -27,17 +27,6 @@
         http.server_port = 8123;
         recorder.db_url = "postgresql://@/hass";
       };
-      #lovelaceConfig = {
-      #  title = "Fort Hemingway";
-      #  views = [ {
-      #    title = "Fort Hemingway";
-      #    cards = [ {
-      #      type = "entities";
-      #      title = "Lovelace";
-      #      content = "Welcome to your **Lovelace UI**.";
-      #    } ];
-      #  } ];
-      #};
     };
 
     postgresql = {
@@ -48,7 +37,6 @@
         {
           name = "hass"; # hass user on host must have access
           ensureDBOwnership = true;
-          #ensureClauses.createdb = true;
         }
       ];
     };
