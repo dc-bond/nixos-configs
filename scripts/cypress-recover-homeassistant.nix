@@ -4,7 +4,7 @@
 }:
 
 let
-  archive = "";
+  archive = "cypress-2024.12.19-T02:30:03";
   borgCypressRepo = config.backups.borgCypressRepo;
   borgRestoreDir = config.backups.borgRestoreDir;
 in
@@ -16,15 +16,12 @@ pkgs.writeShellScriptBin "cypress-recover-homeassistant"
   ssh cypress-tailscale 'sudo rm -rf /var/lib/hass'
   ssh cypress-tailscale 'sudo rm -rf /var/lib/postgresql'
   
-  nixos_old_gen=$(ssh cypress 'readlink -f /run/current-system')
   nixos-rebuild \
   --flake ~/nixos-configs#cypress \
   --target-host cypress \
   --use-remote-sudo \
   --verbose \
   switch
-  nixos_new_gen=$(ssh cypress 'readlink -f /run/current-system')
-  nvd diff "$nixos_old_gen" "$nixos_new_gen"
 
   cd ${borgRestoreDir}
   sudo borg extract --verbose --list ${borgCypressRepo}::${archive} var/lib/hass --strip-components 2
@@ -50,13 +47,10 @@ pkgs.writeShellScriptBin "cypress-recover-homeassistant"
   ssh cypress-tailscale 'sudo rm -rf /var/lib/postgresql/hass.sql'
   rm -rf /home/chris/hass.sql.gz
 
-  nixos_old_gen=$(ssh cypress 'readlink -f /run/current-system')
   nixos-rebuild \
   --flake ~/nixos-configs#cypress \
   --target-host cypress \
   --use-remote-sudo \
   --verbose \
   switch
-  nixos_new_gen=$(ssh cypress 'readlink -f /run/current-system')
-  nvd diff "$nixos_old_gen" "$nixos_new_gen"
 ''
