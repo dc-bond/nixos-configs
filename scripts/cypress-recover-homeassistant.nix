@@ -4,7 +4,7 @@
 }:
 
 let
-  archive = "cypress-2024.12.16-T15:46:03";
+  archive = "";
   borgCypressRepo = config.backups.borgCypressRepo;
   borgRestoreDir = config.backups.borgRestoreDir;
 in
