@@ -46,7 +46,7 @@
             "!secret notifyDefaultRecipient"
           ];
           server = "!secret notifyEmailServer";
-          port = "! secret notifyEmailPort";
+          port = "!secret notifyEmailPort";
           timeout = 60;
           username = "!secret notifyEmailUsername";
           password = "!secret notifyEmailPasswd";
