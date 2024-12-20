@@ -1,5 +1,6 @@
 { 
-  config, 
+  config,
+  configLib,
   pkgs, 
   ... 
 }: 
@@ -8,7 +9,12 @@
 
   #networking.firewall.allowedTCPPorts = [ 8123 ];
 
-  sops.secrets.notifyEmailPasswd = {};
+  #sops.secrets.notifyEmailPasswd = {};
+  sops.secrets."home-assistant-secrets.yaml" = {
+    sopsPath = configLib.relativeToRoot "hosts/${host}/home-assistant-secrets.yaml";
+    owner = "hass";
+    path = "/var/lib/hass/secrets.yaml";
+  };
 
   services = {
 
@@ -45,7 +51,7 @@
         #  port = 2281;
         #  timeout = 60;
         #  username = "";
-        #  password = "!secret ${config.sops.secrets.notifyEmailPasswd.path}";
+        #  password = "!secret notifyEmailPasswd";
         #  encryption = "starttls";
         #};
       };
