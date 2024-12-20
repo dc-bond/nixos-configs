@@ -9,9 +9,7 @@
 
   #networking.firewall.allowedTCPPorts = [ 8123 ];
 
-  #sops.secrets.notifyEmailPasswd = {};
-  sops.secrets."home-assistant-secrets.yaml" = {
-    sopsPath = configLib.relativeToRoot "hosts/${host}/home-assistant-secrets.yaml";
+  sops.secrets.hassSecrets = {
     owner = "hass";
     path = "/var/lib/hass/secrets.yaml";
   };
@@ -39,21 +37,21 @@
         recorder.db_url = "postgresql://@/hass";
         automation = "!include automations.yaml";
         mobile_app = "";
-        #notify = {
-        #  name = "email";
-        #  platform = "smtp";
-        #  sender = "";
-        #  sender_name = "";
-        #  recipient = [ 
-        #    ""
-        #  ];
-        #  server = "";
-        #  port = 2281;
-        #  timeout = 60;
-        #  username = "";
-        #  password = "!secret notifyEmailPasswd";
-        #  encryption = "starttls";
-        #};
+        notify = {
+          name = "email";
+          platform = "smtp";
+          sender = "!secret notifySenderEmail";
+          sender_name = "!secret notifySenderAlias";
+          recipient = [ 
+            "!secret notifyDefaultRecipient"
+          ];
+          server = "!secret notifyEmailServer";
+          port = "! secret notifyEmailPort";
+          timeout = 60;
+          username = "!secret notifyEmailUsername";
+          password = "!secret notifyEmailPasswd";
+          encryption = "starttls";
+        };
       };
     };
 
