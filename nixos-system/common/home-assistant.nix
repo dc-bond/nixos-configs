@@ -8,6 +8,8 @@
 
   #networking.firewall.allowedTCPPorts = [ 8123 ];
 
+  sops.secrets.notifyEmailPasswd = {};
+
   services = {
 
     home-assistant = {
@@ -23,12 +25,29 @@
         "zwave_js"
         "hue"
         "mobile_app"
+        "notify"
+        "smtp"
       ];
       config = {
         http.server_port = 8123;
         recorder.db_url = "postgresql://@/hass";
         automation = "!include automations.yaml";
         mobile_app = "";
+        #notify = {
+        #  name = "email";
+        #  platform = "smtp";
+        #  sender = "";
+        #  sender_name = "";
+        #  recipient = [ 
+        #    ""
+        #  ];
+        #  server = "";
+        #  port = 2281;
+        #  timeout = 60;
+        #  username = "";
+        #  password = "!secret ${config.sops.secrets.notifyEmailPasswd.path}";
+        #  encryption = "starttls";
+        #};
       };
     };
 
