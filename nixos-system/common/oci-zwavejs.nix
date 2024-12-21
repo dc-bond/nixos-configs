@@ -23,7 +23,7 @@ in
     };
     log-driver = "journald";
     ports = [ 
-      "8091:8091/tcp" # for browser interface
+      "8091:8091/tcp" # for browser interface # docker daemon automatically opens firewall port
       "3000:3000/tcp" # for websocket server
     ];
     volumes = [ "${app}:/usr/src/app/store" ];

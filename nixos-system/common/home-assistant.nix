@@ -7,7 +7,7 @@
 
 {
 
-  #networking.firewall.allowedTCPPorts = [ 8123 ];
+  networking.firewall.allowedTCPPorts = [ 8123 ];
 
   sops.secrets.hassSecrets = {
     owner = "hass";
