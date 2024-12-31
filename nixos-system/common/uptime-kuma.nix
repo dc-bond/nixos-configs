@@ -7,7 +7,7 @@
 }:
 
 let
-  app = "uptimekuma";
+  app = "uptime-kuma";
 in
 
 {
