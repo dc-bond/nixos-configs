@@ -7,7 +7,7 @@
 }:
 
 let
-  app = "uptime-kuma";
+  app = "uptimekuma";
 in
 
 {
@@ -17,10 +17,10 @@ in
   services.traefik.dynamicConfigOptions.http = {
     routers.${app} = {
       entrypoints = ["websecure"];
-      rule = "Host(`${app}.${configVars.domain3}`)";
+      rule = "Host(`${app}.${configVars.domain2}`)";
       service = "${app}";
       middlewares = [
-        "authelia"
+        #"authelia"
         "secure-headers"
       ];
       tls = {

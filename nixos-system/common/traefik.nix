@@ -18,11 +18,11 @@
       group = config.users.users.traefik.group;
       mode = "0440";
     };
-    traefikBasicAuth = {
-      owner = config.users.users.traefik.name;
-      group = config.users.users.traefik.group;
-      mode = "0440";
-    };
+    #traefikBasicAuth = {
+    #  owner = config.users.users.traefik.name;
+    #  group = config.users.users.traefik.group;
+    #  mode = "0440";
+    #};
   };
 
   systemd.services.traefik.environment = {
@@ -120,7 +120,7 @@
         http = {
           routers.traefik-dashboard = {
             entrypoints = ["websecure"];
-            rule = "Host(`traefik.${configVars.domain3}`)";
+            rule = "Host(`traefik.${configVars.domain2}`)";
             service = "api@internal";
             middlewares = [
               #"authelia"
@@ -131,8 +131,8 @@
               options = "tls-13@file";
               domains = {
                 "0" = {
-                  main = "${configVars.domain3}";
-                  sans = "*.${configVars.domain3}";
+                  main = "${configVars.domain2}";
+                  sans = "*.${configVars.domain2}";
                 };
               };
             };

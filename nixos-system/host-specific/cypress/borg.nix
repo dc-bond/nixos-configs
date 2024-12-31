@@ -35,6 +35,7 @@
         };
         compression = "auto,zstd,8";
         paths = [
+          "/var/lib/traefik"
           "/var/lib/hass"
           "/var/backup/postgresql/hass.sql.gz"
           "/var/lib/mosquitto"
