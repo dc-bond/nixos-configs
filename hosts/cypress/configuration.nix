@@ -19,8 +19,6 @@
       "nixos-system/common/zsh.nix"
       "nixos-system/common/fonts.nix"
       "nixos-system/common/nixpkgs.nix"
-      "nixos-system/common/traefik.nix"
-      "nixos-system/common/uptimekuma.nix"
       "nixos-system/common/home-assistant.nix"
       "nixos-system/common/oci-containers.nix"
       "nixos-system/common/oci-zwavejs.nix"
@@ -31,6 +29,7 @@
       "nixos-system/host-specific/cypress/networking.nix"
       "nixos-system/host-specific/cypress/tailscale.nix"
       "nixos-system/host-specific/cypress/borg.nix"
+      "nixos-system/host-specific/cypress/traefik.nix"
     ])
   ];
 

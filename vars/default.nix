@@ -19,6 +19,7 @@
 
   domain1 = "dcbond.com";
   domain2 = "opticon.dev";
+  domain2Short = "opticon";
   domain3 = "professorbond.com";
   domain3Short = "professorbond";
 
