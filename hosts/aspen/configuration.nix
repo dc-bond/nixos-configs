@@ -23,15 +23,13 @@
       "nixos-system/host-specific/aspen/sops.nix"
       "nixos-system/host-specific/aspen/networking.nix"
       "nixos-system/host-specific/aspen/borg.nix"
+      "nixos-system/host-specific/aspen/traefik.nix"
+      #"nixos-system/host-specific/aspen/lldap.nix"
+      #"nixos-system/host-specific/aspen/authelia.nix"
       #"nixos-system/common/oci-containers.nix"
       #"nixos-system/common/oci-jellyseerr.nix"
       #"nixos-system/common/oci-lldap.nix"
-      #"nixos-system/common/traefik.nix"
-      #"nixos-system/common/authelia.nix"
-      #"nixos-system/common/uptime-kuma.nix"
       #"nixos-system/common/nextcloud.nix"
-      "nixos-system/common/home-assistant.nix"
-      "nixos-system/common/zwave-js.nix"
     ])
   ];
 
