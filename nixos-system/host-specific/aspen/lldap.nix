@@ -60,7 +60,7 @@ in
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];
-        rule = "Host(`${app}-test.${configVars.domain2}`)";
+        rule = "Host(`${app}.${configVars.domain2}`)";
         service = "${app}";
         middlewares = [
           #"authelia"
