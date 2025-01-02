@@ -123,7 +123,7 @@
             rule = "Host(`traefik.${configVars.domain2}`)";
             service = "api@internal";
             middlewares = [
-              #"authelia"
+              "authelia"
               "secure-headers"
             ];
             tls = {
@@ -138,11 +138,6 @@
             };
           };
           middlewares = {
-            #auth = {
-            #  basicAuth = {
-            #    usersFile = "${config.sops.secrets.traefikBasicAuth.path}";
-            #  };
-            #};
             secure-headers = {
               headers = {
                 sslRedirect = true;
@@ -163,12 +158,6 @@
                 addVaryHeader = true;
               };
             };
-            #auth-chain = {
-            #  chain.middlewares = [
-            #    "authelia"
-            #    "secure-headers" 
-            #  ];
-            #};
           };
         };
         tls = {

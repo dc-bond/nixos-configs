@@ -56,21 +56,17 @@
     };
 
     postgresql = {
-      enable = true;
-      package = pkgs.postgresql_17;
       ensureDatabases = [ "hass" ];
       ensureUsers = [
         {
-          name = "hass"; # hass user on host must have access
+          name = "hass";
           ensureDBOwnership = true;
         }
       ];
     };
 
-    postgresqlBackup = { # postgres database backup
-      enable = true;
+    postgresqlBackup = {
       databases = [ "hass" ];
-      startAt = "*-*-* 01:00:00"; # daily starting at 1:00am
     };
 
   };
