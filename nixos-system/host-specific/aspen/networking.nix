@@ -16,7 +16,7 @@
     useDHCP = false; # disable defaut dhcpcd networking backend in favor of systemd-networkd enabled below
     hostName = "aspen";
     firewall = {
-      enable = false;
+      enable = true;
     };
   };
 

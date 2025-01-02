@@ -12,9 +12,17 @@ in
 
 {
 
-  sops.secrets = {
-    lldapJwtSecret = {};
-    lldapLdapUserPasswd = {};
+  sops = {
+    secrets = {
+      lldapJwtSecret = {};
+      lldapLdapUserPasswd = {};
+    };
+    templates = {
+      "${app}-env".content = ''
+        LLDAP_JWT_SECRET=${config.sops.placeholder.lldapJwtSecret}
+        LLDAP_LDAP_USER_PASS=${config.sops.placeholder.lldapLdapUserPasswd}
+      '';
+    };
   };
 
   services = {
@@ -22,18 +30,16 @@ in
     ${app} = {
       enable = true;
       settings = {
-        lldap_user_email = "${configVars.userEmail}";
-        lldap_user_dn = "admin";
-        lldap_port = 3890;
-        lldap_base_dn = "dc=${configVars.domain2Short},dc=dev";
-        lldap_http_url = "http://127.0.0.1";
-        lldap_http_port = 17170;
-        database_url = "postgresql://@/${app}";
+        ldap_user_email = "${configVars.userEmail}";
+        ldap_user_dn = "admin";
+        ldap_port = 3890;
+        ldap_base_dn = "dc=${configVars.domain2Short},dc=dev";
+        http_url = "https://lldap.${configVars.domain2}";
+        http_port = 17170;
+        http_host = "127.0.0.1";
+        database_url = "postgres:///${app}";
       };    
-      environment = {
-        LLDAP_JWT_SECRET_FILE=${config.sops.placeholder.lldapJwtSecret};
-        LLDAP_LDAP_USER_PASS_FILE=${config.sops.placeholder.lldapLdapUserPasswd};
-      };
+      environmentFile = config.sops.templates."${app}-env".path;
     };
 
     postgresql = {
@@ -44,6 +50,7 @@ in
         {
           name = "${app}"; # lldap user on host must have access
           ensureDBOwnership = true;
+          ensureClauses.login = true;
         }
       ];
     };
@@ -57,7 +64,7 @@ in
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];
-        rule = "Host(`${app}.${configVars.domain2}`)";
+        rule = "Host(`${app}-test.${configVars.domain2}`)";
         service = "${app}";
         middlewares = [
           #"authelia"

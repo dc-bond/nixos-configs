@@ -34,7 +34,8 @@
 
     traefik = {
       enable = true;
-      group = "docker";
+      group = "traefik";
+      #group = "docker"; # for docker access?
 
       staticConfigOptions = {
         api = {
