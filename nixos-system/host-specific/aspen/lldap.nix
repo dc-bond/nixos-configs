@@ -43,22 +43,18 @@ in
     };
 
     postgresql = {
-      enable = true;
-      package = pkgs.postgresql_17;
       ensureDatabases = [ "${app}" ];
       ensureUsers = [
         {
-          name = "${app}"; # lldap user on host must have access
+          name = "${app}";
           ensureDBOwnership = true;
           ensureClauses.login = true;
         }
       ];
     };
 
-    postgresqlBackup = { # postgres database backup
-      enable = true;
+    postgresqlBackup = {
       databases = [ "${app}" ];
-      startAt = "*-*-* 01:00:00"; # daily starting at 1:00am
     };
 
     traefik.dynamicConfigOptions.http = {
