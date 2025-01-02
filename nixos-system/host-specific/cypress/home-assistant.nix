@@ -1,13 +1,18 @@
 { 
   config,
   configLib,
+  configVars,
   pkgs, 
   ... 
 }: 
 
+let
+  app = "home-assistant";
+in
+
 {
 
-  networking.firewall.allowedTCPPorts = [ 8123 ];
+  #networking.firewall.allowedTCPPorts = [ 8123 ];
 
   sops.secrets.hassSecrets = {
     owner = "hass";
@@ -16,7 +21,7 @@
 
   services = {
 
-    home-assistant = {
+    ${app} = {
       enable = true;
       package = (pkgs.home-assistant.override {
         extraPackages = py: with py; [ psycopg2 ];
@@ -67,6 +72,32 @@
 
     postgresqlBackup = {
       databases = [ "hass" ];
+    };
+    
+    traefik.dynamicConfigOptions.http = {
+      routers.${app} = {
+        entrypoints = ["websecure"];
+        rule = "Host(`${app}.${configVars.domain2}`)";
+        service = "${app}";
+        middlewares = [
+          "authelia"
+          "secure-headers"
+        ];
+        tls = {
+          certResolver = "cloudflareDns";
+          options = "tls-13@file";
+        };
+      };
+      services.${app} = {
+        loadBalancer = {
+          passHostHeader = true;
+          servers = [
+          {
+            url = "http://127.0.0.1:8123";
+          }
+          ];
+        };
+      };
     };
 
   };

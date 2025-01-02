@@ -36,10 +36,13 @@
         compression = "auto,zstd,8";
         paths = [
           "/var/lib/traefik"
+          "/var/lib/lldap"
+          "/var/lib/authelia-opticon"
           "/var/lib/hass"
-          "/var/backup/postgresql/hass.sql.gz"
           "/var/lib/mosquitto"
           "/var/lib/docker/volumes/zwavejs"
+          "/var/backup/postgresql/hass.sql.gz"
+          "/var/backup/postgresql/lldap.sql.gz"
         ];
         prune.keep = {
           daily = 7; # keep the last seven daily archives
