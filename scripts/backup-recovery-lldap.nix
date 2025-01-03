@@ -6,31 +6,22 @@
 let
   host = "cypress";
   app = "lldap";
-  archive = "cypress-2025.01.03-T02:30:13";
+  archive = "";
   borgRepo = config.backups.borgCypressRepo;
   borgRestoreDir = config.backups.borgRestoreDir;
 in
 
 pkgs.writeShellScriptBin "backup-recovery-${app}" 
 ''
-  ssh ${host}-tailscale 'sudo systemctl stop ${app}.service'
-  ssh ${host}-tailscale 'sudo rm -rf /var/lib/${app}'
-  
-  nixos-rebuild \
-  --flake ~/nixos-configs#${host} \
-  --target-host ${host} \
-  --use-remote-sudo \
-  --verbose \
-  switch
-
   cd ${borgRestoreDir}
-  sudo borg extract --verbose --list ${borgRepo}::${archive} var/lib/${app} --strip-components 2
+  sudo borg extract --verbose --list ${borgRepo}::${archive} var/lib/private/${app} --strip-components 3
   sudo chown -R chris:users ${borgRestoreDir}/${app}
   ssh ${host}-tailscale 'sudo systemctl stop ${app}.service'
   ssh ${host}-tailscale 'sudo rm -rf /var/lib/${app}'
+  ssh ${host}-tailscale 'sudo rm -rf /var/lib/private/${app}'
   rsync --progress -avzh ${borgRestoreDir}/${app} ${host}-tailscale:/tmp  
-  ssh ${host}-tailscale 'sudo mv /tmp/${app} /var/lib'
-  ssh ${host}-tailscale 'sudo chown -R ${app}:${app} /var/lib/${app}'
+  ssh ${host}-tailscale 'sudo mv /tmp/${app} /var/lib/private'
+  ssh ${host}-tailscale 'sudo chown -R ${app}:${app} /var/lib/private/${app}'
   sudo rm -rf ${borgRestoreDir}/${app}
 
   sudo borg extract --verbose --list ${borgRepo}::${archive} var/backup/postgresql/${app}.sql.gz --strip-components 3

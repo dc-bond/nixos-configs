@@ -13,16 +13,6 @@ in
 
 pkgs.writeShellScriptBin "backup-recovery-${app}" 
 ''
-  ssh ${host}-tailscale 'sudo systemctl stop home-assistant.service'
-  ssh ${host}-tailscale 'sudo rm -rf /var/lib/${app}'
-  
-  nixos-rebuild \
-  --flake ~/nixos-configs#${host} \
-  --target-host ${host} \
-  --use-remote-sudo \
-  --verbose \
-  switch
-
   cd ${borgRestoreDir}
   sudo borg extract --verbose --list ${borgRepo}::${archive} var/lib/${app} --strip-components 2
   sudo chown -R chris:users ${borgRestoreDir}/${app}

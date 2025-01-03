@@ -13,16 +13,6 @@ in
 
 pkgs.writeShellScriptBin "backup-recovery-${app}" 
 ''
-  ssh ${host}-tailscale 'sudo systemctl stop docker-${app}-root.target'
-  ssh ${host}-tailscale 'sudo rm -rf /var/lib/docker/volumes/${app}'
-  
-  nixos-rebuild \
-  --flake ~/nixos-configs#${host} \
-  --target-host ${host} \
-  --use-remote-sudo \
-  --verbose \
-  switch
-
   cd ${borgRestoreDir}
   sudo borg extract --verbose --list ${borgRepo}::${archive} var/lib/docker/volumes/${app} --strip-components 4
   sudo chown -R chris:users ${borgRestoreDir}/${app}

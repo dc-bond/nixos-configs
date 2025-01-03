@@ -36,7 +36,7 @@
         compression = "auto,zstd,8";
         paths = [
           "/var/lib/traefik"
-          "/var/lib/lldap"
+          "/var/lib/private/lldap"
           "/var/lib/authelia-opticon"
           "/var/lib/hass"
           "/var/lib/mosquitto"

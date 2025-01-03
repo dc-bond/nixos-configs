@@ -63,7 +63,7 @@ in
         rule = "Host(`${app}.${configVars.domain2}`)";
         service = "${app}";
         middlewares = [
-          "authelia"
+          #"authelia"
           "secure-headers"
         ];
         tls = {
