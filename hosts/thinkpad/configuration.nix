@@ -42,6 +42,7 @@
     (import (configLib.relativeToRoot "scripts/backup-recovery-zwavejs.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/backup-recovery-lldap.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/backup-recovery-traefik.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/backup-recovery-authelia-opticon.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/deploy-aspen.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/deploy-cypress.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
