@@ -23,15 +23,14 @@
   domain3 = "professorbond.com";
   domain3Short = "professorbond";
 
-  lldapSubnet = "172.21.1.0/25";
-  lldapIp = "172.21.1.2";
-  postgres-lldapIp = "172.21.1.3";
+  piholeSubnet = "172.21.1.0/25";
+  pihleIp = "172.21.1.2";
 
   jellyseerrSubnet = "172.21.2.0/25";
   jellyseerrIp = "172.21.2.2";
 
-  homeAssistantSubnet = "172.21.3.0/25";
-  homeAssistantIp = "172.21.3.2";
+  #homeAssistantSubnet = "172.21.3.0/25";
+  #homeAssistantIp = "172.21.3.2";
 
   zwaveJsSubnet = "172.21.4.0/25";
   zwaveJsIp = "172.21.4.2";
