@@ -29,11 +29,6 @@ in
     image = "docker.io/${app}/zwave-js-ui:9.28.0"; # https://hub.docker.com/r/zwavejs/zwave-js-ui/tags
     autoStart = true;
     environmentFiles = [ config.sops.templates."${app}-env".path ];
-    #environment = {
-    #  TZ = "America/New_York";
-    #  SESSION_SECRET = "${config.sops.secrets.zwavejsSessionSecret.path}";
-    #  ZWAVEJS_EXTERNAL_CONFIG = "/usr/src/app/store/.config-db";
-    #};
     log-driver = "journald";
     ports = [ 
       #"8091:8091/tcp" # for browser interface
