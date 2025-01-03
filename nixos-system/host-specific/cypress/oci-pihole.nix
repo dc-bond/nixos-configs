@@ -30,10 +30,6 @@ in
     autoStart = true;
     environmentFiles = [ config.sops.templates."${app}-env".path ];
     #environment = {
-    #  TZ = "America/New_York";
-    #  WEBPASSWORD = "test";
-    #  FTLCONF_LOCAL_IPV4 = "${configVars.cypressLanIp}";
-    #  VIRTUAL_HOST = "${app}-test.${configVars.domain2}";
     #  #PIHOLE_DNS_ = unbound#5333
     #};
     log-driver = "journald";
