@@ -24,7 +24,7 @@
   domain3Short = "professorbond";
 
   piholeSubnet = "172.21.1.0/25";
-  pihleIp = "172.21.1.2";
+  piholeIp = "172.21.1.2";
 
   jellyseerrSubnet = "172.21.2.0/25";
   jellyseerrIp = "172.21.2.2";

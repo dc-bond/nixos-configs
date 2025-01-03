@@ -18,6 +18,7 @@
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
       "nixos-system/common/postgresql.nix"
+      "nixos-system/common/oci-containers.nix"
       #"nixos-system/host-specific/aspen/tailscale.nix"
       "nixos-system/host-specific/aspen/users.nix"
       "nixos-system/host-specific/aspen/sshd.nix"
@@ -27,10 +28,7 @@
       "nixos-system/host-specific/aspen/traefik.nix"
       "nixos-system/host-specific/aspen/lldap.nix"
       "nixos-system/host-specific/aspen/authelia.nix"
-      #"nixos-system/common/oci-containers.nix"
-      #"nixos-system/common/oci-jellyseerr.nix"
-      #"nixos-system/common/oci-lldap.nix"
-      #"nixos-system/common/nextcloud.nix"
+      "nixos-system/host-specific/aspen/oci-pihole.nix"
     ])
   ];
 

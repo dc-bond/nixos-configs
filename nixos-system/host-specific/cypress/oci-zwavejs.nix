@@ -16,10 +16,11 @@ in
   virtualisation.oci-containers.containers."${app}" = {
     image = "docker.io/${app}/zwave-js-ui:9.28.0"; # https://hub.docker.com/r/zwavejs/zwave-js-ui/tags
     autoStart = true;
+    #environmentFiles = [  ];
     environment = {
+      TZ = "America/New_York";
       SESSION_SECRET = "${config.sops.secrets.zwavejsSessionSecret.path}";
       ZWAVEJS_EXTERNAL_CONFIG = "/usr/src/app/store/.config-db";
-      TZ = "America/New_York";
     };
     log-driver = "journald";
     ports = [ 
