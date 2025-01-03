@@ -23,8 +23,8 @@ in
     };
     log-driver = "journald";
     ports = [ 
-      "8091:8091/tcp" # for browser interface # docker daemon automatically opens firewall port
-      "3000:3000/tcp" # for websocket server
+      #"8091:8091/tcp" # for browser interface
+      "3000:3000/tcp" # for websocket server # docker daemon automatically opens firewall port
     ];
     volumes = [ "${app}:/usr/src/app/store" ];
     extraOptions = [
@@ -34,15 +34,15 @@ in
       "--stop-signal=SIGINT"
       "--device=/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_d677b47b5594eb11ba3436703d98b6d1-if00-port0:/dev/zwave"
     ];
-    #labels = {
-    #  "traefik.enable" = "true";
-    #  "traefik.http.routers.${app}.entrypoints" = "websecure";
-    #  "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
-    #  "traefik.http.routers.${app}.tls" = "true";
-    #  "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-    #  "traefik.http.routers.${app}.middlewares" = "authelia@file,secure-headers@file";
-    #  "traefik.http.services.${app}.loadbalancer.server.port" = "8123";
-    #};
+    labels = {
+      "traefik.enable" = "true";
+      "traefik.http.routers.${app}.entrypoints" = "websecure";
+      "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
+      "traefik.http.routers.${app}.tls" = "true";
+      "traefik.http.routers.${app}.tls.options" = "tls-13@file";
+      "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
+      "traefik.http.services.${app}.loadbalancer.server.port" = "8091"; # port for browser interface
+    };
   };
 
   systemd = {

@@ -12,8 +12,6 @@ in
 
 {
 
-  #networking.firewall.allowedTCPPorts = [ 8123 ];
-
   sops.secrets.hassSecrets = {
     owner = "hass";
     path = "/var/lib/hass/secrets.yaml";
@@ -38,7 +36,13 @@ in
         "smtp"
       ];
       config = {
-        http.server_port = 8123;
+        http = {
+          server_port = 8123;
+          use_x_forwarded_for = true;
+          trusted_proxies = [
+            "127.0.0.1"
+          ];
+        };
         recorder.db_url = "postgresql://@/hass";
         automation = "!include automations.yaml";
         mobile_app = "";
@@ -80,7 +84,7 @@ in
         rule = "Host(`${app}.${configVars.domain2}`)";
         service = "${app}";
         middlewares = [
-          "authelia"
+          #"authelia" # ios app does not support authentication provider sittnig in front of home assistant
           "secure-headers"
         ];
         tls = {
