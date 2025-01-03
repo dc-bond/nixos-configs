@@ -7,16 +7,14 @@ let
   host = "cypress";
   app = "hass";
   archive = "cypress-2025.01.03-T02:30:13";
-  borgRepo = config.backups.borg${host}Repo;
+  borgRepo = config.backups.borgCypressRepo;
   borgRestoreDir = config.backups.borgRestoreDir;
 in
 
 pkgs.writeShellScriptBin "backup-recovery-${app}" 
 ''
   ssh ${host}-tailscale 'sudo systemctl stop home-assistant.service'
-  ssh ${host}-tailscale 'sudo systemctl stop postgresql.service'
   ssh ${host}-tailscale 'sudo rm -rf /var/lib/${app}'
-  ssh ${host}-tailscale 'sudo rm -rf /var/lib/postgresql'
   
   nixos-rebuild \
   --flake ~/nixos-configs#${host} \

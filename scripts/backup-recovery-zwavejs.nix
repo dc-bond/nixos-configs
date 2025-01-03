@@ -7,7 +7,7 @@ let
   host = "cypress";
   app = "zwavejs";
   archive = "cypress-2025.01.03-T02:30:13";
-  borgRepo = config.backups.borg${host}Repo;
+  borgRepo = config.backups.borgCypressRepo;
   borgRestoreDir = config.backups.borgRestoreDir;
 in
 
