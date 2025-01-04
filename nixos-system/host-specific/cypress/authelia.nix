@@ -32,16 +32,16 @@ in
       group = config.users.users."${app}-${configVars.domain2Short}".group;
       mode = "0440";
     };
-    #autheliaOidcHmacSecret = {
-    #  owner = config.users.users."${app}-${configVars.domain2Short}".name;
-    #  group = config.users.users."${app}-${configVars.domain2Short}".group;
-    #  mode = "0440";
-    #};
-    #autheliaOidcJwksKey = {
-    #  owner = config.users.users."${app}-${configVars.domain2Short}".name;
-    #  group = config.users.users."${app}-${configVars.domain2Short}".group;
-    #  mode = "0440";
-    #};
+    autheliaOidcHmacSecret = {
+      owner = config.users.users."${app}-${configVars.domain2Short}".name;
+      group = config.users.users."${app}-${configVars.domain2Short}".group;
+      mode = "0440";
+    };
+    autheliaOidcJwksKey = {
+      owner = config.users.users."${app}-${configVars.domain2Short}".name;
+      group = config.users.users."${app}-${configVars.domain2Short}".group;
+      mode = "0440";
+    };
   };
 
   services = {
@@ -130,36 +130,36 @@ in
               path = "/var/lib/${app}-${configVars.domain2Short}/sqlite3.db";
             };
           };
-          #identity_providers = {
-          #  oidc = {
-          #    jwks = {
-          #      key_id = "${configVars.domain2Short}";
-          #      algorithm = "RS256";
-          #      use = "sig";
-          #    };
-          #    clients = [
-          #      {
-          #      client_id = "7Au52dmVWwvAGdqvrsLatNjedPoSIfQw~UWRj.M24VWhhlDp8v_tXUtePMvCz9pn~Vt1EVBc";
-          #      client_name = "Bond Private Nextcloud";
-          #      client_secret = "$pbkdf2-sha512$310000$PLcD7uvNnhfoie42zPQ71w$oZhEWIOtCXk/fOG4ABoRqDCTZmsZoxWKH0ERqz19aHkS7igOULjOQpvSHFxth0cuU3nehFYEYaF3Yo.z7vg./A";
-          #      public = false;
-          #      authorization_policy = "one_factor";
-          #      require_pkce = true;
-          #      pkce_challenge_method = "S256";
-          #      redirect_uris = "https://cloud.${configVars.domain2}/apps/user_oidc/code";
-          #      scopes = [
-          #        "openid"
-          #        "profile"
-          #        "email"
-          #        "groups"
-          #      ];
-          #      userinfo_signed_response_alg = "none";
-          #      token_endpoint_auth_method = "client_secret_post";
-          #      consent_mode = "implicit"; # disable consent screen flow
-          #      }
-          #    ];
-          #  };
-          #};
+          identity_providers = {
+            oidc = {
+              jwks = {
+                key_id = "${configVars.domain2Short}";
+                algorithm = "RS256";
+                use = "sig";
+              };
+              clients = [
+                {
+                client_id = "7Au52dmVWwvAGdqvrsLatNjedPoSIfQw~UWRj.M24VWhhlDp8v_tXUtePMvCz9pn~Vt1EVBc";
+                client_name = "Bond Private Nextcloud";
+                client_secret = "$pbkdf2-sha512$310000$PLcD7uvNnhfoie42zPQ71w$oZhEWIOtCXk/fOG4ABoRqDCTZmsZoxWKH0ERqz19aHkS7igOULjOQpvSHFxth0cuU3nehFYEYaF3Yo.z7vg./A";
+                public = false;
+                authorization_policy = "one_factor";
+                require_pkce = true;
+                pkce_challenge_method = "S256";
+                redirect_uris = "https://nextcloud.${configVars.domain2}/apps/user_oidc/code";
+                scopes = [
+                  "openid"
+                  "profile"
+                  "email"
+                  "groups"
+                ];
+                userinfo_signed_response_alg = "none";
+                token_endpoint_auth_method = "client_secret_post";
+                consent_mode = "implicit"; # disable consent screen flow
+                }
+              ];
+            };
+          };
           notifier = {
             disable_startup_check = false;
             filesystem = {

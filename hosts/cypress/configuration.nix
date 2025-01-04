@@ -34,6 +34,7 @@
       "nixos-system/host-specific/cypress/lldap.nix"
       "nixos-system/host-specific/cypress/authelia.nix"
       "nixos-system/host-specific/cypress/home-assistant.nix"
+      "nixos-system/host-specific/cypress/nextcloud.nix"
     ])
   ];
 

@@ -31,17 +31,17 @@ in
       recommendedOptimisation = true;
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
-      virtualHosts."cloud.${configVars.domain3}".listen = [{addr = "127.0.0.1"; port = 4411;}];
+      virtualHosts."${app}.${configVars.domain2}".listen = [{addr = "127.0.0.1"; port = 4411;}];
     };
 
     ${app} = {
       enable = true;
-      hostName = "cloud.${configVars.domain3}";
+      hostName = "${app}.${configVars.domain2}";
       package = pkgs.nextcloud30; # manually increment with upgrades
       database.createLocally = true; # enables postgres service
       configureRedis = true; # creates redis instance
       #caching.redis = true; # load redis into nextcloud php, auto enabled if configureRedis is true
-      maxUploadSize = "20G"; # max upload size
+      maxUploadSize = "30G"; # max upload size
       https = true;
       autoUpdateApps.enable = true;
       extraAppsEnable = true;
@@ -88,10 +88,8 @@ in
     #  ];
     #};
 
-    postgresqlBackup = { # postgres database backup
-      enable = true;
+    postgresqlBackup = {
       databases = ["${app}"];
-      startAt = "*-*-* 01:00:00"; # daily starting at 1:00am
     };
 
   };
@@ -99,7 +97,7 @@ in
   services.traefik.dynamicConfigOptions.http = {
     routers.${app} = {
       entrypoints = ["websecure"];
-      rule = "Host(`cloud.${configVars.domain3}`)";
+      rule = "Host(`${app}.${configVars.domain2}`)";
       service = "${app}";
       middlewares = [
         "secure-headers"
