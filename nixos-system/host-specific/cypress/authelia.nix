@@ -180,7 +180,7 @@ in
       };
     }; 
 
-    redis.servers."${app}-${configVars.domain2Short}" = {
+    redis.servers."${app}-${configVars.domain2Short}" = { # service name will be "redis-authelia-opticon"
       enable = true;
       user = "${app}-${configVars.domain2Short}";   
       port = 0;

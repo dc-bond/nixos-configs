@@ -38,6 +38,7 @@
           "/var/lib/traefik"
           "/var/lib/private/lldap"
           "/var/lib/authelia-opticon"
+          "/var/lib/redis-authelia-opticon"
           "/var/lib/hass"
           "/var/lib/mosquitto"
           "/var/lib/docker/volumes/zwavejs"
