@@ -17,6 +17,11 @@ in
     path = "/var/lib/hass/secrets.yaml";
   };
 
+  systemd.services."${app}" = {
+    requires = [ "postgresql.service" ];
+    after = [ "postgresql.service" ];
+  };
+
   services = {
 
     ${app} = {

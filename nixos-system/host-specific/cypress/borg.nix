@@ -39,6 +39,8 @@
           "/var/lib/private/lldap"
           "/var/lib/authelia-opticon"
           "/var/lib/redis-authelia-opticon"
+          "/var/lib/nextcloud"
+          "/var/lib/redis-nextcloud"
           "/var/lib/hass"
           "/var/lib/mosquitto"
           "/var/lib/docker/volumes/zwavejs"

@@ -7,8 +7,10 @@
   ... 
 }: 
 
+##### might fail on fresh install new machine, try rm -rf /var/lib/nextcloud and rebuild switch ####
+
 let
-  app = "nextcloud";
+  app = "nextcloud"; 
 in
 
 {
@@ -21,6 +23,11 @@ in
         mode = "0440";
       };
     };
+  };
+
+  systemd.services."${app}-setup" = {
+    requires = [ "postgresql.service" ];
+    after = [ "postgresql.service" ];
   };
 
   services = {
@@ -38,7 +45,7 @@ in
       enable = true;
       hostName = "${app}.${configVars.domain2}";
       package = pkgs.nextcloud30; # manually increment with upgrades
-      database.createLocally = true; # enables postgres service
+      database.createLocally = false; # enables postgres service if true, manual setup below
       configureRedis = true; # creates redis instance
       #caching.redis = true; # load redis into nextcloud php, auto enabled if configureRedis is true
       maxUploadSize = "30G"; # max upload size
@@ -65,9 +72,9 @@ in
       };
       config = {
         dbtype = "pgsql";
-        #dbhost = "/run/postgresql";
-        #dbname = "${app}";
-        #dbuser = "${app}";
+        dbhost = "/run/postgresql";
+        dbname = "${app}";
+        dbuser = "${app}";
         adminuser = "admin";
         adminpassFile = "${config.sops.secrets.nextcloudAdminPasswd.path}";
       };
@@ -76,53 +83,53 @@ in
       };
     };
 
-    #postgresql = {
-    #  enable = true;
-    #  ensureDatabases = ["${app}"];
-    #  ensureUsers = [
-    #    {
-    #      name = "${app}";
-    #      ensureDBOwnership = true;
-    #      ensureClauses.createdb = true;
-    #    }
-    #  ];
-    #};
+    postgresql = {
+      enable = true;
+      ensureDatabases = ["${app}"];
+      ensureUsers = [
+        {
+          name = "${app}";
+          ensureDBOwnership = true;
+          ensureClauses.createdb = true;
+        }
+      ];
+    };
 
     postgresqlBackup = {
       databases = ["${app}"];
     };
-
-  };
   
-  services.traefik.dynamicConfigOptions.http = {
-    routers.${app} = {
-      entrypoints = ["websecure"];
-      rule = "Host(`${app}.${configVars.domain2}`)";
-      service = "${app}";
-      middlewares = [
-        "secure-headers"
-        "nextcloud-redirect-regex"
-      ];
-      tls = {
-        certResolver = "cloudflareDns";
-        options = "tls-13@file";
-      };
-    };
-    middlewares.nextcloud-redirect-regex.redirectRegex = {
-      permanent = true;
-      regex = "https://(.*)/.well-known/(card|cal)dav";
-      replacement = "https://\${1}/remote.php/dav/";
-    };
-    services.${app} = {
-      loadBalancer = {
-        passHostHeader = true;
-        servers = [
-        {
-          url = "http://127.0.0.1:4411";
-        }
+    traefik.dynamicConfigOptions.http = {
+      routers.${app} = {
+        entrypoints = ["websecure"];
+        rule = "Host(`${app}.${configVars.domain2}`)";
+        service = "${app}";
+        middlewares = [
+          "secure-headers"
+          "nextcloud-redirect-regex"
         ];
+        tls = {
+          certResolver = "cloudflareDns";
+          options = "tls-13@file";
+        };
+      };
+      middlewares.nextcloud-redirect-regex.redirectRegex = {
+        permanent = true;
+        regex = "https://(.*)/.well-known/(card|cal)dav";
+        replacement = "https://\${1}/remote.php/dav/";
+      };
+      services.${app} = {
+        loadBalancer = {
+          passHostHeader = true;
+          servers = [
+          {
+            url = "http://127.0.0.1:4411";
+          }
+          ];
+        };
       };
     };
+
   };
 
 }
