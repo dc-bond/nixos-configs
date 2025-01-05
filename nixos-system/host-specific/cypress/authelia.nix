@@ -90,15 +90,15 @@ in
           access_control = {
             default_policy = "deny";
             rules = [
-              #{
-              #  domain = ["cloud.${configVars.domain2}"];# only allow chris@dcbond.com user to authenticate to nextcloud admin/login 
-              #  resources = [
-              #    "^/login?direct=1.*$"
-              #    "^/login?direct=1/.*$"
-              #  ];
-              #  subject = "user:admin";
-              #  policy = "one_factor";
-              #}
+              {
+                domain = ["${app}.${configVars.domain2}"];# only allow chris@dcbond.com user to authenticate to nextcloud admin/login 
+                resources = [
+                  "^/login?direct=1.*$"
+                  "^/login?direct=1/.*$"
+                ];
+                subject = "user:admin";
+                policy = "one_factor";
+              }
               {
                 domain = [ # bypass authelia when connecting to authelia itself
                   "identity.${configVars.domain2}"
@@ -130,36 +130,42 @@ in
               path = "/var/lib/${app}-${configVars.domain2Short}/sqlite3.db";
             };
           };
-          #identity_providers = {
-          #  oidc = {
-          #    jwks = {
-          #      key_id = "${configVars.domain2Short}";
-          #      algorithm = "RS256";
-          #      use = "sig";
-          #    };
-          #    clients = [
-          #      {
-          #      client_id = "7Au52dmVWwvAGdqvrsLatNjedPoSIfQw~UWRj.M24VWhhlDp8v_tXUtePMvCz9pn~Vt1EVBc";
-          #      client_name = "Bond Private Nextcloud";
-          #      client_secret = "$pbkdf2-sha512$310000$PLcD7uvNnhfoie42zPQ71w$oZhEWIOtCXk/fOG4ABoRqDCTZmsZoxWKH0ERqz19aHkS7igOULjOQpvSHFxth0cuU3nehFYEYaF3Yo.z7vg./A";
-          #      public = false;
-          #      authorization_policy = "one_factor";
-          #      require_pkce = true;
-          #      pkce_challenge_method = "S256";
-          #      redirect_uris = "https://nextcloud.${configVars.domain2}/apps/user_oidc/code";
-          #      scopes = [
-          #        "openid"
-          #        "profile"
-          #        "email"
-          #        "groups"
-          #      ];
-          #      userinfo_signed_response_alg = "none";
-          #      token_endpoint_auth_method = "client_secret_post";
-          #      consent_mode = "implicit"; # disable consent screen flow
-          #      }
-          #    ];
-          #  };
-          #};
+          identity_providers = {
+            oidc = {
+              jwks = {
+                key_id = "${configVars.domain2Short}";
+                algorithm = "RS256";
+                use = "sig";
+              };
+              clients = [
+                # nextcloud requires first time manual setup in the oidc_user app:
+                  # Identifier: whatever
+                  # Client ID:  see below
+                  # Client secret: unhashed version of below, saved in pass
+                  # Discovery endpoint: https://identity.opticon.dev/.well-known/openid-configuration
+                  # Scope: openid email profile groups
+                {
+                client_name = "Bond Private Nextcloud";
+                client_id = "7Au52dmVWwvAGdqvrsLatNjedPoSIfQw~UWRj.M24VWhhlDp8v_tXUtePMvCz9pn~Vt1EVBc";
+                client_secret = "$pbkdf2-sha512$310000$PLcD7uvNnhfoie42zPQ71w$oZhEWIOtCXk/fOG4ABoRqDCTZmsZoxWKH0ERqz19aHkS7igOULjOQpvSHFxth0cuU3nehFYEYaF3Yo.z7vg./A";
+                public = false;
+                authorization_policy = "one_factor";
+                require_pkce = true;
+                pkce_challenge_method = "S256";
+                redirect_uris = "https://nextcloud.${configVars.domain2}/apps/user_oidc/code";
+                scopes = [
+                  "openid"
+                  "profile"
+                  "email"
+                  "groups"
+                ];
+                userinfo_signed_response_alg = "none";
+                token_endpoint_auth_method = "client_secret_post";
+                consent_mode = "implicit"; # disable consent screen flow
+                }
+              ];
+            };
+          };
           notifier = {
             disable_startup_check = false;
             filesystem = {
@@ -174,8 +180,8 @@ in
           jwtSecretFile = "${config.sops.secrets.autheliaJwtSecret.path}";
           storageEncryptionKeyFile = "${config.sops.secrets.autheliaStorageEncryptionKey.path}";
           sessionSecretFile = "${config.sops.secrets.autheliaSessionSecret.path}";
-          #oidcHmacSecretFile = "${config.sops.secrets.autheliaOidcHmacSecret.path}";
-          #oidcIssuerPrivateKeyFile = "${config.sops.secrets.autheliaOidcJwksKey.path}";
+          oidcHmacSecretFile = "${config.sops.secrets.autheliaOidcHmacSecret.path}";
+          oidcIssuerPrivateKeyFile = "${config.sops.secrets.autheliaOidcJwksKey.path}";
         };
       };
     }; 
