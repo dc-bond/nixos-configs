@@ -7,8 +7,6 @@
   ... 
 }: 
 
-##### might fail on fresh install new machine, try rm -rf /var/lib/nextcloud and rebuild switch ####
-
 let
   app = "nextcloud"; 
 in

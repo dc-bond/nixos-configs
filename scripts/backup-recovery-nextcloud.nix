@@ -18,7 +18,6 @@ pkgs.writeShellScriptBin "backup-recovery-${app}"
   sudo chown -R chris:users ${borgRestoreDir}/${app}
   sudo borg extract --verbose --list ${borgRepo}::${archive} var/lib/redis-${app} --strip-components 2
   sudo chown -R chris:users ${borgRestoreDir}/redis-${app}
-  ssh ${host}-tailscale 'sudo systemctl stop ${app}.service'
   ssh ${host}-tailscale 'sudo systemctl stop redis-${app}.service'
   ssh ${host}-tailscale 'sudo rm -rf /var/lib/${app}'
   ssh ${host}-tailscale 'sudo rm -rf /var/lib/redis-${app}'
