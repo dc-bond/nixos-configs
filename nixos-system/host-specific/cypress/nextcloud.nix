@@ -36,12 +36,12 @@ in
       recommendedOptimisation = true;
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
-      virtualHosts."${app}.${configVars.domain2}".listen = [{addr = "127.0.0.1"; port = 4411;}];
+      virtualHosts."cloud.${configVars.domain2}".listen = [{addr = "127.0.0.1"; port = 4411;}];
     };
 
     ${app} = {
       enable = true;
-      hostName = "${app}.${configVars.domain2}";
+      hostName = "cloud.${configVars.domain2}";
       package = pkgs.nextcloud30; # manually increment with upgrades
       database.createLocally = false; # enables postgres service if true, manual setup below
       configureRedis = true; # creates redis instance
@@ -62,6 +62,7 @@ in
         loglevel = 2; # info
         allow_local_remote_servers = true; # required for OIDC
         user_oidc.use_pkce = true; # required for OIDC
+        oidc_login_auto_redirect = true; # 
         maintenance_window_start = 1;
         #allowed_admin_ranges = [
         #  #"127.0.0.1/8"
@@ -100,21 +101,30 @@ in
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];
-        rule = "Host(`${app}.${configVars.domain2}`)";
+        rule = "Host(`cloud.${configVars.domain2}`)";
         service = "${app}";
         middlewares = [
+          #"authelia" # OIDC login setup and working so traditional authelia middleware not necessary
           "secure-headers"
-          "nextcloud-redirect-regex"
+          #"nextcloud-redirect-login"
+          "nextcloud-redirect-dav"
         ];
         tls = {
           certResolver = "cloudflareDns";
           options = "tls-13@file";
         };
       };
-      middlewares.nextcloud-redirect-regex.redirectRegex = {
-        permanent = true;
-        regex = "https://(.*)/.well-known/(card|cal)dav";
-        replacement = "https://\${1}/remote.php/dav/";
+      middlewares = {
+        #nextcloud-redirect-login.redirectRegex = {
+        #  permanent = true;
+        #  regex = "^https://nextcloud\\.opticon\\.dev$";
+        #  replacement = "https://nextcloud.opticon.dev/apps/user_oidc/login/1";
+        #};
+        nextcloud-redirect-dav.redirectRegex = {
+          permanent = true;
+          regex = "https://(.*)/.well-known/(card|cal)dav";
+          replacement = "https://\${1}/remote.php/dav/";
+        };
       };
       services.${app} = {
         loadBalancer = {

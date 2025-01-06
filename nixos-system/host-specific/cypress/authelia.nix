@@ -90,15 +90,15 @@ in
           access_control = {
             default_policy = "deny";
             rules = [
-              {
-                domain = ["${app}.${configVars.domain2}"];# only allow chris@dcbond.com user to authenticate to nextcloud admin/login 
-                resources = [
-                  "^/login?direct=1.*$"
-                  "^/login?direct=1/.*$"
-                ];
-                subject = "user:admin";
-                policy = "one_factor";
-              }
+              #{
+              #  domain = ["cloud.${configVars.domain2}"];# only allow chris@dcbond.com user to authenticate to nextcloud admin/login 
+              #  resources = [
+              #    "^/login?direct=1.*$"
+              #    "^/login?direct=1/.*$"
+              #  ];
+              #  subject = "user:admin";
+              #  policy = "one_factor";
+              #}
               {
                 domain = [ # bypass authelia when connecting to authelia itself
                   "identity.${configVars.domain2}"
@@ -152,7 +152,7 @@ in
                 authorization_policy = "one_factor";
                 require_pkce = true;
                 pkce_challenge_method = "S256";
-                redirect_uris = "https://nextcloud.${configVars.domain2}/apps/user_oidc/code";
+                redirect_uris = "https://cloud.${configVars.domain2}/apps/user_oidc/code";
                 scopes = [
                   "openid"
                   "profile"
