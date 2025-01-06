@@ -52,7 +52,7 @@ in
       extraAppsEnable = true;
       extraApps = with config.services.nextcloud.package.packages.apps; { # list of nextcloud apps
         # https://github.com/NixOS/nixpkgs/blob/master/pkgs/servers/nextcloud/packages/nextcloud-apps.json
-        inherit calendar contacts user_oidc tasks;
+        inherit contacts user_oidc tasks;
       };
       settings = {
         trusted_proxies = ["127.0.0.1"];
@@ -62,7 +62,7 @@ in
         loglevel = 2; # info
         allow_local_remote_servers = true; # required for OIDC
         user_oidc.use_pkce = true; # required for OIDC
-        oidc_login_auto_redirect = true; # 
+        #oidc_login_auto_redirect = true; # doesn't work, must manual occ command: 'nextcloud-occ config:app:set --value=0 user_oidc allow_multiple_user_backends'
         maintenance_window_start = 1;
         #allowed_admin_ranges = [
         #  #"127.0.0.1/8"
