@@ -46,6 +46,7 @@
           "/var/lib/docker/volumes/zwavejs"
           "/var/backup/postgresql/hass.sql.gz"
           "/var/backup/postgresql/lldap.sql.gz"
+          "/var/backup/postgresql/nextcloud.sql.gz"
         ];
         prune.keep = {
           daily = 7; # keep the last seven daily archives
