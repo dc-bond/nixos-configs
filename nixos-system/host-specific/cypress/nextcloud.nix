@@ -105,7 +105,7 @@ in
         lost_password_link = "disabled";
         oidc_login_provider_url = "https://identity.opticon.dev";
         oidc_login_client_id = "7Au52dmVWwvAGdqvrsLatNjedPoSIfQw~UWRj.M24VWhhlDp8v_tXUtePMvCz9pn~Vt1EVBc";
-        oidc_login_client_secret = "5EPje~2UG6pT~ZqhR.JMnCPm~XvfWv~nbC-vxMJSlUbwbv5b7hSi2_FKeWbLPJK6cQkXOyAx";
+        oidc_login_client_secret = "";
         oidc_login_auto_redirect = true; # bypass Nextcloud login screen and go right to identity provider
         oidc_login_end_session_redirect = true;
         oidc_login_logout_url = "https://identity.opticon.dev";
