@@ -6,6 +6,7 @@
 {
 
   userName = "chris";
+  userFullName = "Chris Bond";
   userEmail = "chris@dcbond.com";
 
   aspenLanIp = "192.168.1.189";
@@ -48,7 +49,6 @@
 
 
   
-  #userFullName = inputs.nix-secrets.full-name;
   #userEmail = inputs.nix-secrets.userEmail;
   #persistFolder = "/persist";
 

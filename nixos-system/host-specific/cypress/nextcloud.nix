@@ -8,7 +8,7 @@
 }: 
 
 let
-  app = "nextcloud"; 
+  app = "nextcloud"; # first-time install will fail, must delete /var/lib/nextcloud/config/config.php file and rebuild then should work
 in
 
 {
@@ -59,6 +59,7 @@ in
         #};
       };
       settings = {
+        defaultapp = "files";
         enabledPreviewProviders = [
           "OC\\Preview\\BMP"
           "OC\\Preview\\GIF"
@@ -78,10 +79,6 @@ in
         log_type = "file";
         loglevel = 2; # info
         maintenance_window_start = 1;
-        allowed_admin_ranges = [
-          "127.0.0.1/8"
-          "192.168.0.0/16"
-        ];
         
         ## openid connect oidc:
         #allow_user_to_change_display_name = false;
@@ -123,7 +120,7 @@ in
         dbhost = "/run/postgresql";
         dbname = "${app}";
         dbuser = "${app}";
-        adminuser = "${configVars.userEmail}";
+        adminuser = "${configVars.userFullName}";
         adminpassFile = "${config.sops.secrets.nextcloudAdminPasswd.path}";
       };
       phpOptions = {
