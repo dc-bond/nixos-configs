@@ -75,15 +75,7 @@ in
               address = "ldap://127.0.0.1:3890";
               base_dn = "dc=${configVars.domain2Short},dc=dev";
               user = "uid=admin,ou=people,dc=${configVars.domain2Short},dc=dev"; # admin username, password in env variable below
-              #attribues = {
-              #  username = "uid";
-              #  group_name = "cn";
-              #  display_name = "displayName";
-              #  mail = "mail";
-              #};
-              #additional_users_dn = "ou=people";
               users_filter = "(&(|({username_attribute}={input})({mail_attribute}={input}))(objectClass=person))"; # allow sign in with username OR email
-              #additional_groups_dn = "ou=groups";
               groups_filter = "(member={dn})";
             };
           };
@@ -140,13 +132,6 @@ in
               clients = [
 
                 #{
-                ## nextcloud requires first time manual setup in the oidc_user app:
-                # # Identifier: whatever
-                # # Client ID:  see below
-                # # Client secret: unhashed version of below, saved in pass
-                # # Discovery endpoint: https://identity.opticon.dev/.well-known/openid-configuration
-                # # Scope: openid email profile groups
-                # # see https://github.com/nextcloud/user_oidc for more info
                 #client_name = "Bond Private Nextcloud";
                 #client_id = "7Au52dmVWwvAGdqvrsLatNjedPoSIfQw~UWRj.M24VWhhlDp8v_tXUtePMvCz9pn~Vt1EVBc";
                 #client_secret = "$pbkdf2-sha512$310000$PLcD7uvNnhfoie42zPQ71w$oZhEWIOtCXk/fOG4ABoRqDCTZmsZoxWKH0ERqz19aHkS7igOULjOQpvSHFxth0cuU3nehFYEYaF3Yo.z7vg./A";
@@ -154,7 +139,7 @@ in
                 #authorization_policy = "one_factor";
                 #require_pkce = true;
                 #pkce_challenge_method = "S256";
-                #redirect_uris = "https://cloud.${configVars.domain2}/apps/user_oidc/code";
+                #redirect_uris = "https://cloud.${configVars.domain2}/apps/oidc_login/oidc";
                 #scopes = [
                 #  "openid"
                 #  "profile"
@@ -162,29 +147,9 @@ in
                 #  "groups"
                 #];
                 #userinfo_signed_response_alg = "none";
-                #token_endpoint_auth_method = "client_secret_post";
+                #token_endpoint_auth_method = "client_secret_basic";
                 #consent_mode = "implicit"; # disable consent screen flow
                 #}
-                
-                {
-                client_name = "Bond Private Nextcloud";
-                client_id = "7Au52dmVWwvAGdqvrsLatNjedPoSIfQw~UWRj.M24VWhhlDp8v_tXUtePMvCz9pn~Vt1EVBc";
-                client_secret = "$pbkdf2-sha512$310000$PLcD7uvNnhfoie42zPQ71w$oZhEWIOtCXk/fOG4ABoRqDCTZmsZoxWKH0ERqz19aHkS7igOULjOQpvSHFxth0cuU3nehFYEYaF3Yo.z7vg./A";
-                public = false;
-                authorization_policy = "one_factor";
-                require_pkce = true;
-                pkce_challenge_method = "S256";
-                redirect_uris = "https://cloud.${configVars.domain2}/apps/oidc_login/oidc";
-                scopes = [
-                  "openid"
-                  "profile"
-                  "email"
-                  "groups"
-                ];
-                userinfo_signed_response_alg = "none";
-                token_endpoint_auth_method = "client_secret_basic";
-                consent_mode = "implicit"; # disable consent screen flow
-                }
                 
               ];
             };
