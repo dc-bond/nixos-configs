@@ -30,13 +30,13 @@ in
     image = "docker.io/${app}/${app}:2024.07.0"; # https://hub.docker.com/r/pihole/pihole/tags
     autoStart = true;
     environmentFiles = [ config.sops.templates."${app}-env".path ];
-    #environment = {
-    #  #PIHOLE_DNS_ = unbound#5333
-    #};
+    environment = {
+      PIHOLE_DNS_ = "127.0.0.1#5323";
+    };
     log-driver = "journald";
     ports = [ # docker daemon automatically opens firewall ports
-      "5399:53/tcp"
-      "5399:53/udp"
+      "53:53/tcp"
+      "53:53/udp"
     ];
     volumes = [ "${app}:/etc" ];
     extraOptions = [

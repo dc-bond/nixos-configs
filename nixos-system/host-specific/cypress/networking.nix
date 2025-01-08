@@ -8,7 +8,7 @@
 {
 
   services.resolved = {
-    enable = true; # use systemd-resolved for DNS functionality
+    enable = false; # use systemd-resolved for DNS functionality
     llmnr = "false"; # disable link-local multicast name resolution
   };
 
