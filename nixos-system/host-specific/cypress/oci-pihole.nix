@@ -34,7 +34,7 @@ in
       autoStart = true;
       environmentFiles = [ config.sops.templates."${app}-env".path ];
       environment = {
-        PIHOLE_DNS_ = "192.168.1.89#5323";
+        PIHOLE_DNS_ = "${configVars.unboundIp}#5323";
       };
       log-driver = "journald";
       ports = [ # docker daemon automatically opens firewall ports
@@ -60,7 +60,7 @@ in
     };
 
     "${app2}" = {
-      image = "docker.io/mvance/${app2}:1.22.0"; # https://github.com/MatthewVance/unbound-docker
+      image = "docker.io/mvance/${app2}:1.15.0"; # https://github.com/MatthewVance/unbound-docker
       autoStart = true;
       log-driver = "journald";
       volumes = [ "${app2}:/opt/unbound/etc/unbound" ];
