@@ -26,6 +26,7 @@
 
   piholeSubnet = "172.21.1.0/25";
   piholeIp = "172.21.1.2";
+  unboundIp = "172.21.1.3";
 
   jellyseerrSubnet = "172.21.2.0/25";
   jellyseerrIp = "172.21.2.2";

@@ -34,7 +34,7 @@
         edns-buffer-size = 1232;
         prefetch = "yes";
         so-rcvbuf = "1m";
-        log-queries = "no";
+        log-queries = "yes";
         hide-version = "yes";
         hide-identity = "yes";
         qname-minimisation = "yes";
@@ -53,25 +53,17 @@
         delay-close = 10000;
         cache-min-ttl = 60;
         cache-max-ttl = 86400;
-        do-daemonize "no";
         identity = "DNS";
         #chroot = "/opt/unbound/etc/unbound";
         #directory = "/opt/unbound/etc/unbound";
-        auto-trust-anchor-file = "var/lib/unbound/root.key";
         #tls-cert-bundle = "/etc/ssl/certs/ca-certificates.crt";
-        private-address = "10.0.0.0/8";
-        private-address = "172.16.0.0/12";
-        private-address = "192.168.0.0/16";
-        private-address = "169.254.0.0/16"; 
-        #private-address = "fd00::/8";
-        #private-address = "fe80::/10";
-        #private-address = "::ffff:0:0/96";
-        #access-control = "127.0.0.1/32 allow
-        #access-control = "192.168.0.0/16 allow
-        #access-control = "172.16.0.0/12 allow
+        private-address = [
+          "10.0.0.0/8"
+          "172.16.0.0/12"
+          "192.168.0.0/16"
+          "169.254.0.0/16"
+        ];
         #access-control: 172.21.2.0/25 allow # only allow queries from docker backend network (pihole)
-        #access-control: 172.21.2.44/32 allow
-        #access-control: 10.0.0.0/8 allow
       };
     };
   };
