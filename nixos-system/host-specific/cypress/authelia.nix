@@ -32,16 +32,16 @@ in
       group = config.users.users."${app}-${configVars.domain2Short}".group;
       mode = "0440";
     };
-    autheliaOidcHmacSecret = {
-      owner = config.users.users."${app}-${configVars.domain2Short}".name;
-      group = config.users.users."${app}-${configVars.domain2Short}".group;
-      mode = "0440";
-    };
-    autheliaOidcJwksKey = {
-      owner = config.users.users."${app}-${configVars.domain2Short}".name;
-      group = config.users.users."${app}-${configVars.domain2Short}".group;
-      mode = "0440";
-    };
+    #autheliaOidcHmacSecret = {
+    #  owner = config.users.users."${app}-${configVars.domain2Short}".name;
+    #  group = config.users.users."${app}-${configVars.domain2Short}".group;
+    #  mode = "0440";
+    #};
+    #autheliaOidcJwksKey = {
+    #  owner = config.users.users."${app}-${configVars.domain2Short}".name;
+    #  group = config.users.users."${app}-${configVars.domain2Short}".group;
+    #  mode = "0440";
+    #};
   };
 
   services = {
@@ -168,8 +168,8 @@ in
           jwtSecretFile = "${config.sops.secrets.autheliaJwtSecret.path}";
           storageEncryptionKeyFile = "${config.sops.secrets.autheliaStorageEncryptionKey.path}";
           sessionSecretFile = "${config.sops.secrets.autheliaSessionSecret.path}";
-          oidcHmacSecretFile = "${config.sops.secrets.autheliaOidcHmacSecret.path}";
-          oidcIssuerPrivateKeyFile = "${config.sops.secrets.autheliaOidcJwksKey.path}";
+          #oidcHmacSecretFile = "${config.sops.secrets.autheliaOidcHmacSecret.path}";
+          #oidcIssuerPrivateKeyFile = "${config.sops.secrets.autheliaOidcJwksKey.path}";
         };
       };
     }; 

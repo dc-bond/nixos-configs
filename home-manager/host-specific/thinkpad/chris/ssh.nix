@@ -11,7 +11,7 @@
     enable = true;
     matchBlocks = {
       "opticon" = {
-        hostname = "${configVars.domain2}";
+        hostname = "vpn.${configVars.domain2}";
         user = "xixor";
         port = 39800;
       };
