@@ -31,7 +31,7 @@
       "nixos-system/host-specific/thinkpad/sops.nix"
       "nixos-system/host-specific/thinkpad/bluetooth.nix"
       "nixos-system/host-specific/thinkpad/networking.nix"
-      "nixos-system/host-specific/thinkpad/tailscale.nix"
+      #"nixos-system/host-specific/thinkpad/tailscale.nix"
       "nixos-system/host-specific/thinkpad/borg.nix"
     ])
   ];
@@ -72,7 +72,7 @@
     i2c-tools # hardware interface tools required by ddcutil
     libreoffice-still # office suite
     #element-desktop-wayland # matrix chat app
-    drawio # diagram drawing app
+    #drawio # diagram drawing app
   ];
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality

@@ -79,14 +79,14 @@
         matchConfig.Name = "enp0s31f6";
         networkConfig.DHCP = "ipv4";
         dhcpV4Config.RouteMetric = 300;
-        dhcpV6Config.RouteMetric = 300;
+        dhcpV6Config.RouteMetric = 400;
         linkConfig.RequiredForOnline = "no";
       };    
       "20-ethernet-dock" = {
         matchConfig.Name = "enp0s20f0u2u1u2";
         networkConfig.DHCP = "ipv4";
         dhcpV4Config.RouteMetric = 300;
-        dhcpV6Config.RouteMetric = 300;
+        dhcpV6Config.RouteMetric = 400;
         linkConfig.RequiredForOnline = "no";
       };    
       "30-wifi" = {
@@ -95,7 +95,7 @@
           DHCP = "ipv4";
           IgnoreCarrierLoss = "3s"; # avoid re-configuring interface when wireless roaming between APs
         };
-        dhcpV4Config.RouteMetric = 600;
+        dhcpV4Config.RouteMetric = 500;
         dhcpV6Config.RouteMetric = 600;
         linkConfig.RequiredForOnline = "no";
       };
