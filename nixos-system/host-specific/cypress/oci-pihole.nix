@@ -22,7 +22,7 @@ in
         TZ=America/New_York
         WEBPASSWORD=${config.sops.placeholder.piholeWebPasswd}
         FTLCONF_LOCAL_IPV4=${configVars.cypressLanIp}
-        VIRTUAL_HOST=${app}-test.${configVars.domain2}
+        VIRTUAL_HOST=${app}.${configVars.domain2}
       '';
     };
   };
@@ -51,7 +51,7 @@ in
       labels = {
         "traefik.enable" = "true";
         "traefik.http.routers.${app}.entrypoints" = "websecure";
-        "traefik.http.routers.${app}.rule" = "Host(`${app}-test.${configVars.domain2}`)";
+        "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
         "traefik.http.routers.${app}.tls" = "true";
         "traefik.http.routers.${app}.tls.options" = "tls-13@file";
         "traefik.http.routers.${app}.middlewares" = "secure-headers@file";

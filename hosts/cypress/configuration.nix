@@ -30,7 +30,6 @@
       "nixos-system/host-specific/cypress/borg.nix"
       "nixos-system/host-specific/cypress/traefik.nix"
       "nixos-system/host-specific/cypress/oci-zwavejs.nix"
-      #"nixos-system/host-specific/cypress/unbound.nix"
       "nixos-system/host-specific/cypress/oci-pihole.nix"
       "nixos-system/host-specific/cypress/lldap.nix"
       "nixos-system/host-specific/cypress/authelia.nix"

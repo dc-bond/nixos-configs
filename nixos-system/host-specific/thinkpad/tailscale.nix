@@ -23,14 +23,11 @@
       useRoutingFeatures = "client";
       extraDaemonFlags = ["--no-logs-no-support"];
       extraUpFlags = [
-        "-ssh"
-        #"--accept-routes" # autmatically discover and accept subnet routes advertised by other nodes
-        #"--exit-node=${configVars.opticonTailscaleIp}"
+        "-ssh" # enable tailscale-ssh
+        "--accept-routes" # autmatically discover and accept subnet routes advertised by other nodes
+        "--exit-node=${configVars.cypressTailscaleIp}" # use exit node
       ];
     };
   };
-
-  #systemd.services.tailscaled.restartIfChanged = true;
-  #systemd.services.tailscaled.serviceConfig.Environment = lib.mkAfter ["TS_NO_LOGS_NO_SUPPORT=true"];
 
 }

@@ -35,11 +35,11 @@
         user = "${configVars.userName}";
         port = 28766;
       };
-      "aspen-tailscale" = {
-        hostname = "${configVars.aspenTailscaleIp}";
-        user = "${configVars.userName}";
-        port = 22;
-      };
+      #"aspen-tailscale" = {
+      #  hostname = "${configVars.aspenTailscaleIp}";
+      #  user = "${configVars.userName}";
+      #  port = 22;
+      #};
     };
   };
   

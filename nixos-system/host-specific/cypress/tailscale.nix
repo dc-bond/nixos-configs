@@ -20,17 +20,14 @@
     tailscale = {
       enable = true;
       authKeyFile = "${config.sops.secrets.tailscaleAuthKey.path}";
-      useRoutingFeatures = "client";
+      useRoutingFeatures = "server";
       extraDaemonFlags = ["--no-logs-no-support"];
       extraUpFlags = [
-        "-ssh"
-        #"--accept-routes" # autmatically discover and accept subnet routes advertised by other nodes
-        #"--exit-node=${configVars.opticonTailscaleIp}"
+        "-ssh" # enable tailscale-ssh
+        "--advertise-exit-node" # advertise as exit node
+        "--advertise-routes=192.168.1.0/24,192.168.4.0/27" # advertise home and iot vlan subnets
       ];
     };
   };
-
-  #systemd.services.tailscaled.restartIfChanged = true;
-  #systemd.services.tailscaled.serviceConfig.Environment = lib.mkAfter ["TS_NO_LOGS_NO_SUPPORT=true"];
 
 }

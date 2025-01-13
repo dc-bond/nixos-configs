@@ -10,13 +10,13 @@
   userEmail = "chris@dcbond.com";
 
   aspenLanIp = "192.168.1.189";
-  aspenTailscaleIp = "100.111.119.3";
+  #aspenTailscaleIp = "";
   thinkpadLanIp = "192.168.1.62";
-  thinkpadTailscaleIp = "100.79.41.50";
+  thinkpadTailscaleIp = "100.84.116.103";
   opticonLanIp = "192.168.1.2";
   opticonTailscaleIp = "100.92.225.78";
   cypressLanIp = "192.168.1.89";
-  cypressTailscaleIp = "100.68.16.63";
+  cypressTailscaleIp = "100.99.203.105";
 
   domain1 = "dcbond.com";
   domain2 = "opticon.dev";
@@ -43,14 +43,18 @@
 
 
 
-
-
-
-
-
-
   
   #userEmail = inputs.nix-secrets.userEmail;
-  #persistFolder = "/persist";
+
+
+
+  # rm rf /var/lib/tailscale on cypress
+  # nix garbage collect on cypress
+  # rebuild cypress
+  # authroize exit node
+  # copy ip address here
+  # rebuild thinkpad
+  # copy ip address here
+  # verify
 
 }
