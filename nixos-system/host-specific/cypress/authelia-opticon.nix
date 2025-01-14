@@ -13,24 +13,24 @@ in
 
   sops.secrets = {
     autheliaLdapUserPasswd = {
-      owner = config.users.users."${app}-${configVars.domain2Short}".name;
-      group = config.users.users."${app}-${configVars.domain2Short}".group;
-      mode = "0440";
+      #owner = config.users.users."${app}-${configVars.domain2Short}".name;
+      #group = config.users.users."${app}-${configVars.domain2Short}".group;
+      #mode = "0440";
     };
     autheliaJwtSecret = {
-      owner = config.users.users."${app}-${configVars.domain2Short}".name;
-      group = config.users.users."${app}-${configVars.domain2Short}".group;
-      mode = "0440";
+      #owner = config.users.users."${app}-${configVars.domain2Short}".name;
+      #group = config.users.users."${app}-${configVars.domain2Short}".group;
+      #mode = "0440";
     };
     autheliaStorageEncryptionKey = {
-      owner = config.users.users."${app}-${configVars.domain2Short}".name;
-      group = config.users.users."${app}-${configVars.domain2Short}".group;
-      mode = "0440";
+      #owner = config.users.users."${app}-${configVars.domain2Short}".name;
+      #group = config.users.users."${app}-${configVars.domain2Short}".group;
+      #mode = "0440";
     };
     autheliaSessionSecret = {
-      owner = config.users.users."${app}-${configVars.domain2Short}".name;
-      group = config.users.users."${app}-${configVars.domain2Short}".group;
-      mode = "0440";
+      #owner = config.users.users."${app}-${configVars.domain2Short}".name;
+      #group = config.users.users."${app}-${configVars.domain2Short}".group;
+      #mode = "0440";
     };
     #autheliaOidcHmacSecret = {
     #  owner = config.users.users."${app}-${configVars.domain2Short}".name;
@@ -58,7 +58,7 @@ in
             file_path = "/var/lib/${app}-${configVars.domain2Short}/authelia.log";
             keep_stdout = true;
           };
-          server.address = "tcp://:9091";
+          server.address = "tcp://:9092";
           session = {
             cookies = [
               {
@@ -230,7 +230,7 @@ in
           passHostHeader = true;
           servers = [
           {
-            url = "http://127.0.0.1:9091";
+            url = "http://127.0.0.1:9092";
           }
           ];
         };

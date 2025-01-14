@@ -19,6 +19,7 @@
   cypressTailscaleIp = "100.99.203.105";
 
   domain1 = "dcbond.com";
+  domain1Short = "dcbond";
   domain2 = "opticon.dev";
   domain2Short = "opticon";
   domain3 = "professorbond.com";
