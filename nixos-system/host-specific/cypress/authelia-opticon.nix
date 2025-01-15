@@ -12,32 +12,32 @@ in
 {
 
   sops.secrets = {
-    autheliaLdapUserPasswd = {
-      #owner = config.users.users."${app}-${configVars.domain2Short}".name;
-      #group = config.users.users."${app}-${configVars.domain2Short}".group;
-      #mode = "0440";
+    autheliaLdapUserPasswd2 = {
+      owner = config.users.users."${app}-${configVars.domain2Short}".name;
+      group = config.users.users."${app}-${configVars.domain2Short}".group;
+      mode = "0440";
     };
-    autheliaJwtSecret = {
-      #owner = config.users.users."${app}-${configVars.domain2Short}".name;
-      #group = config.users.users."${app}-${configVars.domain2Short}".group;
-      #mode = "0440";
+    autheliaJwtSecret2 = {
+      owner = config.users.users."${app}-${configVars.domain2Short}".name;
+      group = config.users.users."${app}-${configVars.domain2Short}".group;
+      mode = "0440";
     };
-    autheliaStorageEncryptionKey = {
-      #owner = config.users.users."${app}-${configVars.domain2Short}".name;
-      #group = config.users.users."${app}-${configVars.domain2Short}".group;
-      #mode = "0440";
+    autheliaStorageEncryptionKey2 = {
+      owner = config.users.users."${app}-${configVars.domain2Short}".name;
+      group = config.users.users."${app}-${configVars.domain2Short}".group;
+      mode = "0440";
     };
-    autheliaSessionSecret = {
-      #owner = config.users.users."${app}-${configVars.domain2Short}".name;
-      #group = config.users.users."${app}-${configVars.domain2Short}".group;
-      #mode = "0440";
+    autheliaSessionSecret2 = {
+      owner = config.users.users."${app}-${configVars.domain2Short}".name;
+      group = config.users.users."${app}-${configVars.domain2Short}".group;
+      mode = "0440";
     };
-    #autheliaOidcHmacSecret = {
+    #autheliaOidcHmacSecret2 = {
     #  owner = config.users.users."${app}-${configVars.domain2Short}".name;
     #  group = config.users.users."${app}-${configVars.domain2Short}".group;
     #  mode = "0440";
     #};
-    #autheliaOidcJwksKey = {
+    #autheliaOidcJwksKey2 = {
     #  owner = config.users.users."${app}-${configVars.domain2Short}".name;
     #  group = config.users.users."${app}-${configVars.domain2Short}".group;
     #  mode = "0440";
@@ -162,14 +162,14 @@ in
           };
         };
         environmentVariables = {
-          AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE = "${config.sops.secrets.autheliaLdapUserPasswd.path}";
+          AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE = "${config.sops.secrets.autheliaLdapUserPasswd2.path}";
         };
         secrets = {
-          jwtSecretFile = "${config.sops.secrets.autheliaJwtSecret.path}";
-          storageEncryptionKeyFile = "${config.sops.secrets.autheliaStorageEncryptionKey.path}";
-          sessionSecretFile = "${config.sops.secrets.autheliaSessionSecret.path}";
-          #oidcHmacSecretFile = "${config.sops.secrets.autheliaOidcHmacSecret.path}";
-          #oidcIssuerPrivateKeyFile = "${config.sops.secrets.autheliaOidcJwksKey.path}";
+          jwtSecretFile = "${config.sops.secrets.autheliaJwtSecret2.path}";
+          storageEncryptionKeyFile = "${config.sops.secrets.autheliaStorageEncryptionKey2.path}";
+          sessionSecretFile = "${config.sops.secrets.autheliaSessionSecret2.path}";
+          #oidcHmacSecretFile = "${config.sops.secrets.autheliaOidcHmacSecret2.path}";
+          #oidcIssuerPrivateKeyFile = "${config.sops.secrets.autheliaOidcJwksKey2.path}";
         };
       };
     }; 
@@ -199,10 +199,10 @@ in
       
     # this creates traefik router, middleware, and service called "authelia" that other apps can point to in their traefik configs, need to determine how this interplays with separate instances of authelia?
     traefik.dynamicConfigOptions.http = {
-      routers.${app} = {
+      routers.authelia-opticon = {
         entrypoints = ["websecure"];
         rule = "Host(`identity.${configVars.domain2}`)";
-        service = "${app}";
+        service = "authelia-opticon";
         middlewares = [
           "secure-headers"
         ];
@@ -211,21 +211,19 @@ in
           options = "tls-13@file";
         };
       };
-      middlewares = {
-        ${app} = {
-          forwardAuth = {
-            address = "http://127.0.0.1:9091/api/verify?rd=https://identity.${configVars.domain2}";
-            trustForwardHeader = true;
-            authResponseHeaders = [
-              "Remote-User"
-              "Remote-Groups"
-              "Remote-Name"
-              "Remote-Email"
-            ];
-          };
+      middlewares.authelia-opticon = {
+        forwardAuth = {
+          address = "http://127.0.0.1:9092/api/verify?rd=https://identity.${configVars.domain2}";
+          trustForwardHeader = true;
+          authResponseHeaders = [
+            "Remote-User"
+            "Remote-Groups"
+            "Remote-Name"
+            "Remote-Email"
+          ];
         };
       };
-      services.${app} = {
+      services.authelia-opticon = {
         loadBalancer = {
           passHostHeader = true;
           servers = [

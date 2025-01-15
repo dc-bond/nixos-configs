@@ -32,7 +32,7 @@
       "nixos-system/host-specific/cypress/oci-zwavejs.nix"
       "nixos-system/host-specific/cypress/oci-pihole.nix"
       "nixos-system/host-specific/cypress/lldap.nix"
-      "nixos-system/host-specific/cypress/authelia-opticon.nix"
+      "nixos-system/host-specific/cypress/authelia-dcbond.nix"
       "nixos-system/host-specific/cypress/home-assistant.nix"
       "nixos-system/host-specific/cypress/nextcloud.nix"
     ])

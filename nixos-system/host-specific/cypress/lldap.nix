@@ -33,8 +33,8 @@ in
         ldap_user_email = "${configVars.userEmail}";
         ldap_user_dn = "admin";
         ldap_port = 3890;
-        ldap_base_dn = "dc=${configVars.domain2Short},dc=dev";
-        http_url = "https://lldap.${configVars.domain2}";
+        ldap_base_dn = "dc=${configVars.domain1Short},dc=com";
+        http_url = "https://lldap.${configVars.domain1}";
         http_port = 17170;
         http_host = "127.0.0.1";
         database_url = "postgres:///${app}";
@@ -60,10 +60,10 @@ in
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];
-        rule = "Host(`${app}.${configVars.domain2}`)";
+        rule = "Host(`${app}.${configVars.domain1}`)";
         service = "${app}";
         middlewares = [
-          "authelia"
+          #"authelia"
           "secure-headers"
         ];
         tls = {

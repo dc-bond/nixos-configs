@@ -123,7 +123,7 @@
             rule = "Host(`traefik.${configVars.domain2}`)";
             service = "api@internal";
             middlewares = [
-              "authelia"
+              #"authelia"
               "secure-headers"
             ];
             tls = {

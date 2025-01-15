@@ -162,14 +162,14 @@ in
           };
         };
         environmentVariables = {
-          AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE = "${config.sops.secrets.autheliaLdapUserPasswd.path}";
+          AUTHELIA_AUTHENTICATION_BACKEND_LDAP_PASSWORD_FILE = "${config.sops.secrets.autheliaLdapUserPasswd1.path}";
         };
         secrets = {
-          jwtSecretFile1 = "${config.sops.secrets.autheliaJwtSecret.path}";
-          storageEncryptionKeyFile1 = "${config.sops.secrets.autheliaStorageEncryptionKey.path}";
-          sessionSecretFile1 = "${config.sops.secrets.autheliaSessionSecret.path}";
-          #oidcHmacSecretFile1 = "${config.sops.secrets.autheliaOidcHmacSecret.path}";
-          #oidcIssuerPrivateKeyFile1 = "${config.sops.secrets.autheliaOidcJwksKey.path}";
+          jwtSecretFile = "${config.sops.secrets.autheliaJwtSecret1.path}";
+          storageEncryptionKeyFile = "${config.sops.secrets.autheliaStorageEncryptionKey1.path}";
+          sessionSecretFile = "${config.sops.secrets.autheliaSessionSecret1.path}";
+          #oidcHmacSecretFile = "${config.sops.secrets.autheliaOidcHmacSecret1.path}";
+          #oidcIssuerPrivateKeyFile = "${config.sops.secrets.autheliaOidcJwksKey1.path}";
         };
       };
     }; 
@@ -199,10 +199,10 @@ in
       
     # this creates traefik router, middleware, and service called "authelia" that other apps can point to in their traefik configs, need to determine how this interplays with separate instances of authelia?
     traefik.dynamicConfigOptions.http = {
-      routers.${app} = {
+      routers.authelia-dcbond = {
         entrypoints = ["websecure"];
         rule = "Host(`identity.${configVars.domain1}`)";
-        service = "${app}";
+        service = "authelia-dcbond";
         middlewares = [
           "secure-headers"
         ];
@@ -211,21 +211,19 @@ in
           options = "tls-13@file";
         };
       };
-      middlewares = {
-        ${app} = {
-          forwardAuth = {
-            address = "http://127.0.0.1:9091/api/verify?rd=https://identity.${configVars.domain1}";
-            trustForwardHeader = true;
-            authResponseHeaders = [
-              "Remote-User"
-              "Remote-Groups"
-              "Remote-Name"
-              "Remote-Email"
-            ];
-          };
+      middlewares.authelia-dcbond = {
+        forwardAuth = {
+          address = "http://127.0.0.1:9091/api/verify?rd=https://identity.${configVars.domain1}";
+          trustForwardHeader = true;
+          authResponseHeaders = [
+            "Remote-User"
+            "Remote-Groups"
+            "Remote-Name"
+            "Remote-Email"
+          ];
         };
       };
-      services.${app} = {
+      services.authelia-dcbond = {
         loadBalancer = {
           passHostHeader = true;
           servers = [
