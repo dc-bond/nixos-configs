@@ -22,9 +22,6 @@
       sshKeyPaths = [];
       keyFile = "/etc/age/thinkpad-age.key"; # sops/age will use private age key in this location to decrypt secrets.yaml
     };
-    secrets = { # output to /run/secrets/...
-      test = {};
-    };
   };
 
 }

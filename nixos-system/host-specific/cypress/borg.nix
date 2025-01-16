@@ -12,7 +12,6 @@
     borgCryptPasswd = {};
   };
 
-
   services.borgbackup = {
     jobs = {
       cypress = {
