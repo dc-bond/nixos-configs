@@ -32,13 +32,14 @@
         };
         environment = { 
           BORG_RSH = "ssh -p 28764 -o StrictHostKeyChecking=no -i /root/.ssh/borg-ed25519-cypress"; # requires manual creation and transfer of private/public keys (see script)
+          BORG_RELOCATED_REPO_ACCESS_IS_OK = "yes"; # supress warning about repo location being moved since last backup (e.g. changing directory location or IP address)
         };
         compression = "auto,zstd,8";
         paths = [
           "/var/lib/traefik"
           "/var/lib/private/lldap"
-          #"/var/lib/authelia-opticon"
-          #"/var/lib/redis-authelia-opticon"
+          "/var/lib/authelia-dcbond"
+          "/var/lib/redis-authelia-dcbond"
           "/var/lib/nextcloud"
           "/var/lib/redis-nextcloud"
           "/var/lib/hass"
