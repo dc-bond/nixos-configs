@@ -13,7 +13,6 @@ in
 
   pkgs.writeShellScriptBin "backup-recovery-${app}" 
   ''
-
     set -e
   
     cd ${borgRestoreDir}
