@@ -8,7 +8,7 @@
 }: 
 
 let
-  rcloneRun = pkgs.writeShellScriptBin "rcloneRun" ''
+  backblazeBackup = pkgs.writeShellScriptBin "backblazeBackup" ''
     #!/bin/bash
     echo "Running my custom script at $(date)" >> /var/log/my-custom-script.log
     sleep 30
@@ -18,23 +18,27 @@ in
 
 {
 
-  environment.systemPackages = with pkgs; [ rcloneRun ];
+  environment.systemPackages = with pkgs; [ backblazeBackup ];
 
   sops = {
     secrets = {
-      rcloneSecret = {};
+      backblazeAccount = {};
+      backblazeKey = {};
     };
     templates = {
       "rclone.conf".content = ''
-        LLDAP_JWT_SECRET=${config.sops.placeholder.lldapJwtSecret}
+        [backblaze-b2]
+        type = b2
+        account = ${config.sops.placeholder.backblazeAccount}
+        key = ${config.sops.placeholder.backblazeKey}
+        hard_delete = true
       '';
     };
   };
 
-  systemd.services."rcloneBackup".serviceConfig = (import ./lib/pg-db-archive.nix) {
+  systemd.services."backblazeBackup".serviceConfig = (import ./lib/pg-db-archive.nix) {
     config = config;
     pkgs = pkgs;
-    fileEncKey = "/run/secrets/keys/db2";
     fileRcloneConf = "/run/secrets/rcloneConf";
   };
   
