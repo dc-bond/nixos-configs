@@ -12,10 +12,14 @@ in
 
 {
 
-  services.unifi = {
-    enable = true;
-    openFirewall = true;
-    mongodbPackage = pkgs.mongodb-7_0;
+  services = {
+
+    unifi = {
+      enable = true;
+      unifiPackage = pkgs.unifi8;
+      openFirewall = true;
+      mongodbPackage = pkgs.mongodb-7_0;
+    };
   
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
