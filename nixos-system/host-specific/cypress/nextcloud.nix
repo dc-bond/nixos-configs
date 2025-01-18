@@ -36,12 +36,12 @@ in
       recommendedOptimisation = true;
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
-      virtualHosts."cloud.${configVars.domain1}".listen = [{addr = "127.0.0.1"; port = 4411;}];
+      virtualHosts."nextcloud.${configVars.domain1}".listen = [{addr = "127.0.0.1"; port = 4411;}];
     };
 
     ${app} = {
       enable = true;
-      hostName = "cloud.${configVars.domain1}";
+      hostName = "nextcloud.${configVars.domain1}";
       package = pkgs.nextcloud30; # manually increment with upgrades
       database.createLocally = false; # enables postgres service if true, manual setup below
       configureRedis = true; # creates redis instance
@@ -147,7 +147,7 @@ in
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];
-        rule = "Host(`cloud.${configVars.domain1}`)";
+        rule = "Host(`nextcloud.${configVars.domain1}`)";
         service = "${app}";
         middlewares = [
           "secure-headers"
