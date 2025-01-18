@@ -14,6 +14,11 @@
       default = "/var/lib/borg-backups/cypress";
       description = "path to the cypress borg backup repository";
     };
+    borgCypressCloudRestoreRepo = lib.mkOption {
+      type = lib.types.path;
+      default = "/var/lib/borg-backups/cypress-cloud-restore";
+      description = "path to the cypress borg backup repository after it has been restored from backblaze";
+    };
     borgRestoreDir = lib.mkOption {
       type = lib.types.path;
       default = "/var/lib/borg-backups";

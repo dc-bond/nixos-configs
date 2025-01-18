@@ -6,27 +6,25 @@
 let
   host = "cypress";
   app = "hass";
-  archive = "cypress-2025.01.16-T06:59:25";
-  borgRepo = config.backups.borgCypressRepo;
-  borgRestoreDir = config.backups.borgRestoreDir;
+  archive = "cypress-2025.01.18-T02:30:04";
 in
 
   pkgs.writeShellScriptBin "backup-recovery-${app}" 
   ''
     set -e
   
-    cd ${borgRestoreDir}
-    sudo borg extract --verbose --list ${borgRepo}::${archive} var/lib/${app} --strip-components 2
-    sudo chown -R chris:users ${borgRestoreDir}/${app}
+    cd ${config.backups.borgRestoreDir}
+    env BORG_RELOCATED_REPO_ACCESS_IS_OK=yes sudo borg extract --verbose --list ${config.backups.borgCypressCloudRestoreRepo}::${archive} var/lib/${app} --strip-components 2
+    sudo chown -R chris:users ${config.backups.borgRestoreDir}/${app}
     ssh ${host}-tailscale 'sudo systemctl stop home-assistant.service'
     ssh ${host}-tailscale 'sudo rm -rf /var/lib/${app}'
-    rsync --progress -avzh ${borgRestoreDir}/${app} ${host}-tailscale:/tmp  
+    rsync --progress -avzh ${config.backups.borgRestoreDir}/${app} ${host}-tailscale:/tmp  
     ssh ${host}-tailscale 'sudo mv /tmp/${app} /var/lib'
     ssh ${host}-tailscale 'sudo chown -R ${app}:${app} /var/lib/${app}'
-    sudo rm -rf ${borgRestoreDir}/${app}
+    sudo rm -rf ${config.backups.borgRestoreDir}/${app}
   
-    sudo borg extract --verbose --list ${borgRepo}::${archive} var/backup/postgresql/${app}.sql.gz --strip-components 3
-    sudo mv ${borgRestoreDir}/${app}.sql.gz /home/chris
+    env BORG_RELOCATED_REPO_ACCESS_IS_OK=yes sudo borg extract --verbose --list ${config.backups.borgCypressCloudRestoreRepo}::${archive} var/backup/postgresql/${app}.sql.gz --strip-components 3
+    sudo mv ${config.backups.borgRestoreDir}/${app}.sql.gz /home/chris
     sudo chown chris:users /home/chris/${app}.sql.gz
     rsync --progress -avzh /home/chris/${app}.sql.gz ${host}-tailscale:/tmp
     ssh ${host}-tailscale 'sudo gunzip -c /tmp/${app}.sql.gz > /tmp/${app}.sql'
