@@ -16,7 +16,7 @@ pkgs.writeShellScriptBin "setup-borg-sshkeys"
   ssh ${host}-tailscale "sudo chown root:root /root/.ssh/borg-ed25519-${host}"
   echo ""
   echo ""
-  echo "REMEMBER TO COPY PUBKEY INTO authorizedKeys SECTION IN BORG.NIX MODULE FOR REPO HOST THEN REBUILD"
+  echo "REMEMBER TO COPY PUBKEY INTO authorizedKeys SECTION IN BORG-SERVER.NIX MODULE FOR REPO HOST THEN REBUILD"
   echo ""
   echo ""
   cat /home/chris/borg-ed25519-${host}.pub
