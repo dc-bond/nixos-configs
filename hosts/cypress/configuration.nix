@@ -35,6 +35,7 @@
       "nixos-system/host-specific/cypress/authelia-dcbond.nix"
       "nixos-system/host-specific/cypress/home-assistant.nix"
       "nixos-system/host-specific/cypress/nextcloud.nix"
+      "nixos-system/host-specific/cypress/unifi-controller.nix"
     ])
   ];
 
