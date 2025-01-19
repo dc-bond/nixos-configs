@@ -1,22 +1,36 @@
 { 
   pkgs, 
-  config 
+  config,
+  ...
 }:
 
 let
-  listCypressArchivesScript = pkgs.writeShellScriptBin "cypressArchives" ''
+  borgCypressCryptPasswdFile = "/run/secrets/borgCypressCryptPasswd";
+  borgCypressArchivesListScript = pkgs.writeShellScriptBin "borgCypressArchivesList" ''
     #!/bin/bash
-    export BORG_PASSPHRASE=$(cat ${sops.secrets.borgCryptPasswd.path})
-    sudo borg list ${config.backups.borgCypressRepo} 
+    export BORG_PASSPHRASE=$(cat ${borgCypressCryptPasswdFile})
+    ${pkgs.borgbackup}/bin/borg list ${config.backups.borgCypressRepo} 
+    '';
+  borgCypressArchivesInfoScript = pkgs.writeShellScriptBin "borgCypressArchivesInfo" ''
+    #!/bin/bash
+    export BORG_PASSPHRASE=$(cat ${borgCypressCryptPasswdFile})
+    ${pkgs.borgbackup}/bin/borg info ${config.backups.borgCypressRepo} 
     '';
 in
 
 {
 
-  sops.secrets.borgCryptPasswd = {};
+  environment.variables = {
+    BORG_PASSPHRASE = builtins.readFile "/run/secrets/borgCypressCryptPasswd";
+  };
 
-  environment.systemPackages = with pkgs; [ 
-    listCypressArchivesScript
-  ];
+  sops.secrets.borgCypressCryptPasswd = {
+    path = "/run/secrets/borgCypressCryptPasswd";
+  };
+
+  #environment.systemPackages = with pkgs; [ 
+  #  borgCypressArchivesListScript 
+  #  borgCypressArchivesInfoScript 
+  #];
 
 }

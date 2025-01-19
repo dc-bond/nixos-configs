@@ -34,13 +34,13 @@
       "nixos-system/host-specific/thinkpad/tailscale.nix"
       "nixos-system/host-specific/thinkpad/borg-server.nix"
       "nixos-system/host-specific/thinkpad/backblaze.nix"
-      "nixos-system/host-specific/thinkpad/list-cypress-archives.nix"
+      "nixos-system/host-specific/thinkpad/backup-recovery-hass-experiment.nix"
     ])
   ];
 
   environment.systemPackages = with pkgs; [
-    (import (configLib.relativeToRoot "scripts/borglistcypress.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/backup-recovery-hass.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/backup-recovery-hass-experiment.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/backup-recovery-zwavejs.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/backup-recovery-lldap.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/backup-recovery-traefik.nix") { inherit pkgs config; })
