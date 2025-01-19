@@ -34,6 +34,7 @@
       "nixos-system/host-specific/thinkpad/tailscale.nix"
       "nixos-system/host-specific/thinkpad/borg-server.nix"
       "nixos-system/host-specific/thinkpad/backblaze.nix"
+      "nixos-system/host-specific/thinkpad/list-cypress-archives.nix"
     ])
   ];
 
