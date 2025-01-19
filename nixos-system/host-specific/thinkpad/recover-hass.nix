@@ -1,6 +1,7 @@
 { 
   pkgs, 
-  config 
+  config,
+  ...
 }:
 
 let
@@ -8,9 +9,9 @@ let
   app = "hass";
   archive = "cypress-2025.01.19-T02:30:01";
   borgCypressCryptPasswdFile = "/run/secrets/borgCypressCryptPasswd";
-  scriptRecoverCypress-${app} = pkgs.writeShellScriptBin "recoverCypress-${app}" ''
+  recoverCypressHassScript = pkgs.writeShellScriptBin "recoverCypressHass" ''
     #!/bin/bash
-    
+
     set -e
     export BORG_PASSPHRASE=$(cat ${borgCypressCryptPasswdFile})
 
@@ -52,7 +53,7 @@ in
   sops.secrets.borgCypressCryptPasswd = {};
 
   environment.systemPackages = with pkgs; [ 
-    scriptRecoverCypress-${app}
+    recoverCypressHassScript
   ];
 
 }
