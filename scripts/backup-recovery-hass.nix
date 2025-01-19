@@ -6,7 +6,7 @@
 let
   host = "cypress";
   app = "hass";
-  archive = "cypress-2025.01.16-T06:59:25";
+  archive = "cypress-2025.01.19-T02:30:01";
 in
 
   pkgs.writeShellScriptBin "backup-recovery-${app}" 

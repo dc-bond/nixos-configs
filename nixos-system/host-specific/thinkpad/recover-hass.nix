@@ -5,9 +5,6 @@
 }:
 
 let
-  host = "cypress";
-  app = "hass";
-  archive = "cypress-2025.01.19-T02:30:01";
   borgCypressCryptPasswdFile = "/run/secrets/borgCypressCryptPasswd";
   recoverCypressHassScript = pkgs.writeShellScriptBin "recoverCypressHass" ''
     #!/bin/bash
@@ -15,33 +12,51 @@ let
     set -e
     export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
 
+    read -p "Enter hostname to recover: " HOST
+    if [ -z "$HOST" ]; then
+      echo "Error: host required."
+      exit 1
+    fi
+    
+    read -p "Enter the archive to recover: " ARCHIVE
+    if [ -z "$ARCHIVE" ]; then
+      echo "Error: archive required."
+      exit 1
+    fi
+
+    read -p "Enter the application to recover: " APP
+    if [ -z "$APP" ]; then
+      echo "Error: application required."
+      exit 1
+    fi
+
     cd ${config.backups.borgRestoreDir}
-    sudo ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCypressRepo}::${archive} var/lib/${app} --strip-components 2
-    sudo chown -R chris:users ${config.backups.borgRestoreDir}/${app}
-    ssh ${host}-tailscale 'sudo systemctl stop home-assistant.service'
-    ssh ${host}-tailscale 'sudo rm -rf /var/lib/${app}'
-    rsync --progress -avzh ${config.backups.borgRestoreDir}/${app} ${host}-tailscale:/tmp  
-    ssh ${host}-tailscale 'sudo mv /tmp/${app} /var/lib'
-    ssh ${host}-tailscale 'sudo chown -R ${app}:${app} /var/lib/${app}'
-    sudo rm -rf ${config.backups.borgRestoreDir}/${app}
+    sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCypressRepo}::$ARCHIVE var/lib/$APP --strip-components 2
+    sudo chown -R chris:users ${config.backups.borgRestoreDir}/$APP
+    ssh $HOST-tailscale 'sudo systemctl stop home-assistant.service'
+    ssh $HOST-tailscale 'sudo rm -rf /var/lib/$APP'
+    rsync --progress -avzh ${config.backups.borgRestoreDir}/$APP $HOST-tailscale:/tmp  
+    ssh $HOST-tailscale 'sudo mv /tmp/$APP /var/lib'
+    ssh $HOST-tailscale 'sudo chown -R $APP:$APP /var/lib/$APP'
+    sudo rm -rf ${config.backups.borgRestoreDir}/$APP
   
-    sudo ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCypressRepo}::${archive} var/backup/postgresql/${app}.sql.gz --strip-components 3
-    sudo mv ${config.backups.borgRestoreDir}/${app}.sql.gz /home/chris
-    sudo chown chris:users /home/chris/${app}.sql.gz
-    rsync --progress -avzh /home/chris/${app}.sql.gz ${host}-tailscale:/tmp
-    ssh ${host}-tailscale 'sudo gunzip -c /tmp/${app}.sql.gz > /tmp/${app}.sql'
-    ssh ${host}-tailscale 'sudo chown postgres:postgres /tmp/${app}.sql'
-    ssh ${host}-tailscale 'sudo mv /tmp/${app}.sql /var/lib/postgresql'
-    ssh ${host}-tailscale 'sudo rm -rf /tmp/${app}.sql.gz'
-    ssh ${host}-tailscale 'sudo -u postgres psql -U postgres -d template1 -c "DROP DATABASE \"${app}\";"'
-    ssh ${host}-tailscale 'sudo -u postgres psql -U postgres -d template1 -c "CREATE DATABASE \"${app}\" OWNER \"${app}\";"'
-    ssh ${host}-tailscale 'sudo -u postgres psql -U postgres -d ${app} -f /var/lib/postgresql/${app}.sql'
-    ssh ${host}-tailscale 'sudo rm -rf /var/lib/postgresql/${app}.sql'
-    rm -rf /home/chris/${app}.sql.gz
+    sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCypressRepo}::$ARCHIVE var/backup/postgresql/$APP.sql.gz --strip-components 3
+    sudo mv ${config.backups.borgRestoreDir}/$APP.sql.gz /home/chris
+    sudo chown chris:users /home/chris/$APP.sql.gz
+    rsync --progress -avzh /home/chris/$APP.sql.gz $HOST-tailscale:/tmp
+    ssh $HOST-tailscale 'sudo gunzip -c /tmp/$APP.sql.gz > /tmp/$APP.sql'
+    ssh $HOST-tailscale 'sudo chown postgres:postgres /tmp/$APP.sql'
+    ssh $HOST-tailscale 'sudo mv /tmp/$APP.sql /var/lib/postgresql'
+    ssh $HOST-tailscale 'sudo rm -rf /tmp/$APP.sql.gz'
+    ssh $HOST-tailscale 'sudo -u postgres psql -U postgres -d template1 -c "DROP DATABASE \"$APP\";"'
+    ssh $HOST-tailscale 'sudo -u postgres psql -U postgres -d template1 -c "CREATE DATABASE \"$APP\" OWNER \"$APP\";"'
+    ssh $HOST-tailscale 'sudo -u postgres psql -U postgres -d $APP -f /var/lib/postgresql/$APP.sql'
+    ssh $HOST-tailscale 'sudo rm -rf /var/lib/postgresql/$APP.sql'
+    rm -rf /home/chris/$APP.sql.gz
   
     nixos-rebuild \
-    --flake ~/nixos-configs#${host} \
-    --target-host ${host} \
+    --flake ~/nixos-configs#$HOST \
+    --target-host $HOST \
     --use-remote-sudo \
     --verbose \
     switch

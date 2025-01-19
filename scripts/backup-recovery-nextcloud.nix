@@ -6,7 +6,7 @@
 let
   host = "cypress";
   app = "nextcloud";
-  archive = "";
+  archive = "cypress-2025.01.19-T02:30:01";
   borgRepo = config.backups.borgCypressRepo;
   borgRestoreDir = config.backups.borgRestoreDir;
 in
