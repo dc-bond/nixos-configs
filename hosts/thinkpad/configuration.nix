@@ -38,6 +38,7 @@
   ];
 
   environment.systemPackages = with pkgs; [
+    (import (configLib.relativeToRoot "scripts/borglistcypress.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/backup-recovery-hass.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/backup-recovery-zwavejs.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/backup-recovery-lldap.nix") { inherit pkgs config; })
