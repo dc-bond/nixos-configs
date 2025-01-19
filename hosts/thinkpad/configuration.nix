@@ -34,13 +34,12 @@
       "nixos-system/host-specific/thinkpad/tailscale.nix"
       "nixos-system/host-specific/thinkpad/borg-server.nix"
       "nixos-system/host-specific/thinkpad/backblaze.nix"
-      "nixos-system/host-specific/thinkpad/recover-hass.nix"
+      #"nixos-system/host-specific/thinkpad/recover-hass.nix"
     ])
   ];
 
   environment.systemPackages = with pkgs; [
     (import (configLib.relativeToRoot "scripts/backup-recovery-hass.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/backup-recovery-hass-experiment.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/backup-recovery-zwavejs.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/backup-recovery-lldap.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/backup-recovery-traefik.nix") { inherit pkgs config; })

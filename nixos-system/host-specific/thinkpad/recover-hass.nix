@@ -13,10 +13,10 @@ let
     #!/bin/bash
 
     set -e
-    export BORG_PASSPHRASE=$(cat ${borgCypressCryptPasswdFile})
+    export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
 
     cd ${config.backups.borgRestoreDir}
-    ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCypressRepo}::${archive} var/lib/${app} --strip-components 2
+    sudo ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCypressRepo}::${archive} var/lib/${app} --strip-components 2
     sudo chown -R chris:users ${config.backups.borgRestoreDir}/${app}
     ssh ${host}-tailscale 'sudo systemctl stop home-assistant.service'
     ssh ${host}-tailscale 'sudo rm -rf /var/lib/${app}'
@@ -25,7 +25,7 @@ let
     ssh ${host}-tailscale 'sudo chown -R ${app}:${app} /var/lib/${app}'
     sudo rm -rf ${config.backups.borgRestoreDir}/${app}
   
-    ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCypressRepo}::${archive} var/backup/postgresql/${app}.sql.gz --strip-components 3
+    sudo ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCypressRepo}::${archive} var/backup/postgresql/${app}.sql.gz --strip-components 3
     sudo mv ${config.backups.borgRestoreDir}/${app}.sql.gz /home/chris
     sudo chown chris:users /home/chris/${app}.sql.gz
     rsync --progress -avzh /home/chris/${app}.sql.gz ${host}-tailscale:/tmp
