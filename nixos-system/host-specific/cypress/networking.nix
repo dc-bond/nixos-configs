@@ -8,15 +8,20 @@
 {
 
   services.resolved = {
-    enable = false; # use systemd-resolved for DNS functionality
+    enable = false; # ensure not enabled in favor of resolvconf below because running pihole
     llmnr = "false"; # disable link-local multicast name resolution
   };
 
   networking = {
-    useDHCP = false; # disable defaut dhcpcd networking backend in favor of systemd-networkd enabled below
+    useDHCP = false; # disable default dhcpcd networking backend in favor of systemd-networkd enabled below
     hostName = "cypress";
     firewall = {
       enable = true;
+    };
+    resolvconf = {
+      #useLocalResolver = true;
+      dnsSingleRequest = true;
+      extraConfig = "name_servers='127.0.0.1 1.1.1.1 9.9.9.9'";
     };
   };
 

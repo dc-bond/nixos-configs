@@ -34,7 +34,7 @@ in
       autoStart = true;
       environmentFiles = [ config.sops.templates."${app}-env".path ];
       environment = {
-        PIHOLE_DNS_ = "${configVars.unboundIp}#5323";
+        PIHOLE_DNS_ = "${configVars.unboundIp}#53";
       };
       log-driver = "journald";
       ports = [ # docker daemon automatically opens firewall ports

@@ -45,6 +45,7 @@
           "/var/lib/mosquitto"
           "/var/lib/docker/volumes/zwavejs"
           "/var/lib/docker/volumes/pihole"
+          "/var/lib/docker/volumes/unbound"
           "/var/backup/postgresql/hass.sql.gz"
           "/var/backup/postgresql/lldap.sql.gz"
           "/var/backup/postgresql/nextcloud.sql.gz"
