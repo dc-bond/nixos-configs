@@ -18,11 +18,11 @@
     firewall = {
       enable = true;
     };
-    resolvconf = {
-      #useLocalResolver = true;
-      dnsSingleRequest = true;
-      extraConfig = "name_servers='127.0.0.1 1.1.1.1 9.9.9.9'";
-    };
+    #resolvconf = {
+    #  #useLocalResolver = true;
+    #  dnsSingleRequest = true;
+    #  extraConfig = "name_servers='127.0.0.1 1.1.1.1 9.9.9.9'";
+    #};
   };
 
   systemd.services.systemd-networkd-wait-online.enable = lib.mkForce false; # for wait-online error - need to find proper solution
