@@ -16,7 +16,7 @@
   opticonLanIp = "192.168.1.2";
   opticonTailscaleIp = "100.92.225.78";
   cypressLanIp = "192.168.1.89";
-  cypressTailscaleIp = "100.99.203.105";
+  cypressTailscaleIp = "100.84.248.69";
 
   domain1 = "dcbond.com";
   domain1Short = "dcbond";
