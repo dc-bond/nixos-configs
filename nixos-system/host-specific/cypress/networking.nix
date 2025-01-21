@@ -8,9 +8,14 @@
 {
 
   services.resolved = {
-    enable = false; # ensure not enabled in favor of resolvconf below because running pihole
-    llmnr = "false"; # disable link-local multicast name resolution
+    enable = lib.mkForce false; # ensure not enabled because running pihole on port 53
   };
+
+  # manually set static nameservers - primary as 127.0.0.1 for internal pihole-unbound service, fallback as 1.1.1.1 if pihole-unbound stopped/broken
+  environment.etc."resolv.conf".text = ''
+    nameserver 127.0.0.1
+    nameserver 1.1.1.1
+  '';
 
   networking = {
     useDHCP = false; # disable default dhcpcd networking backend in favor of systemd-networkd enabled below
@@ -18,11 +23,9 @@
     firewall = {
       enable = true;
     };
-    #resolvconf = {
-    #  #useLocalResolver = true;
-    #  dnsSingleRequest = true;
-    #  extraConfig = "name_servers='127.0.0.1 1.1.1.1 9.9.9.9'";
-    #};
+    resolvconf = {
+      enable = lib.mkForce false;
+    };
   };
 
   systemd.services.systemd-networkd-wait-online.enable = lib.mkForce false; # for wait-online error - need to find proper solution
@@ -43,4 +46,5 @@
       };    
     };
   };
+
 }
