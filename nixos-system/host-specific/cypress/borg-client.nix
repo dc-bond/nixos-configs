@@ -24,7 +24,7 @@
           "--stats"
         ];
         startAt = "*-*-* 02:30:00"; # everyday at 2:30am
-        repo = "borg@${configVars.thinkpadTailscaleIp}:."; # this automatically picks up the location of the remote borg repository assuming remote is running a nixos borg module
+        repo = "borg@${configVars.thinkpadLanIp}:."; # this automatically picks up the location of the remote borg repository assuming remote is running a nixos borg module
         encryption = {
           mode = "repokey-blake2"; # encrypt using password and save encryption key inside repository
           passCommand = "cat ${config.sops.secrets.borgCryptPasswd.path}";
@@ -43,6 +43,7 @@
           "/var/lib/redis-nextcloud"
           "/var/lib/hass"
           "/var/lib/mosquitto"
+          "/var/lib/tailscale"
           "/var/lib/docker/volumes/zwavejs"
           "/var/lib/docker/volumes/pihole"
           "/var/lib/docker/volumes/unbound"

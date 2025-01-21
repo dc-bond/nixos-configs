@@ -12,7 +12,7 @@
   aspenLanIp = "192.168.1.189";
   #aspenTailscaleIp = "";
   thinkpadLanIp = "192.168.1.62";
-  thinkpadTailscaleIp = "100.84.116.103";
+  thinkpadTailscaleIp = "100.90.150.101";
   opticonLanIp = "192.168.1.2";
   opticonTailscaleIp = "100.92.225.78";
   cypressLanIp = "192.168.1.89";
