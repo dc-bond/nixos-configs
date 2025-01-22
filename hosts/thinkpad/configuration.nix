@@ -33,8 +33,8 @@
       "nixos-system/host-specific/thinkpad/networking.nix"
       "nixos-system/host-specific/thinkpad/tailscale.nix"
       "nixos-system/host-specific/thinkpad/borg-server.nix"
-      "nixos-system/host-specific/thinkpad/backblaze.nix"
-      #"nixos-system/host-specific/thinkpad/recover-hass.nix"
+      "nixos-system/host-specific/thinkpad/cloud-backups.nix"
+      "nixos-system/host-specific/thinkpad/backup-recoveries.nix"
     ])
   ];
 
