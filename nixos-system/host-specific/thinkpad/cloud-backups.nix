@@ -10,21 +10,21 @@ let
   cypressBackupScript = pkgs.writeShellScriptBin "cypressBackup" ''
     #!/bin/bash
     echo "rclone cloud backup to backblaze started at $(date)"
-    ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync ${config.backups.borgCypressRepo} backblaze-b2:cypress-backup
+    ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync ${config.backups.borgDir}/cypress backblaze-b2:cypress-backup
     echo "rclone cloud backup to backblaze finished at $(date)"
     '';
   cypressRestoreScript = pkgs.writeShellScriptBin "cypressRestore" ''
     #!/bin/bash
     echo "rclone cloud restore from backblaze started at $(date)"
-    if [ -d "${config.backups.borgCypressCloudRestoreRepo}" ]; then
-      echo "stale restoration detected at ${config.backups.borgCypressCloudRestoreRepo}... deleting"
-      rm -rf ${config.backups.borgCypressCloudRestoreRepo}
+    if [ -d "${config.backups.borgCloudDir}/cypress" ]; then
+      echo "stale restoration detected at ${config.backups.borgCloudDir}/cypress... deleting"
+      rm -rf ${config.backups.borgCloudDir}/cypress
     fi
-    echo "creating restoration directory at ${config.backups.borgCypressCloudRestoreRepo}"
-    mkdir ${config.backups.borgCypressCloudRestoreRepo}
-    ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync backblaze-b2:cypress-backup ${config.backups.borgCypressCloudRestoreRepo}
-    echo "change ownership of restoration directory at ${config.backups.borgCypressCloudRestoreRepo} to borg"
-    chown -R borg:borg ${config.backups.borgCypressCloudRestoreRepo}
+    echo "creating restoration directory at ${config.backups.borgCloudDir}/cypress"
+    mkdir ${config.backups.borgCloudDir}/cypress
+    ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync backblaze-b2:cypress-backup ${config.backups.borgCloudDir}/cypress
+    echo "change ownership of restoration directory at ${config.backups.borgCloudDir}/cypress to borg"
+    chown -R borg:borg ${config.backups.borgCloudDir}/cypress
     echo "rclone cloud restore from backblaze finished at $(date)"
     '';
 in
