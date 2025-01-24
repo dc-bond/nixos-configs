@@ -409,6 +409,66 @@ let
     ssh cypress 'sudo systemctl start docker-pihole-root.target'
     '';
 
+  recoverCypressActualScript = pkgs.writeShellScriptBin "recoverCypressActual" ''
+    #!/bin/bash
+    
+    # track errors
+    set -e
+    set -o pipefail
+    
+    # set borg passphrase environment variable
+    export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+  
+    # obtain target archive from user
+    read -p "Enter the archive to recover: " ARCHIVE
+    if [ -z "$ARCHIVE" ]; then
+      echo "Error: archive required."
+      exit 1
+    fi
+    
+    # helper function to print styled messages
+    log() {
+      # temporarily disable tracing for this function
+      { set +x; } 2>/dev/null
+      echo -e "\033[1;33m$1\033[0m"
+      { set -x; } 2>/dev/null
+    }
+    
+    # enable tracing of commands
+    set -x
+
+    { set +x; log "starting backup recovery for actual container on cypress"; } 2>/dev/null
+
+    { set +x; log "changing directory to ${config.backups.borgDir}"; } 2>/dev/null
+    cd ${config.backups.borgDir}
+
+    { set +x; log "extracting application data from borg repository"; } 2>/dev/null
+    sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/cypress::$ARCHIVE var/lib/docker/volumes/actual --strip-components 4
+    
+    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
+    sudo chown -R chris:users ${config.backups.borgDir}/actual
+
+    { set +x; log "stopping actual container stack on cypress"; } 2>/dev/null
+    ssh cypress 'sudo systemctl stop docker-actual-root.target'
+
+    { set +x; log "removing existing application data on cypress"; } 2>/dev/null
+    ssh cypress 'sudo rm -rf /var/lib/docker/volumes/actual'
+
+    { set +x; log "transferring restored data to cypress"; } 2>/dev/null
+    rsync --progress -avzh ${config.backups.borgDir}/actual cypress:/tmp
+    ssh cypress 'sudo mv /tmp/actual /var/lib/docker/volumes'
+    
+    { set +x; log "changing ownership of restored application data"; } 2>/dev/null
+    ssh cypress 'sudo chown -R root:root /var/lib/docker/volumes/actual'
+
+    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
+    sudo rm -rf ${config.backups.borgDir}/actual
+
+    { set +x; log "restarting restored actual container stack on cypress"; } 2>/dev/null
+    ssh cypress 'sudo systemctl start docker-actual-root.target'
+    '';
+    
   recoverCypressZwavejsScript = pkgs.writeShellScriptBin "recoverCypressZwavejs" ''
     #!/bin/bash
     
@@ -481,6 +541,7 @@ in
     recoverCypressLldapScript
     recoverCypressPiholeScript
     recoverCypressZwavejsScript
+    recoverCypressActualScript
     recoverCypressNextcloudScript
     recoverCypressTraefikScript
     recoverCypressHomeassistantScript

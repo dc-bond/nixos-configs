@@ -26,7 +26,7 @@ in
     labels = {
       "traefik.enable" = "true";
       "traefik.http.routers.${app}.entrypoints" = "websecure";
-      "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
+      "traefik.http.routers.${app}.rule" = "Host(`chris-allowance.${configVars.domain2}`)";
       "traefik.http.routers.${app}.tls" = "true";
       "traefik.http.routers.${app}.tls.options" = "tls-13@file";
       "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
