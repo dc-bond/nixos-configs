@@ -41,6 +41,9 @@
   actualSubnet = "172.21.5.0/25";
   actualIp = "172.21.5.2";
 
+  favaSubnet = "172.21.6.0/25";
+  favaIp = "172.21.6.2";
+
   #kumaHostVethIp = "172.22.1.2";
   #kumaContainerVethIp = "172.22.1.3";
 
