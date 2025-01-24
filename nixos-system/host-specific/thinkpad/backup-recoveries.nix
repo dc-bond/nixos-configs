@@ -11,12 +11,14 @@ let
   listCypressArchivesScript = pkgs.writeShellScriptBin "listCypressArchives" ''
     #!/bin/bash
     export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
     sudo -E ${pkgs.borgbackup}/bin/borg list ${config.backups.borgDir}/cypress
     '';
 
   infoCypressArchivesScript = pkgs.writeShellScriptBin "infoCypressArchives" ''
     #!/bin/bash
     export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
     sudo -E ${pkgs.borgbackup}/bin/borg info ${config.backups.borgDir}/cypress
     '';
 
@@ -37,6 +39,7 @@ let
     
     # set borg passphrase environment variable
     export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
   
     # obtain target archive from user
     read -p "Enter the archive to recover: " ARCHIVE
@@ -103,6 +106,7 @@ let
     
     # set borg passphrase environment variable
     export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
   
     # obtain target archive from user
     read -p "Enter the archive to recover: " ARCHIVE
@@ -183,6 +187,7 @@ let
     
     # set borg passphrase environment variable
     export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
   
     # obtain target archive from user
     read -p "Enter the archive to recover: " ARCHIVE
@@ -273,6 +278,7 @@ let
     
     # set borg passphrase environment variable
     export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
   
     # obtain target archive from user
     read -p "Enter the archive to recover: " ARCHIVE
@@ -343,6 +349,7 @@ let
     
     # set borg passphrase environment variable
     export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
   
     # obtain target archive from user
     read -p "Enter the archive to recover: " ARCHIVE
@@ -411,6 +418,7 @@ let
     
     # set borg passphrase environment variable
     export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
   
     # obtain target archive from user
     read -p "Enter the archive to recover: " ARCHIVE
