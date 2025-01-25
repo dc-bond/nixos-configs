@@ -18,7 +18,7 @@ in
     log-driver = "journald";
     volumes = [ "${app}:/bean" ];
     environment = { 
-      BEANCOUNT_FILE = "/bean/master.beancount" 
+      BEANCOUNT_FILE = "/bean/master.beancount";
     };
     extraOptions = [
       "--network=${app}"
