@@ -16,7 +16,7 @@ in
     image = "docker.io/yegle/${app}:v1.27"; # https://hub.docker.com/r/yegle/fava/tags
     autoStart = true;
     log-driver = "journald";
-    volumes = [ "${app}:/bean" ];
+    volumes = [ "/home/chris/bond-ledger:/bean" ];
     environment = { 
       BEANCOUNT_FILE = "/bean/master.beancount";
     };
@@ -48,11 +48,11 @@ in
         };
         after = [
           "docker-network-${app}.service"
-          "docker-volume-${app}.service"
+          #"docker-volume-${app}.service"
         ];
         requires = [
           "docker-network-${app}.service"
-          "docker-volume-${app}.service"
+          #"docker-volume-${app}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -74,18 +74,18 @@ in
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
       };
-      "docker-volume-${app}" = {
-        path = [pkgs.docker];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-        };
-        script = ''
-          docker volume inspect ${app} || docker volume create ${app}
-        '';
-        partOf = ["docker-${app}-root.target"];
-        wantedBy = ["docker-${app}-root.target"];
-      };
+      #"docker-volume-${app}" = {
+      #  path = [pkgs.docker];
+      #  serviceConfig = {
+      #    Type = "oneshot";
+      #    RemainAfterExit = true;
+      #  };
+      #  script = ''
+      #    docker volume inspect ${app} || docker volume create ${app}
+      #  '';
+      #  partOf = ["docker-${app}-root.target"];
+      #  wantedBy = ["docker-${app}-root.target"];
+      #};
     };
     targets."docker-${app}-root" = {
       unitConfig = {
