@@ -32,13 +32,13 @@
       "nixos-system/common/oci-pihole.nix"
       "nixos-system/common/oci-actual.nix"
       "nixos-system/common/oci-fava.nix"
+      "nixos-system/common/oci-zwavejs.nix"
       "nixos-system/host-specific/cypress/users.nix"
       "nixos-system/host-specific/cypress/sshd.nix"
       "nixos-system/host-specific/cypress/sops.nix"
       "nixos-system/host-specific/cypress/networking.nix"
       "nixos-system/host-specific/cypress/tailscale.nix"
       "nixos-system/host-specific/cypress/borg-client.nix"
-      "nixos-system/host-specific/cypress/oci-zwavejs.nix"
     ])
   ];
 
