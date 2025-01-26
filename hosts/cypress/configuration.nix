@@ -21,8 +21,17 @@
       "nixos-system/common/nixpkgs.nix"
       "nixos-system/common/oci-containers.nix"
       "nixos-system/common/mosquitto.nix"
+      "nixos-system/common/uptime-kuma.nix"
+      "nixos-system/common/lldap.nix"
       "nixos-system/common/postgresql.nix"
       "nixos-system/common/traefik.nix"
+      "nixos-system/common/nextcloud.nix"
+      "nixos-system/common/home-assistant.nix"
+      #"nixos-system/common/authelia-dcbond.nix"
+      #"nixos-system/common/unifi-controller.nix" # compile problems with mongodb
+      "nixos-system/common/oci-pihole.nix"
+      "nixos-system/common/oci-actual.nix"
+      "nixos-system/common/oci-fava.nix"
       "nixos-system/host-specific/cypress/users.nix"
       "nixos-system/host-specific/cypress/sshd.nix"
       "nixos-system/host-specific/cypress/sops.nix"
@@ -30,14 +39,6 @@
       "nixos-system/host-specific/cypress/tailscale.nix"
       "nixos-system/host-specific/cypress/borg-client.nix"
       "nixos-system/host-specific/cypress/oci-zwavejs.nix"
-      "nixos-system/host-specific/cypress/oci-pihole.nix"
-      "nixos-system/host-specific/cypress/oci-actual.nix"
-      "nixos-system/host-specific/cypress/oci-fava.nix"
-      "nixos-system/host-specific/cypress/lldap.nix"
-      "nixos-system/host-specific/cypress/authelia-dcbond.nix"
-      "nixos-system/host-specific/cypress/home-assistant.nix"
-      "nixos-system/host-specific/cypress/nextcloud.nix"
-      #"nixos-system/host-specific/cypress/unifi-controller.nix" # compile problems with mongodb, possibly try on opticon?
     ])
   ];
 
