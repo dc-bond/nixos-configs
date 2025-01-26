@@ -33,6 +33,7 @@
       "nixos-system/common/oci-actual.nix"
       "nixos-system/common/oci-fava.nix"
       "nixos-system/common/oci-zwavejs.nix"
+      "nixos-system/common/oci-recipesage.nix"
       "nixos-system/host-specific/cypress/users.nix"
       "nixos-system/host-specific/cypress/sshd.nix"
       "nixos-system/host-specific/cypress/sops.nix"

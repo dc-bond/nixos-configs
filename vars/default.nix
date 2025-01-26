@@ -44,6 +44,17 @@
   favaSubnet = "172.21.6.0/25";
   favaIp = "172.21.6.2";
 
+  recipesageSubnet = "172.21.7.0/25";
+  recipesageNginxIp = "172.21.7.2";
+  recipesageStaticIp = "172.21.7.3";
+  recipesageApiIp = "172.21.7.4";
+  recipesageElasticsearchIp = "172.21.7.5";
+  recipesagePushpinIp = "172.21.7.6";
+  recipesagePostgresIp = "172.21.7.7";
+  recipesageBrowserlessIp = "172.21.7.8";
+  recipesageIngredientIp = "172.21.7.9";
+  recipesageMinioIp = "172.21.7.10";
+
   #kumaHostVethIp = "172.22.1.2";
   #kumaContainerVethIp = "172.22.1.3";
 
