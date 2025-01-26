@@ -26,6 +26,10 @@
         startAt = "*-*-* 02:30:00"; # everyday at 2:30am
         preHook = ''
           nextcloud-occ maintenance:mode --on
+          systemctl stop lldap.service
+          systemctl stop uptime-kuma.service
+          systemctl stop home-assistant.service
+          systemctl stop mosquitto.service
           systemctl start postgresqlBackup-hass.service
           systemctl start postgresqlBackup-lldap.service
           systemctl start postgresqlBackup-nextcloud.service
@@ -38,6 +42,10 @@
           systemctl start docker-zwavejs-root.target
           systemctl start docker-pihole-root.target
           systemctl start docker-actual-root.target
+          systemctl start lldap.service
+          systemctl start uptime-kuma.service
+          systemctl start home-assistant.service
+          systemctl start mosquitto.service
         '';
         repo = "borg@${configVars.thinkpadLanIp}:."; # this automatically picks up the location of the remote borg repository assuming remote is running a nixos borg module
         encryption = {
@@ -52,8 +60,9 @@
         paths = [
           "/var/lib/traefik"
           "/var/lib/private/lldap"
-          "/var/lib/authelia-dcbond"
-          "/var/lib/redis-authelia-dcbond"
+          "/var/lib/private/uptime-kuma"
+          #"/var/lib/authelia-dcbond"
+          #"/var/lib/redis-authelia-dcbond"
           "/var/lib/nextcloud"
           "/var/lib/redis-nextcloud"
           "/var/lib/hass"
