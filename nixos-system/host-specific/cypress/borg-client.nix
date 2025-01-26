@@ -24,6 +24,21 @@
           "--stats"
         ];
         startAt = "*-*-* 02:30:00"; # everyday at 2:30am
+        preHook = ''
+          nextcloud-occ maintenance:mode --on
+          systemctl start postgresqlBackup-hass.service
+          systemctl start postgresqlBackup-lldap.service
+          systemctl start postgresqlBackup-nextcloud.service
+          systemctl stop docker-zwavejs-root.target
+          systemctl stop docker-pihole-root.target
+          systemctl stop docker-actual-root.target
+        '';
+        postHook = ''
+          nextcloud-occ maintenance:mode --off
+          systemctl start docker-zwavejs-root.target
+          systemctl start docker-pihole-root.target
+          systemctl start docker-actual-root.target
+        '';
         repo = "borg@${configVars.thinkpadLanIp}:."; # this automatically picks up the location of the remote borg repository assuming remote is running a nixos borg module
         encryption = {
           mode = "repokey-blake2"; # encrypt using password and save encryption key inside repository

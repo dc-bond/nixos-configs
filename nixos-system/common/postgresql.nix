@@ -14,7 +14,7 @@
 
     postgresqlBackup = { # postgres database backup
       enable = true;
-      startAt = "*-*-* 01:00:00"; # daily starting at 1:00am
+      #startAt = "*-*-* 01:00:00"; # daily starting at 1:00am
     };
 
   };
