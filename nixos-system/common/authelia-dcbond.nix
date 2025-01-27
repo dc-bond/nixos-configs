@@ -32,16 +32,16 @@ in
       group = config.users.users."${app}-${configVars.domain1Short}".group;
       mode = "0440";
     };
-    #autheliaOidcHmacSecret1 = {
-    #  owner = config.users.users."${app}-${configVars.domain1Short}".name;
-    #  group = config.users.users."${app}-${configVars.domain1Short}".group;
-    #  mode = "0440";
-    #};
-    #autheliaOidcJwksKey1 = {
-    #  owner = config.users.users."${app}-${configVars.domain1Short}".name;
-    #  group = config.users.users."${app}-${configVars.domain1Short}".group;
-    #  mode = "0440";
-    #};
+    autheliaOidcHmacSecret1 = {
+      owner = config.users.users."${app}-${configVars.domain1Short}".name;
+      group = config.users.users."${app}-${configVars.domain1Short}".group;
+      mode = "0440";
+    };
+    autheliaOidcJwksKey1 = {
+      owner = config.users.users."${app}-${configVars.domain1Short}".name;
+      group = config.users.users."${app}-${configVars.domain1Short}".group;
+      mode = "0440";
+    };
   };
 
   services = {
@@ -51,7 +51,17 @@ in
         enable = true; 
         settings = {
           theme = "dark";
+          totp = {
+            disable = true;
+          };
           default_2fa_method = "webauthn";
+          webauthn = {
+            disable = false;
+            display_name = "Two-Factor Authentication (2FA)";
+            attestation_conveyance_preference = "indirect";
+            user_verification = "preferred";
+            timeout = "30s";
+          };
           log = {
             level = "info";
             format = "text"; 
@@ -122,38 +132,51 @@ in
               path = "/var/lib/${app}-${configVars.domain1Short}/sqlite3.db";
             };
           };
-          #identity_providers = {
-          #  oidc = {
-          #    jwks = {
-          #      key_id = "${configVars.domain1Short}";
-          #      algorithm = "RS256";
-          #      use = "sig";
-          #    };
-          #    clients = [
+          identity_providers = {
+            oidc = {
+              jwks = {
+                key_id = "${configVars.domain1Short}";
+                algorithm = "RS256";
+                use = "sig";
+              };
+              clients = [
 
-          #      {
-          #      client_name = "Bond Private Nextcloud";
-          #      client_id = "7Au52dmVWwvAGdqvrsLatNjedPoSIfQw~UWRj.M24VWhhlDp8v_tXUtePMvCz9pn~Vt1EVBc";
-          #      client_secret = "$pbkdf2-sha512$310000$PLcD7uvNnhfoie42zPQ71w$oZhEWIOtCXk/fOG4ABoRqDCTZmsZoxWKH0ERqz19aHkS7igOULjOQpvSHFxth0cuU3nehFYEYaF3Yo.z7vg./A";
-          #      public = false;
-          #      authorization_policy = "one_factor";
-          #      require_pkce = true;
-          #      pkce_challenge_method = "S256";
-          #      redirect_uris = "https://cloud.${configVars.domain1}/apps/oidc_login/oidc";
-          #      scopes = [
-          #        "openid"
-          #        "profile"
-          #        "email"
-          #        "groups"
-          #      ];
-          #      userinfo_signed_response_alg = "none";
-          #      token_endpoint_auth_method = "client_secret_basic";
-          #      consent_mode = "implicit"; # disable consent screen flow
-          #      }
-          #      
-          #    ];
-          #  };
-          #};
+                {
+                client_name = "Tailscale SSO";
+                client_id = "bond-tailnet";
+                client_secret = "$pbkdf2-sha512$310000$wFwB54/jYlnRZPYwL5Yj2A$6Umdwy/f6h5.GPITzV0PLg3r1vSUn5NsmaxJc6qZo7hkZbs4pixefwSA2DaZb0AQO4VawZPt7x7Zhyc4qMeINA";
+                redirect_uris = "https://login.tailscale.com/a/oauth_response";
+                scopes = [
+                  "openid"
+                  "profile"
+                  "email"
+                ];
+                consent_mode = "implicit"; # disable consent screen flow
+                }
+
+                #{
+                #client_name = "Bond Private Nextcloud";
+                #client_id = "7Au52dmVWwvAGdqvrsLatNjedPoSIfQw~UWRj.M24VWhhlDp8v_tXUtePMvCz9pn~Vt1EVBc";
+                #client_secret = "$pbkdf2-sha512$310000$PLcD7uvNnhfoie42zPQ71w$oZhEWIOtCXk/fOG4ABoRqDCTZmsZoxWKH0ERqz19aHkS7igOULjOQpvSHFxth0cuU3nehFYEYaF3Yo.z7vg./A";
+                #public = false;
+                #authorization_policy = "one_factor";
+                #require_pkce = true;
+                #pkce_challenge_method = "S256";
+                #redirect_uris = "https://cloud.${configVars.domain1}/apps/oidc_login/oidc";
+                #scopes = [
+                #  "openid"
+                #  "profile"
+                #  "email"
+                #  "groups"
+                #];
+                #userinfo_signed_response_alg = "none";
+                #token_endpoint_auth_method = "client_secret_basic";
+                #consent_mode = "implicit"; # disable consent screen flow
+                #}
+                
+              ];
+            };
+          };
           notifier = {
             disable_startup_check = false;
             filesystem = {
@@ -168,8 +191,8 @@ in
           jwtSecretFile = "${config.sops.secrets.autheliaJwtSecret1.path}";
           storageEncryptionKeyFile = "${config.sops.secrets.autheliaStorageEncryptionKey1.path}";
           sessionSecretFile = "${config.sops.secrets.autheliaSessionSecret1.path}";
-          #oidcHmacSecretFile = "${config.sops.secrets.autheliaOidcHmacSecret1.path}";
-          #oidcIssuerPrivateKeyFile = "${config.sops.secrets.autheliaOidcJwksKey1.path}";
+          oidcHmacSecretFile = "${config.sops.secrets.autheliaOidcHmacSecret1.path}";
+          oidcIssuerPrivateKeyFile = "${config.sops.secrets.autheliaOidcJwksKey1.path}";
         };
       };
     }; 

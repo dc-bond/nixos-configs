@@ -11,12 +11,12 @@ let
   app1 = "recipesage-nginx";
   app2 = "recipesage-static";
   app3 = "recipesage-api";
-  app4 = "recipesage-elasticsearch";
+  app4 = "recipesage-elasticsearch"; # volume
   app5 = "recipesage-pushpin";
-  app6 = "recipesage-postgres";
+  app6 = "recipesage-postgres"; # volume
   app7 = "recipesage-browserless";
   app8 = "recipesage-ingredient-instruction-classifier";
-  app9 = "recipesage-minio";
+  app9 = "recipesage-minio"; # volume
 in
 
 {
@@ -91,13 +91,56 @@ in
     };
   };
 
+  #environment.etc = {
+  #  "recipesage-nginx-default.conf" = {
+  #    user = "docker";
+  #    group = "docker";      
+  #    text = ''
+  #      server {
+  #        client_max_body_size 1G;
+  #      	listen 80;
+  #      	server_name localhost;
+  #        location /grip/ws {
+  #          resolver 127.0.0.11 valid=30s;
+  #          proxy_http_version 1.1;
+  #          proxy_set_header Upgrade $http_upgrade;
+  #          proxy_set_header Connection "Upgrade";
+  #          proxy_connect_timeout 1h;
+  #          proxy_send_timeout 1h;
+  #          proxy_read_timeout 1h;
+  #          proxy_pass http://recipesage-pushpin:7999/ws;
+  #        }
+  #        location /myminio/ {
+  #          resolver 127.0.0.11 valid=30s;
+  #          proxy_pass http://recipesage-minio:9000/;
+  #        }
+  #        location /api/ {
+  #          resolver 127.0.0.11 valid=30s;
+  #          proxy_pass http://recipesage-api:3000/;
+  #        }
+  #      	location / {
+  #          resolver 127.0.0.11 valid=30s;
+  #          proxy_pass http://recipesage-static:80/;
+  #      	}
+  #      }
+  #    '';
+  #  };
+  #  #"recipesage-static.entrypoint.sh".text = ''
+  #  #  #!/bin/sh
+  #  #  sed -i 's|<base href="\/">.*|<base href="/"><script>window.API_BASE_OVERRIDE = '${API_BASE_OVERRIDE}';</script>|i' /usr/share/nginx/html/index.html
+  #  #'';
+  #};
+
+
   virtualisation.oci-containers.containers = {
 
     "${app1}" = {
       image = "docker.io/nginx:1.27.3"; # https://hub.docker.com/_/nginx/tags
       autoStart = true;
       log-driver = "journald";
-      volumes = [ "${app}:/etc/nginx/conf.d" ];
+      volumes = [ 
+        "/home/chris/proxy.conf:/etc/nginx/conf.d/default.conf" 
+      ];
       dependsOn = [
         "${app2}"
         "${app3}"
@@ -125,8 +168,7 @@ in
       autoStart = true;
       log-driver = "journald";
       volumes = [ 
-        "${app2}:docker-entrypoint.d" 
-        #"/var/lib/docker/volumes/${app2}/_data/static.entrypoint.sh:docker-entrypoint.d/static.entrypoint.sh" 
+        "/home/chris/static.entrypoint.sh:/docker-entrypoint.d/static.entrypoint.sh" 
       ];
       environment = {
         DISABLE_REGISTRATION = "true";
@@ -190,7 +232,7 @@ in
       autoStart = true;
       log-driver = "journald";
       environment = { 
-        "target=${app3}:3000"; 
+        target = "${app3}:3000";
       };
       extraOptions = [
         "--network=${app}"
@@ -221,8 +263,8 @@ in
       autoStart = true;
       log-driver = "journald";
       environment = { 
-        "MAX_CONCURRENT_SESSIONS=3"; 
-        "MAX_QUEUE_LENGTH=10"; 
+        MAX_CONCURRENT_SESSIONS = "3"; 
+        MAX_QUEUE_LENGTH = "10"; 
       };
       extraOptions = [
         "--network=${app}"
@@ -233,12 +275,12 @@ in
     };
 
     "${app8}" = {
-      image = "docker.io/julianpoy/ingredient-instruction-classifier:v1.4.11";
+      image = "docker.io/julianpoy/ingredient-instruction-classifier:1.4.11";
       autoStart = true;
       log-driver = "journald";
       environment = { 
-        "SENTENCE_EMBEDDING_BATCH_SIZE=200";
-        "PREDICTION_CONCURRENCY=4";
+        SENTENCE_EMBEDDING_BATCH_SIZE = "200";
+        PREDICTION_CONCURRENCY = "4";
       };
       extraOptions = [
         "--network=${app}"
@@ -288,11 +330,9 @@ in
         };
         after = [
           "docker-network-${app}.service"
-          "docker-volume-${app1}.service"
         ];
         requires = [
           "docker-network-${app}.service"
-          "docker-volume-${app1}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -300,19 +340,6 @@ in
         wantedBy = [
           "docker-${app}-root.target"
         ];
-      };
-      
-      "docker-volume-${app1}" = {
-        path = [pkgs.docker];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-        };
-        script = ''
-          docker volume inspect ${app1} || docker volume create ${app1}
-        '';
-        partOf = ["docker-${app}-root.target"];
-        wantedBy = ["docker-${app}-root.target"];
       };
       
       "docker-${app2}" = {
@@ -324,11 +351,9 @@ in
         };
         after = [
           "docker-network-${app}.service"
-          "docker-volume-${app2}.service"
         ];
         requires = [
           "docker-network-${app}.service"
-          "docker-volume-${app2}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -336,19 +361,6 @@ in
         wantedBy = [
           "docker-${app}-root.target"
         ];
-      };
-      
-      "docker-volume-${app2}" = {
-        path = [pkgs.docker];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-        };
-        script = ''
-          docker volume inspect ${app2} || docker volume create ${app2}
-        '';
-        partOf = ["docker-${app}-root.target"];
-        wantedBy = ["docker-${app}-root.target"];
       };
       
       "docker-${app3}" = {
