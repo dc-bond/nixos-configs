@@ -53,36 +53,49 @@ in
     };
   };
 
-  systemd.services = {
-    "cypressBackup" = {
-      description = "rclone backup to backblaze cloud storage";
-      serviceConfig = {
-        ExecStart = "${cypressBackupScript}/bin/cypressBackup";
-        Restart = "on-failure";
-        EnvironmentFile = "${rcloneConf}";
-      };
-      preStart = ''
-        if [ ! -f "${rcloneConf}" ]; then
-          echo "rclone configuration file not found at ${rcloneConf}"
-          exit 1
-        fi
-      '';
-    };
-    "cypressRestore" = {
-      description = "rclone restore from backblaze cloud storage";
-      serviceConfig = {
-        ExecStart = "${cypressRestoreScript}/bin/cypressRestore";
-        Restart = "on-failure";
-        EnvironmentFile = "${rcloneConf}";
-      };
-      preStart = ''
-        if [ ! -f "${rcloneConf}" ]; then
-          echo "rclone configuration file not found at ${rcloneConf}"
-          exit 1
-        fi
-      '';
+  systemd = {
 
+    services = {
+      "cypressBackup" = {
+        description = "rclone backup to backblaze cloud storage";
+        serviceConfig = {
+          ExecStart = "${cypressBackupScript}/bin/cypressBackup";
+          Restart = "on-failure";
+          EnvironmentFile = "${rcloneConf}";
+        };
+        preStart = ''
+          if [ ! -f "${rcloneConf}" ]; then
+            echo "rclone configuration file not found at ${rcloneConf}"
+            exit 1
+          fi
+        '';
+      };
+      "cypressRestore" = {
+        description = "rclone restore from backblaze cloud storage";
+        serviceConfig = {
+          ExecStart = "${cypressRestoreScript}/bin/cypressRestore";
+          Restart = "on-failure";
+          EnvironmentFile = "${rcloneConf}";
+        };
+        preStart = ''
+          if [ ! -f "${rcloneConf}" ]; then
+            echo "rclone configuration file not found at ${rcloneConf}"
+            exit 1
+          fi
+        '';
+      };
     };
-  };
-  
+
+    timers = {
+      "cypressBackup" = {
+        description = "systemd timer for cypressBackup service";
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          OnCalendar = "04:00:00"; # everyday at 4am
+          Persistent = true; # ensure missed executions are run after the system is online again
+        };
+      };
+    };
+
+  }; 
 }  

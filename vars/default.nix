@@ -55,6 +55,10 @@
   recipesageIngredientIp = "172.21.7.9";
   recipesageMinioIp = "172.21.7.10";
 
+  wordpressDcbondSubnet = "172.21.8.0/25";
+  wordpressDcbondIp = "172.21.8.2";
+  wordpressDcbondMysqlIp = "172.21.8.3";
+
   #kumaHostVethIp = "172.22.1.2";
   #kumaContainerVethIp = "172.22.1.3";
 

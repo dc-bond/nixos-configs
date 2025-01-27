@@ -51,7 +51,7 @@ in
       autoUpdateApps.enable = true;
       extraAppsEnable = true;
       extraApps = {
-        inherit (config.services.nextcloud.package.packages.apps) contacts tasks;
+        inherit (config.services.nextcloud.package.packages.apps) contacts calendar tasks;
         #oidc_login = pkgs.fetchNextcloudApp {
         #  sha256 = "sha256-DrbaKENMz2QJfbDKCMrNGEZYpUEvtcsiqw9WnveaPZA=";
         #  url = "https://github.com/pulsejet/nextcloud-oidc-login/releases/download/v3.2.0/oidc_login.tar.gz";

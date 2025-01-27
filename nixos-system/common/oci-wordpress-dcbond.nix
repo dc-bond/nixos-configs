@@ -7,23 +7,34 @@
 }: 
 
 let
-  app = "pihole";
-  app2 = "unbound";
+  app = "wordpress-dcbond";
+  app2 = "wordpress-dcbond-mysql";
 in
 
 {
   
   sops = {
     secrets = {
-      piholeWebPasswd = {};
+      wordpressDbUser = {};
+      wordpressDbPasswd = {};
+      wordpressDbName = {};
+      wordpressMysqlRootPasswd = {};
+      wordpressMysqlDb = {};
+      wordpressMysqlUser = {};
+      wordpressMysqlPasswd = {};
     };
     templates = {
       "${app}-env".content = ''
-        TZ=America/New_York
-        WEBPASSWORD=${config.sops.placeholder.piholeWebPasswd}
-        FTLCONF_LOCAL_IPV4=${configVars.cypressLanIp}
-        VIRTUAL_HOST=${app}.${configVars.domain2}
-        PIHOLE_DNS_ = "${configVars.unboundIp}#53";
+        WORDPRESS_DB_HOST=${app2}:3306
+        WORDPRESS_DB_USER=${config.sops.placeholder.wordpressDbUser}
+        WORDPRESS_DB_PASSWORD=${config.sops.placeholder.wordpressDbPasswd}
+        WORDPRESS_DB_NAME=${config.sops.placeholder.wordpressDbName}
+      '';
+      "${app2}-env".content = ''
+        MYSQL_ROOT_PASSWORDE=${config.sops.placeholder.wordpressMysqlRootPasswd}
+        MYSQL_DATABASE=${config.sops.placeholder.wordpressMysqlDb}
+        MYSQL_USER=${config.sops.placeholder.wordpressMysqlUser}
+        MYSQL_PASSWORD=${config.sops.placeholder.wordpressMysqlPasswd}
       '';
     };
   };
@@ -31,43 +42,43 @@ in
   virtualisation.oci-containers.containers = {
 
     "${app}" = {
-      image = "docker.io/${app}/${app}:2024.07.0"; # https://hub.docker.com/r/pihole/pihole/tags
+      image = "docker.io/wordpress:6.1.1"; # https://hub.docker.com/_/wordpress/tags 
       autoStart = true;
       environmentFiles = [ config.sops.templates."${app}-env".path ];
-      #environment = {
-      #  PIHOLE_DNS_ = "${configVars.unboundIp}#53";
-      #};
       log-driver = "journald";
-      ports = [ # docker daemon automatically opens firewall ports
-        "53:53/tcp"
-        "53:53/udp"
-      ];
-      volumes = [ "${app}:/etc" ];
+      volumes = [ "${app}:/var/www/html" ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.piholeIp}"
+        "--ip=${configVars.wordpressDcbondIp}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
       labels = {
         "traefik.enable" = "true";
         "traefik.http.routers.${app}.entrypoints" = "websecure";
-        "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
+        "traefik.http.routers.${app}.rule" = "Host(`${configVars.domain1}`)";
         "traefik.http.routers.${app}.tls" = "true";
         "traefik.http.routers.${app}.tls.options" = "tls-13@file";
         "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
-        "traefik.http.services.${app}.loadbalancer.server.port" = "80"; # port for browser interface
+        "traefik.http.services.${app}.loadbalancer.server.port" = "80";
+        "traefik.http.routers.${app}-admin.entrypoints" = "websecure";
+        "traefik.http.routers.${app}-admin.rule" = "Host(`${configVars.domain1}`) && PathPrefix(`/wp-admin`)";
+        "traefik.http.routers.${app}-admin.tls" = "true";
+        "traefik.http.routers.${app}-admin.tls.options" = "tls-13@file";
+        "traefik.http.routers.${app}-admin.middlewares" = "secure-headers@file";
+        "traefik.http.services.${app}-admin.loadbalancer.server.port" = "80";
       };
     };
 
     "${app2}" = {
-      image = "docker.io/mvance/${app2}:1.15.0"; # https://github.com/MatthewVance/unbound-docker
+      image = "docker.io/${app2}:8.0.25"; # https://hub.docker.com/_/mysql/tags
       autoStart = true;
       log-driver = "journald";
-      volumes = [ "${app2}:/opt/unbound/etc/unbound" ];
+      environmentFiles = [ config.sops.templates."${app2}-env".path ];
+      volumes = [ "${app2}:/var/lib/mysql" ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.unboundIp}"
+        "--ip=${configVars.wordpressDcbondMysqlIp}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -86,10 +97,12 @@ in
           RestartSteps = lib.mkOverride 500 9;
         };
         after = [
+          "docker-${app2}.service"
           "docker-network-${app}.service"
           "docker-volume-${app}.service"
         ];
         requires = [
+          "docker-${app2}.service"
           "docker-network-${app}.service"
           "docker-volume-${app}.service"
         ];
@@ -134,11 +147,9 @@ in
           RestartSteps = lib.mkOverride 500 9;
         };
         after = [
-          "docker-${app}.service"
           "docker-volume-${app2}.service"
         ];
         requires = [
-          "docker-${app}.service"
           "docker-volume-${app2}.service"
         ];
         partOf = [
@@ -164,7 +175,7 @@ in
     };
     targets."docker-${app}-root" = {
       unitConfig = {
-        Description = "root target for docker-${app} and docker-${app2}";
+        Description = "root target for docker-${app} container stack";
       };
       wantedBy = ["multi-user.target"];
     };

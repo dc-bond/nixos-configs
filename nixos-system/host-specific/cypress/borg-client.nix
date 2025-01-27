@@ -26,9 +26,10 @@
         ];
         startAt = "*-*-* 02:30:00"; # everyday at 2:30am
         preHook = ''
+          set -x
           echo "spinning down services and starting sql database dumps"
-          #${lib.getExe config.services.nextcloud.occ} maintenance:mode --on
-          #sleep 20
+          ${lib.getExe config.services.nextcloud.occ} maintenance:mode --on
+          sleep 10 
           systemctl stop lldap.service
           systemctl stop uptime-kuma.service
           systemctl stop home-assistant.service
@@ -39,10 +40,11 @@
           systemctl stop docker-zwavejs-root.target
           systemctl stop docker-pihole-root.target
           systemctl stop docker-actual-root.target
+          sleep 120
         '';
         postHook = ''
           echo "spinning services back up"
-          #${lib.getExe config.services.nextcloud.occ} maintenance:mode --off
+          ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off
           systemctl start docker-zwavejs-root.target
           systemctl start docker-pihole-root.target
           systemctl start docker-actual-root.target
