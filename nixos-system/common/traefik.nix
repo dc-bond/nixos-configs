@@ -42,7 +42,7 @@
           insecure = false;
         };
         log = {
-          level = "TRACE";
+          level = "ERROR";
           noColor = false;
           filePath = "/var/lib/traefik/traefik.log";
         };

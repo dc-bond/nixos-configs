@@ -23,7 +23,6 @@ in
         WEBPASSWORD=${config.sops.placeholder.piholeWebPasswd}
         FTLCONF_LOCAL_IPV4=${configVars.cypressLanIp}
         VIRTUAL_HOST=${app}.${configVars.domain2}
-        PIHOLE_DNS_ = "${configVars.unboundIp}#53";
       '';
     };
   };
@@ -34,9 +33,9 @@ in
       image = "docker.io/${app}/${app}:2024.07.0"; # https://hub.docker.com/r/pihole/pihole/tags
       autoStart = true;
       environmentFiles = [ config.sops.templates."${app}-env".path ];
-      #environment = {
-      #  PIHOLE_DNS_ = "${configVars.unboundIp}#53";
-      #};
+      environment = {
+        PIHOLE_DNS_ = "${configVars.unboundIp}#53"; # must be in environment and not environmentFile because of nix formatting issue
+      };
       log-driver = "journald";
       ports = [ # docker daemon automatically opens firewall ports
         "53:53/tcp"

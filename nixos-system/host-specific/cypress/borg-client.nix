@@ -43,6 +43,7 @@
           sleep 120
         '';
         postHook = ''
+          set -x
           echo "spinning services back up"
           ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off
           systemctl start docker-zwavejs-root.target
