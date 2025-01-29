@@ -41,14 +41,12 @@
           dashboard = true;
           insecure = false;
         };
-        log = {
-          level = "ERROR";
+        log = { # logs to journal under traefik.service
+          level = "INFO";
           noColor = false;
-          filePath = "/var/lib/traefik/traefik.log";
         };
-        accessLog = {
-          filePath = "/var/lib/traefik/traefik-access.log";
-          addInternals = true;
+        accessLog = { # logs to journal under traefik.service
+          addInternals = false;
           bufferingSize = 100;
           filters.statusCodes = [
             "200-206"
@@ -125,6 +123,10 @@
               options = "tls-13@file";
               domains = {
                 "0" = {
+                  main = "${configVars.domain1}";
+                  sans = "*.${configVars.domain1}";
+                };
+                "1" = {
                   main = "${configVars.domain2}";
                   sans = "*.${configVars.domain2}";
                 };

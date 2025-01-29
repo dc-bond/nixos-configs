@@ -55,12 +55,14 @@ in
       ];
       labels = {
         "traefik.enable" = "true";
+        "traefik.http.routers.${app}.service" = "${app}";
         "traefik.http.routers.${app}.entrypoints" = "websecure";
         "traefik.http.routers.${app}.rule" = "Host(`about.${configVars.domain1}`)";
         "traefik.http.routers.${app}.tls" = "true";
         "traefik.http.routers.${app}.tls.options" = "tls-13@file";
         "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
         "traefik.http.services.${app}.loadbalancer.server.port" = "80";
+        "traefik.http.routers.${app}-admin.service" = "${app}-admin";
         "traefik.http.routers.${app}-admin.entrypoints" = "websecure";
         "traefik.http.routers.${app}-admin.rule" = "Host(`about.${configVars.domain1}`) && PathPrefix(`/wp-admin`)";
         "traefik.http.routers.${app}-admin.tls" = "true";
