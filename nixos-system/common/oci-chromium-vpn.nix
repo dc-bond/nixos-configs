@@ -12,6 +12,8 @@ let
 in
 
 {
+
+  networking.wireguard.enable = true;
   
   sops = {
     secrets = {
@@ -40,10 +42,9 @@ in
       log-driver = "journald";
       dependsOn = ["${app2}"];
       extraOptions = [
-        "--network_mode=container:${app2}"
-        "--shm_size=1gb"
-        "--security_opt=seccomp:unconfined"
-        "--ip=${configVars.chromiumIp}"
+        "--network=container:${app2}"
+        "--shm-size=1g"
+        "--security-opt=seccomp=unconfined"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -57,8 +58,9 @@ in
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.chromiumVpnIp}"
-        "--sysctls=net.ipv6.conf.all.disable_ipv6=1"
-        "--cap_add=NET_ADMIN"
+        "--sysctl=net.ipv6.conf.all.disable_ipv6=1"
+        "--cap-add=NET_ADMIN"
+        "--privileged"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -108,7 +110,7 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
         };
         script = ''
-          docker network inspect ${app} || docker network create --subnet ${configVars.piholeSubnet} --driver bridge --scope local --attachable ${app}
+          docker network inspect ${app} || docker network create --subnet ${configVars.chromiumSubnet} --driver bridge --scope local --attachable ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];

@@ -60,8 +60,7 @@
   wordpressDcbondMysqlIp = "172.21.8.3";
 
   chromiumSubnet = "172.21.9.0/25";
-  chromiumIp = "172.21.9.2";
-  chromiumVpnIp = "172.21.9.3";
+  chromiumVpnIp = "172.21.9.2";
 
   #kumaHostVethIp = "172.22.1.2";
   #kumaContainerVethIp = "172.22.1.3";
