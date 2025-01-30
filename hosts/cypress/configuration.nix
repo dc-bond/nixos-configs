@@ -28,6 +28,7 @@
       "nixos-system/common/nextcloud.nix"
       "nixos-system/common/home-assistant.nix"
       "nixos-system/common/authelia-dcbond.nix"
+      "nixos-system/common/stirling-pdf.nix"
       #"nixos-system/common/unifi-controller.nix" # compile problems with mongodb
       "nixos-system/common/oci-pihole.nix"
       "nixos-system/common/oci-actual.nix"
