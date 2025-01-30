@@ -42,7 +42,7 @@ in
   virtualisation.oci-containers.containers = {
 
     "${app}" = {
-      image = "docker.io/wordpress:6.1.1"; # https://hub.docker.com/_/wordpress/tags 
+      image = "docker.io/wordpress:6.7.1"; # https://hub.docker.com/_/wordpress/tags 
       autoStart = true;
       environmentFiles = [ config.sops.templates."${app}-env".path ];
       log-driver = "journald";
@@ -57,14 +57,14 @@ in
         "traefik.enable" = "true";
         "traefik.http.routers.${app}.service" = "${app}";
         "traefik.http.routers.${app}.entrypoints" = "websecure";
-        "traefik.http.routers.${app}.rule" = "Host(`about.${configVars.domain1}`)";
+        "traefik.http.routers.${app}.rule" = "Host(`${configVars.domain1}`)";
         "traefik.http.routers.${app}.tls" = "true";
         "traefik.http.routers.${app}.tls.options" = "tls-13@file";
         "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
         "traefik.http.services.${app}.loadbalancer.server.port" = "80";
         "traefik.http.routers.${app}-admin.service" = "${app}-admin";
         "traefik.http.routers.${app}-admin.entrypoints" = "websecure";
-        "traefik.http.routers.${app}-admin.rule" = "Host(`about.${configVars.domain1}`) && PathPrefix(`/wp-admin`)";
+        "traefik.http.routers.${app}-admin.rule" = "Host(`${configVars.domain1}`) && PathPrefix(`/wp-admin`)";
         "traefik.http.routers.${app}-admin.tls" = "true";
         "traefik.http.routers.${app}-admin.tls.options" = "tls-13@file";
         "traefik.http.routers.${app}-admin.middlewares" = "secure-headers@file";
