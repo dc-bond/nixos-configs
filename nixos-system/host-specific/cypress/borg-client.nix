@@ -30,16 +30,21 @@
           echo "spinning down services and starting sql database dumps"
           ${lib.getExe config.services.nextcloud.occ} maintenance:mode --on
           sleep 10 
+          systemctl stop authelia-dcbond.service
+          systemctl stop redis-authelia-dcbond.service
           systemctl stop lldap.service
           systemctl stop uptime-kuma.service
           systemctl stop home-assistant.service
           systemctl stop mosquitto.service
+          systemctl stop traefik.service
           systemctl start postgresqlBackup-hass.service
           systemctl start postgresqlBackup-lldap.service
           systemctl start postgresqlBackup-nextcloud.service
           systemctl stop docker-zwavejs-root.target
           systemctl stop docker-pihole-root.target
           systemctl stop docker-actual-root.target
+          systemctl stop docker-chromium-vpn-root.target
+          systemctl stop docker-searxng-root.target
           sleep 120
         '';
         postHook = ''
@@ -49,10 +54,15 @@
           systemctl start docker-zwavejs-root.target
           systemctl start docker-pihole-root.target
           systemctl start docker-actual-root.target
+          systemctl start traefik.service
+          systemctl start redis-authelia-dcbond.service
           systemctl start lldap.service
+          systemctl start authelia-dcbond.service
           systemctl start uptime-kuma.service
           systemctl start home-assistant.service
           systemctl start mosquitto.service
+          systemctl start docker-chromium-vpn-root.target
+          systemctl start docker-searxng-root.target
         '';
         repo = "borg@${configVars.thinkpadLanIp}:."; # this automatically picks up the location of the remote borg repository assuming remote is running a nixos borg module
         encryption = {
