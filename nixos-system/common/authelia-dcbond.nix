@@ -108,11 +108,21 @@ in
                 policy = "bypass";
               }
               {
-                domain = [ # catchall for any remaining subdomains to only allow chris@dcbond.com to authenticate (assuming 'authelia' traefik middleware set on the service)
+                domain = [ # bypass authelia when connecting to authelia itself
+                  "lldap.${configVars.domain1}"
+                ];
+                subject = [ # only allow admin and danielle-bond users to access lldap and only require one factor
+                  "user:admin"
+                  "user:danielle-bond"
+                ];
+                policy = "one_factor";
+              }
+              {
+                domain = [ # catchall for any remaining subdomains to only allow admin user to authenticate (assuming 'authelia-dcbond' traefik middleware set on the service)
                   "*.${configVars.domain1}"
                 ];
                 subject = "user:admin";
-                policy = "one_factor";
+                policy = "two_factor";
               }
             ];
           };
@@ -220,7 +230,7 @@ in
     #  databases = [ "${app}-${configVars.domain1Short}" ];
     #};
       
-    # this creates traefik router, middleware, and service called "authelia" that other apps can point to in their traefik configs, need to determine how this interplays with separate instances of authelia?
+    # this creates traefik router, middleware, and service called "authelia-dcbond" that other apps can point to in their traefik configs
     traefik.dynamicConfigOptions.http = {
       routers.authelia-dcbond = {
         entrypoints = ["websecure"];
