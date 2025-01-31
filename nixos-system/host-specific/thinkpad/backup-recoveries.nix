@@ -516,7 +516,7 @@ let
     ssh cypress 'sudo mv /tmp/chromium /var/lib/docker/volumes'
 
     { set +x; log "changing ownership of restored application data"; } 2>/dev/null
-    ssh cypress 'sudo chown -R root:root /var/lib/docker/volumes/chromium'
+    ssh cypress 'sudo chown root:root /var/lib/docker/volumes/chromium'
 
     { set +x; log "cleaning up local restore directory"; } 2>/dev/null
     sudo rm -rf ${config.backups.borgCloudDir}/chromium
