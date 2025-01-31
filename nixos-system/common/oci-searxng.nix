@@ -1,4 +1,5 @@
 { 
+  lib,
   config, 
   pkgs, 
   configVars,
@@ -12,7 +13,7 @@ in
 {
 
   virtualisation.oci-containers.containers."${app}" = {
-    image = "docker.io/${app}/${app}:2024.1.6-2f7c800f6"; # https://hub.docker.com/r/searxng/searxng/tags
+    image = "docker.io/${app}/${app}:2025.1.29-738906358"; # https://hub.docker.com/r/searxng/searxng/tags
     autoStart = true;
     log-driver = "journald";
     volumes = [ "${app}:/etc/${app}" ];

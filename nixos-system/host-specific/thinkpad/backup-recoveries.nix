@@ -405,6 +405,126 @@ let
     ssh cypress 'sudo systemctl start lldap.service'
     '';
 
+   recoverCypressSearxngScript = pkgs.writeShellScriptBin "recoverCypressSearxng" ''
+    #!/bin/bash
+    
+    # track errors
+    set -e
+    set -o pipefail
+    
+    # set borg passphrase environment variable
+    export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+  
+    # obtain target archive from user
+    read -p "Enter the archive to recover: " ARCHIVE
+    if [ -z "$ARCHIVE" ]; then
+      echo "Error: archive required."
+      exit 1
+    fi
+    
+    # helper function to print styled messages
+    log() {
+      # temporarily disable tracing for this function
+      { set +x; } 2>/dev/null
+      echo -e "\033[1;33m$1\033[0m"
+      { set -x; } 2>/dev/null
+    }
+    
+    # enable tracing of commands
+    set -x
+
+    { set +x; log "starting backup recovery for searxng container stack on cypress"; } 2>/dev/null
+
+    { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
+    cd ${config.backups.borgCloudDir}
+
+    { set +x; log "extracting application data from borg repository"; } 2>/dev/null
+    sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE var/lib/docker/volumes/searxng --strip-components 4
+
+    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
+    sudo chown -R chris:users ${config.backups.borgCloudDir}/searxng
+
+    { set +x; log "stopping container stack on cypress"; } 2>/dev/null
+    ssh cypress 'sudo systemctl stop docker-searxng-root.target'
+
+    { set +x; log "removing existing application data on cypress"; } 2>/dev/null
+    ssh cypress 'sudo rm -rf /var/lib/docker/volumes/searxng'
+
+    { set +x; log "transferring restored data to cypress"; } 2>/dev/null
+    rsync --progress -avzh ${config.backups.borgCloudDir}/searxng cypress:/tmp
+    ssh cypress 'sudo mv /tmp/searxng /var/lib/docker/volumes'
+
+    { set +x; log "changing ownership of restored application data"; } 2>/dev/null
+    ssh cypress 'sudo chown -R root:root /var/lib/docker/volumes/searxng'
+
+    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
+    sudo rm -rf ${config.backups.borgCloudDir}/searxng
+
+    { set +x; log "restarting restored container stack on cypress"; } 2>/dev/null
+    ssh cypress 'sudo systemctl start docker-searxng-root.target'
+    '';
+   
+  recoverCypressChromiumVpnScript = pkgs.writeShellScriptBin "recoverCypressChromiumVpn" ''
+    #!/bin/bash
+    
+    # track errors
+    set -e
+    set -o pipefail
+    
+    # set borg passphrase environment variable
+    export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+  
+    # obtain target archive from user
+    read -p "Enter the archive to recover: " ARCHIVE
+    if [ -z "$ARCHIVE" ]; then
+      echo "Error: archive required."
+      exit 1
+    fi
+    
+    # helper function to print styled messages
+    log() {
+      # temporarily disable tracing for this function
+      { set +x; } 2>/dev/null
+      echo -e "\033[1;33m$1\033[0m"
+      { set -x; } 2>/dev/null
+    }
+    
+    # enable tracing of commands
+    set -x
+
+    { set +x; log "starting backup recovery for chromium-vpn container stack on cypress"; } 2>/dev/null
+
+    { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
+    cd ${config.backups.borgCloudDir}
+
+    { set +x; log "extracting application data from borg repository"; } 2>/dev/null
+    sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE var/lib/docker/volumes/chromium --strip-components 4
+
+    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
+    sudo chown -R chris:users ${config.backups.borgCloudDir}/chromium
+
+    { set +x; log "stopping chromium-vpn container stack on cypress"; } 2>/dev/null
+    ssh cypress 'sudo systemctl stop docker-chromium-vpn-root.target'
+
+    { set +x; log "removing existing application data on cypress"; } 2>/dev/null
+    ssh cypress 'sudo rm -rf /var/lib/docker/volumes/chromium'
+
+    { set +x; log "transferring restored data to cypress"; } 2>/dev/null
+    rsync --progress -avzh ${config.backups.borgCloudDir}/chromium cypress:/tmp
+    ssh cypress 'sudo mv /tmp/chromium /var/lib/docker/volumes'
+
+    { set +x; log "changing ownership of restored application data"; } 2>/dev/null
+    ssh cypress 'sudo chown -R root:root /var/lib/docker/volumes/chromium'
+
+    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
+    sudo rm -rf ${config.backups.borgCloudDir}/chromium
+
+    { set +x; log "restarting restored chromium-vpn container stack on cypress"; } 2>/dev/null
+    ssh cypress 'sudo systemctl start docker-chromium-vpn-root.target'
+    '';
+
   recoverCypressPiholeScript = pkgs.writeShellScriptBin "recoverCypressPihole" ''
     #!/bin/bash
     
@@ -611,6 +731,8 @@ in
     recoverCypressNextcloudScript
     recoverCypressTraefikScript
     recoverCypressHomeassistantScript
+    recoverCypressChromiumVpnScript
+    recoverCypressSearxngScript
   ];
 
 }  

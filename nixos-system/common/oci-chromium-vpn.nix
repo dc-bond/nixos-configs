@@ -27,13 +27,13 @@ in
       '';
     };
   };
-        #END_POINT=us8963153.nordvpn.com:51820
 
   virtualisation.oci-containers.containers = {
 
     "${app}" = {
       image = "lscr.io/linuxserver/chromium:fdb79002-ls107"; # https://github.com/linuxserver/docker-chromium/releases
       autoStart = true;
+      volumes = [ "${app}:/config" ];
       environment = {
         PUID = "1000";
         PGID = "1000";
@@ -89,10 +89,12 @@ in
         };
         after = [
           "docker-network-${app}.service"
+          "docker-volume-${app}.service"
           "docker-${app2}.service"
         ];
         requires = [
           "docker-network-${app}.service"
+          "docker-volume-${app}.service"
           "docker-${app2}.service"
         ];
         partOf = [
@@ -111,6 +113,18 @@ in
         };
         script = ''
           docker network inspect ${app} || docker network create --subnet ${configVars.chromiumSubnet} --driver bridge --scope local --attachable ${app}
+        '';
+        partOf = ["docker-${app}-root.target"];
+        wantedBy = ["docker-${app}-root.target"];
+      };
+      "docker-volume-${app}" = {
+        path = [pkgs.docker];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        script = ''
+          docker volume inspect ${app} || docker volume create ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];

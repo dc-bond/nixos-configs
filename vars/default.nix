@@ -63,7 +63,7 @@
   chromiumVpnIp = "172.21.9.2";
 
   searxngSubnet = "172.21.10.0/25";
-  searxngVpnIp = "172.21.10.2";
+  searxngIp = "172.21.10.2";
 
   #kumaHostVethIp = "172.22.1.2";
   #kumaContainerVethIp = "172.22.1.3";
