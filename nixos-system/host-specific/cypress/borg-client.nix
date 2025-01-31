@@ -43,7 +43,7 @@
           systemctl stop docker-zwavejs-root.target
           systemctl stop docker-pihole-root.target
           systemctl stop docker-actual-root.target
-          systemctl stop docker-chromium-vpn-root.target
+          systemctl stop docker-chromium-root.target
           systemctl stop docker-searxng-root.target
           sleep 120
         '';
@@ -61,7 +61,7 @@
           systemctl start uptime-kuma.service
           systemctl start home-assistant.service
           systemctl start mosquitto.service
-          systemctl start docker-chromium-vpn-root.target
+          systemctl start docker-chromium-root.target
           systemctl start docker-searxng-root.target
         '';
         repo = "borg@${configVars.thinkpadLanIp}:."; # this automatically picks up the location of the remote borg repository assuming remote is running a nixos borg module

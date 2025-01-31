@@ -506,7 +506,7 @@ let
     sudo chown -R chris:users ${config.backups.borgCloudDir}/chromium
 
     { set +x; log "stopping chromium-vpn container stack on cypress"; } 2>/dev/null
-    ssh cypress 'sudo systemctl stop docker-chromium-vpn-root.target'
+    ssh cypress 'sudo systemctl stop docker-chromium-root.target'
 
     { set +x; log "removing existing application data on cypress"; } 2>/dev/null
     ssh cypress 'sudo rm -rf /var/lib/docker/volumes/chromium'
@@ -522,7 +522,7 @@ let
     sudo rm -rf ${config.backups.borgCloudDir}/chromium
 
     { set +x; log "restarting restored chromium-vpn container stack on cypress"; } 2>/dev/null
-    ssh cypress 'sudo systemctl start docker-chromium-vpn-root.target'
+    ssh cypress 'sudo systemctl start docker-chromium-root.target'
     '';
 
   recoverCypressPiholeScript = pkgs.writeShellScriptBin "recoverCypressPihole" ''
