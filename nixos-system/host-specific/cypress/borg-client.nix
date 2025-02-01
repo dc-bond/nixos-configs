@@ -47,7 +47,7 @@
           systemctl stop docker-actual-root.target
           systemctl stop docker-chromium-root.target
           systemctl stop docker-searxng-root.target
-          sleep 120
+          sleep 30 
         '';
         postHook = ''
           set -x

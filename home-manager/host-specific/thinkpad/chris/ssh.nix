@@ -7,6 +7,8 @@
 
 {
 
+  #sops.secrets.unifiSshPasswd = {};
+
   programs.ssh = {
     enable = true;
     matchBlocks = {
@@ -35,11 +37,32 @@
         user = "${configVars.userName}";
         port = 28766;
       };
-      #"aspen-tailscale" = {
-      #  hostname = "${configVars.aspenTailscaleIp}";
-      #  user = "${configVars.userName}";
-      #  port = 22;
-      #};
+      "unifi-usg" = {
+        hostname = "${configVars.unifiUsgIp}";
+        user = "dcbond";
+        port = 22;
+        #IdentityFile = "${config.sops.secrets.unifiSshPasswd.path}";
+      };
+      "unifi-uap-livingroom" = {
+        hostname = "${configVars.unifiUapLivingRoomIp}";
+        user = "dcbond";
+        port = 22;
+      };
+      "unifi-uap-garage" = {
+        hostname = "${configVars.unifiUapGarageIp}";
+        user = "dcbond";
+        port = 22;
+      };
+      "unifi-switch8" = {
+        hostname = "${configVars.unifiSwitch8Ip}";
+        user = "dcbond";
+        port = 22;
+      };
+      "unifi-switch8-lite" = {
+        hostname = "${configVars.unifiSwitch8LiteIp}";
+        user = "dcbond";
+        port = 22;
+      };
     };
   };
   
