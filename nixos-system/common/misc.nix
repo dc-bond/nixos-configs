@@ -18,4 +18,6 @@
 
   systemd.extraConfig = "DefaultLimitNOFILE=2048"; # defaults to 1024 if unset
 
+  #nix.settings.cores = 2;
+
 }

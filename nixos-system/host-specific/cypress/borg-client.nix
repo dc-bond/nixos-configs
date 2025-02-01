@@ -7,6 +7,8 @@
   ... 
 }: 
 
+          #${lib.getExe config.services.nextcloud.occ} maintenance:mode --on
+          #${lib.getExe config.services.nextcloud.occ} maintenance:mode --off
 {
 
   sops.secrets = {
@@ -28,7 +30,7 @@
         preHook = ''
           set -x
           echo "spinning down services and starting sql database dumps"
-          ${lib.getExe config.services.nextcloud.occ} maintenance:mode --on
+          systemctl start nextcloudMaintenanceOn.service
           sleep 10 
           systemctl stop authelia-dcbond.service
           systemctl stop redis-authelia-dcbond.service
@@ -50,7 +52,7 @@
         postHook = ''
           set -x
           echo "spinning services back up"
-          ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off
+          systemctl start nextcloudMaintenanceOff.service
           systemctl start docker-zwavejs-root.target
           systemctl start docker-pihole-root.target
           systemctl start docker-actual-root.target
