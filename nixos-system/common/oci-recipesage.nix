@@ -8,41 +8,30 @@
 
 let
   app = "recipesage";
-  app1 = "recipesage-nginx";
-  app2 = "recipesage-static";
-  app3 = "recipesage-api";
-  app4 = "recipesage-elasticsearch"; # volume
-  app5 = "recipesage-pushpin";
-  app6 = "recipesage-postgres"; # volume
-  app7 = "recipesage-browserless";
-  app8 = "recipesage-ingredient-instruction-classifier";
-  app9 = "recipesage-minio"; # volume
+  app1 = "recipesage_proxy";
+  app2 = "recipesage_static";
+  app3 = "recipesage_api"; # volume
+  app4 = "recipesage_typesense"; # volume
+  app5 = "recipesage_pushpin";
+  app6 = "recipesage_postgres"; # volume
+  app7 = "recipesage_browserless";
+  app8 = "recipesage_ingredient-instruction-classifier";
 in
 
 {
   
   sops = {
     secrets = {
-      recipesageApiAwsAccessKeyId = {};
-      recipesageApiAwsSecretAccessKey = {};
+      recipesageTypesenseApiKey = {};
       recipesagePostgresDb = {};
       recipesagePostgresUser = {};
       recipesagePostgresPasswd = {};
-      recipesageElasticPasswd = {};
-      recipesageMinioRootUser = {};
-      recipesageMinioRootPasswd = {};
     };
     templates = {
 
       "${app3}-env".content = ''
-        AWS_ACCESS_KEY_ID=${config.sops.placeholder.recipesageApiAwsAccessKeyId}
-        AWS_SECRET_ACCESS_KEY=${config.sops.placeholder.recipesageApiAwsSecretAccessKey}
-        AWS_REGION=us-west-2
-        AWS_BUCKET=recipesage-selfhost
-        AWS_ENDPOINT=http://${app9}:9000/
-        AWS_S3_PUBLIC_PATH=/myminio/recipesage-selfhost/
-        AWS_S3_FORCE_PATH_STYLE=true
-        AWS_S3_SIGNATURE_VERSION=v4
+        STORAGE_TYPE=filesystem
+        FILESYSTEM_STORAGE_PATH=/rs-media
         NODE_ENV=selfhost
         VERBOSE=false
         VERSION=selfhost
@@ -53,28 +42,20 @@ in
         POSTGRES_HOST=${app6}
         POSTGRES_SSL=false
         POSTGRES_LOGGING=false
+        DATABASE_URL=postgresql://${config.sops.placeholder.recipesagePostgresUser}:${config.sops.placeholder.recipesagePostgresPasswd}@${app6}:5432/${config.sops.placeholder.recipesagePostgresDb}
         GCM_KEYPAIR
         SENTRY_DSN
-        GRAYLOG_HOST=localhost
-        GRAYLOG_PORT
         GRIP_URL=http://${app5}:5561/
         GRIP_KEY=recipesage
-        ELASTIC_ENABLE=true
-        ELASTIC_IDX_PREFIX=rs_selfhost_
-        ELASTIC_CONN=http://elastic:recipesage_selfhost@${app4}:9200
-        ELASTIC_PASSWORD=recipesage_selfhost
-        STRIPE_SK
-        STRIPE_WEBHOOK_SECRET
+        SEARCH_PROVIDER=${app4}
+        'TYPESENSE_NODES=[{"host": "${app4}", "port": 8108, "protocol": "http"}]'
+        TYPESENSE_API_KEY=${config.sops.placeholder.recipesageTypesenseApiKey}
+        STRIPE_SK # value should not be set.
+        STRIPE_WEBHOOK_SECRET # value should not be set
         BROWSERLESS_HOST=${app7}
         BROWSERLESS_PORT=3000
         INGREDIENT_INSTRUCTION_CLASSIFIER_URL=http://${app8}:3000/
-      '';
-
-      "${app4}-env".content = ''
-        discovery.type=single-node
-        xpack.security.enabled=false
-        ELASTIC_PASSWORD=${config.sops.placeholder.recipesageElasticPasswd}
-        ES_JAVA_OPTS=-Xms1024m -Xmx1024m 
+        OPENAI_API_KEY
       '';
 
       "${app6}-env".content = ''
@@ -83,64 +64,17 @@ in
         POSTGRES_PASSWORD=${config.sops.placeholder.recipesagePostgresPasswd}
       '';
 
-      "${app9}-env".content = ''
-        MINIO_ROOT_USER=${config.sops.placeholder.recipesageMinioRootUser}
-        MINIO_ROOT_PASSWORD=${config.sops.placeholder.recipesageMinioRootPasswd}
-      '';
-      
     };
   };
 
-  #environment.etc = {
-  #  "recipesage-nginx-default.conf" = {
-  #    user = "docker";
-  #    group = "docker";      
-  #    text = ''
-  #      server {
-  #        client_max_body_size 1G;
-  #      	listen 80;
-  #      	server_name localhost;
-  #        location /grip/ws {
-  #          resolver 127.0.0.11 valid=30s;
-  #          proxy_http_version 1.1;
-  #          proxy_set_header Upgrade $http_upgrade;
-  #          proxy_set_header Connection "Upgrade";
-  #          proxy_connect_timeout 1h;
-  #          proxy_send_timeout 1h;
-  #          proxy_read_timeout 1h;
-  #          proxy_pass http://recipesage-pushpin:7999/ws;
-  #        }
-  #        location /myminio/ {
-  #          resolver 127.0.0.11 valid=30s;
-  #          proxy_pass http://recipesage-minio:9000/;
-  #        }
-  #        location /api/ {
-  #          resolver 127.0.0.11 valid=30s;
-  #          proxy_pass http://recipesage-api:3000/;
-  #        }
-  #      	location / {
-  #          resolver 127.0.0.11 valid=30s;
-  #          proxy_pass http://recipesage-static:80/;
-  #      	}
-  #      }
-  #    '';
-  #  };
-  #  #"recipesage-static.entrypoint.sh".text = ''
-  #  #  #!/bin/sh
-  #  #  sed -i 's|<base href="\/">.*|<base href="/"><script>window.API_BASE_OVERRIDE = '${API_BASE_OVERRIDE}';</script>|i' /usr/share/nginx/html/index.html
-  #  #'';
-  #};
-
-
+  # https://github.com/julianpoy/RecipeSage-selfhost
   virtualisation.oci-containers.containers = {
 
     "${app1}" = {
-      image = "docker.io/nginx:1.27.3"; # https://hub.docker.com/_/nginx/tags
+      image = "docker.io/julianpoy/recipesage-selfhost-proxy:v4.0.0";
       autoStart = true;
       log-driver = "journald";
-      volumes = [ 
-        "/home/chris/proxy.conf:/etc/nginx/conf.d/default.conf" 
-      ];
+      ports = [ "7270:80" ];
       dependsOn = [
         "${app2}"
         "${app3}"
@@ -148,32 +82,25 @@ in
       ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.recipesageNginxIp}"
+        "--ip=${configVars.recipesageProxyIp}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.${app}.entrypoints" = "websecure";
-        "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
-        "traefik.http.routers.${app}.tls" = "true";
-        "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-        "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
-        "traefik.http.services.${app}.loadbalancer.server.port" = "80";
-      };
+      #labels = {
+      #  "traefik.enable" = "true";
+      #  "traefik.http.routers.${app}.entrypoints" = "websecure";
+      #  "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
+      #  "traefik.http.routers.${app}.tls" = "true";
+      #  "traefik.http.routers.${app}.tls.options" = "tls-13@file";
+      #  "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
+      #  "traefik.http.services.${app}.loadbalancer.server.port" = "80";
+      #};
     };
 
     "${app2}" = {
-      image = "docker.io/julianpoy/recipesage-selfhost:static-v2.9.9";
+      image = "docker.io/julianpoy/recipesage-selfhost:static-v2.15.9";
       autoStart = true;
       log-driver = "journald";
-      volumes = [ 
-        "/home/chris/static.entrypoint.sh:/docker-entrypoint.d/static.entrypoint.sh" 
-      ];
-      environment = {
-        DISABLE_REGISTRATION = "true";
-        API_BASE_OVERRIDE = "null";
-      };
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.recipesageStaticIp}"
@@ -183,55 +110,52 @@ in
     };
 
     "${app3}" = {
-      image = "docker.io/julianpoy/recipesage-selfhost:api-v2.9.9";
+      image = "docker.io/julianpoy/recipesage-selfhost:api-v2.15.9";
       autoStart = true;
       log-driver = "journald";
-      cmd = [ "/app/www" ];
-      environmentFiles = [ config.sops.templates."${app3}-env".path ];
       dependsOn = [
         "${app4}"
         "${app5}"
         "${app6}"
         "${app7}"
       ];
+      #cmd = [ "sh -c "npx prisma migrate deploy; npx nx seed prisma; npx ts-node --swc --project packages/backend/tsconfig.json packages/backend/src/bin/www"" ];
+      cmd = [
+      "sh" "-c"
+      "npx prisma migrate deploy; npx nx seed prisma; npx ts-node --swc --project packages/backend/tsconfig.json packages/backend/src/bin/www"
+      ];
+      environmentFiles = [ config.sops.templates."${app3}-env".path ];
+      volumes = [ "${app3}:/rs-media" ];
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.recipesageApiIp}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.${app}.entrypoints" = "websecure";
-        "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
-        "traefik.http.routers.${app}.tls" = "true";
-        "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-        "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
-        "traefik.http.services.${app}.loadbalancer.server.port" = "80";
-      };
     };
 
     "${app4}" = {
-      image = "docker.elastic.co/elasticsearch/elasticsearch:8.5.3";
+      image = "docker.io/typesense/typesense:0.24.1";
       autoStart = true;
       log-driver = "journald";
-      volumes = [ 
-        "${app4}:/usr/share/elasticsearch/data" 
-      ];
-      environmentFiles = [ config.sops.templates."${app4}-env".path ];
+      volumes = [ "${app4}:data" ];
+      cmd = [ "--data-dir /data --api-key=XgQCnEyQf5YuJYvm2VTQZV3BetFTni --enable-cors" ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.recipesageElasticsearchIp}"
+        "--ip=${configVars.recipesageTypesenseIp}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
     };
 
     "${app5}" = {
-      image = "docker.io/fanout/pushpin:1.27.0";
+      image = "docker.io/julianpoy/pushpin:2023-09-17";
       autoStart = true;
       log-driver = "journald";
+      entrypoint = "/bin/sh -c";
+      #cmd = [ "'sed -i "s/sig_key=changeme/sig_key=$$GRIP_KEY/" /etc/pushpin/pushpin.conf && echo "* $${TARGET},over_http" > /etc/pushpin/routes && pushpin --merge-output'" ]
       environment = { 
+        GRIP_KEY = "recipesage";
         target = "${app3}:3000";
       };
       extraOptions = [
@@ -243,12 +167,10 @@ in
     };
 
     "${app6}" = {
-      image = "docker.io/postgres:15.1";
+      image = "docker.io/postgres:16";
       autoStart = true;
       log-driver = "journald";
-      volumes = [ 
-        "${app6}:/var/lib/postgresql/data" 
-      ];
+      volumes = [ "${app6}:/var/lib/postgresql/data" ];
       environmentFiles = [ config.sops.templates."${app6}-env".path ];
       extraOptions = [
         "--network=${app}"
@@ -259,7 +181,7 @@ in
     };
 
     "${app7}" = {
-      image = "docker.io/browserless/chrome:1.53.0-chrome-stable";
+      image = "docker.io/browserless/chrome:1.61.0-puppeteer-21.4.1";
       autoStart = true;
       log-driver = "journald";
       environment = { 
@@ -280,7 +202,7 @@ in
       log-driver = "journald";
       environment = { 
         SENTENCE_EMBEDDING_BATCH_SIZE = "200";
-        PREDICTION_CONCURRENCY = "4";
+        PREDICTION_CONCURRENCY = "2";
       };
       extraOptions = [
         "--network=${app}"
@@ -288,32 +210,6 @@ in
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
-    };
-
-    "${app9}" = {
-      image = "docker.io/minio/minio:RELEASE.2025-01-20T14-49-07Z"; # https://hub.docker.com/r/minio/minio/tags
-      autoStart = true;
-      log-driver = "journald";
-      volumes = [ 
-        "${app9}:/data" 
-      ];
-      cmd = [ "server /data" ];
-      environmentFiles = [ config.sops.templates."${app9}-env".path ];
-      extraOptions = [
-        "--network=${app}"
-        "--ip=${configVars.recipesageMinioIp}"
-        "--tty=true"
-        "--stop-signal=SIGINT"
-      ];
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.${app9}.entrypoints" = "websecure";
-        "traefik.http.routers.${app9}.rule" = "Host(`${app9}.${configVars.domain2}`)";
-        "traefik.http.routers.${app9}.tls" = "true";
-        "traefik.http.routers.${app9}.tls.options" = "tls-13@file";
-        "traefik.http.routers.${app9}.middlewares" = "secure-headers@file";
-        "traefik.http.services.${app9}.loadbalancer.server.port" = "9000";
-      };
     };
 
   };
@@ -330,9 +226,15 @@ in
         };
         after = [
           "docker-network-${app}.service"
+          "docker-${app2}.service"
+          "docker-${app3}.service"
+          "docker-${app5}.service"
         ];
         requires = [
           "docker-network-${app}.service"
+          "docker-${app2}.service"
+          "docker-${app3}.service"
+          "docker-${app5}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -372,9 +274,19 @@ in
         };
         after = [
           "docker-network-${app}.service"
+          "docker-volume-${app3}.service"
+          "docker-${app4}.service"
+          "docker-${app5}.service"
+          "docker-${app6}.service"
+          "docker-${app7}.service"
         ];
         requires = [
           "docker-network-${app}.service"
+          "docker-volume-${app3}.service"
+          "docker-${app4}.service"
+          "docker-${app5}.service"
+          "docker-${app6}.service"
+          "docker-${app7}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -382,6 +294,19 @@ in
         wantedBy = [
           "docker-${app}-root.target"
         ];
+      };
+
+      "docker-volume-${app3}" = {
+        path = [pkgs.docker];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        script = ''
+          docker volume inspect ${app3} || docker volume create ${app3}
+        '';
+        partOf = ["docker-${app}-root.target"];
+        wantedBy = ["docker-${app}-root.target"];
       };
       
       "docker-${app4}" = {
@@ -517,42 +442,6 @@ in
         wantedBy = [
           "docker-${app}-root.target"
         ];
-      };
-
-      "docker-${app9}" = {
-        serviceConfig = {
-          Restart = lib.mkOverride 500 "always";
-          RestartMaxDelaySec = lib.mkOverride 500 "1m";
-          RestartSec = lib.mkOverride 500 "100ms";
-          RestartSteps = lib.mkOverride 500 9;
-        };
-        after = [
-          "docker-network-${app}.service"
-          "docker-volume-${app9}.service"
-        ];
-        requires = [
-          "docker-network-${app}.service"
-          "docker-volume-${app9}.service"
-        ];
-        partOf = [
-          "docker-${app}-root.target"
-        ];
-        wantedBy = [
-          "docker-${app}-root.target"
-        ];
-      };
-
-      "docker-volume-${app9}" = {
-        path = [pkgs.docker];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-        };
-        script = ''
-          docker volume inspect ${app9} || docker volume create ${app9}
-        '';
-        partOf = ["docker-${app}-root.target"];
-        wantedBy = ["docker-${app}-root.target"];
       };
 
       "docker-network-${app}" = {
