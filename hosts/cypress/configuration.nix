@@ -37,7 +37,7 @@
       "nixos-system/common/oci-chromium-vpn.nix"
       "nixos-system/common/oci-searxng.nix"
       #"nixos-system/common/oci-wordpress-dcbond.nix"
-      #"nixos-system/common/oci-recipesage.nix"
+      "nixos-system/common/oci-recipesage.nix"
       "nixos-system/host-specific/cypress/users.nix"
       "nixos-system/host-specific/cypress/sshd.nix"
       "nixos-system/host-specific/cypress/sops.nix"
