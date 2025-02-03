@@ -8,7 +8,7 @@
 
 let
   app1 = "jellyfin";
-  app2 = "jellyseer";
+  app2 = "jellyseerr";
 in
 
 {
