@@ -12,7 +12,7 @@ let
   app2 = "static";
   app3 = "api"; # volume
   app4 = "typesense"; # volume
-  app5 = "pushpin";
+  app5 = "pushpin"; # bind mount
   app6 = "postgres"; # volume
   app7 = "browserless";
   app8 = "ingredient-instruction-classifier";
@@ -32,7 +32,8 @@ in
   
   sops = {
     secrets = {
-      recipesageTypesenseApiKey = {};
+      #recipesageTypesenseApiKey = {};
+      recipesageGripKey = {};
       recipesagePostgresDb = {};
       recipesagePostgresUser = {};
       recipesagePostgresPasswd = {};
@@ -55,10 +56,10 @@ in
         POSTGRES_LOGGING=false
         DATABASE_URL=postgresql://${config.sops.placeholder.recipesagePostgresUser}:${config.sops.placeholder.recipesagePostgresPasswd}@${app6}:5432/${config.sops.placeholder.recipesagePostgresDb}
         GRIP_URL=http://${app5}:5561/
-        GRIP_KEY=recipesage
+        GRIP_KEY=${config.sops.placeholder.recipesageGripKey}
         SEARCH_PROVIDER=${app4}
         TYPESENSE_NODES=[{"host": "${app4}", "port": 8108, "protocol": "http"}]
-        TYPESENSE_API_KEY=${config.sops.placeholder.recipesageTypesenseApiKey}
+        TYPESENSE_API_KEY=recipesage
         BROWSERLESS_HOST=${app7}
         BROWSERLESS_PORT=3000
         INGREDIENT_INSTRUCTION_CLASSIFIER_URL=http://${app8}:3000/
@@ -135,7 +136,7 @@ in
         "npx prisma migrate deploy; npx nx seed prisma; npx ts-node --swc --project packages/backend/tsconfig.json packages/backend/src/bin/www"
       ];
       environmentFiles = [ config.sops.templates."${app3}-env".path ];
-      volumes = [ "${app3}:/rs-media" ];
+      volumes = [ "${app}-${app3}:/rs-media" ];
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.recipesageApiIp}"
@@ -148,11 +149,11 @@ in
       image = "docker.io/typesense/typesense:0.24.1";
       autoStart = true;
       log-driver = "journald";
-      volumes = [ "${app4}:/data" ];
+      volumes = [ "${app}-${app4}:/data" ];
       cmd = [ 
         "--data-dir" 
         "/data"
-        "--api-key=${config.sops.placeholder.recipesageTypesenseApiKey}"
+        "--api-key=recipesage"
         "--enable-cors" 
       ];
       extraOptions = [
@@ -170,7 +171,7 @@ in
       cmd = [ "/start-recipesage-pushpin.sh" ];
       volumes = [ "/etc/start-recipesage-pushpin.sh:/start-recipesage-pushpin.sh" ];
       environment = { 
-        GRIP_KEY = "recipesage";
+        GRIP_KEY = "${config.sops.placeholder.recipesageGripKey}";
         target = "${app3}:3000";
       };
       extraOptions = [
@@ -185,7 +186,7 @@ in
       image = "docker.io/postgres:16";
       autoStart = true;
       log-driver = "journald";
-      volumes = [ "${app6}:/var/lib/postgresql/data" ];
+      volumes = [ "${app}-${app6}:/var/lib/postgresql/data" ];
       environmentFiles = [ config.sops.templates."${app6}-env".path ];
       extraOptions = [
         "--network=${app}"
@@ -289,7 +290,7 @@ in
         };
         after = [
           "docker-network-${app}.service"
-          "docker-volume-${app3}.service"
+          "docker-volume-${app}-${app3}.service"
           "docker-${app4}.service"
           "docker-${app5}.service"
           "docker-${app6}.service"
@@ -297,7 +298,7 @@ in
         ];
         requires = [
           "docker-network-${app}.service"
-          "docker-volume-${app3}.service"
+          "docker-volume-${app}-${app3}.service"
           "docker-${app4}.service"
           "docker-${app5}.service"
           "docker-${app6}.service"
@@ -311,14 +312,14 @@ in
         ];
       };
 
-      "docker-volume-${app3}" = {
+      "docker-volume-${app}-${app3}" = {
         path = [pkgs.docker];
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
         };
         script = ''
-          docker volume inspect ${app3} || docker volume create ${app3}
+          docker volume inspect ${app}-${app3} || docker volume create ${app}-${app3}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
@@ -333,11 +334,11 @@ in
         };
         after = [
           "docker-network-${app}.service"
-          "docker-volume-${app4}.service"
+          "docker-volume-${app}-${app4}.service"
         ];
         requires = [
           "docker-network-${app}.service"
-          "docker-volume-${app4}.service"
+          "docker-volume-${app}-${app4}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -347,14 +348,14 @@ in
         ];
       };
       
-      "docker-volume-${app4}" = {
+      "docker-volume-${app}-${app4}" = {
         path = [pkgs.docker];
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
         };
         script = ''
-          docker volume inspect ${app4} || docker volume create ${app4}
+          docker volume inspect ${app}-${app4} || docker volume create ${app}-${app4}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
@@ -390,11 +391,11 @@ in
         };
         after = [
           "docker-network-${app}.service"
-          "docker-volume-${app6}.service"
+          "docker-volume-${app}-${app6}.service"
         ];
         requires = [
           "docker-network-${app}.service"
-          "docker-volume-${app6}.service"
+          "docker-volume-${app}-${app6}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -404,14 +405,14 @@ in
         ];
       };
       
-      "docker-volume-${app6}" = {
+      "docker-volume-${app}-${app6}" = {
         path = [pkgs.docker];
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
         };
         script = ''
-          docker volume inspect ${app6} || docker volume create ${app6}
+          docker volume inspect ${app}-${app6} || docker volume create ${app}-${app6}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];

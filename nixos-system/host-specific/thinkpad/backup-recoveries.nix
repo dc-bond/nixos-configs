@@ -258,7 +258,10 @@ let
 
     { set +x; log "restarting restored nextcloud service on cypress"; } 2>/dev/null
     ssh cypress 'sudo systemctl start redis-nextcloud.service'
+    sleep 5 
     ssh cypress 'sudo systemctl start nginx.service'
+    sleep 5
+    ssh cypress 'nextcloud-occ maintenance:mode --off'
     '';
 
   recoverCypressUptimeKumaScript = pkgs.writeShellScriptBin "recoverCypressUptimeKuma" ''
@@ -525,6 +528,80 @@ let
     ssh cypress 'sudo systemctl start docker-chromium-root.target'
     '';
 
+  recoverCypressRecipesageScript = pkgs.writeShellScriptBin "recoverCypressRecipesage" ''
+    #!/bin/bash
+    
+    # track errors
+    set -e
+    set -o pipefail
+    
+    # set borg passphrase environment variable
+    export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+  
+    # obtain target archive from user
+    read -p "Enter the archive to recover: " ARCHIVE
+    if [ -z "$ARCHIVE" ]; then
+      echo "Error: archive required."
+      exit 1
+    fi
+    
+    # helper function to print styled messages
+    log() {
+      # temporarily disable tracing for this function
+      { set +x; } 2>/dev/null
+      echo -e "\033[1;33m$1\033[0m"
+      { set -x; } 2>/dev/null
+    }
+    
+    # enable tracing of commands
+    set -x
+
+    { set +x; log "starting backup recovery for recipesage containers on cypress"; } 2>/dev/null
+
+    { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
+    cd ${config.backups.borgCloudDir}
+
+    { set +x; log "extracting application data from borg repository"; } 2>/dev/null
+    sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE var/lib/docker/volumes/recipesage-api --strip-components 4
+    sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE var/lib/docker/volumes/recipesage-postgres --strip-components 4
+    sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE var/lib/docker/volumes/recipesage-typesense --strip-components 4
+
+    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
+    sudo chown -R chris:users ${config.backups.borgCloudDir}/recipesage-api
+    sudo chown -R chris:users ${config.backups.borgCloudDir}/recipesage-postgres
+    sudo chown -R chris:users ${config.backups.borgCloudDir}/recipesage-typesense
+
+    { set +x; log "stopping container stack on cypress"; } 2>/dev/null
+    ssh cypress 'sudo systemctl stop docker-recipesage-root.target'
+
+    { set +x; log "removing existing application data on cypress"; } 2>/dev/null
+    ssh cypress 'sudo rm -rf /var/lib/docker/volumes/recipesage-api'
+    ssh cypress 'sudo rm -rf /var/lib/docker/volumes/recipesage-postgres'
+    ssh cypress 'sudo rm -rf /var/lib/docker/volumes/recipesage-typesense'
+
+    { set +x; log "transferring restored data to cypress"; } 2>/dev/null
+    rsync --progress -avzh ${config.backups.borgCloudDir}/recipesage-api cypress:/tmp
+    rsync --progress -avzh ${config.backups.borgCloudDir}/recipesage-postgres cypress:/tmp
+    rsync --progress -avzh ${config.backups.borgCloudDir}/recipesage-typesense cypress:/tmp
+    ssh cypress 'sudo mv /tmp/recipesage-api /var/lib/docker/volumes'
+    ssh cypress 'sudo mv /tmp/recipesage-postgres /var/lib/docker/volumes'
+    ssh cypress 'sudo mv /tmp/recipesage-typesense /var/lib/docker/volumes'
+
+    { set +x; log "changing ownership of restored application data"; } 2>/dev/null
+    ssh cypress 'sudo chown -R root:root /var/lib/docker/volumes/recipesage-api'
+    ssh cypress 'sudo chown -R root:root /var/lib/docker/volumes/recipesage-postgres'
+    ssh cypress 'sudo chown -R root:root /var/lib/docker/volumes/recipesage-typesense'
+
+    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
+    sudo rm -rf ${config.backups.borgCloudDir}/recipesage-api
+    sudo rm -rf ${config.backups.borgCloudDir}/recipesage-postgres
+    sudo rm -rf ${config.backups.borgCloudDir}/recipesage-typesense
+
+    { set +x; log "restarting restored pihole-unbound container stack on cypress"; } 2>/dev/null
+    ssh cypress 'sudo systemctl start docker-recipesage-root.target'
+    '';
+    
   recoverCypressPiholeScript = pkgs.writeShellScriptBin "recoverCypressPihole" ''
     #!/bin/bash
     
@@ -733,6 +810,7 @@ in
     recoverCypressHomeassistantScript
     recoverCypressChromiumVpnScript
     recoverCypressSearxngScript
+    recoverCypressRecipesageScript
   ];
 
 }  
