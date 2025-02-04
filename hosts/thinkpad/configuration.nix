@@ -69,6 +69,7 @@
     libreoffice-still # office suite
     #element-desktop-wayland # matrix chat app
     hollywood # fill terminal with melodramatic technobabble
+    cool-retro-term # retro terminal
   ];
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
