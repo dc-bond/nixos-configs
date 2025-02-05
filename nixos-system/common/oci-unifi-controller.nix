@@ -113,7 +113,8 @@ in
       log-driver = "journald";
       environmentFiles = [ config.sops.templates."${app1}-env".path ];
       volumes = [ 
-        "${app1}:/data/db"
+        "${app1}-db:/data/db"
+        "${app1}-configdb:/data/configdb"
         "/etc/${app1}-init.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro"
       ];
       extraOptions = [
@@ -179,11 +180,13 @@ in
         };
         after = [
           "docker-network-${app}.service"
-          "docker-volume-${app1}.service"
+          "docker-volume-${app1}-db.service"
+          "docker-volume-${app1}-configdb.service"
         ];
         requires = [
           "docker-network-${app}.service"
-          "docker-volume-${app1}.service"
+          "docker-volume-${app1}-db.service"
+          "docker-volume-${app1}-configdb.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -204,14 +207,26 @@ in
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
       };
-      "docker-volume-${app1}" = {
+      "docker-volume-${app1}-db" = {
         path = [pkgs.docker];
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
         };
         script = ''
-          docker volume inspect ${app1} || docker volume create ${app1}
+          docker volume inspect ${app1}-db || docker volume create ${app1}-db
+        '';
+        partOf = ["docker-${app}-root.target"];
+        wantedBy = ["docker-${app}-root.target"];
+      };
+      "docker-volume-${app1}-configdb" = {
+        path = [pkgs.docker];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        script = ''
+          docker volume inspect ${app1}-configdb || docker volume create ${app1}-configdb
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];

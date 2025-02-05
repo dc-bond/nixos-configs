@@ -528,6 +528,80 @@ let
     ssh cypress 'sudo systemctl start docker-chromium-root.target'
     '';
 
+  recoverCypressUnifiControllerScript = pkgs.writeShellScriptBin "recoverCypressUnifiController" ''
+    #!/bin/bash
+    
+    # track errors
+    set -e
+    set -o pipefail
+    
+    # set borg passphrase environment variable
+    export BORG_PASSPHRASE=$(sudo cat ${borgCypressCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+  
+    # obtain target archive from user
+    read -p "Enter the archive to recover: " ARCHIVE
+    if [ -z "$ARCHIVE" ]; then
+      echo "Error: archive required."
+      exit 1
+    fi
+    
+    # helper function to print styled messages
+    log() {
+      # temporarily disable tracing for this function
+      { set +x; } 2>/dev/null
+      echo -e "\033[1;33m$1\033[0m"
+      { set -x; } 2>/dev/null
+    }
+    
+    # enable tracing of commands
+    set -x
+
+    { set +x; log "starting backup recovery for unifi-controller containers on cypress"; } 2>/dev/null
+
+    { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
+    cd ${config.backups.borgCloudDir}
+
+    { set +x; log "extracting application data from borg repository"; } 2>/dev/null
+    sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE var/lib/docker/volumes/unifi-controller --strip-components 4
+    sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE var/lib/docker/volumes/unifi-controller-mongodb-db --strip-components 4
+    sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE var/lib/docker/volumes/unifi-controller-mongodb-configdb --strip-components 4
+
+    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
+    sudo chown -R chris:users ${config.backups.borgCloudDir}/unifi-controller
+    sudo chown -R chris:users ${config.backups.borgCloudDir}/unifi-controller-mongodb-db
+    sudo chown -R chris:users ${config.backups.borgCloudDir}/unifi-controller-mongodb-configdb
+
+    { set +x; log "stopping container stack on cypress"; } 2>/dev/null
+    ssh cypress 'sudo systemctl stop docker-unifi-controller-root.target'
+
+    { set +x; log "removing existing application data on cypress"; } 2>/dev/null
+    ssh cypress 'sudo rm -rf /var/lib/docker/volumes/unifi-controller'
+    ssh cypress 'sudo rm -rf /var/lib/docker/volumes/unifi-controller-mongodb-db'
+    ssh cypress 'sudo rm -rf /var/lib/docker/volumes/unifi-controller-mongodb-configdb'
+
+    { set +x; log "transferring restored data to cypress"; } 2>/dev/null
+    rsync --progress -avzh ${config.backups.borgCloudDir}/unifi-controller cypress:/tmp
+    rsync --progress -avzh ${config.backups.borgCloudDir}/unifi-controller-mongodb-db cypress:/tmp
+    rsync --progress -avzh ${config.backups.borgCloudDir}/unifi-controller-mongodb-configdb cypress:/tmp
+    ssh cypress 'sudo mv /tmp/unifi-controller /var/lib/docker/volumes'
+    ssh cypress 'sudo mv /tmp/unifi-controller-mongodb-db /var/lib/docker/volumes'
+    ssh cypress 'sudo mv /tmp/unifi-controller-mongodb-configdb /var/lib/docker/volumes'
+
+    { set +x; log "changing ownership of restored application data"; } 2>/dev/null
+    ssh cypress 'sudo chown -R root:root /var/lib/docker/volumes/unifi-controller'
+    ssh cypress 'sudo chown -R root:root /var/lib/docker/volumes/unifi-controller-mongodb-db'
+    ssh cypress 'sudo chown -R root:root /var/lib/docker/volumes/unifi-controller-mongodb-configdb'
+
+    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
+    sudo rm -rf ${config.backups.borgCloudDir}/unifi-controller
+    sudo rm -rf ${config.backups.borgCloudDir}/unifi-controller-mongodb-db
+    sudo rm -rf ${config.backups.borgCloudDir}/unifi-controller-mongodo-configdb
+
+    { set +x; log "restarting restored unifi-controller container stack on cypress"; } 2>/dev/null
+    ssh cypress 'sudo systemctl start docker-unifi-controller-root.target'
+    '';
+
   recoverCypressRecipesageScript = pkgs.writeShellScriptBin "recoverCypressRecipesage" ''
     #!/bin/bash
     
@@ -811,6 +885,7 @@ in
     recoverCypressChromiumVpnScript
     recoverCypressSearxngScript
     recoverCypressRecipesageScript
+    recoverCypressUnifiControllerScript
   ];
 
 }  
