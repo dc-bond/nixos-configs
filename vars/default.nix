@@ -19,7 +19,7 @@
   cypressTailscaleIp = "100.84.248.69";
 
   unifiUsgIp = "192.168.1.1";
-  unifiSwitch8Ip = "192.168.1.183";
+  unifiSwitch8Ip = "192.168.1.199";
   unifiSwitch8LiteIp = "192.168.1.151";
   unifiUapGarageIp = "192.168.1.191";
   unifiUapLivingRoomIp = "192.168.1.173";

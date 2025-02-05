@@ -54,9 +54,10 @@ in
         MONGO_PASS=${config.sops.placeholder.unifiMongoPasswd}
         MONGO_DBNAME=${config.sops.placeholder.unifiMongoDb}
         MONGO_HOST=${app1}
-        MONGO_PORT=27017 # mongodb port only evaluated on first run
+        MONGO_PORT=27017
         MEM_LIMIT=1024
-        MEM_STARTUP=1024 #optional
+        MEM_STARTUP=1024
+        MONGO_AUTHSOURCE=admin
       '';
       "${app1}-env".content = ''
         MONGO_INITDB_ROOT_USERNAME=${config.sops.placeholder.unifiMongoRootUser}
@@ -82,7 +83,7 @@ in
         #"5514:5514/udp" # remote syslog port
         "10001:10001/udp" # AP discovery port
         "8080:8080" # device communication port
-        "8443:8443" # web admin port
+        #"8443:8443" # web admin port, add if not using traefik
         "8843:8843" # guest portal https redirect port
         "8880:8880" # guest portal http redirect port
         "6789:6789" # mobile throughput test
@@ -93,16 +94,18 @@ in
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
-      #labels = {
-      #  "traefik.enable" = "true";
-      #  "traefik.http.routers.${app}.service" = "${app}";
-      #  "traefik.http.routers.${app}.entrypoints" = "websecure";
-      #  "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
-      #  "traefik.http.routers.${app}.tls" = "true";
-      #  "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-      #  "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
-      #  "traefik.http.services.${app}.loadbalancer.server.port" = "8443";
-      #};
+      labels = {
+        "traefik.enable" = "true";
+        "traefik.http.routers.${app}.service" = "${app}";
+        "traefik.http.routers.${app}.entrypoints" = "websecure";
+        "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
+        "traefik.http.routers.${app}.tls" = "true";
+        "traefik.http.routers.${app}.tls.options" = "tls-13@file";
+        #"traefik.http.routers.${app}.middlewares" = "secure-headers@file"; # add if not using traefik
+        "traefik.http.routers.${app}.middlewares" = "secure-headers@file, unifi-headers@file"; # drop if not using traefik
+        "traefik.http.services.${app}.loadbalancer.server.port" = "8443";
+        "traefik.http.services.${app}.loadbalancer.server.scheme" = "https"; # drop if not using traefik
+      };
     };
     "${app1}" = {
       image = "docker.io/mongo:7.0"; # https://hub.docker.com/_/mongo/tags
@@ -121,6 +124,11 @@ in
       ];
     };
 
+  };
+  
+  services.traefik = {
+    staticConfigOptions.serversTransport.insecureSkipVerify = true; 
+    dynamicConfigOptions.http.middlewares.unifi-headers.headers.customRequestHeaders.Authorization = "";
   };
 
   systemd = {
