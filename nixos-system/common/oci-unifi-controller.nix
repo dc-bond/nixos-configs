@@ -12,9 +12,35 @@ let
 in
 
 {
+
+  environment.etc."${app1}-init.sh" = {
+    text = ''
+      #!/bin/bash
+      if which mongosh > /dev/null 2>&1; then
+        mongo_init_bin='mongosh'
+      else
+        mongo_init_bin='mongo'
+      fi
+      "''${mongo_init_bin}" <<EOF
+      use ''${MONGO_AUTHSOURCE}
+      db.auth("''${MONGO_INITDB_ROOT_USERNAME}", "''${MONGO_INITDB_ROOT_PASSWORD}")
+      db.createUser({
+        user: "''${MONGO_USER}",
+        pwd: "''${MONGO_PASS}",
+        roles: [
+          { db: "''${MONGO_DBNAME}", role: "dbOwner" },
+          { db: "''${MONGO_DBNAME}_stat", role: "dbOwner" }
+        ]
+      })
+      EOF
+    '';
+    mode = "0755";
+  };
   
   sops = {
     secrets = {
+      unifiMongoRootUser = {};
+      unifiMongoRootPasswd = {};
       unifiMongoUser = {};
       unifiMongoPasswd = {};
       unifiMongoDb = {};
@@ -33,9 +59,12 @@ in
         MEM_STARTUP=1024 #optional
       '';
       "${app1}-env".content = ''
-        MONGO_INITDB_ROOT_USERNAME=${config.sops.placeholder.unifiMongoUser}
-        MONGO_INITDB_ROOT_PASSWORD=${config.sops.placeholder.unifiMongoPasswd}
-        MONGO_INITDB_DATABASE=${config.sops.placeholder.unifiMongoDb}
+        MONGO_INITDB_ROOT_USERNAME=${config.sops.placeholder.unifiMongoRootUser}
+        MONGO_INITDB_ROOT_PASSWORD=${config.sops.placeholder.unifiMongoRootPasswd}
+        MONGO_USER=${config.sops.placeholder.unifiMongoUser}
+        MONGO_PASS=${config.sops.placeholder.unifiMongoPasswd}
+        MONGO_DBNAME=${config.sops.placeholder.unifiMongoDb}
+        MONGO_AUTHSOURCE=admin
       '';
     };
   };
@@ -76,11 +105,14 @@ in
       #};
     };
     "${app1}" = {
-      image = "docker.io/mongo:8.0.4"; # https://hub.docker.com/_/mongo/tags
+      image = "docker.io/mongo:7.0"; # https://hub.docker.com/_/mongo/tags
       autoStart = true;
       log-driver = "journald";
       environmentFiles = [ config.sops.templates."${app1}-env".path ];
-      volumes = [ "${app1}:/data" ];
+      volumes = [ 
+        "${app1}:/data/db"
+        "/etc/${app1}-init.sh:/docker-entrypoint-initdb.d/init-mongo.sh:ro"
+      ];
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.unifiMongoIp}"
