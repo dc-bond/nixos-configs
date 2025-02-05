@@ -29,8 +29,9 @@
       "nixos-system/common/home-assistant.nix"
       "nixos-system/common/authelia-dcbond.nix"
       "nixos-system/common/stirling-pdf.nix"
-      "nixos-system/common/media-server.nix"
+      #"nixos-system/common/media-server.nix" # need to figure out vpn solution
       #"nixos-system/common/unifi-controller.nix" # compile problems with mongodb
+      "nixos-system/common/oci-unifi-controller.nix"
       "nixos-system/common/oci-pihole.nix"
       "nixos-system/common/oci-actual.nix"
       "nixos-system/common/oci-fava.nix"

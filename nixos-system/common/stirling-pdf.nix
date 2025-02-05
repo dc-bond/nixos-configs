@@ -12,6 +12,10 @@ in
 
   services.${app} = {
     enable = true;
+    environment = { 
+      SERVER_PORT = 8081; 
+      INSTALL_BOOK_AND_ADVANCED_HTML_OPS = "true";
+    };
   };
 
   services.traefik.dynamicConfigOptions.http = {
@@ -32,7 +36,7 @@ in
         passHostHeader = true;
         servers = [
         {
-          url = "http://127.0.0.1:8080";
+          url = "http://127.0.0.1:8081";
         }
         ];
       };
