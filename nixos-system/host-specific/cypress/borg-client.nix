@@ -31,7 +31,6 @@
           set -x
           echo "spinning down services and starting sql database dumps"
           systemctl start nextcloudMaintenanceOn.service
-          sleep 10 
           systemctl stop authelia-dcbond.service
           systemctl stop redis-authelia-dcbond.service
           systemctl stop lldap.service
@@ -39,20 +38,23 @@
           systemctl stop home-assistant.service
           systemctl stop mosquitto.service
           systemctl stop traefik.service
-          systemctl start postgresqlBackup-hass.service
-          systemctl start postgresqlBackup-lldap.service
-          systemctl start postgresqlBackup-nextcloud.service
           systemctl stop docker-zwavejs-root.target
           systemctl stop docker-pihole-root.target
           systemctl stop docker-actual-root.target
           systemctl stop docker-chromium-root.target
           systemctl stop docker-searxng-root.target
-          sleep 30 
+          systemctl stop docker-unifi-controller-root.target
+          sleep 10 
+          systemctl start postgresqlBackup-hass.service
+          systemctl start postgresqlBackup-lldap.service
+          systemctl start postgresqlBackup-nextcloud.service
+          sleep 10
         '';
         postHook = ''
           set -x
           echo "spinning services back up"
           systemctl start nextcloudMaintenanceOff.service
+          systemctl start docker-unifi-controller-root.target
           systemctl start docker-zwavejs-root.target
           systemctl start docker-pihole-root.target
           systemctl start docker-actual-root.target
@@ -93,6 +95,9 @@
           "/var/lib/docker/volumes/actual"
           "/var/lib/docker/volumes/searxng"
           "/var/lib/docker/volumes/chromium"
+          "/var/lib/docker/volumes/unifi-controller"
+          "/var/lib/docker/volumes/unifi-controller-mongodb-db"
+          "/var/lib/docker/volumes/unifi-controller-mongodb-configdb"
           "/var/backup/postgresql/hass.sql.gz"
           "/var/backup/postgresql/lldap.sql.gz"
           "/var/backup/postgresql/nextcloud.sql.gz"

@@ -1,6 +1,7 @@
 { 
   config,
   configLib,
+  configVars,
   pkgs, 
   ... 
 }: 
@@ -22,7 +23,7 @@
       require-cross-certification = true;
       throw-keyids = true;
       with-fingerprint = true;
-      default-key = "DB9ADBBE6FBD1F0E694AF25D012321D46E090E61";
+      default-key = "${userGpgPubKey}";
       keyid-format = "0xlong";
       list-options = "show-uid-validity";
       verify-options = "show-uid-validity";
