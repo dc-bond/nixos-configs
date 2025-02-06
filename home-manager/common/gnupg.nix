@@ -23,7 +23,7 @@
       require-cross-certification = true;
       throw-keyids = true;
       with-fingerprint = true;
-      default-key = "${userGpgPubKey}";
+      default-key = "${configVars.userGpgPubKey}";
       keyid-format = "0xlong";
       list-options = "show-uid-validity";
       verify-options = "show-uid-validity";

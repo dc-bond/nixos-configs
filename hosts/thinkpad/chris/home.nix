@@ -27,6 +27,7 @@
       "home-manager/common/pass.nix"
       "home-manager/common/git.nix"
       "home-manager/common/wlogout.nix"
+      "home-manager/common/email.nix"
       "home-manager/host-specific/thinkpad/chris/aliases.nix"
       "home-manager/host-specific/thinkpad/chris/ssh.nix"
     ])

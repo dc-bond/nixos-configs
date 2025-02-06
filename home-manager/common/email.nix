@@ -1,5 +1,6 @@
 { 
   pkgs,
+  config,
   configVars, 
   ... 
 }: 
@@ -18,30 +19,40 @@
   accounts.email.accounts = {
     dcbond = {
       address = "${configVars.userEmail}";
-      gpg = {
-        key = "${userGpgPubKey}";
-        signByDefault = true;
-      };
+      userName = "${configVars.userEmail}";
+      realName = "${configVars.userFullName}";
+      passwordCommand = "pass email/${configVars.userEmail}";
+      primary = true;
       imap = {
         host = "mail.privateemail.com";
         port = 993; 
+        tls = {
+          enable = true;
+          useStartTls = false;
+        };
       };
       smtp = {
         host = "mail.privateemail.com";
         port = 465; 
-        tls.enable = true;
-        useStartTls = false;
+        tls = {
+          enable = true;
+          useStartTls = false;
+        };
+      };
+      msmtp.enable = true;
+      notmuch = {
+        enable = true;
+        #neomutt.enable = true; 
       };
       mbsync = {
         enable = true;
         create = "maildir";
         expunge = "both";
-        #extraConfig
       };
-      msmtp.enable = true;
-      notmuch.enable = true;
-      primary = true;
-      realName = "${configVars.userFullName}";
+      maildir.path = "${config.home.homeDirectory}/email";
+      #neomutt = {
+      #  enable = true;
+      #};
       signature = {
         text = ''
           Chris Bond
@@ -51,8 +62,10 @@
         '';
         showSignature = "append";
       };
-      passwordCommand = "pass email/${configVars.userEmail}";
-      userName = "${configVars.userEmail}";
+      gpg = {
+        key = "${configVars.userGpgPubKey}";
+        signByDefault = true;
+      };
     };
   };
   
