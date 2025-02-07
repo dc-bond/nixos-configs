@@ -12,12 +12,21 @@
     msmtp.enable = true;
     notmuch = {
       enable = true;
+      maildir.synchronizeFlags = true;
+      new.tags = [
+        "unread"
+        "inbox"
+      ];
+      search.excludeTags = [
+        "deleted"
+        "spam"
+      ];
       hooks.preNew = "mbsync --all";
     };
   };
 
   accounts.email.accounts = {
-    dcbond = {
+    "${configVars.userEmail}" = {
       address = "${configVars.userEmail}";
       userName = "${configVars.userEmail}";
       realName = "${configVars.userFullName}";
@@ -40,19 +49,62 @@
         };
       };
       msmtp.enable = true;
-      notmuch = {
-        enable = true;
-        #neomutt.enable = true; 
-      };
+      notmuch.enable = true;
       mbsync = {
         enable = true;
         create = "maildir";
-        expunge = "both";
+        groups = {
+          "${configVars.userEmail}" = {
+            channels = {
+              "inbox" = {
+                farPattern = "INBOX";
+                nearPattern = "Inbox";
+                extraConfig = {
+                  Create = "both";
+                  Expunge = "both";
+                  SyncState = "*";
+                };
+              };
+              "sent" = {
+                farPattern = "Sent";
+                nearPattern = "Sent";
+                extraConfig = {
+                  Create = "both";
+                  Expunge = "both";
+                  SyncState = "*";
+                };
+              };
+              "drafts" = {
+                farPattern = "Drafts";
+                nearPattern = "Drafts";
+                extraConfig = {
+                  Create = "both";
+                  Expunge = "both";
+                  SyncState = "*";
+                };
+              };
+              "spam" = {
+                farPattern = "Spam";
+                nearPattern = "Spam";
+                extraConfig = {
+                  Create = "both";
+                  Expunge = "both";
+                  SyncState = "*";
+                };
+              };
+              "trash" = {
+                farPattern = "Trash";
+                nearPattern = "Trash";
+                extraConfig = {
+                  Create = "both";
+                  Expunge = "both";
+                  SyncState = "*";
+                };
+              };
+            };
+          };
+        };
       };
-      maildir.path = "${config.home.homeDirectory}/email";
-      #neomutt = {
-      #  enable = true;
-      #};
       signature = {
         text = ''
           Chris Bond
