@@ -47,8 +47,8 @@ in
     };
     templates = {
       "${app}-env".content = ''
-        PUID=1000
-        PGID=1000
+        PUID=0
+        PGID=0
         TZ=America/New_York
         MONGO_USER=${config.sops.placeholder.unifiMongoUser}
         MONGO_PASS=${config.sops.placeholder.unifiMongoPasswd}

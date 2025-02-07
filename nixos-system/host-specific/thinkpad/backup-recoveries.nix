@@ -574,6 +574,7 @@ let
 
     { set +x; log "stopping container stack on cypress"; } 2>/dev/null
     ssh cypress 'sudo systemctl stop docker-unifi-controller-root.target'
+    sleep 20
 
     { set +x; log "removing existing application data on cypress"; } 2>/dev/null
     ssh cypress 'sudo rm -rf /var/lib/docker/volumes/unifi-controller'
@@ -590,8 +591,10 @@ let
 
     { set +x; log "changing ownership of restored application data"; } 2>/dev/null
     ssh cypress 'sudo chown -R root:root /var/lib/docker/volumes/unifi-controller'
-    ssh cypress 'sudo chown -R root:root /var/lib/docker/volumes/unifi-controller-mongodb-db'
-    ssh cypress 'sudo chown -R root:root /var/lib/docker/volumes/unifi-controller-mongodb-configdb'
+    ssh cypress 'sudo chown root:root /var/lib/docker/volumes/unifi-controller-mongodb-db'
+    ssh cypress 'sudo chown root:root /var/lib/docker/volumes/unifi-controller-mongodb-configdb'
+    ssh cypress 'sudo chown -R nscd:nscd /var/lib/docker/volumes/unifi-controller-mongodb-db/_data'
+    ssh cypress 'sudo chown -R nscd:nscd /var/lib/docker/volumes/unifi-controller-mongodb-configdb/_data'
 
     { set +x; log "cleaning up local restore directory"; } 2>/dev/null
     sudo rm -rf ${config.backups.borgDir}/unifi-controller

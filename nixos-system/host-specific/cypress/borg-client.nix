@@ -7,8 +7,6 @@
   ... 
 }: 
 
-          #${lib.getExe config.services.nextcloud.occ} maintenance:mode --on
-          #${lib.getExe config.services.nextcloud.occ} maintenance:mode --off
 {
 
   sops.secrets = {
