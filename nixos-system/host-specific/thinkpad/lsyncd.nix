@@ -13,8 +13,9 @@
   #    after = [ "network.target" ];
   #    wants = [ "network.target" ];
   #    wantedBy = [ "multi-user.target" ];
+  #    environment = { SSH_AUTH_SOCK = "/run/user/1000/gnupg/S.gpg-agent.ssh"; };
   #    serviceConfig = {
-  #      ExecStart = "${pkgs.lsyncd}/bin/lsyncd /etc/lsyncd.conf";
+  #      ExecStart = "${pkgs.lsyncd}/bin/lsyncd -nodaemon /etc/lsyncd.conf";
   #      Restart = "always";
   #      User = "chris";
   #    };
@@ -29,7 +30,7 @@
       }
       sync {
         default.rsyncssh,
-        source = "/home/chris/nextcloud-local/Bond/Financial/bond-ledger",
+        source = "/home/chris/nextcloud-client/Bond Family/Financial/bond-ledger",
         host = "cypress",
         targetdir = "/home/chris/bond-ledger",
         delay = 10,
