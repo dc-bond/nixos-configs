@@ -7,6 +7,32 @@
 
 {
 
+  systemd.user = {
+    services."emailsync" = {
+      Unit = {
+        Description = "synchronize email with server";
+        After = [ "network-online.target" ];
+      };
+      Service = {
+        ExecStart = "${pkgs.bash}/bin/bash -c 'export $(/run/wrappers/bin/loginctl show-user $USER --property=Environment --value); ${pkgs.isync}/bin/mbsync --all && ${pkgs.notmuch}/bin/notmuch new'";
+        StandardOutput = "journal";
+        StandardError = "journal";
+      };
+      Install = { WantedBy = [ "default.target" ]; };
+    };
+    timers.${configVars.userEmail}-sync = {
+      Unit = {
+        Description = "synchronize email with server every 5 minutes";
+      };
+      Timer = {
+        OnBootSec = "5min";
+        OnUnitActiveSec = "5min";
+        Unit = "emailsync.service";
+      };
+      Install = { WantedBy = [ "timers.target" ]; };
+    };
+  };
+
   programs = {
     mbsync.enable = true;
     msmtp.enable = true;
