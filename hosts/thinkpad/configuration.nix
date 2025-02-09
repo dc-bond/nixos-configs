@@ -70,6 +70,7 @@
     #element-desktop-wayland # matrix chat app
     hollywood # fill terminal with melodramatic technobabble
     cool-retro-term # retro terminal
+    filelight # disk usage visualizer
   ];
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
