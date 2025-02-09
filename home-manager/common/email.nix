@@ -22,7 +22,7 @@
     };
     timers."${configVars.userEmail}-emailsync" = {
       Unit = {
-        Description = "synchronize email with server every 5 minutes";
+        Description = "synchronize email with server every 15 minutes";
       };
       Timer = {
         OnBootSec = "15min";
