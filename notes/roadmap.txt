@@ -1,3 +1,29 @@
+**For Opticon Migration**
+
+Media Server
+
+Photos
+
+
+**Long-Term**
+
+Matrix
+
+Frigate
+
+Crowdsec
+
+Logging Solution
+
+Recipesage
+
+Mailserver
+
+Calibre
+
+
+** Housekeeping **
+
 vscode opening on workspace 2 instead of 3
 git signing using gpg/yubikey
 systemd-networkd wait online error
