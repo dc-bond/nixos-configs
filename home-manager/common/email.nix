@@ -8,7 +8,7 @@
 {
 
   systemd.user = {
-    services."${configVars.userEmail}-sync" = {
+    services."${configVars.userEmail}-emailsync" = {
       Unit = {
         Description = "synchronize email with server";
         After = [ "network-online.target" ];
@@ -20,14 +20,14 @@
       };
       Install = { WantedBy = [ "default.target" ]; };
     };
-    timers."${configVars.userEmail}-sync" = {
+    timers."${configVars.userEmail}-emailsync" = {
       Unit = {
         Description = "synchronize email with server every 5 minutes";
       };
       Timer = {
-        OnBootSec = "5min";
-        OnUnitActiveSec = "5min";
-        Unit = "${configVars.userEmail}-sync.service";
+        OnBootSec = "15min";
+        OnUnitActiveSec = "15min";
+        Unit = "${configVars.userEmail}-emailsync.service";
       };
       Install = { WantedBy = [ "timers.target" ]; };
     };
