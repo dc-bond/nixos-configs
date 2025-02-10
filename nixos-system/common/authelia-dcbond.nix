@@ -102,6 +102,13 @@ in
               #  policy = "one_factor";
               #}
               {
+                domain = [ # root domain
+                  "${configVars.domain1}"
+                ];
+                subject = "user:admin";
+                policy = "two_factor";
+              }
+              {
                 domain = [ # bypass authelia when connecting to authelia itself
                   "identity.${configVars.domain1}"
                 ];
