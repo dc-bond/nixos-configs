@@ -29,8 +29,8 @@ lib,
       middlewares = {
         "${configVars.domain1}-redirect".redirectRegex = {
           permanent = true;
-          regex = "^https://${configVars.domain1}/";
-          replacement = "https://linkedin.com/dc-bond";
+          regex = "^https://${configVars.domain1}/$";
+          replacement = "https://www.linkedin.com/in/dcbond";
         };
       };
     };

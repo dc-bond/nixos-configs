@@ -21,6 +21,11 @@ in
 
 {
 
+  #environment = {
+  #  systemPackages = with pkgs; [ element-web ];
+  #  #etc."element-web/config.json".text = builtins.toJSON elementConfig; 
+  #};
+
   services = {
 
     postgresql = {
@@ -42,17 +47,34 @@ in
       recommendedOptimisation = true;
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
-      virtualHosts."${configVars.domain1}" = {
-        listen = [
-          {
-            addr = "127.0.0.1"; 
-            port = 8076;
-          }
-        ];
-        enableACME = false;
-        forceSSL = false;
-        locations."= /.well-known/matrix/server".extraConfig = mkWellKnown serverConfig;
-        locations."= /.well-known/matrix/client".extraConfig = mkWellKnown clientConfig;
+      virtualHosts = {
+        "${configVars.domain1}" = {
+          enableACME = false;
+          forceSSL = false;
+          listen = [
+            {
+              addr = "127.0.0.1"; 
+              port = 8076;
+            }
+          ];
+          locations."= /.well-known/matrix/server".extraConfig = mkWellKnown serverConfig;
+          locations."= /.well-known/matrix/client".extraConfig = mkWellKnown clientConfig;
+        };
+        "chat.${configVars.domain1}" = {
+          enableACME = false;
+          forceSSL = false;
+          root = pkgs.element-web.override {
+            conf = {
+              default_server_config = clientConfig;
+            };
+          };
+          listen = [
+            {
+              addr = "127.0.0.1"; 
+              port = 8077;
+            }
+          ];
+        };
       };
     };
 
@@ -235,6 +257,16 @@ in
             servers = [
               {
                 url = "http://127.0.0.1:8008";
+              }
+            ];
+          };
+        };
+        "element-web" = {
+          loadBalancer = {
+            passHostHeader = true;
+            servers = [
+              {
+                url = "http://127.0.0.1:8077";
               }
             ];
           };
