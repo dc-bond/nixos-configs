@@ -21,38 +21,6 @@ in
 
 {
 
-  environment.etc = {
-    "matrix-wellknown/matrix-server.json".text = ''
-      {
-        "m.server": {
-          "base_url": "https://matrix.${configVars.domain1}:443"
-        }
-      }
-    '';
-    "matrix-wellknown/matrix-client.json".text = ''
-      {
-        "m.homeserver": {
-          "base_url": "https://matrix.${configVars.domain1}"
-        }
-      }
-    '';
-  };
-
-  systemd.services.matrix-wellknown-server = {
-    description = "python HTTP server for matrix .well-known files";
-    after = [ "network.target" ];
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      ExecStart = "${pkgs.python3}/bin/python3 -m http.server 8076 --directory /etc/matrix-wellknown";
-      #ExecStart = "${pkgs.python3Packages.httpserver}/bin/httpserver -p 8076 --directory /etc/matrix-wellknown";
-      WorkingDirectory = "/etc/matrix-wellknown";
-      #User = "matrix";
-      #Group = "matrix";
-      Restart = "always";
-      RestartSec = 5;
-    };
-  };
-
   services = {
 
     postgresql = {
@@ -78,7 +46,7 @@ in
         listen = [
           {
             addr = "127.0.0.1"; 
-            port = 8075;
+            port = 8076;
           }
         ];
         enableACME = false;
@@ -224,7 +192,7 @@ in
           service = "${app}";
           middlewares = [
             "secure-headers"
-            #"authelia-dcbond"
+            "authelia-dcbond"
           ];
           tls = {
             certResolver = "cloudflareDns";
@@ -234,10 +202,7 @@ in
         "matrix-wellknown-server" = {
           entrypoints = ["websecure"];
           rule = "Host(`${configVars.domain1}`) && PathPrefix(`/.well-known/matrix/server`)";
-          service = "matrix-wellknow-server";
-          #middlewares = [
-          #  "matrix-server-json"
-          #];
+          service = "matrix-wellknown";
           tls = {
             certResolver = "cloudflareDns";
             options = "tls-13@file";
@@ -246,45 +211,20 @@ in
         "matrix-wellknown-client" = {
           entrypoints = ["websecure"];
           rule = "Host(`${configVars.domain1}`) && PathPrefix(`/.well-known/matrix/client`)";
-          service = "matrix-wellknown-client";
-          #middlewares = [
-          #  "matrix-client-json"
-          #];
+          service = "matrix-wellknown";
           tls = {
             certResolver = "cloudflareDns";
             options = "tls-13@file";
           };
         };
       };
-      #middlewares = {
-      #  "matrix-server-json".redirectRegex = {
-      #    regex = ".*";
-      #    replacement = "http://127.0.0.1:8076/matrix-server.json";
-      #    permanent = true;
-      #  };
-      #  "matrix-client-json".redirectRegex = {
-      #    regex = ".*";
-      #    replacement = "http://127.0.0.1:8076/matrix-client.json";
-      #    permanent = true;
-      #  };
-      #};
       services = {
-        "matrix-wellknown-server" = {
+        "matrix-wellknown" = {
           loadBalancer = {
             passHostHeader = true;
             servers = [
               {
-                url = "http://127.0.0.1:8076/matrix-server.json";
-              }
-            ];
-          };
-        };
-        "matrix-wellknown-client" = {
-          loadBalancer = {
-            passHostHeader = true;
-            servers = [
-              {
-                url = "http://127.0.0.1:8076/matrix-client.json";
+                url = "http://127.0.0.1:8076";
               }
             ];
           };
