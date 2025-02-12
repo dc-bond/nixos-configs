@@ -57,6 +57,7 @@
     nvd # package version diff info for nix build operations
     nix-tree # table view of package dependencies
     ethtool # network tools
+    inetutils # more network tools like telnet
     unzip # utility to unzip directories
     git # git
     eza # modern replacement for 'ls'
@@ -67,7 +68,7 @@
     ddcutil # query and change monitor settings using DDC/CI and USB
     i2c-tools # hardware interface tools required by ddcutil
     libreoffice-still # office suite
-    #element-desktop-wayland # matrix chat app
+    element-desktop # matrix chat app
     hollywood # fill terminal with melodramatic technobabble
     cool-retro-term # retro terminal
     filelight # disk usage visualizer

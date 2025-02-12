@@ -21,25 +21,6 @@ in
 
 {
 
-  #environment.etc."${app}-extra.conf" = {
-  #  text = ''
-  #    modules:
-  #      - module: "ldap_auth_provider.LdapAuthProviderModule"
-  #        config:
-  #          enabled: true
-  #          uri: "ldap://127.0.0.1:3890"
-  #          start_tls: false
-  #          base: "dc=${configVars.domain1Short},dc=com"
-  #        attributes:
-  #          uid: "cn"
-  #          mail: "mail"
-  #          name: "givenName"
-  #  '';
-  #  user = "${app}";
-  #  group = "${app}";
-  #  mode = "0755";
-  #};
-
   sops = {
     secrets = {
       #userEmailPasswd = {};
@@ -114,26 +95,26 @@ in
           locations."= /.well-known/matrix/server".extraConfig = mkWellKnown serverConfig;
           locations."= /.well-known/matrix/client".extraConfig = mkWellKnown clientConfig;
         };
-        "chat.${configVars.domain1}" = {
-          enableACME = false;
-          forceSSL = false;
-          root = pkgs.element-web.override {
-            conf = {
-              #"default_server_config": {
-              #  "m.homeserver": {
-              #    "base_url": "https://matrix.${configVars.domain1}"
-              #  }
-              #}
-              default_server_config = clientConfig;
-            };
-          };
-          listen = [
-            {
-              addr = "127.0.0.1"; 
-              port = 8077;
-            }
-          ];
-        };
+        #"chat.${configVars.domain1}" = {
+        #  enableACME = false;
+        #  forceSSL = false;
+        #  root = pkgs.element-web.override {
+        #    conf = {
+        #      #"default_server_config": {
+        #      #  "m.homeserver": {
+        #      #    "base_url": "https://matrix.${configVars.domain1}"
+        #      #  }
+        #      #}
+        #      default_server_config = clientConfig;
+        #    };
+        #  };
+        #  listen = [
+        #    {
+        #      addr = "127.0.0.1"; 
+        #      port = 8077;
+        #    }
+        #  ];
+        #};
       };
     };
 
@@ -196,28 +177,26 @@ in
           }
         ];
       };
-      #extraConfigFiles = [
-      #  (pkgs.writeTextFile {
-      #    name = "${app}-extra.conf";
-      #    text = ''
-      #      modules:
-      #        - module: "ldap_auth_provider.LdapAuthProviderModule"
-      #          config:
-      #            enabled: true
-      #            uri: "ldap://127.0.0.1:3890"
-      #            start_tls: false
-      #            base: "dc=${configVars.domain1Short},dc=com"
-      #          attributes:
-      #            uid: "cn"
-      #            mail: "mail"
-      #            name: "givenName"
-      #    '';
-      #  })
-      #];
       extraConfigFiles = [
         "/run/secrets/rendered/matrix-registration-secret"
         "/run/secrets/rendered/matrix-macaroon-key"
         #"/run/secrets/rendered/matrix-email-conf"
+        #(pkgs.writeTextFile {
+        #  name = "${app}-extra.conf";
+        #  text = ''
+        #    modules:
+        #      - module: "ldap_auth_provider.LdapAuthProviderModule"
+        #        config:
+        #          enabled: true
+        #          uri: "ldap://127.0.0.1:3890"
+        #          start_tls: false
+        #          base: "dc=${configVars.domain1Short},dc=com"
+        #        attributes:
+        #          uid: "cn"
+        #          mail: "mail"
+        #          name: "givenName"
+        #  '';
+        #})
       ];
     };
 
@@ -290,82 +269,174 @@ in
     #  turn_user_lifetime = "1h";
     #};
 
-    traefik.dynamicConfigOptions.http = {
-      routers = {
-        "${app}" = {
-          entrypoints = ["websecure"];
-          rule = "Host(`matrix.${configVars.domain1}`)";
-          service = "${app}";
-          middlewares = [
-            "secure-headers"
-            #"authelia-dcbond"
-          ];
-          tls = {
-            certResolver = "cloudflareDns";
-            options = "tls-13@file";
-          };
-        };
-        "element-web" = {
-          entrypoints = ["websecure"];
-          rule = "Host(`chat.${configVars.domain1}`)";
-          service = "element-web";
-          middlewares = [
-            "secure-headers"
-          ];
-          tls = {
-            certResolver = "cloudflareDns";
-            options = "tls-13@file";
-          };
-        };
-        "matrix-wellknown-server" = {
-          entrypoints = ["websecure"];
-          rule = "Host(`${configVars.domain1}`) && PathPrefix(`/.well-known/matrix/server`)";
-          service = "matrix-wellknown";
-          tls = {
-            certResolver = "cloudflareDns";
-            options = "tls-13@file";
-          };
-        };
-        "matrix-wellknown-client" = {
-          entrypoints = ["websecure"];
-          rule = "Host(`${configVars.domain1}`) && PathPrefix(`/.well-known/matrix/client`)";
-          service = "matrix-wellknown";
-          tls = {
-            certResolver = "cloudflareDns";
-            options = "tls-13@file";
-          };
+    traefik = {
+
+      staticConfigOptions.entryPoints = {
+        matrix-federation = {
+          address = ":8448/tcp";
         };
       };
-      services = {
-        "matrix-wellknown" = {
-          loadBalancer = {
-            passHostHeader = true;
-            servers = [
-              {
-                url = "http://127.0.0.1:8076";
-              }
+
+      dynamicConfigOptions.http = {
+        routers = {
+          "matrix-web" = {
+            entrypoints = ["websecure"];
+            rule = "Host(`matrix.${configVars.domain1}`)";
+            service = "${app}";
+            middlewares = [
+              #"secure-headers"
             ];
+            tls = {
+              certResolver = "cloudflareDns";
+              options = "tls-13@file";
+            };
+          };
+          "matrix-client-api" = {
+            entrypoints = ["websecure"];
+            rule = "Host(`matrix.${configVars.domain1}`) && PathPrefix(`/_matrix`)";
+            service = "${app}";
+            middlewares = [
+              "matrix-headers"
+              "matrix-body-limit"
+            ];
+            tls = {
+              certResolver = "cloudflareDns";
+              options = "tls-13@file";
+            };
+          };
+          "synapse-client-api" = {
+            entrypoints = ["websecure"];
+            rule = "Host(`matrix.${configVars.domain1}`) && PathPrefix(`/_synapse/client`)";
+            service = "${app}";
+            middlewares = [
+              "matrix-headers"
+              "matrix-body-limit"
+            ];
+            tls = {
+              certResolver = "cloudflareDns";
+              options = "tls-13@file";
+            };
+          };
+          "matrix-federation-api" = {
+            entrypoints = ["matrix-federation"];
+            rule = "Host(`matrix.${configVars.domain1}`) && PathPrefix(`/_matrix`)";
+            service = "${app}";
+            middlewares = [
+              #"matrix-headers"
+              #"matrix-body-limit"
+            ];
+            tls = {
+              certResolver = "cloudflareDns";
+              options = "tls-13@file";
+            };
+          };
+          "synapse-federation-api" = {
+            entrypoints = ["matrix-federation"];
+            rule = "Host(`matrix.${configVars.domain1}`) && PathPrefix(`/_synapse/client`)";
+            service = "${app}";
+            middlewares = [
+              #"matrix-headers"
+              #"matrix-body-limit"
+            ];
+            tls = {
+              certResolver = "cloudflareDns";
+              options = "tls-13@file";
+            };
+          };
+          "matrix-wellknown-server" = {
+            entrypoints = ["websecure"];
+            rule = "Host(`${configVars.domain1}`) && PathPrefix(`/.well-known/matrix/server`)";
+            service = "matrix-wellknown";
+            tls = {
+              certResolver = "cloudflareDns";
+              options = "tls-13@file";
+            };
+          };
+          "matrix-wellknown-client" = {
+            entrypoints = ["websecure"];
+            rule = "Host(`${configVars.domain1}`) && PathPrefix(`/.well-known/matrix/client`)";
+            service = "matrix-wellknown";
+            tls = {
+              certResolver = "cloudflareDns";
+              options = "tls-13@file";
+            };
+          };
+          #"element-web" = {
+          #  entrypoints = ["websecure"];
+          #  rule = "Host(`chat.${configVars.domain1}`)";
+          #  service = "element-web";
+          #  middlewares = [
+          #    "secure-headers"
+          #  ];
+          #  tls = {
+          #    certResolver = "cloudflareDns";
+          #    options = "tls-13@file";
+          #  };
+          #};
+        };
+        middlewares = {
+          matrix-body-limit.buffering = {
+            maxRequestBodyBytes = 52428800; # 50MB (matches `client_max_body_size 50M`)
+          };
+          matrix-headers.headers = {
+            customRequestHeaders = {
+              "X-Forwarded-For" = "client";
+              "X-Forwarded-Proto" = "https";
+            };
+            #sslRedirect = true;
+            #stsSeconds = "31536000"; # force browsers to only connect over https
+            #stsIncludeSubdomains = true; # force browsers to only connect over https
+            #stsPreload = true; # force browsers to only connect over https
+            #forceSTSHeader = true; # force browsers to only connect over https
+            #contentTypeNosniff = true; # sets x-content-type-options header value to "nosniff", reduces risk of drive-by downloads
+            #frameDeny = true; # sets x-frame-options header value to "deny", prevents attacker from spoofing website in order to fool users into clicking something that is not there
+            #customFrameOptionsValue = "SAMEORIGIN"; # suggested by nextcloud, overrides frameDeny
+            #browserXssFilter = true; # sets x-xss-protection header value to "1; mode=block", which prevents page from loading if detecting a cross-site scripting attack
+            #contentSecurityPolicy = [ # sets content-security-policy header to suggested value
+            #  "default-src"
+            #  "self"
+            #];
+            #referrerPolicy = "same-origin";
+            #addVaryHeader = true; # ensures that the response includes a Vary header (such as Vary: Origin) so that caches treat different origin requests separately
+            #accessControlAllowCredentials = true; 
+            #accessControlMaxAge = "100";
+            #accessControlAllowOrigin = "*";
+            #accessControlAllowMethods = "GET, POST, OPTIONS, PUT, DELETE";
+            #accessControlAllowHeaders = "Authorization, Content-Type";
+            #accessControlExposeHeaders = "Synapse-Trace-Id, Server"
           };
         };
-        "${app}" = {
-          loadBalancer = {
-            passHostHeader = true;
-            servers = [
-              {
-                url = "http://127.0.0.1:8008";
-              }
-            ];
+        services = {
+          "${app}" = {
+            loadBalancer = {
+              passHostHeader = true;
+              servers = [
+                {
+                  url = "http://127.0.0.1:8008";
+                }
+              ];
+            };
           };
-        };
-        "element-web" = {
-          loadBalancer = {
-            passHostHeader = true;
-            servers = [
-              {
-                url = "http://127.0.0.1:8077";
-              }
-            ];
+          "matrix-wellknown" = {
+            loadBalancer = {
+              passHostHeader = true;
+              servers = [
+                {
+                  url = "http://127.0.0.1:8076";
+                }
+              ];
+            };
           };
+          #"element-web" = {
+          #  loadBalancer = {
+          #    passHostHeader = true;
+          #    servers = [
+          #      {
+          #        url = "http://127.0.0.1:8077";
+          #      }
+          #    ];
+          #  };
+          #};
         };
       };
     };
