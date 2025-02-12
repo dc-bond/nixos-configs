@@ -23,41 +23,60 @@ in
 
   sops = {
     secrets = {
-      #userEmailPasswd = {};
+      userEmailPasswd = {};
       matrixSynapseRegistrationSharedSecret = {};
       matrixSynapseMacaroonSecretKey = {};
     };
     templates = {
+      "matrix-extra-conf" = {
+        content = ''
+          registration_requires_token: true
+          registrations_require_3pid:
+            - email
+          registration_shared_secret: ${config.sops.placeholder.matrixSynapseRegistrationSharedSecret}
+          macaroon_secret_key: ${config.sops.placeholder.matrixSynapseMacaroonSecretKey}
+          email:
+            smtp_host: mail.privateemail.com
+            smtp_port: 465
+            force_tls: true
+            smtp_user: ${configVars.userEmail}
+            smtp_pass: '${config.sops.placeholder.userEmailPasswd}'
+            notif_from: "Bond Matrix Server <noreply@dcbond.com>"
+        '';
+        owner = "${config.users.users.${app}.name}";
+        group = "${config.users.users.${app}.group}";
+        mode = "0440";
+      };
       #"matrix-email-conf" = {
       #  content = ''
-      #  email:
-      #    smtp_host: mail.privateemail.com
-      #    smtp_port: 465
-      #    force_tls: true
-      #    smtp_user: ${configVars.userEmail}
-      #    smtp_pass: '${config.sops.placeholder.userEmailPasswd}'
-      #    notif_from: "Bond %(app)s Server <matrix-admin@dcbond.com>"
+      #    email:
+      #      smtp_host: mail.privateemail.com
+      #      smtp_port: 465
+      #      force_tls: true
+      #      smtp_user: ${configVars.userEmail}
+      #      smtp_pass: '${config.sops.placeholder.userEmailPasswd}'
+      #      notif_from: "Bond Matrix Server <noreply@dcbond.com>"
       #  '';
       #  owner = "${config.users.users.${app}.name}";
       #  group = "${config.users.users.${app}.group}";
       #  mode = "0440";
       #};
-      "matrix-registration-secret" = {
-        content = ''
-          registration_shared_secret: ${config.sops.placeholder.matrixSynapseRegistrationSharedSecret}
-        '';
-        owner = "${config.users.users.${app}.name}";
-        group = "${config.users.users.${app}.group}";
-        mode = "0440";
-      };
-      "matrix-macaroon-key" = {
-        content = ''
-          macaroon_secret_key: ${config.sops.placeholder.matrixSynapseMacaroonSecretKey}
-        '';
-        owner = "${config.users.users.${app}.name}";
-        group = "${config.users.users.${app}.group}";
-        mode = "0440";
-      };
+      #"matrix-registration-secret" = {
+      #  content = ''
+      #    registration_shared_secret: ${config.sops.placeholder.matrixSynapseRegistrationSharedSecret}
+      #  '';
+      #  owner = "${config.users.users.${app}.name}";
+      #  group = "${config.users.users.${app}.group}";
+      #  mode = "0440";
+      #};
+      #"matrix-macaroon-key" = {
+      #  content = ''
+      #    macaroon_secret_key: ${config.sops.placeholder.matrixSynapseMacaroonSecretKey}
+      #  '';
+      #  owner = "${config.users.users.${app}.name}";
+      #  group = "${config.users.users.${app}.group}";
+      #  mode = "0440";
+      #};
     };
   };
 
@@ -95,26 +114,27 @@ in
           locations."= /.well-known/matrix/server".extraConfig = mkWellKnown serverConfig;
           locations."= /.well-known/matrix/client".extraConfig = mkWellKnown clientConfig;
         };
-        #"chat.${configVars.domain1}" = {
-        #  enableACME = false;
-        #  forceSSL = false;
-        #  root = pkgs.element-web.override {
-        #    conf = {
-        #      #"default_server_config": {
-        #      #  "m.homeserver": {
-        #      #    "base_url": "https://matrix.${configVars.domain1}"
-        #      #  }
-        #      #}
-        #      default_server_config = clientConfig;
-        #    };
-        #  };
-        #  listen = [
-        #    {
-        #      addr = "127.0.0.1"; 
-        #      port = 8077;
-        #    }
-        #  ];
-        #};
+        "comms.${configVars.domain1}" = {
+          enableACME = false;
+          forceSSL = false;
+          root = pkgs.element-web.override {
+            conf = {
+              default_server_config = {
+                "m.homeserver" = {
+                  "base_url" = "https://matrix.${configVars.domain1}";
+                  "server_name" = "${configVars.domain1}";
+                };
+              };
+              brand = "Bond Encrypted Communications";
+            };
+          };
+          listen = [
+            {
+              addr = "127.0.0.1"; 
+              port = 8077;
+            }
+          ];
+        };
       };
     };
 
@@ -149,7 +169,7 @@ in
         redis.enabled = true;
         server_name = configVars.domain1;
         public_baseurl = "https://matrix.${configVars.domain1}";
-        enable_registration = false;
+        enable_registration = true;
         enable_metrics = false;
         database = {
           name = "psycopg2";
@@ -178,9 +198,10 @@ in
         ];
       };
       extraConfigFiles = [
-        "/run/secrets/rendered/matrix-registration-secret"
-        "/run/secrets/rendered/matrix-macaroon-key"
+        #"/run/secrets/rendered/matrix-registration-secret"
+        #"/run/secrets/rendered/matrix-macaroon-key"
         #"/run/secrets/rendered/matrix-email-conf"
+        "/run/secrets/rendered/matrix-extra-conf"
         #(pkgs.writeTextFile {
         #  name = "${app}-extra.conf";
         #  text = ''
@@ -322,8 +343,8 @@ in
             rule = "Host(`matrix.${configVars.domain1}`) && PathPrefix(`/_matrix`)";
             service = "${app}";
             middlewares = [
-              #"matrix-headers"
-              #"matrix-body-limit"
+              "matrix-headers"
+              "matrix-body-limit"
             ];
             tls = {
               certResolver = "cloudflareDns";
@@ -335,8 +356,8 @@ in
             rule = "Host(`matrix.${configVars.domain1}`) && PathPrefix(`/_synapse/client`)";
             service = "${app}";
             middlewares = [
-              #"matrix-headers"
-              #"matrix-body-limit"
+              "matrix-headers"
+              "matrix-body-limit"
             ];
             tls = {
               certResolver = "cloudflareDns";
@@ -361,18 +382,18 @@ in
               options = "tls-13@file";
             };
           };
-          #"element-web" = {
-          #  entrypoints = ["websecure"];
-          #  rule = "Host(`chat.${configVars.domain1}`)";
-          #  service = "element-web";
-          #  middlewares = [
-          #    "secure-headers"
-          #  ];
-          #  tls = {
-          #    certResolver = "cloudflareDns";
-          #    options = "tls-13@file";
-          #  };
-          #};
+          "element-web" = {
+            entrypoints = ["websecure"];
+            rule = "Host(`comms.${configVars.domain1}`)";
+            service = "element-web";
+            middlewares = [
+              "secure-headers"
+            ];
+            tls = {
+              certResolver = "cloudflareDns";
+              options = "tls-13@file";
+            };
+          };
         };
         middlewares = {
           matrix-body-limit.buffering = {
@@ -427,16 +448,16 @@ in
               ];
             };
           };
-          #"element-web" = {
-          #  loadBalancer = {
-          #    passHostHeader = true;
-          #    servers = [
-          #      {
-          #        url = "http://127.0.0.1:8077";
-          #      }
-          #    ];
-          #  };
-          #};
+          "element-web" = {
+            loadBalancer = {
+              passHostHeader = true;
+              servers = [
+                {
+                  url = "http://127.0.0.1:8077";
+                }
+              ];
+            };
+          };
         };
       };
     };
