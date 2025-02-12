@@ -21,10 +21,64 @@ in
 
 {
 
-  #environment = {
-  #  systemPackages = with pkgs; [ element-web ];
-  #  #etc."element-web/config.json".text = builtins.toJSON elementConfig; 
+  #environment.etc."${app}-extra.conf" = {
+  #  text = ''
+  #    modules:
+  #      - module: "ldap_auth_provider.LdapAuthProviderModule"
+  #        config:
+  #          enabled: true
+  #          uri: "ldap://127.0.0.1:3890"
+  #          start_tls: false
+  #          base: "dc=${configVars.domain1Short},dc=com"
+  #        attributes:
+  #          uid: "cn"
+  #          mail: "mail"
+  #          name: "givenName"
+  #  '';
+  #  user = "${app}";
+  #  group = "${app}";
+  #  mode = "0755";
   #};
+
+  sops = {
+    secrets = {
+      #userEmailPasswd = {};
+      matrixSynapseRegistrationSharedSecret = {};
+      matrixSynapseMacaroonSecretKey = {};
+    };
+    templates = {
+      #"matrix-email-conf" = {
+      #  content = ''
+      #  email:
+      #    smtp_host: mail.privateemail.com
+      #    smtp_port: 465
+      #    force_tls: true
+      #    smtp_user: ${configVars.userEmail}
+      #    smtp_pass: '${config.sops.placeholder.userEmailPasswd}'
+      #    notif_from: "Bond %(app)s Server <matrix-admin@dcbond.com>"
+      #  '';
+      #  owner = "${config.users.users.${app}.name}";
+      #  group = "${config.users.users.${app}.group}";
+      #  mode = "0440";
+      #};
+      "matrix-registration-secret" = {
+        content = ''
+          registration_shared_secret: ${config.sops.placeholder.matrixSynapseRegistrationSharedSecret}
+        '';
+        owner = "${config.users.users.${app}.name}";
+        group = "${config.users.users.${app}.group}";
+        mode = "0440";
+      };
+      "matrix-macaroon-key" = {
+        content = ''
+          macaroon_secret_key: ${config.sops.placeholder.matrixSynapseMacaroonSecretKey}
+        '';
+        owner = "${config.users.users.${app}.name}";
+        group = "${config.users.users.${app}.group}";
+        mode = "0440";
+      };
+    };
+  };
 
   services = {
 
@@ -65,6 +119,11 @@ in
           forceSSL = false;
           root = pkgs.element-web.override {
             conf = {
+              #"default_server_config": {
+              #  "m.homeserver": {
+              #    "base_url": "https://matrix.${configVars.domain1}"
+              #  }
+              #}
               default_server_config = clientConfig;
             };
           };
@@ -102,10 +161,15 @@ in
         };
         version = 1;
       };
+      #plugins = with config.services.matrix-synapse.package.plugins; [
+      #  matrix-synapse-ldap3
+      #];
       settings = {
         redis.enabled = true;
         server_name = configVars.domain1;
         public_baseurl = "https://matrix.${configVars.domain1}";
+        enable_registration = false;
+        enable_metrics = false;
         database = {
           name = "psycopg2";
           args = {
@@ -131,10 +195,30 @@ in
             ];
           }
         ];
-        extraConfig = ''
-          max_upload_size: "50M"
-        '';
       };
+      #extraConfigFiles = [
+      #  (pkgs.writeTextFile {
+      #    name = "${app}-extra.conf";
+      #    text = ''
+      #      modules:
+      #        - module: "ldap_auth_provider.LdapAuthProviderModule"
+      #          config:
+      #            enabled: true
+      #            uri: "ldap://127.0.0.1:3890"
+      #            start_tls: false
+      #            base: "dc=${configVars.domain1Short},dc=com"
+      #          attributes:
+      #            uid: "cn"
+      #            mail: "mail"
+      #            name: "givenName"
+      #    '';
+      #  })
+      #];
+      extraConfigFiles = [
+        "/run/secrets/rendered/matrix-registration-secret"
+        "/run/secrets/rendered/matrix-macaroon-key"
+        #"/run/secrets/rendered/matrix-email-conf"
+      ];
     };
 
     #coturn = rec {
@@ -214,7 +298,19 @@ in
           service = "${app}";
           middlewares = [
             "secure-headers"
-            "authelia-dcbond"
+            #"authelia-dcbond"
+          ];
+          tls = {
+            certResolver = "cloudflareDns";
+            options = "tls-13@file";
+          };
+        };
+        "element-web" = {
+          entrypoints = ["websecure"];
+          rule = "Host(`chat.${configVars.domain1}`)";
+          service = "element-web";
+          middlewares = [
+            "secure-headers"
           ];
           tls = {
             certResolver = "cloudflareDns";
