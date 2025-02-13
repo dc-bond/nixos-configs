@@ -30,9 +30,6 @@ in
     templates = {
       "matrix-extra-conf" = {
         content = ''
-          registration_requires_token: true
-          registrations_require_3pid:
-            - email
           registration_shared_secret: ${config.sops.placeholder.matrixSynapseRegistrationSharedSecret}
           macaroon_secret_key: ${config.sops.placeholder.matrixSynapseMacaroonSecretKey}
           email:
@@ -41,11 +38,14 @@ in
             force_tls: true
             smtp_user: ${configVars.userEmail}
             smtp_pass: '${config.sops.placeholder.userEmailPasswd}'
-            notif_from: "Bond Matrix Server <noreply@dcbond.com>"
+            notif_from: "Bond Encrypted Communications <noreply@dcbond.com>"
         '';
         owner = "${config.users.users.${app}.name}";
         group = "${config.users.users.${app}.group}";
         mode = "0440";
+          #registration_requires_token: true
+          #registrations_require_3pid:
+          #  - email
       };
       #"matrix-email-conf" = {
       #  content = ''
@@ -183,7 +183,7 @@ in
         redis.enabled = true;
         server_name = configVars.domain1;
         public_baseurl = "https://matrix.${configVars.domain1}";
-        enable_registration = true;
+        enable_registration = false;
         enable_metrics = false;
         database = {
           name = "psycopg2";
