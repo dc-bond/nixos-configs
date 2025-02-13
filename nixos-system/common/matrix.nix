@@ -135,6 +135,20 @@ in
             }
           ];
         };
+        "matrix.${configVars.domain1}" = {
+          enableACME = false;
+          forceSSL = false;
+          locations."/" = {
+            return = "200 '<html><head><title>Not Found</title></head><body><h1>This is not the page you are looking for.</h1></body></html>'";
+            extraConfig = "default_type text/html;";
+          };
+          listen = [
+            {
+              addr = "127.0.0.1"; 
+              port = 8078;
+            }
+          ];
+        };
       };
     };
 
@@ -198,9 +212,6 @@ in
         ];
       };
       extraConfigFiles = [
-        #"/run/secrets/rendered/matrix-registration-secret"
-        #"/run/secrets/rendered/matrix-macaroon-key"
-        #"/run/secrets/rendered/matrix-email-conf"
         "/run/secrets/rendered/matrix-extra-conf"
         #(pkgs.writeTextFile {
         #  name = "${app}-extra.conf";
@@ -303,9 +314,9 @@ in
           "matrix-web" = {
             entrypoints = ["websecure"];
             rule = "Host(`matrix.${configVars.domain1}`)";
-            service = "${app}";
+            service = "matrix-web";
             middlewares = [
-              #"secure-headers"
+              "secure-headers"
             ];
             tls = {
               certResolver = "cloudflareDns";
@@ -434,6 +445,16 @@ in
               servers = [
                 {
                   url = "http://127.0.0.1:8008";
+                }
+              ];
+            };
+          };
+          "matrix-web" = {
+            loadBalancer = {
+              passHostHeader = true;
+              servers = [
+                {
+                  url = "http://127.0.0.1:8078";
                 }
               ];
             };
