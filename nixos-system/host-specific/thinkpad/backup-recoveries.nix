@@ -251,7 +251,10 @@ let
     ssh cypress 'sudo mv /tmp/matrix-synapse.sql /var/lib/postgresql'
     ssh cypress 'sudo rm -rf /tmp/matrix-synapse.sql.gz'
     ssh cypress 'sudo -u postgres psql -U postgres -d template1 -c "DROP DATABASE \"matrix-synapse\";"'
-    #ssh cypress 'sudo -u postgres psql -U postgres -d template0 -c "CREATE DATABASE \"matrix-synapse\" OWNER \"matrix-synapse\" ENCODING \"UTF8\" LC_COLLATE='C' LC_CTYPE='C' template=template0;"'
+    
+    ssh cypress 'sudo -u postgres psql -U postgres -d template0 -c "CREATE DATABASE \"matrix-synapse\" OWNER \"matrix-synapse\" ENCODING \"UTF8\" LC_COLLATE='C' LC_CTYPE='C' template=template0;"'
+    ssh cypress 'sudo -u postgres psql -U postgres -d template0 -c "CREATE DATABASE \"matrix-synapse\" ENCODING '\''UTF8'\'' LC_COLLATE '\''C'\'' LC_CTYPE '\''C'\'' TEMPLATE template0 OWNER \"matrix-synapse\";"'
+
     ssh cypress 'sudo -u postgres psql -U postgres -d matrix-synapse -f /var/lib/postgresql/matrix-synapse.sql'
     ssh cypress 'sudo rm -rf /var/lib/postgresql/matrix-synapse.sql'
     sudo rm -rf ${config.backups.borgDir}/matrix-synapse.sql.gz
