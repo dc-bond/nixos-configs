@@ -26,6 +26,11 @@ in
       userEmailPasswd = {};
       matrixSynapseRegistrationSharedSecret = {};
       matrixSynapseMacaroonSecretKey = {};
+      coturnStaticAuthSecret = {
+        owner = "${config.users.users.turnserver.name}";
+        group = "${config.users.users.turnserver.group}";
+        mode = "0440";
+      };
     };
     templates = {
       "matrix-extra-conf" = {
@@ -39,45 +44,32 @@ in
             smtp_user: ${configVars.userEmail}
             smtp_pass: '${config.sops.placeholder.userEmailPasswd}'
             notif_from: "Bond Encrypted Communications <noreply@dcbond.com>"
+          encryption_enabled_by_default_for_room_type: all
+          user_directory:
+              enabled: true
+              search_all_users: true
+              prefer_local_users: true
+              show_locked_users: true
+          turn_shared_secret: ${config.sops.placeholder.coturnStaticAuthSecret}
         '';
         owner = "${config.users.users.${app}.name}";
         group = "${config.users.users.${app}.group}";
         mode = "0440";
-          #registration_requires_token: true
-          #registrations_require_3pid:
-          #  - email
       };
-      #"matrix-email-conf" = {
-      #  content = ''
-      #    email:
-      #      smtp_host: mail.privateemail.com
-      #      smtp_port: 465
-      #      force_tls: true
-      #      smtp_user: ${configVars.userEmail}
-      #      smtp_pass: '${config.sops.placeholder.userEmailPasswd}'
-      #      notif_from: "Bond Matrix Server <noreply@dcbond.com>"
-      #  '';
-      #  owner = "${config.users.users.${app}.name}";
-      #  group = "${config.users.users.${app}.group}";
-      #  mode = "0440";
-      #};
-      #"matrix-registration-secret" = {
-      #  content = ''
-      #    registration_shared_secret: ${config.sops.placeholder.matrixSynapseRegistrationSharedSecret}
-      #  '';
-      #  owner = "${config.users.users.${app}.name}";
-      #  group = "${config.users.users.${app}.group}";
-      #  mode = "0440";
-      #};
-      #"matrix-macaroon-key" = {
-      #  content = ''
-      #    macaroon_secret_key: ${config.sops.placeholder.matrixSynapseMacaroonSecretKey}
-      #  '';
-      #  owner = "${config.users.users.${app}.name}";
-      #  group = "${config.users.users.${app}.group}";
-      #  mode = "0440";
-      #};
     };
+  };
+
+  networking.firewall = {
+    allowedUDPPorts = [ 3478 5349 ];
+    allowedTCPPorts = [ 3478 5349 ];
+    allowedUDPPortRanges = let
+      range = with config.services.coturn; [
+        {
+          from = min-port;
+          to = max-port;
+        }
+      ];
+    in range;
   };
 
   services = {
@@ -114,27 +106,28 @@ in
           locations."= /.well-known/matrix/server".extraConfig = mkWellKnown serverConfig;
           locations."= /.well-known/matrix/client".extraConfig = mkWellKnown clientConfig;
         };
-        "comms.${configVars.domain1}" = {
-          enableACME = false;
-          forceSSL = false;
-          root = pkgs.element-web.override {
-            conf = {
-              default_server_config = {
-                "m.homeserver" = {
-                  "base_url" = "https://matrix.${configVars.domain1}";
-                  "server_name" = "${configVars.domain1}";
-                };
-              };
-              brand = "Bond Encrypted Communications";
-            };
-          };
-          listen = [
-            {
-              addr = "127.0.0.1"; 
-              port = 8077;
-            }
-          ];
-        };
+        #"comms.${configVars.domain1}" = {
+        #  enableACME = false;
+        #  forceSSL = false;
+        #  root = pkgs.element-web.override {
+        #    conf = {
+        #      #default_theme = "dark";
+        #      default_server_config = {
+        #        "m.homeserver" = {
+        #          "base_url" = "https://matrix.${configVars.domain1}";
+        #          "server_name" = "${configVars.domain1}";
+        #        };
+        #      };
+        #      brand = "Bond Encrypted Communications";
+        #    };
+        #  };
+        #  listen = [
+        #    {
+        #      addr = "127.0.0.1"; 
+        #      port = 8077;
+        #    }
+        #  ];
+        #};
         "matrix.${configVars.domain1}" = {
           enableACME = false;
           forceSSL = false;
@@ -210,96 +203,76 @@ in
             ];
           }
         ];
+        turn_uris = [
+          "turn:turn.${configVars.domain1}:3478?transport=udp" 
+          "turn:turn.${configVars.domain1}:3478?transport=tcp"
+          #"turn:turn.dcbond.com?transport=udp"
+          #"turn:turn.dcbond.com?transport=tcp"
+        ];
+        turn_user_lifetime = "1h";
+        turn_allow_guests = true;
+        #workers = {
+        #  "client" = {
+        #    worker_listeners = [
+        #      {
+        #        type = "http";
+        #        port = 9094;
+        #        bind_addresses = [ "127.0.0.1" ];
+        #        tls = false;
+        #        x_forwarded = true;
+        #        resources = [
+        #          {
+        #          names = [ "client" ];
+        #          }
+        #        ];
+        #      }
+        #    ];
+        #  };
+        #};
       };
       extraConfigFiles = [
         "/run/secrets/rendered/matrix-extra-conf"
-        #(pkgs.writeTextFile {
-        #  name = "${app}-extra.conf";
-        #  text = ''
-        #    modules:
-        #      - module: "ldap_auth_provider.LdapAuthProviderModule"
-        #        config:
-        #          enabled: true
-        #          uri: "ldap://127.0.0.1:3890"
-        #          start_tls: false
-        #          base: "dc=${configVars.domain1Short},dc=com"
-        #        attributes:
-        #          uid: "cn"
-        #          mail: "mail"
-        #          name: "givenName"
-        #  '';
-        #})
       ];
     };
 
-    #coturn = rec {
-    #  enable = true;
-    #  no-cli = true;
-    #  no-tcp-relay = true;
-    #  min-port = 49000;
-    #  max-port = 50000;
-    #  use-auth-secret = true;
-    #  static-auth-secret = "will be world readable for local users :(";
-    #  realm = "turn.example.com";
-    #  cert = "${config.security.acme.certs.${realm}.directory}/full.pem";
-    #  pkey = "${config.security.acme.certs.${realm}.directory}/key.pem";
-    #  extraConfig = ''
-    #    # for debugging
-    #    verbose
-    #    # ban private IP ranges
-    #    no-multicast-peers
-    #    denied-peer-ip=0.0.0.0-0.255.255.255
-    #    denied-peer-ip=10.0.0.0-10.255.255.255
-    #    denied-peer-ip=100.64.0.0-100.127.255.255
-    #    denied-peer-ip=127.0.0.0-127.255.255.255
-    #    denied-peer-ip=169.254.0.0-169.254.255.255
-    #    denied-peer-ip=172.16.0.0-172.31.255.255
-    #    denied-peer-ip=192.0.0.0-192.0.0.255
-    #    denied-peer-ip=192.0.2.0-192.0.2.255
-    #    denied-peer-ip=192.88.99.0-192.88.99.255
-    #    denied-peer-ip=192.168.0.0-192.168.255.255
-    #    denied-peer-ip=198.18.0.0-198.19.255.255
-    #    denied-peer-ip=198.51.100.0-198.51.100.255
-    #    denied-peer-ip=203.0.113.0-203.0.113.255
-    #    denied-peer-ip=240.0.0.0-255.255.255.255
-    #    denied-peer-ip=::1
-    #    denied-peer-ip=64:ff9b::-64:ff9b::ffff:ffff
-    #    denied-peer-ip=::ffff:0.0.0.0-::ffff:255.255.255.255
-    #    denied-peer-ip=100::-100::ffff:ffff:ffff:ffff
-    #    denied-peer-ip=2001::-2001:1ff:ffff:ffff:ffff:ffff:ffff:ffff
-    #    denied-peer-ip=2002::-2002:ffff:ffff:ffff:ffff:ffff:ffff:ffff
-    #    denied-peer-ip=fc00::-fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
-    #    denied-peer-ip=fe80::-febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff
-    #  '';
-    #};
-
-    #networking.firewall = {
-    #  interfaces.enp2s0 = let
-    #    range = with config.services.coturn; [ {
-    #    from = min-port;
-    #    to = max-port;
-    #  } ];
-    #  in
-    #  {
-    #    allowedUDPPortRanges = range;
-    #    allowedUDPPorts = [ 3478 5349 ];
-    #    allowedTCPPortRanges = [ ];
-    #    allowedTCPPorts = [ 3478 5349 ];
-    #  };
-    #};
-
-    #security.acme.certs.${config.services.coturn.realm} = {
-    #  /* insert here the right configuration to obtain a certificate */
-    #  postRun = "systemctl restart coturn.service";
-    #  group = "turnserver";
-    #};
-
-    ## configure synapse to point users to coturn
-    #${app}.settings = with config.services.coturn; {
-    #  turn_uris = ["turn:${realm}:3478?transport=udp" "turn:${realm}:3478?transport=tcp"];
-    #  turn_shared_secret = static-auth-secret;
-    #  turn_user_lifetime = "1h";
-    #};
+    coturn = rec {
+      enable = true;
+      no-cli = true;
+      no-tcp-relay = true;
+      min-port = 49152;
+      max-port = 65535;
+      use-auth-secret = true;
+      static-auth-secret-file = "${config.sops.secrets.coturnStaticAuthSecret.path}";
+      realm = "turn.${configVars.domain1}";
+      cert = "/var/lib/traefik/certs-dump/cert.pem";
+      pkey = "/var/lib/traefik/certs-dump/key.pem";
+      extraConfig = ''
+        verbose
+        no-multicast-peers
+        denied-peer-ip=0.0.0.0-0.255.255.255
+        denied-peer-ip=10.0.0.0-10.255.255.255
+        denied-peer-ip=100.64.0.0-100.127.255.255
+        denied-peer-ip=127.0.0.0-127.255.255.255
+        denied-peer-ip=169.254.0.0-169.254.255.255
+        denied-peer-ip=172.16.0.0-172.31.255.255
+        denied-peer-ip=192.0.0.0-192.0.0.255
+        denied-peer-ip=192.0.2.0-192.0.2.255
+        denied-peer-ip=192.88.99.0-192.88.99.255
+        denied-peer-ip=192.168.0.0-192.168.255.255
+        denied-peer-ip=198.18.0.0-198.19.255.255
+        denied-peer-ip=198.51.100.0-198.51.100.255
+        denied-peer-ip=203.0.113.0-203.0.113.255
+        denied-peer-ip=240.0.0.0-255.255.255.255
+        denied-peer-ip=::1
+        denied-peer-ip=64:ff9b::-64:ff9b::ffff:ffff
+        denied-peer-ip=::ffff:0.0.0.0-::ffff:255.255.255.255
+        denied-peer-ip=100::-100::ffff:ffff:ffff:ffff
+        denied-peer-ip=2001::-2001:1ff:ffff:ffff:ffff:ffff:ffff:ffff
+        denied-peer-ip=2002::-2002:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+        denied-peer-ip=fc00::-fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+        denied-peer-ip=fe80::-febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+      '';
+    };
 
     traefik = {
 
@@ -393,18 +366,18 @@ in
               options = "tls-13@file";
             };
           };
-          "element-web" = {
-            entrypoints = ["websecure"];
-            rule = "Host(`comms.${configVars.domain1}`)";
-            service = "element-web";
-            middlewares = [
-              "secure-headers"
-            ];
-            tls = {
-              certResolver = "cloudflareDns";
-              options = "tls-13@file";
-            };
-          };
+          #"element-web" = {
+          #  entrypoints = ["websecure"];
+          #  rule = "Host(`comms.${configVars.domain1}`)";
+          #  service = "element-web";
+          #  middlewares = [
+          #    "secure-headers"
+          #  ];
+          #  tls = {
+          #    certResolver = "cloudflareDns";
+          #    options = "tls-13@file";
+          #  };
+          #};
         };
         middlewares = {
           matrix-body-limit.buffering = {
@@ -415,27 +388,6 @@ in
               "X-Forwarded-For" = "client";
               "X-Forwarded-Proto" = "https";
             };
-            #sslRedirect = true;
-            #stsSeconds = "31536000"; # force browsers to only connect over https
-            #stsIncludeSubdomains = true; # force browsers to only connect over https
-            #stsPreload = true; # force browsers to only connect over https
-            #forceSTSHeader = true; # force browsers to only connect over https
-            #contentTypeNosniff = true; # sets x-content-type-options header value to "nosniff", reduces risk of drive-by downloads
-            #frameDeny = true; # sets x-frame-options header value to "deny", prevents attacker from spoofing website in order to fool users into clicking something that is not there
-            #customFrameOptionsValue = "SAMEORIGIN"; # suggested by nextcloud, overrides frameDeny
-            #browserXssFilter = true; # sets x-xss-protection header value to "1; mode=block", which prevents page from loading if detecting a cross-site scripting attack
-            #contentSecurityPolicy = [ # sets content-security-policy header to suggested value
-            #  "default-src"
-            #  "self"
-            #];
-            #referrerPolicy = "same-origin";
-            #addVaryHeader = true; # ensures that the response includes a Vary header (such as Vary: Origin) so that caches treat different origin requests separately
-            #accessControlAllowCredentials = true; 
-            #accessControlMaxAge = "100";
-            #accessControlAllowOrigin = "*";
-            #accessControlAllowMethods = "GET, POST, OPTIONS, PUT, DELETE";
-            #accessControlAllowHeaders = "Authorization, Content-Type";
-            #accessControlExposeHeaders = "Synapse-Trace-Id, Server"
           };
         };
         services = {
@@ -449,6 +401,16 @@ in
               ];
             };
           };
+          #"matrix-client-worker" = {
+          #  loadBalancer = {
+          #    passHostHeader = true;
+          #    servers = [
+          #      {
+          #        url = "http://127.0.0.1:9094";
+          #      }
+          #    ];
+          #  };
+          #};
           "matrix-web" = {
             loadBalancer = {
               passHostHeader = true;
@@ -469,20 +431,83 @@ in
               ];
             };
           };
-          "element-web" = {
-            loadBalancer = {
-              passHostHeader = true;
-              servers = [
-                {
-                  url = "http://127.0.0.1:8077";
-                }
-              ];
-            };
-          };
+          #"element-web" = {
+          #  loadBalancer = {
+          #    passHostHeader = true;
+          #    servers = [
+          #      {
+          #        url = "http://127.0.0.1:8077";
+          #      }
+          #    ];
+          #  };
+          #};
         };
       };
     };
 
   };
+
+  virtualisation.oci-containers.containers."traefik-certs-dumper" = {
+    image = "ghcr.io/kereis/traefik-certs-dumper:latest"; # https://github.com/kereis/traefik-certs-dumper/releases/tag/v1.7.0
+    autoStart = true;
+    log-driver = "journald";
+    volumes = [ 
+      "/var/lib/traefik:/traefik:ro" 
+      "/var/lib/traefik/certs-dump:/output:rw" 
+    ];
+    environment = { 
+      DOMAIN = "${configVars.domain1}";
+    };
+    extraOptions = [
+      "--network=traefik-certs-dumper"
+      "--ip=${configVars.traefikCertsIp}"
+      "--tty=true"
+      "--stop-signal=SIGINT"
+    ];
+  };
+
+  systemd = {
+    services = { 
+      "docker-traefik-certs-dumper" = {
+        serviceConfig = {
+          Restart = lib.mkOverride 500 "always";
+          RestartMaxDelaySec = lib.mkOverride 500 "1m";
+          RestartSec = lib.mkOverride 500 "100ms";
+          RestartSteps = lib.mkOverride 500 9;
+        };
+        after = [
+          "docker-network-traefik-certs-dumper.service"
+        ];
+        requires = [
+          "docker-network-traefik-certs-dumper.service"
+        ];
+        partOf = [
+          "docker-traefik-certs-dumper-root.target"
+        ];
+        wantedBy = [
+          "docker-traefik-certs-dumper-root.target"
+        ];
+      };
+      "docker-network-traefik-certs-dumper" = {
+        path = [pkgs.docker];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStop = "${pkgs.docker}/bin/docker network rm -f traefik-certs-dumper";
+        };
+        script = ''
+          docker network inspect traefik-certs-dumper || docker network create --subnet ${configVars.traefikCertsSubnet} --driver bridge --scope local --attachable traefik-certs-dumper
+        '';
+        partOf = ["docker-traefik-certs-dumper-root.target"];
+        wantedBy = ["docker-traefik-certs-dumper-root.target"];
+      };
+    };
+    targets."docker-traefik-certs-dumper-root" = {
+      unitConfig = {
+        Description = "root target for docker-traefik-certs-dumper";
+      };
+      wantedBy = ["multi-user.target"];
+    };
+  }; 
 
 }

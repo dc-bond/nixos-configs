@@ -72,6 +72,8 @@
   searxngSubnet = "172.21.10.0/25";
   searxngIp = "172.21.10.2";
 
+  traefikCertsSubnet = "172.21.11.0/25";
+  traefikCertsIp = "172.21.11.2";
 
 
 
