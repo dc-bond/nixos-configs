@@ -211,7 +211,7 @@ let
     { set +x; log "changing directory to ${config.backups.borgDir}"; } 2>/dev/null
     cd ${config.backups.borgDir}
 
-    { set +x; log "extracting application data for nextcloud from borg repository"; } 2>/dev/null
+    { set +x; log "extracting application data from borg repository"; } 2>/dev/null
     sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/cypress::$ARCHIVE var/lib/matrix-synapse --strip-components 2
     sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/cypress::$ARCHIVE var/lib/redis-matrix-synapse --strip-components 2
 

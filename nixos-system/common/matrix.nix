@@ -60,8 +60,14 @@ in
   };
 
   networking.firewall = {
-    allowedUDPPorts = [ 3478 5349 ];
-    allowedTCPPorts = [ 3478 5349 ];
+    allowedUDPPorts = [ 
+      3478 
+      5349 
+    ];
+    allowedTCPPorts = [ 
+      3478 
+      5349 
+    ];
     allowedUDPPortRanges = let
       range = with config.services.coturn; [
         {
@@ -205,12 +211,14 @@ in
         ];
         turn_uris = [
           "turn:turn.${configVars.domain1}:3478?transport=udp" 
-          "turn:turn.${configVars.domain1}:3478?transport=tcp"
-          #"turn:turn.dcbond.com?transport=udp"
-          #"turn:turn.dcbond.com?transport=tcp"
+          "turns:turn.${configVars.domain1}:5349?transport=udp" 
         ];
         turn_user_lifetime = "1h";
-        turn_allow_guests = true;
+        turn_allow_guests = false;
+          #"turn:turn.${configVars.domain1}:3478?transport=tcp"
+          #"turn:turn.${configVars.domain1}:3478?transport=udp" 
+          #"turns:turn.${configVars.domain1}:5349?transport=tcp"
+          #"turns:turn.${configVars.domain1}:5349?transport=udp" 
         #workers = {
         #  "client" = {
         #    worker_listeners = [
@@ -238,41 +246,62 @@ in
     coturn = rec {
       enable = true;
       no-cli = true;
-      no-tcp-relay = true;
+      no-tcp = true; # force UDP only
+      no-udp = false;
+      no-tcp-relay = true; # force UDP only
+      no-udp-relay = false;
+      listening-ips = [ "192.168.1.89" ];
+      listening-port = 3478;
+      tls-listening-port = 5349;
+      relay-ips = ["192.168.1.89" ];
       min-port = 49152;
       max-port = 65535;
       use-auth-secret = true;
       static-auth-secret-file = "${config.sops.secrets.coturnStaticAuthSecret.path}";
       realm = "turn.${configVars.domain1}";
-      cert = "/var/lib/traefik/certs-dump/cert.pem";
-      pkey = "/var/lib/traefik/certs-dump/key.pem";
+      cert = "/etc/turnserver/cert.pem";
+      pkey = "/etc/turnserver/key.pem";
+      dh-file = "/etc/turnserver/dh.pem";
       extraConfig = ''
         verbose
         no-multicast-peers
-        denied-peer-ip=0.0.0.0-0.255.255.255
-        denied-peer-ip=10.0.0.0-10.255.255.255
-        denied-peer-ip=100.64.0.0-100.127.255.255
-        denied-peer-ip=127.0.0.0-127.255.255.255
-        denied-peer-ip=169.254.0.0-169.254.255.255
-        denied-peer-ip=172.16.0.0-172.31.255.255
-        denied-peer-ip=192.0.0.0-192.0.0.255
-        denied-peer-ip=192.0.2.0-192.0.2.255
-        denied-peer-ip=192.88.99.0-192.88.99.255
-        denied-peer-ip=192.168.0.0-192.168.255.255
-        denied-peer-ip=198.18.0.0-198.19.255.255
-        denied-peer-ip=198.51.100.0-198.51.100.255
-        denied-peer-ip=203.0.113.0-203.0.113.255
-        denied-peer-ip=240.0.0.0-255.255.255.255
-        denied-peer-ip=::1
-        denied-peer-ip=64:ff9b::-64:ff9b::ffff:ffff
-        denied-peer-ip=::ffff:0.0.0.0-::ffff:255.255.255.255
-        denied-peer-ip=100::-100::ffff:ffff:ffff:ffff
-        denied-peer-ip=2001::-2001:1ff:ffff:ffff:ffff:ffff:ffff:ffff
-        denied-peer-ip=2002::-2002:ffff:ffff:ffff:ffff:ffff:ffff:ffff
-        denied-peer-ip=fc00::-fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
-        denied-peer-ip=fe80::-febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+        user-quota=24
+        total-quota=2400
+        udp-self-balance
       '';
     };
+        #cipher-list=TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256 dh2066
+        #udp-self-balance
+      #no-udp = false;
+      #no-udp-relay = false;
+      #listening-port = 3478;
+      #tls-listening-port = 5349;
+      #no-tls = true;
+      #no-dtls = true;
+        #cipher-list=\"HIGH\"
+        #denied-peer-ip=10.0.0.0-10.255.255.255
+        #denied-peer-ip=192.168.0.0-192.168.255.255
+        #denied-peer-ip=172.16.0.0-172.31.255.255
+        
+        #denied-peer-ip=0.0.0.0-0.255.255.255
+        #denied-peer-ip=100.64.0.0-100.127.255.255
+        #denied-peer-ip=127.0.0.0-127.255.255.255
+        #denied-peer-ip=169.254.0.0-169.254.255.255
+        #denied-peer-ip=192.0.0.0-192.0.0.255
+        #denied-peer-ip=192.0.2.0-192.0.2.255
+        #denied-peer-ip=192.88.99.0-192.88.99.255
+        #denied-peer-ip=198.18.0.0-198.19.255.255
+        #denied-peer-ip=198.51.100.0-198.51.100.255
+        #denied-peer-ip=203.0.113.0-203.0.113.255
+        #denied-peer-ip=240.0.0.0-255.255.255.255
+        #denied-peer-ip=::1
+        #denied-peer-ip=64:ff9b::-64:ff9b::ffff:ffff
+        #denied-peer-ip=::ffff:0.0.0.0-::ffff:255.255.255.255
+        #denied-peer-ip=100::-100::ffff:ffff:ffff:ffff
+        #denied-peer-ip=2001::-2001:1ff:ffff:ffff:ffff:ffff:ffff:ffff
+        #denied-peer-ip=2002::-2002:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+        #denied-peer-ip=fc00::-fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+        #denied-peer-ip=fe80::-febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff
 
     traefik = {
 
@@ -453,10 +482,12 @@ in
     log-driver = "journald";
     volumes = [ 
       "/var/lib/traefik:/traefik:ro" 
-      "/var/lib/traefik/certs-dump:/output:rw" 
+      "/etc/turnserver:/output:rw" 
     ];
     environment = { 
       DOMAIN = "${configVars.domain1}";
+      OVERRIDE_UID = "249"; # turnserver user
+      OVERRIDE_GID = "249"; # turnserver group
     };
     extraOptions = [
       "--network=traefik-certs-dumper"
@@ -466,8 +497,39 @@ in
     ];
   };
 
+  environment.systemPackages = with pkgs; [
+  openssl
+  ];
+
   systemd = {
+    #tmpfiles.rules = [
+    #  "d /etc/turnserver 0750 turnserver turnserver -"
+    #];
     services = { 
+      "generate-dhparam" = {
+        description = "generate diffie-hellman parameters for coturn";
+        after = [ "network.target" ];
+        before = [ "docker-traefik-certs-dumper.service" ];
+        wantedBy = [ "multi-user.target" ];
+        script = ''
+          DH_FILE="/etc/turnserver/dh.pem"
+          if [ ! -f "$DH_FILE" ]; then
+            echo "generating diffie-hellman parameters..."
+            mkdir -p /etc/turnserver
+            chmod 750 /etc/turnserver
+            chown turnserver:turnserver /etc/turnserver
+            ${pkgs.openssl}/bin/openssl dhparam -out "$DH_FILE" 2066
+            chmod 640 "$DH_FILE"
+            chown turnserver:turnserver "$DH_FILE"
+          else
+            echo "diffie-hellman parameters already exist."
+          fi
+        '';
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+      };
       "docker-traefik-certs-dumper" = {
         serviceConfig = {
           Restart = lib.mkOverride 500 "always";
@@ -476,9 +538,11 @@ in
           RestartSteps = lib.mkOverride 500 9;
         };
         after = [
+          "generate-dhparam.service"
           "docker-network-traefik-certs-dumper.service"
         ];
         requires = [
+          "generate-dhparam.service"
           "docker-network-traefik-certs-dumper.service"
         ];
         partOf = [
