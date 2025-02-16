@@ -254,8 +254,8 @@ in
       listening-port = 3478;
       tls-listening-port = 5349;
       relay-ips = ["192.168.1.89" ];
-      min-port = 49152;
-      max-port = 65535;
+      min-port = 50100;
+      max-port = 50200; # only anticipate a handful of concurrent calls, so only opening 100 ports which should still be on the liberal side
       use-auth-secret = true;
       static-auth-secret-file = "${config.sops.secrets.coturnStaticAuthSecret.path}";
       realm = "turn.${configVars.domain1}";
@@ -263,46 +263,31 @@ in
       pkey = "/etc/turnserver/key.pem";
       dh-file = "/etc/turnserver/dh.pem";
       extraConfig = ''
-        verbose
         no-multicast-peers
-        user-quota=24
-        total-quota=2400
+        user-quota=48
+        total-quota=4800
         udp-self-balance
+        cipher-list=TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256 dh2066
+        denied-peer-ip=10.0.0.0-10.255.255.255    
+        #denied-peer-ip=192.168.0.0-192.168.255.255
+        denied-peer-ip=172.16.0.0-172.31.255.255  
+        denied-peer-ip=0.0.0.0-0.255.255.255       
+        denied-peer-ip=100.64.0.0-100.127.255.255  
+        denied-peer-ip=127.0.0.0-127.255.255.255   
+        denied-peer-ip=169.254.0.0-169.254.255.255 
+        denied-peer-ip=192.0.0.0-192.0.0.255       
+        denied-peer-ip=192.0.2.0-192.0.2.255       
+        denied-peer-ip=192.88.99.0-192.88.99.255   
+        denied-peer-ip=198.18.0.0-198.19.255.255   
+        denied-peer-ip=198.51.100.0-198.51.100.255 
+        denied-peer-ip=203.0.113.0-203.0.113.255   
+        denied-peer-ip=240.0.0.0-255.255.255.255   
+        denied-peer-ip=::1                         
+        denied-peer-ip=fc00::-fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+        denied-peer-ip=fe80::-febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff
       '';
     };
-        #cipher-list=TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256 dh2066
-        #udp-self-balance
-      #no-udp = false;
-      #no-udp-relay = false;
-      #listening-port = 3478;
-      #tls-listening-port = 5349;
-      #no-tls = true;
-      #no-dtls = true;
-        #cipher-list=\"HIGH\"
-        #denied-peer-ip=10.0.0.0-10.255.255.255
-        #denied-peer-ip=192.168.0.0-192.168.255.255
-        #denied-peer-ip=172.16.0.0-172.31.255.255
         
-        #denied-peer-ip=0.0.0.0-0.255.255.255
-        #denied-peer-ip=100.64.0.0-100.127.255.255
-        #denied-peer-ip=127.0.0.0-127.255.255.255
-        #denied-peer-ip=169.254.0.0-169.254.255.255
-        #denied-peer-ip=192.0.0.0-192.0.0.255
-        #denied-peer-ip=192.0.2.0-192.0.2.255
-        #denied-peer-ip=192.88.99.0-192.88.99.255
-        #denied-peer-ip=198.18.0.0-198.19.255.255
-        #denied-peer-ip=198.51.100.0-198.51.100.255
-        #denied-peer-ip=203.0.113.0-203.0.113.255
-        #denied-peer-ip=240.0.0.0-255.255.255.255
-        #denied-peer-ip=::1
-        #denied-peer-ip=64:ff9b::-64:ff9b::ffff:ffff
-        #denied-peer-ip=::ffff:0.0.0.0-::ffff:255.255.255.255
-        #denied-peer-ip=100::-100::ffff:ffff:ffff:ffff
-        #denied-peer-ip=2001::-2001:1ff:ffff:ffff:ffff:ffff:ffff:ffff
-        #denied-peer-ip=2002::-2002:ffff:ffff:ffff:ffff:ffff:ffff:ffff
-        #denied-peer-ip=fc00::-fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
-        #denied-peer-ip=fe80::-febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff
-
     traefik = {
 
       staticConfigOptions.entryPoints = {
@@ -497,14 +482,9 @@ in
     ];
   };
 
-  environment.systemPackages = with pkgs; [
-  openssl
-  ];
+  environment.systemPackages = with pkgs; [ openssl ];
 
   systemd = {
-    #tmpfiles.rules = [
-    #  "d /etc/turnserver 0750 turnserver turnserver -"
-    #];
     services = { 
       "generate-dhparam" = {
         description = "generate diffie-hellman parameters for coturn";
@@ -516,7 +496,7 @@ in
           if [ ! -f "$DH_FILE" ]; then
             echo "generating diffie-hellman parameters..."
             mkdir -p /etc/turnserver
-            chmod 750 /etc/turnserver
+            chmod 755 /etc/turnserver
             chown turnserver:turnserver /etc/turnserver
             ${pkgs.openssl}/bin/openssl dhparam -out "$DH_FILE" 2066
             chmod 640 "$DH_FILE"
