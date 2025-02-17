@@ -32,7 +32,7 @@
       "nixos-system/common/matrix.nix"
       "nixos-system/common/privatebin.nix"
       "nixos-system/common/dcbond-root.nix"
-      #"nixos-system/common/media-server.nix" # need to figure out vpn solution
+      "nixos-system/common/media-server.nix" # need to figure out vpn solution
       #"nixos-system/common/unifi-controller.nix" # compile problems with mongodb
       "nixos-system/common/oci-unifi-controller.nix"
       "nixos-system/common/oci-pihole.nix"
