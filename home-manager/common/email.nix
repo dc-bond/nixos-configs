@@ -33,6 +33,10 @@
     };
   };
 
+  home.file.".config/neomutt/mailcap".text = ''
+    text/html; ${pkgs.firefox-esr}/bin/firefox-esr %s
+  '';
+
   programs = {
     mbsync.enable = true;
     msmtp.enable = true;
@@ -102,7 +106,7 @@
           map = [ "index" "pager" ];
         }
         {
-          action = "<view-attachments><search>text/html<enter><view-mailcap><exit>";
+          action = "<view-attachments><search>text/html<enter><view-mailcap><exit>"; # view message in firefox
           key = "B";
           map = [ "index" ];
         }
@@ -128,6 +132,7 @@
         set sort_re
         set send_charset = "utf-8:iso-8859-1:us-ascii"
         set charset = "utf-8"
+        set mailcap_path = "~/.config/neomutt/mailcap"
         unset confirmappend
         unset move
         unset mark_old
