@@ -171,7 +171,7 @@ in
           handlers = [
             "journal"
           ];
-          level = "INFO";
+          level = "WARNING";
         };
         version = 1;
       };
@@ -210,15 +210,13 @@ in
           }
         ];
         turn_uris = [
+          #"turn:turn.${configVars.domain1}:3478?transport=tcp" # force UDP
           "turn:turn.${configVars.domain1}:3478?transport=udp" 
+          #"turns:turn.${configVars.domain1}:5349?transport=tcp" # force UDP
           "turns:turn.${configVars.domain1}:5349?transport=udp" 
         ];
         turn_user_lifetime = "1h";
         turn_allow_guests = false;
-          #"turn:turn.${configVars.domain1}:3478?transport=tcp"
-          #"turn:turn.${configVars.domain1}:3478?transport=udp" 
-          #"turns:turn.${configVars.domain1}:5349?transport=tcp"
-          #"turns:turn.${configVars.domain1}:5349?transport=udp" 
         #workers = {
         #  "client" = {
         #    worker_listeners = [
@@ -263,6 +261,7 @@ in
       pkey = "/etc/turnserver/key.pem";
       dh-file = "/etc/turnserver/dh.pem";
       extraConfig = ''
+        suppress_key_server_warning=true
         no-multicast-peers
         user-quota=48
         total-quota=4800
@@ -272,7 +271,7 @@ in
         #denied-peer-ip=192.168.0.0-192.168.255.255
         denied-peer-ip=172.16.0.0-172.31.255.255  
         denied-peer-ip=0.0.0.0-0.255.255.255       
-        denied-peer-ip=100.64.0.0-100.127.255.255  
+        #denied-peer-ip=100.64.0.0-100.127.255.255  
         denied-peer-ip=127.0.0.0-127.255.255.255   
         denied-peer-ip=169.254.0.0-169.254.255.255 
         denied-peer-ip=192.0.0.0-192.0.0.255       

@@ -13,6 +13,7 @@ let
   app4 = "prowlarr";
   app5 = "radarr";
   app6 = "sonarr";
+  app7 = "nordlynx";
 in
 
 {
@@ -35,6 +36,21 @@ in
     "dotnet-sdk-6.0.428"
     "dotnet-sdk-wrapped-6.0.428"
   ];
+  
+  networking.wireguard.enable = true;
+
+  sops = {
+    secrets = {
+      vpnPrivateKey = {};
+    };
+    templates = {
+      "${app7}-env".content = ''
+        TZ=America/New_York
+        PRIVATE_KEY=${config.sops.placeholder.vpnPrivateKey}
+        NET_LOCAL=192.168.1.0/24
+      '';
+    };
+  };
 
   services = {
 
@@ -47,6 +63,31 @@ in
     ${app4}.enable = true;
     ${app5}.enable = true;
     ${app6}.enable = true;
+
+  #virtualisation.oci-containers.containers.${app7} = {
+  #  image = "docker.io/bubuntux/nordlynx:2025-01-01"; # https://hub.docker.com/r/bubuntux/nordlynx/tags
+  #  autoStart = true;
+  #  log-driver = "journald";
+  #  environmentFiles = [ config.sops.templates."${app7}-env".path ];
+  #  extraOptions = [
+  #    "--network=host"
+  #    #"--ip=${configVars.chromiumVpnIp}"
+  #    "--sysctl=net.ipv6.conf.all.disable_ipv6=1"
+  #    "--cap-add=NET_ADMIN"
+  #    "--privileged"
+  #    "--tty=true"
+  #    "--stop-signal=SIGINT"
+  #  ];
+  #  #labels = {
+  #  #  "traefik.enable" = "true";
+  #  #  "traefik.http.routers.${app}.entrypoints" = "websecure";
+  #  #  "traefik.http.routers.${app}.rule" = "Host(`${app2}.${configVars.domain2}`)";
+  #  #  "traefik.http.routers.${app}.tls" = "true";
+  #  #  "traefik.http.routers.${app}.tls.options" = "tls-13@file";
+  #  #  "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
+  #  #  "traefik.http.services.${app}.loadbalancer.server.port" = "3000"; # port for chromium container
+  #  #};
+  #};
 
     traefik.dynamicConfigOptions.http = {
       routers = {
