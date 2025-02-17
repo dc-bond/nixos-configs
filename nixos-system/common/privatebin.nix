@@ -54,12 +54,12 @@ in
 
     ${app} = {
       enable = true;
+      group = "nginx";
       settings = {
         main = {
-          name = "Bond Secure Datadrop";
+          name = "Bond Secure Pastebin";
           discussion = false;
           defaultformatter = "plalib.types.intext";
-          qrcode = true
         };
         model.class = "Filesystem";
         model_options.dir = "/var/lib/privatebin/data";
@@ -72,7 +72,8 @@ in
         rule = "Host(`blackbox.${configVars.domain1}`)";
         service = "${app}";
         middlewares = [
-          #"secure-headers"
+          "secure-headers"
+          "authelia-dcbond"
         ];
         tls = {
           certResolver = "cloudflareDns";
