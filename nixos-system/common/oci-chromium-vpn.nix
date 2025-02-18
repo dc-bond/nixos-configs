@@ -80,6 +80,20 @@ in
   systemd = {
     services = { 
 
+      "docker-network-${app}" = {
+        path = [pkgs.docker];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
+        };
+        script = ''
+          docker network inspect ${app} || docker network create --subnet ${configVars.chromiumSubnet} --driver bridge --scope local --attachable ${app}
+        '';
+        partOf = ["docker-${app}-root.target"];
+        wantedBy = ["docker-${app}-root.target"];
+      };
+
       "docker-${app}" = {
         serviceConfig = {
           Restart = lib.mkOverride 500 "always";
@@ -103,19 +117,6 @@ in
         wantedBy = [
           "docker-${app}-root.target"
         ];
-      };
-      "docker-network-${app}" = {
-        path = [pkgs.docker];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-          ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
-        };
-        script = ''
-          docker network inspect ${app} || docker network create --subnet ${configVars.chromiumSubnet} --driver bridge --scope local --attachable ${app}
-        '';
-        partOf = ["docker-${app}-root.target"];
-        wantedBy = ["docker-${app}-root.target"];
       };
       "docker-volume-${app}" = {
         path = [pkgs.docker];
@@ -148,7 +149,7 @@ in
     };
     targets."docker-${app}-root" = {
       unitConfig = {
-        Description = "root target for ${app2} container stack";
+        Description = "root target for ${app} container stack";
       };
       wantedBy = ["multi-user.target"];
     };

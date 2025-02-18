@@ -75,6 +75,12 @@
   traefikCertsSubnet = "172.21.11.0/25";
   traefikCertsIp = "172.21.11.2";
 
+  arrStackSubnet = "172.21.12.0/25";
+  arrVpnIp = "172.21.12.2";
+  sabnzbdIp = "172.21.12.3";
+  sonarrIp = "172.21.12.4";
+  radarrIp = "172.21.12.5";
+  prowlarrIp = "172.21.12.6";
 
 
 
