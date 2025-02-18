@@ -39,7 +39,7 @@
       "nixos-system/common/oci-actual.nix"
       "nixos-system/common/oci-fava.nix"
       "nixos-system/common/oci-zwavejs.nix"
-      "nixos-system/common/oci-chromium-vpn.nix"
+      "nixos-system/common/oci-chromium.nix"
       "nixos-system/common/oci-searxng.nix"
       #"nixos-system/common/oci-wordpress-dcbond.nix"
       #"nixos-system/common/oci-recipesage.nix"
