@@ -7,12 +7,14 @@
 }: 
 
 let
-  app = "arrstack";
-  app1 = "arr-vpn";
+  app = "media-server";
+  app1 = "media-server-vpn";
   app2 = "sabnzbd";
   app3 = "sonarr";
   app4 = "radarr";
   app5 = "prowlarr";
+  app6 = "jellyseerr";
+  app7 = "jellyfin";
 in
 
 {
@@ -30,6 +32,56 @@ in
         NET_LOCAL=192.168.1.0/24
       '';
     };
+  };
+
+  fileSystems."/mnt/transcodes" = {
+    fsType = "tmpfs";
+    options = [ 
+      "rw" 
+      "nosuid" 
+      "inode64" 
+      "nodev" 
+      "noexec" 
+      "size=2G" 
+    ];
+  };
+
+  services = {
+
+    ${app7} = {
+      enable = true;
+      cacheDir = "/mnt/transcodes";
+    };
+
+    traefik.dynamicConfigOptions.http = {
+      routers = {
+        ${app7} = {
+          entrypoints = ["websecure"];
+          rule = "Host(`${app7}.${configVars.domain2}`)";
+          service = "${app7}";
+          middlewares = [
+            "secure-headers"
+          ];
+          tls = {
+            certResolver = "cloudflareDns";
+            options = "tls-13@file";
+          };
+        };
+      };
+      services = {
+        ${app7} = {
+          loadBalancer = {
+            passHostHeader = true;
+            servers = [
+            {
+              url = "http://127.0.0.1:8096";
+            }
+            ];
+          };
+        };
+      };
+    };
+
   };
 
   virtualisation.oci-containers.containers = {
@@ -78,6 +130,13 @@ in
         "traefik.http.routers.${app5}.tls.options" = "tls-13@file";
         "traefik.http.routers.${app5}.middlewares" = "secure-headers@file";
         "traefik.http.services.${app5}.loadbalancer.server.port" = "9696"; # prowlarr
+        "traefik.http.routers.${app6}.service" = "${app6}";
+        "traefik.http.routers.${app6}.entrypoints" = "websecure";
+        "traefik.http.routers.${app6}.rule" = "Host(`${app6}.${configVars.domain2}`)";
+        "traefik.http.routers.${app6}.tls" = "true";
+        "traefik.http.routers.${app6}.tls.options" = "tls-13@file";
+        "traefik.http.routers.${app6}.middlewares" = "secure-headers@file";
+        "traefik.http.services.${app6}.loadbalancer.server.port" = "5055"; # jellyseerr
       };
     };
 
@@ -147,6 +206,19 @@ in
         PGID = "0";
         TZ = "America/New_York";
       };
+      log-driver = "journald";
+      dependsOn = ["${app1}"];
+      extraOptions = [
+        "--network=container:${app1}"
+        "--tty=true"
+        "--stop-signal=SIGINT"
+      ];
+    };
+
+    "${app6}" = {
+      image = "docker.io/fallenbagel/${app5}:2.3.0"; # https://hub.docker.com/r/fallenbagel/jellyseerr/tags
+      autoStart = true;
+      volumes = [ "${app6}:/config" ];
       log-driver = "journald";
       dependsOn = ["${app1}"];
       extraOptions = [
@@ -331,6 +403,41 @@ in
         };
         script = ''
           docker volume inspect ${app5} || docker volume create ${app5}
+        '';
+        partOf = ["docker-${app}-root.target"];
+        wantedBy = ["docker-${app}-root.target"];
+      };
+
+      "docker-${app6}" = {
+        serviceConfig = {
+          Restart = lib.mkOverride 500 "always";
+          RestartMaxDelaySec = lib.mkOverride 500 "1m";
+          RestartSec = lib.mkOverride 500 "100ms";
+          RestartSteps = lib.mkOverride 500 9;
+        };
+        after = [
+          "docker-${app1}.service"
+          "docker-volume-${app6}.service"
+        ];
+        requires = [
+          "docker-${app1}.service"
+          "docker-volume-${app6}.service"
+        ];
+        partOf = [
+          "docker-${app}-root.target"
+        ];
+        wantedBy = [
+          "docker-${app}-root.target"
+        ];
+      };
+      "docker-volume-${app6}" = {
+        path = [pkgs.docker];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        script = ''
+          docker volume inspect ${app6} || docker volume create ${app6}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
