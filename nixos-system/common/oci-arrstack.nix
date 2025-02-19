@@ -86,7 +86,7 @@ in
       autoStart = true;
       volumes = [ 
         "${app2}:/config" 
-        #"" # setup usenet bind mount
+        #"/home/chris/usenet:/media/usenet:rw" # bind mount for downloads
       ];
       environment = {
         PUID = "0";

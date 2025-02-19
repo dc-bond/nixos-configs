@@ -6,6 +6,8 @@ lib,
 ... 
 }: 
 
+# CREATE NEW USERS WITH 'nix-shell -p matrix-synapse --run "register_new_matrix_user -k "shared-secret" http://127.0.0.1:8008"'
+
 let
   app = "matrix-synapse";
   fqdn = "matrix.${configVars.domain1}";
