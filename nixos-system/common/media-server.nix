@@ -216,9 +216,9 @@ in
     };
 
     "${app6}" = {
-      image = "docker.io/fallenbagel/${app5}:2.3.0"; # https://hub.docker.com/r/fallenbagel/jellyseerr/tags
+      image = "docker.io/fallenbagel/${app6}:2.3.0"; # https://hub.docker.com/r/fallenbagel/jellyseerr/tags
       autoStart = true;
-      volumes = [ "${app6}:/config" ];
+      volumes = [ "${app6}:/app/config" ];
       log-driver = "journald";
       dependsOn = ["${app1}"];
       extraOptions = [
