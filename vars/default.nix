@@ -77,10 +77,6 @@
 
   arrStackSubnet = "172.21.12.0/25";
   arrVpnIp = "172.21.12.2";
-  sabnzbdIp = "172.21.12.3";
-  sonarrIp = "172.21.12.4";
-  radarrIp = "172.21.12.5";
-  prowlarrIp = "172.21.12.6";
 
 
 

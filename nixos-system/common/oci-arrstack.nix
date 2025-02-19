@@ -50,24 +50,28 @@ in
       ];
       labels = {
         "traefik.enable" = "true";
+        "traefik.http.routers.${app2}.service" = "${app2}";
         "traefik.http.routers.${app2}.entrypoints" = "websecure";
         "traefik.http.routers.${app2}.rule" = "Host(`${app2}.${configVars.domain2}`)";
         "traefik.http.routers.${app2}.tls" = "true";
         "traefik.http.routers.${app2}.tls.options" = "tls-13@file";
         "traefik.http.routers.${app2}.middlewares" = "secure-headers@file";
         "traefik.http.services.${app2}.loadbalancer.server.port" = "8080"; # sabnzbd
+        "traefik.http.routers.${app3}.service" = "${app3}";
         "traefik.http.routers.${app3}.entrypoints" = "websecure";
         "traefik.http.routers.${app3}.rule" = "Host(`${app3}.${configVars.domain2}`)";
         "traefik.http.routers.${app3}.tls" = "true";
         "traefik.http.routers.${app3}.tls.options" = "tls-13@file";
         "traefik.http.routers.${app3}.middlewares" = "secure-headers@file";
         "traefik.http.services.${app3}.loadbalancer.server.port" = "8989"; # sonarr
+        "traefik.http.routers.${app4}.service" = "${app4}";
         "traefik.http.routers.${app4}.entrypoints" = "websecure";
         "traefik.http.routers.${app4}.rule" = "Host(`${app4}.${configVars.domain2}`)";
         "traefik.http.routers.${app4}.tls" = "true";
         "traefik.http.routers.${app4}.tls.options" = "tls-13@file";
         "traefik.http.routers.${app4}.middlewares" = "secure-headers@file";
         "traefik.http.services.${app4}.loadbalancer.server.port" = "7878"; # radarr
+        "traefik.http.routers.${app5}.service" = "${app5}";
         "traefik.http.routers.${app5}.entrypoints" = "websecure";
         "traefik.http.routers.${app5}.rule" = "Host(`${app5}.${configVars.domain2}`)";
         "traefik.http.routers.${app5}.tls" = "true";
@@ -133,7 +137,7 @@ in
         "--stop-signal=SIGINT"
       ];
     };
-
+    
     "${app5}" = {
       image = "lscr.io/linuxserver/prowlarr:1.30.2.4939-ls105"; # https://github.com/linuxserver/docker-prowlarr/releases
       autoStart = true;
@@ -201,11 +205,11 @@ in
         };
         after = [
           "docker-${app1}.service"
-          "docker-volume-${app2}"
+          "docker-volume-${app2}.service"
         ];
         requires = [
           "docker-${app1}.service"
-          "docker-volume-${app2}"
+          "docker-volume-${app2}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -236,11 +240,11 @@ in
         };
         after = [
           "docker-${app1}.service"
-          "docker-volume-${app3}"
+          "docker-volume-${app3}.service"
         ];
         requires = [
           "docker-${app1}.service"
-          "docker-volume-${app3}"
+          "docker-volume-${app3}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -271,11 +275,11 @@ in
         };
         after = [
           "docker-${app1}.service"
-          "docker-volume-${app4}"
+          "docker-volume-${app4}.service"
         ];
         requires = [
           "docker-${app1}.service"
-          "docker-volume-${app4}"
+          "docker-volume-${app4}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -306,11 +310,11 @@ in
         };
         after = [
           "docker-${app1}.service"
-          "docker-volume-${app5}"
+          "docker-volume-${app5}.service"
         ];
         requires = [
           "docker-${app1}.service"
-          "docker-volume-${app5}"
+          "docker-volume-${app5}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
