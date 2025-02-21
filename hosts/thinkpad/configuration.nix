@@ -11,8 +11,6 @@
 {
 
   imports = lib.flatten [
-    (map (file: configLib.relativeToRoot "scripts/backup-recovery/${file}")
-    (builtins.attrNames (builtins.readDir ./scripts/backup-recovery)))
     (map configLib.relativeToRoot [
       "hosts/thinkpad/disk-config-btrfs-luks.nix"
       "hosts/thinkpad/hardware-configuration.nix"
@@ -38,6 +36,10 @@
       "nixos-system/host-specific/thinkpad/cloud-backups.nix"
       #"nixos-system/host-specific/thinkpad/backup-recoveries.nix"
       "nixos-system/host-specific/thinkpad/lsyncd.nix"
+      "scripts/backup-recovery/info-cypress-archives.nix"
+      "scripts/backup-recovery/recover-traefik.nix"
+      "scripts/backup-recovery/recover-homeassistant.nix"
+      #"scripts/rebuild-remote-cypress.nix"
     ])
   ];
 
