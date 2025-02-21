@@ -39,6 +39,8 @@
       "scripts/backup-recovery/info-cypress-archives.nix"
       "scripts/backup-recovery/recover-traefik.nix"
       "scripts/backup-recovery/recover-homeassistant.nix"
+      "scripts/backup-recovery/recover-matrix.nix"
+      "scripts/backup-recovery/recover-nextcloud.nix"
       #"scripts/rebuild-remote-cypress.nix"
     ])
   ];
