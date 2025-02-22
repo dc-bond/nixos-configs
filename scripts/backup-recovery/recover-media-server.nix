@@ -113,7 +113,7 @@ let
    ssh $HOST 'sudo mv /tmp/sonarr /var/lib/docker/volumes'
    
    { set +x; log "changing ownership of restored application data"; } 2>/dev/null
-   ssh $HOST 'sudo chown -R root:root /var/lib/docker/volumes/jellyfin'
+   ssh $HOST 'sudo chown -R 911:911 /var/lib/docker/volumes/jellyfin'
    ssh $HOST 'sudo chown -R root:root /var/lib/docker/volumes/jellyseerr'
    ssh $HOST 'sudo chown -R root:root /var/lib/docker/volumes/sabnzbd'
    ssh $HOST 'sudo chown -R root:root /var/lib/docker/volumes/prowlarr'
