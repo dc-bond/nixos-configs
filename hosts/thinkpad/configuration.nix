@@ -47,6 +47,7 @@
       "scripts/backup-recovery/recover-lldap.nix"
       "scripts/backup-recovery/recover-searxng.nix"
       "scripts/backup-recovery/recover-chromium.nix"
+      "scripts/backup-recovery/recover-actual.nix"
       #"scripts/rebuild-remote-cypress.nix"
     ])
   ];
