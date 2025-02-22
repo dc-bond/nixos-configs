@@ -82,7 +82,6 @@ let
    { set +x; log "stopping nextcloud stack on $HOST"; } 2>/dev/null
    ssh $HOST 'nextcloud-occ maintenance:mode --on'
    ssh $HOST 'sudo systemctl stop redis-nextcloud.service'
-   ssh $HOST 'sudo systemctl stop nginx.service'
 
    { set +x; log "removing existing application data on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo rm -rf /var/lib/nextcloud'
@@ -119,8 +118,6 @@ let
    { set +x; log "restarting restored nextcloud service on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl start redis-nextcloud.service'
    sleep 5 
-   ssh $HOST 'sudo systemctl start nginx.service'
-   sleep 5
    ssh $HOST 'nextcloud-occ maintenance:mode --off'
    '';
 
