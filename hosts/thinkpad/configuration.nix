@@ -48,6 +48,7 @@
       "scripts/backup-recovery/recover-searxng.nix"
       "scripts/backup-recovery/recover-chromium.nix"
       "scripts/backup-recovery/recover-actual.nix"
+      "scripts/backup-recovery/recover-pihole.nix"
       #"scripts/rebuild-remote-cypress.nix"
     ])
   ];

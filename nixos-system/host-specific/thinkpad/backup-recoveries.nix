@@ -588,12 +588,9 @@ in
   sops.secrets.borgCypressCryptPasswd = {};
 
   environment.systemPackages = with pkgs; [ 
-    recoverCypressLldapScript
     recoverCypressPiholeScript
     recoverCypressActualScript
     recoverCypressNextcloudScript
-    recoverCypressChromiumVpnScript
-    recoverCypressSearxngScript
     recoverCypressRecipesageScript
     recoverCypressUnifiControllerScript
   ];
