@@ -44,6 +44,9 @@
       "scripts/backup-recovery/recover-uptime-kuma.nix"
       "scripts/backup-recovery/recover-zwavejs.nix"
       "scripts/backup-recovery/recover-media-server.nix"
+      "scripts/backup-recovery/recover-lldap.nix"
+      "scripts/backup-recovery/recover-searxng.nix"
+      "scripts/backup-recovery/recover-chromium.nix"
       #"scripts/rebuild-remote-cypress.nix"
     ])
   ];
