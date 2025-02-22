@@ -9,7 +9,7 @@
   programs.zsh = {
     shellAliases = {
       rbthink = "rebuild-local-thinkpad";
-      rbcypress = "rebuild-remote-cypress";
+      rbcypress = "rebuildRemoteCypress";
       rbaspen = "rebuild-remote-aspen";
       getnets = "iwctl station wlan0 get-networks";
       flakeupdate = "sudo nix flake update --flake ~/nixos-configs";

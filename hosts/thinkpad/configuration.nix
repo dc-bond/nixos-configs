@@ -50,7 +50,7 @@
       "scripts/backup-recovery/recover-pihole.nix"
       "scripts/backup-recovery/recover-unifi-controller.nix"
       #"scripts/backup-recovery/recover-recipesage.nix"
-      #"scripts/rebuild-remote-cypress.nix"
+      "scripts/rebuild-remote-cypress.nix"
     ])
   ];
 
@@ -60,7 +60,6 @@
     (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/setup-borg-sshkeys.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuild-local-thinkpad.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/rebuild-remote-cypress.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/rebuild-remote-aspen.nix") { inherit pkgs config; })
     age # encryption tool
     mkpasswd # password hashing tool
