@@ -34,7 +34,6 @@
       "nixos-system/host-specific/thinkpad/tailscale.nix"
       "nixos-system/host-specific/thinkpad/borg-server.nix"
       "nixos-system/host-specific/thinkpad/cloud-backups.nix"
-      #"nixos-system/host-specific/thinkpad/backup-recoveries.nix"
       "nixos-system/host-specific/thinkpad/lsyncd.nix"
       "scripts/backup-recovery/info-cypress-archives.nix"
       "scripts/backup-recovery/recover-traefik.nix"
