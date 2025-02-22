@@ -71,7 +71,7 @@ let
    { set +x; log "changing directory to ${config.backups.borgDir}"; } 2>/dev/null
    cd ${config.backups.borgDir}
 
-   { set +x; log "extracting application data for zwavejs from borg repository"; } 2>/dev/null
+   { set +x; log "extracting application data from borg repository"; } 2>/dev/null
    sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/zwavejs --strip-components 4
    
    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
