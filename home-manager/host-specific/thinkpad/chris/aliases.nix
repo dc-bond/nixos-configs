@@ -8,6 +8,7 @@
 
   programs.zsh = {
     shellAliases = {
+      email = "mbsync --all; notmuch new; neomutt";
       rbthink = "rebuild-local-thinkpad";
       rbcypress = "rebuildRemoteCypress";
       rbaspen = "rebuild-remote-aspen";
