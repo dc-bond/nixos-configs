@@ -8,7 +8,7 @@
 }: 
 
 {
-  
+
   options.backups = {
     borgDir = lib.mkOption {
       type = lib.types.path;
@@ -22,10 +22,11 @@
     };
   };
   
-  sops.secrets.borgCryptPasswd = {};
+  config = {
 
-  services.borgbackup = {
-    jobs = {
+    sops.secrets.borgCryptPasswd = {};
+
+    services.borgbackup.jobs = {
       "${config.networking.hostName}" = {
         archiveBaseName = "${config.networking.hostName}";
         repo = "${config.backups.borgDir}/${config.networking.hostName}";
@@ -134,6 +135,7 @@
         };
       };
     };
+    
   };
 
 }
