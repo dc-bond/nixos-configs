@@ -10,6 +10,12 @@
 
 {
 
+  #fileSystems."/media/WD-WCC7K4RU947F" = {
+  #  device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb";
+  #  fsType = "ext4"; 
+  #  options = [ "defaults" ];
+  #};
+
   imports = lib.flatten [
     (map configLib.relativeToRoot [
       "hosts/aspen/disk-config-ext4.nix"

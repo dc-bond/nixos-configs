@@ -26,7 +26,7 @@
       pfetch     
     '';
     shellAliases = {
-      ls = "eza -all --long -g -h --color=always --group-directories-first --git";
+      ls = "eza -all --long -g -h --color=always --group-directories-first --git --total-size";
     };
     #zplug = {
     #  enable = true;

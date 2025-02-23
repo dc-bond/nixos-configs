@@ -8,7 +8,7 @@ let
 
   rebuildHostScript = pkgs.writeShellScriptBin "rebuildHost" ''
     # define available hosts
-    HOSTS=("cypress" "thinkpad" "opticon")
+    HOSTS=("aspen", "cypress" "thinkpad")
     
     # display menu options for hosts
     echo "Select host to rebuild:"

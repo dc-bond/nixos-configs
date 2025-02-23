@@ -10,6 +10,12 @@
 
 {
 
+  #fileSystems."/media/WD-WX21DC86RU3P" = {
+  #  device = "/dev/disk/by-uuid/f3fb53cc-52fa-48e3-8cac-b69d85a8aff1";
+  #  fsType = "ext4"; 
+  #  options = [ "defaults" ];
+  #};
+
   imports = lib.flatten [
     (map configLib.relativeToRoot [
       "hosts/cypress/disk-config-btrfs.nix"
