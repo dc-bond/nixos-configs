@@ -48,7 +48,7 @@ let
     echo "creating restoration directory at ${config.backups.borgCloudDir}/$HOST"
     mkdir ${config.backups.borgCloudDir}/$HOST
     ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync backblaze-b2:$HOST-backup ${config.backups.borgCloudDir}/$HOST
-    echo "change ownership of restoration directory at ${config.backups.borgCloudDir}/$HOST to borg"
+    echo "change ownership of restoration directory at ${config.backups.borgCloudDir}/$HOST"
     chown -R root:root ${config.backups.borgCloudDir}/$HOST
     echo "rclone cloud restore from backblaze finished at $(date)"
     '';  
@@ -59,7 +59,7 @@ let
     HOSTS=("aspen", "cypress" "thinkpad")
     
     # display menu options for hosts
-    echo "Select a host to recover:"
+    echo "Select a host:"
     for i in "''${!HOSTS[@]}"; do
       echo "$((i+1))) ''${HOSTS[$i]}"
     done
@@ -87,7 +87,7 @@ let
     HOSTS=("aspen", "cypress" "thinkpad")
     
     # display menu options for hosts
-    echo "Select a host to recover:"
+    echo "Select a host:"
     for i in "''${!HOSTS[@]}"; do
       echo "$((i+1))) ''${HOSTS[$i]}"
     done
