@@ -93,9 +93,9 @@
           systemctl start mosquitto.service
           systemctl start docker-chromium-root.target
           systemctl start docker-searxng-root.target
+          echo "starting cloud backup"
+          systemctl start cloudBackup.service
         '';
-          #echo "starting cloud backup"
-          #systemctl start cloudBackup.service
         paths = [
           "/var/lib/traefik"
           "/var/lib/private/lldap"

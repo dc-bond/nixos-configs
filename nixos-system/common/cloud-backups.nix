@@ -17,16 +17,38 @@ let
     '';
   cloudRestoreScript = pkgs.writeShellScriptBin "cloudRestore" ''
     #!/bin/bash
-    echo "rclone cloud restore from backblaze started at $(date)"
-    if [ -d "${config.backups.borgCloudDir}/${config.networking.hostName}" ]; then
-      echo "stale restoration detected at ${config.backups.borgCloudDir}/${config.networking.hostName}... deleting"
-      rm -rf ${config.backups.borgCloudDir}/${config.networking.hostName}
+
+    # define available hosts
+    HOSTS=("aspen", "cypress" "thinkpad")
+    
+    # display menu options for hosts
+    echo "Select a host to recover:"
+    for i in "''${!HOSTS[@]}"; do
+      echo "$((i+1))) ''${HOSTS[$i]}"
+    done
+    
+    # obtain target host from user
+    read -p "Enter the number of your choice for a host: " CHOICE
+    
+    # validate host selection
+    if [[ ! "$CHOICE" =~ ^[1-3]$ ]]; then
+      echo "Error: Invalid selection."
+      exit 1
     fi
-    echo "creating restoration directory at ${config.backups.borgCloudDir}/${config.networking.hostName}"
-    mkdir ${config.backups.borgCloudDir}/${config.networking.hostName}
-    ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync backblaze-b2:${config.networking.hostName}-backup ${config.backups.borgCloudDir}/${config.networking.hostName}
-    echo "change ownership of restoration directory at ${config.backups.borgCloudDir}/${config.networking.hostName} to borg"
-    chown -R borg:borg ${config.backups.borgCloudDir}/${config.networking.hostName}
+   
+    # set the selected host
+    HOST="''${HOSTS[$((CHOICE-1))]}"
+
+    echo "rclone cloud restore from backblaze started at $(date)"
+    if [ -d "${config.backups.borgCloudDir}/$HOST" ]; then
+      echo "stale restoration detected at ${config.backups.borgCloudDir}/$HOST... deleting"
+      rm -rf ${config.backups.borgCloudDir}/$HOST
+    fi
+    echo "creating restoration directory at ${config.backups.borgCloudDir}/$HOST"
+    mkdir ${config.backups.borgCloudDir}/$HOST
+    ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync backblaze-b2:$HOST-backup ${config.backups.borgCloudDir}/$HOST
+    echo "change ownership of restoration directory at ${config.backups.borgCloudDir}/$HOST to borg"
+    chown -R borg:borg ${config.backups.borgCloudDir}/$HOST
     echo "rclone cloud restore from backblaze finished at $(date)"
     '';
 in
