@@ -57,7 +57,6 @@
       "nixos-system/host-specific/cypress/networking.nix"
       "nixos-system/host-specific/cypress/tailscale.nix"
       #"nixos-system/host-specific/cypress/borg-client.nix"
-      "scripts/backup-recovery/borg-archives.nix"
     ])
   ];
 
