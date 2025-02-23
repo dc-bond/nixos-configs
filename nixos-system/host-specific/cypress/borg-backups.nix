@@ -7,30 +7,6 @@
   ... 
 }: 
 
-let
-  rcloneConf = "/run/secrets/rendered/rclone.conf";
-  cypressBackupScript = pkgs.writeShellScriptBin "cypressBackup" ''
-    #!/bin/bash
-    echo "rclone cloud backup to backblaze started at $(date)"
-    ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync ${config.backups.borgDir}/cypress backblaze-b2:cypress-backup
-    echo "rclone cloud backup to backblaze finished at $(date)"
-    '';
-  cypressRestoreScript = pkgs.writeShellScriptBin "cypressRestore" ''
-    #!/bin/bash
-    echo "rclone cloud restore from backblaze started at $(date)"
-    if [ -d "${config.backups.borgCloudDir}/cypress" ]; then
-      echo "stale restoration detected at ${config.backups.borgCloudDir}/cypress... deleting"
-      rm -rf ${config.backups.borgCloudDir}/cypress
-    fi
-    echo "creating restoration directory at ${config.backups.borgCloudDir}/cypress"
-    mkdir ${config.backups.borgCloudDir}/cypress
-    ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync backblaze-b2:cypress-backup ${config.backups.borgCloudDir}/cypress
-    echo "change ownership of restoration directory at ${config.backups.borgCloudDir}/cypress to borg"
-    chown -R borg:borg ${config.backups.borgCloudDir}/cypress
-    echo "rclone cloud restore from backblaze finished at $(date)"
-    '';
-in
-
 {
   
   options.backups = {
@@ -46,45 +22,13 @@ in
     };
   };
   
-  environment.systemPackages = with pkgs; [ 
-    cypressBackupScript
-    cypressRestoreScript
-    rclone
-  ];
-
-  #config = {
-
-  #  services.borgbackup.repos = {
-  #    cypress = {
-  #      authorizedKeys = ["ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOpolyGOcVqcrl1Kp+brigrMsrD9R194SGG9+L5ubZe3 borg@cypress"];
-  #      path = "${config.backups.borgDir}/cypress";
-  #    };
-  #  };
-
-  #};
-  
-  sops = {
-    secrets = {
-      borgCryptPasswd = {};
-      backblazeCypressAccount = {};
-      backblazeCypressKey = {};
-    };
-    templates = {
-      "rclone.conf".content = ''
-        [backblaze-b2]
-        type = b2
-        account = ${config.sops.placeholder.backblazeCypressAccount}
-        key = ${config.sops.placeholder.backblazeCypressKey}
-        hard_delete = true
-      '';
-    };
-  };
+  sops.secrets.borgCryptPasswd = {};
 
   services.borgbackup = {
     jobs = {
-      cypress = {
-        archiveBaseName = "cypress";
-        repo = "${config.backups.borgDir}/cypress";
+      "${config.networking.hostName}" = {
+        archiveBaseName = "${config.networking.hostName}";
+        repo = "${config.backups.borgDir}/${config.networking.hostName}";
         dateFormat = "+%Y.%m.%d-T%H:%M:%S";
         doInit = true; # run borg init if backup directory does not already contain the repository
         failOnWarnings = false;
@@ -150,7 +94,7 @@ in
           systemctl start docker-searxng-root.target
         '';
           #echo "starting cloud backup"
-          #systemctl start cypressBackup.service
+          #systemctl start cloudBackup.service
         paths = [
           "/var/lib/traefik"
           "/var/lib/private/lldap"
@@ -191,47 +135,5 @@ in
       };
     };
   };
-
-  systemd.services = {
-    "cypressBackup" = {
-      description = "rclone backup to backblaze cloud storage";
-      serviceConfig = {
-        ExecStart = "${cypressBackupScript}/bin/cypressBackup";
-        Restart = "on-failure";
-        EnvironmentFile = "${rcloneConf}";
-      };
-      preStart = ''
-        if [ ! -f "${rcloneConf}" ]; then
-          echo "rclone configuration file not found at ${rcloneConf}"
-          exit 1
-        fi
-      '';
-    };
-    "cypressRestore" = {
-      description = "rclone restore from backblaze cloud storage";
-      serviceConfig = {
-        ExecStart = "${cypressRestoreScript}/bin/cypressRestore";
-        Restart = "on-failure";
-        EnvironmentFile = "${rcloneConf}";
-      };
-      preStart = ''
-        if [ ! -f "${rcloneConf}" ]; then
-          echo "rclone configuration file not found at ${rcloneConf}"
-          exit 1
-        fi
-      '';
-    };
-  };
-  #  timers = {
-  #    "cypressBackup" = {
-  #      description = "systemd timer for cypressBackup service";
-  #      wantedBy = [ "timers.target" ];
-  #      timerConfig = {
-  #        OnCalendar = "04:00:00"; # everyday at 4am
-  #        Persistent = true; # ensure missed executions are run after the system is online again
-  #      };
-  #    };
-  #  };
-  #}; 
 
 }

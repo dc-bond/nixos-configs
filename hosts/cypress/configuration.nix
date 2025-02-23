@@ -20,6 +20,7 @@
     (map configLib.relativeToRoot [
       "hosts/cypress/disk-config-btrfs.nix"
       "hosts/cypress/hardware-configuration.nix"
+      "nixos-system/common/cloud-backups.nix"
       "nixos-system/common/boot.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/zsh.nix"
@@ -49,13 +50,13 @@
       "nixos-system/common/oci-searxng.nix"
       #"nixos-system/common/oci-wordpress-dcbond.nix"
       #"nixos-system/common/oci-recipesage.nix"
+      "nixos-system/host-specific/cypress/borg-backups.nix"
       "nixos-system/host-specific/cypress/users.nix"
       "nixos-system/host-specific/cypress/sshd.nix"
       "nixos-system/host-specific/cypress/sops.nix"
       "nixos-system/host-specific/cypress/networking.nix"
       "nixos-system/host-specific/cypress/tailscale.nix"
-      "nixos-system/host-specific/cypress/borg-client.nix"
-      #"nixos-system/host-specific/cypress/borg-backups.nix"
+      #"nixos-system/host-specific/cypress/borg-client.nix"
     ])
   ];
 
