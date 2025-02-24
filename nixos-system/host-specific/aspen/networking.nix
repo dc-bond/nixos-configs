@@ -64,7 +64,7 @@
         linkConfig.RequiredForOnline = "no";
       };    
       "10-ethernet" = {
-        matchConfig.Name = "";
+        matchConfig.Name = "enp4s0";
         networkConfig.DHCP = "ipv4";
         dhcpV4Config.RouteMetric = 300;
         dhcpV6Config.RouteMetric = 400;

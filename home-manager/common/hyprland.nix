@@ -107,6 +107,8 @@
       ];
       env = [
         "SSH_AUTH_SOCK,/run/user/1000/gnupg/S.gpg-agent.ssh" # workaround to ensure ssh_auth_sock variable inherited by all applications instead of just interactive shell when using gpg-agent to serve ssh
+        #"LIBVA_DRIVER_NAME,nvidia"
+        #"__GLX_VENDOR_LIBRARY_NAME,nvidia"
       ];
       #source = [
       #  "~/.cache/wal/colors-hyprland.conf" # not working

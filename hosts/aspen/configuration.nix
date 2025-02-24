@@ -35,6 +35,7 @@
       "nixos-system/common/traefik.nix"
       #"nixos-system/common/postgresql.nix"
       "nixos-system/common/oci-containers.nix"
+      "nixos-system/host-specific/aspen/nvidia.nix"
       "nixos-system/host-specific/aspen/bluetooth.nix"
       "nixos-system/host-specific/aspen/borg-backups.nix"
       "nixos-system/host-specific/aspen/keyring.nix"

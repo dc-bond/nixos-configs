@@ -1,3 +1,1 @@
 check ip on installation iso, set root password on installation iso with 'sudo passwd'
-identify and update network interface networking.nix
-identify and update drives on disko layout

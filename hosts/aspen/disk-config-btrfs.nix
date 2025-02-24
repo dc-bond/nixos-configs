@@ -14,7 +14,7 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/"; # UPDATE
+        device = "/dev/nvme0n1";
         content = {
           type = "gpt";
           partitions = {
