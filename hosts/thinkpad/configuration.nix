@@ -49,17 +49,17 @@
       "scripts/backup-recovery/recover-pihole.nix"
       "scripts/backup-recovery/recover-unifi-controller.nix"
       #"scripts/backup-recovery/recover-recipesage.nix"
-      "scripts/rebuild-remote-cypress.nix"
+      "scripts/rebuild/rebuild-local-thinkpad.nix"
+      "scripts/rebuild/rebuild-remote-aspen.nix"
+      "scripts/rebuild/rebuild-remote-cypress.nix"
+      "scripts/deploy/deploy-aspen.nix"
+      "scripts/deploy/deploy-cypress.nix"
     ])
   ];
 
   environment.systemPackages = with pkgs; [
-    (import (configLib.relativeToRoot "scripts/deploy-aspen.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/deploy-cypress.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
     (import (configLib.relativeToRoot "scripts/setup-borg-sshkeys.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/rebuild-local-thinkpad.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/rebuild-remote-aspen.nix") { inherit pkgs config; })
     age # encryption tool
     mkpasswd # password hashing tool
     dig # dns lookup tool

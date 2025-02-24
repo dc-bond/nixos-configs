@@ -10,31 +10,15 @@
 
 {
 
-  #fileSystems."/media/WD-WCC7K4RU947F" = {
-  #  device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb";
-  #  fsType = "ext4"; 
-  #  options = [ "defaults" ];
-  #};
+  fileSystems."/media/WD-WCC7K4RU947F" = {
+    device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb";
+    fsType = "ext4"; 
+    options = [ "defaults" ];
+  };
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/aspen/disk-config-ext4.nix"
-      "hosts/aspen/hardware-configuration.nix"
-      "nixos-system/common/boot.nix"
-      "nixos-system/common/misc.nix"
-      "nixos-system/common/nixpkgs.nix"
-      "nixos-system/common/postgresql.nix"
-      "nixos-system/common/oci-containers.nix"
-      #"nixos-system/host-specific/aspen/tailscale.nix"
-      "nixos-system/host-specific/aspen/users.nix"
-      "nixos-system/host-specific/aspen/sshd.nix"
-      "nixos-system/host-specific/aspen/sops.nix"
-      "nixos-system/host-specific/aspen/networking.nix"
-      "nixos-system/host-specific/aspen/borg.nix"
-      "nixos-system/host-specific/aspen/traefik.nix"
-      "nixos-system/host-specific/aspen/lldap.nix"
-      "nixos-system/host-specific/aspen/authelia.nix"
-      "nixos-system/host-specific/aspen/oci-pihole.nix"
+      
     ])
   ];
 

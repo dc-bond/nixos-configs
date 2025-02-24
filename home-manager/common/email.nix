@@ -38,6 +38,7 @@
   '';
 
   programs = {
+    zsh.shellAliases.email = "mbsync --all; notmuch new; neomutt";
     mbsync.enable = true;
     msmtp.enable = true;
     notmuch = {
