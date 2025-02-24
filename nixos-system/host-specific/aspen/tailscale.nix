@@ -1,21 +1,16 @@
 { 
   pkgs, 
   config,
+  configVars,
   lib,
   ... 
 }: 
 
 {
 
-  sops.secrets = {
-    tailscaleAuthKey = {};
-  };
+  sops.secrets.tailscaleAuthKey = {};
 
-  networking.firewall = {
-    trustedInterfaces = [
-      "tailscale0"
-    ];
-  };
+  networking.firewall.trustedInterfaces."tailscale0";
 
   services = {
     tailscale = {
@@ -24,20 +19,11 @@
       useRoutingFeatures = "server";
       extraDaemonFlags = ["--no-logs-no-support"];
       extraUpFlags = [
-        "--ssh" # enable devices on tailnet to ssh into this machine over tailscale on port 22
-        #"--advertise-routes=" # autmatically discover and accept subnet routes advertised by other nodes
+        "-ssh" # enable tailscale-ssh
         "--advertise-exit-node" # advertise as exit node
+        "--advertise-routes=192.168.1.0/24,192.168.4.0/27" # advertise home and iot vlan subnets
       ];
     };
-    #networkd-dispatcher = {
-    #  enable = true;
-    #  rules."50-tailscale" = {
-    #    onState = ["routable"];
-    #    script = ''
-    #      ${lib.getExe ethtool} -K enp0s3 rx-udp-gro-forwarding on rx-gro-list off
-    #    '';
-    #  };
-    #};
   };
-  
+
 }

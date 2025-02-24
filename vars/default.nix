@@ -8,10 +8,11 @@
   userName = "chris";
   userFullName = "Chris Bond";
   userEmail = "chris@dcbond.com";
+  #userEmail = inputs.nix-secrets.userEmail;
   userGpgPubKey = "DB9ADBBE6FBD1F0E694AF25D012321D46E090E61";
 
   aspenLanIp = "192.168.1.189";
-  #aspenTailscaleIp = "";
+  aspenTailscaleIp = "192.168.1.200";
   thinkpadLanIp = "192.168.1.62";
   thinkpadTailscaleIp = "100.90.150.101";
   opticonLanIp = "192.168.1.2";
@@ -77,28 +78,5 @@
 
   arrStackSubnet = "172.21.12.0/25";
   arrVpnIp = "172.21.12.2";
-
-
-
-
-  #kumaHostVethIp = "172.22.1.2";
-  #kumaContainerVethIp = "172.22.1.3";
-
-
-
-
   
-  #userEmail = inputs.nix-secrets.userEmail;
-
-
-
-  # rm rf /var/lib/tailscale on cypress
-  # nix garbage collect on cypress
-  # rebuild cypress
-  # authroize exit node
-  # copy ip address here
-  # rebuild thinkpad
-  # copy ip address here
-  # verify
-
 }

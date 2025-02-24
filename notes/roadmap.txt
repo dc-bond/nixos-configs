@@ -48,3 +48,12 @@ sudo runuser -u nextcloud -- psql -U nextcloud -c "CREATE DATABASE \"nextcloud\"
 # restore nextcloud database
 sudo runuser -u nextcloud -- pg_restore -U nextcloud -d nextcloud nextcloud.sql.gz
 sudo -i nextcloud-occ db:add-missing-indices # maybe?
+
+  # rm rf /var/lib/tailscale on cypress
+  # nix garbage collect on cypress
+  # rebuild cypress
+  # authroize exit node
+  # copy ip address here
+  # rebuild thinkpad
+  # copy ip address here
+  # verify

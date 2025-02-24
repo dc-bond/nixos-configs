@@ -10,24 +10,14 @@
   programs.ssh = {
     enable = true;
     matchBlocks = {
-      "aspen" = {
-        hostname = "${configVars.aspenLanIp}";
+      "thinkpad" = {
+        hostname = "${configVars.thinkpadLanIp}";
         user = "${configVars.userName}";
-        port = 28766;
+        port = 28764;
       };
-      "aspen-tailscale" = {
-        hostname = "${configVars.aspenTailscaleIp}";
-        user = "xixor";
-        port = 22;
-      };
-      "opticon" = {
-        hostname = "${configVars.opticonLanIp}";
-        user = "xixor";
-        port = 39800;
-      };
-      "opticon-tailscale" = {
-        hostname = "${configVars.opticonTailscaleIp}";
-        user = "xixor";
+      "thinkpad-tailscale" = {
+        hostname = "${configVars.thinkpadTailscaleIp}";
+        user = "${configVars.userName}";
         port = 22;
       };
       "cypress" = {

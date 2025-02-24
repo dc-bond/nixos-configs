@@ -12,8 +12,8 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/thinkpad/disk-config-btrfs-luks.nix"
-      "hosts/thinkpad/hardware-configuration.nix"
+      "hosts/${config.networking.hostName}/disk-config-btrfs-luks.nix"
+      "hosts/${config.networking.hostName}/hardware-configuration.nix"
       "nixos-system/common/audio.nix"
       "nixos-system/common/boot.nix"
       "nixos-system/common/zsh.nix"
@@ -25,16 +25,16 @@
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
       "nixos-system/common/cloud-backups.nix"
-      "nixos-system/host-specific/thinkpad/login.nix"
-      "nixos-system/host-specific/thinkpad/users.nix"
-      "nixos-system/host-specific/thinkpad/keyring.nix"
-      "nixos-system/host-specific/thinkpad/sshd.nix"
-      "nixos-system/host-specific/thinkpad/sops.nix"
-      "nixos-system/host-specific/thinkpad/bluetooth.nix"
-      "nixos-system/host-specific/thinkpad/networking.nix"
-      "nixos-system/host-specific/thinkpad/tailscale.nix"
-      "nixos-system/host-specific/thinkpad/borg-backups.nix"
-      "nixos-system/host-specific/thinkpad/lsyncd.nix"
+      "nixos-system/common/sops.nix"
+      "nixos-system/host-specific/${config.networking.hostName}/login.nix"
+      "nixos-system/host-specific/${config.networking.hostName}/users.nix"
+      "nixos-system/host-specific/${config.networking.hostName}/keyring.nix"
+      "nixos-system/host-specific/${config.networking.hostName}/sshd.nix"
+      "nixos-system/host-specific/${config.networking.hostName}/bluetooth.nix"
+      "nixos-system/host-specific/${config.networking.hostName}/networking.nix"
+      "nixos-system/host-specific/${config.networking.hostName}/tailscale.nix"
+      "nixos-system/host-specific/${config.networking.hostName}/borg-backups.nix"
+      "nixos-system/host-specific/${config.networking.hostName}/lsyncd.nix"
       "scripts/backup-recovery/recover-traefik.nix"
       "scripts/backup-recovery/recover-homeassistant.nix"
       "scripts/backup-recovery/recover-matrix.nix"
@@ -49,7 +49,7 @@
       "scripts/backup-recovery/recover-pihole.nix"
       "scripts/backup-recovery/recover-unifi-controller.nix"
       #"scripts/backup-recovery/recover-recipesage.nix"
-      "scripts/rebuild/rebuild-local-thinkpad.nix"
+      "scripts/rebuild/rebuild-local-${config.networking.hostName}.nix"
       "scripts/rebuild/rebuild-remote-aspen.nix"
       "scripts/rebuild/rebuild-remote-cypress.nix"
       "scripts/deploy/deploy-aspen.nix"
@@ -59,7 +59,6 @@
 
   environment.systemPackages = with pkgs; [
     (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
-    (import (configLib.relativeToRoot "scripts/setup-borg-sshkeys.nix") { inherit pkgs config; })
     age # encryption tool
     mkpasswd # password hashing tool
     dig # dns lookup tool
