@@ -10,7 +10,7 @@
 
   sops.secrets.tailscaleAuthKey = {};
 
-  networking.firewall.trustedInterfaces."tailscale0";
+  networking.firewall.trustedInterfaces = ["tailscale0"];
 
   services = {
     tailscale = {

@@ -112,7 +112,7 @@
         http = {
           routers.traefik-dashboard = {
             entrypoints = ["websecure"];
-            rule = "Host(`traefik.${configVars.domain2}`)";
+            rule = "Host(`traefik-${config.networking.hostName}.${configVars.domain2}`)";
             service = "api@internal";
             middlewares = [
               "secure-headers"

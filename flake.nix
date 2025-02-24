@@ -102,6 +102,7 @@
               useGlobalPkgs = true;
               useUserPackages = true;
               users.chris = import ./hosts/aspen/chris/home.nix;
+              users.root = import ./hosts/aspen/root/home.nix;
               extraSpecialArgs = specialArgs;
             };
           }
