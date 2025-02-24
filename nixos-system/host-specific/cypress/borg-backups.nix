@@ -90,7 +90,6 @@ in
           systemctl stop docker-chromium-root.target
           systemctl stop docker-searxng-root.target
           systemctl stop docker-unifi-controller-root.target
-          systemctl stop docker-media-server-root.target
           sleep 10 
           systemctl start postgresqlBackup-hass.service
           systemctl start postgresqlBackup-lldap.service
@@ -106,7 +105,6 @@ in
           systemctl start docker-zwavejs-root.target
           systemctl start docker-pihole-root.target
           systemctl start docker-actual-root.target
-          systemctl start docker-media-server-root.target
           systemctl start traefik.service
           systemctl start redis-authelia-dcbond.service
           systemctl start lldap.service
@@ -143,12 +141,6 @@ in
           "/var/lib/docker/volumes/unifi-controller"
           "/var/lib/docker/volumes/unifi-controller-mongodb-db"
           "/var/lib/docker/volumes/unifi-controller-mongodb-configdb"
-          "/var/lib/docker/volumes/jellyfin"
-          "/var/lib/docker/volumes/jellyseerr"
-          "/var/lib/docker/volumes/sabnzbd"
-          "/var/lib/docker/volumes/prowlarr"
-          "/var/lib/docker/volumes/radarr"
-          "/var/lib/docker/volumes/sonarr"
           "/var/backup/postgresql/hass.sql.gz"
           "/var/backup/postgresql/lldap.sql.gz"
           "/var/backup/postgresql/nextcloud.sql.gz"

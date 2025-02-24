@@ -68,24 +68,24 @@ let
 
    { set +x; log "starting backup recovery for media server container stack on $HOST"; } 2>/dev/null
 
-   { set +x; log "changing directory to ${config.backups.borgDir}"; } 2>/dev/null
-   cd ${config.backups.borgDir}
+   { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
+   cd ${config.backups.borgCloudDir}
    
    { set +x; log "extracting application data from borg repository"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/jellyfin --strip-components 4
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/jellyseerr --strip-components 4
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/sabnzbd --strip-components 4
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/prowlarr --strip-components 4
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/radarr --strip-components 4
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/sonarr --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/jellyfin --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/jellyseerr --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/sabnzbd --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/prowlarr --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/radarr --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/sonarr --strip-components 4
    
    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
-   sudo chown -R chris:users ${config.backups.borgDir}/jellyfin
-   sudo chown -R chris:users ${config.backups.borgDir}/jellyseerr
-   sudo chown -R chris:users ${config.backups.borgDir}/sabnzbd
-   sudo chown -R chris:users ${config.backups.borgDir}/prowlarr
-   sudo chown -R chris:users ${config.backups.borgDir}/radarr
-   sudo chown -R chris:users ${config.backups.borgDir}/sonarr
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/jellyfin
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/jellyseerr
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/sabnzbd
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/prowlarr
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/radarr
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/sonarr
 
    { set +x; log "stopping container stack on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl stop docker-media-server-root.target'
@@ -99,12 +99,12 @@ let
    ssh $HOST 'sudo rm -rf /var/lib/docker/volumes/sonarr'
 
    { set +x; log "transferring restored data to $HOST"; } 2>/dev/null
-   rsync --progress -avzh ${config.backups.borgDir}/jellyfin $HOST:/tmp
-   rsync --progress -avzh ${config.backups.borgDir}/jellyseerr $HOST:/tmp
-   rsync --progress -avzh ${config.backups.borgDir}/sabnzbd $HOST:/tmp
-   rsync --progress -avzh ${config.backups.borgDir}/prowlarr $HOST:/tmp
-   rsync --progress -avzh ${config.backups.borgDir}/radarr $HOST:/tmp
-   rsync --progress -avzh ${config.backups.borgDir}/sonarr $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/jellyfin $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/jellyseerr $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/sabnzbd $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/prowlarr $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/radarr $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/sonarr $HOST:/tmp
    ssh $HOST 'sudo mv /tmp/jellyfin /var/lib/docker/volumes'
    ssh $HOST 'sudo mv /tmp/jellyseerr /var/lib/docker/volumes'
    ssh $HOST 'sudo mv /tmp/sabnzbd /var/lib/docker/volumes'
@@ -121,12 +121,12 @@ let
    ssh $HOST 'sudo chown -R root:root /var/lib/docker/volumes/sonarr'
 
    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
-   sudo rm -rf ${config.backups.borgDir}/jellyfin
-   sudo rm -rf ${config.backups.borgDir}/jellyseerr
-   sudo rm -rf ${config.backups.borgDir}/sabnzbd
-   sudo rm -rf ${config.backups.borgDir}/prowlarr
-   sudo rm -rf ${config.backups.borgDir}/radarr
-   sudo rm -rf ${config.backups.borgDir}/sonarr
+   sudo rm -rf ${config.backups.borgCloudDir}/jellyfin
+   sudo rm -rf ${config.backups.borgCloudDir}/jellyseerr
+   sudo rm -rf ${config.backups.borgCloudDir}/sabnzbd
+   sudo rm -rf ${config.backups.borgCloudDir}/prowlarr
+   sudo rm -rf ${config.backups.borgCloudDir}/radarr
+   sudo rm -rf ${config.backups.borgCloudDir}/sonarr
 
    { set +x; log "restarting restored media server container stack on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl start docker-media-server-root.target'
