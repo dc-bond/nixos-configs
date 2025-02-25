@@ -170,11 +170,11 @@ in
     };
 
     "${app2}" = {
-      image = "lscr.io/linuxserver/sabnzbd:4.4.1-ls202"; # https://github.com/linuxserver/docker-sabnzbd/releases
+      image = "lscr.io/linuxserver/${app2}:4.4.1-ls202"; # https://github.com/linuxserver/docker-sabnzbd/releases
       autoStart = true;
       volumes = [ 
         "${app2}:/config" 
-        #"/home/chris/usenet:/media/usenet:rw" # bind mount for downloads
+        "/storage/WD-WCC7K4RU947F/media/usenet:/media/usenet:rw" # bind mount for downloads
       ];
       environment = {
         PUID = "0";
@@ -191,9 +191,12 @@ in
     };
     
     "${app3}" = {
-      image = "lscr.io/linuxserver/sonarr:4.0.13.2932-ls271"; # https://github.com/linuxserver/docker-sonarr/releases
+      image = "lscr.io/linuxserver/${app3}:4.0.13.2932-ls271"; # https://github.com/linuxserver/docker-sonarr/releases
       autoStart = true;
-      volumes = [ "${app3}:/config" ];
+      volumes = [ 
+        "${app3}:/config" 
+        "/storage/WD-WCC7K4RU947F/media:/media:rw" # bind mount for media access
+      ];
       environment = {
         PUID = "0";
         PGID = "0";
@@ -209,9 +212,12 @@ in
     };
     
     "${app4}" = {
-      image = "lscr.io/linuxserver/radarr:5.18.4.9674-ls260"; # https://github.com/linuxserver/docker-radarr/releases
+      image = "lscr.io/linuxserver/${app4}:5.18.4.9674-ls260"; # https://github.com/linuxserver/docker-radarr/releases
       autoStart = true;
-      volumes = [ "${app4}:/config" ];
+      volumes = [ 
+        "${app4}:/config" 
+        "/storage/WD-WCC7K4RU947F/media:/media:rw" # bind mount for media access
+      ];
       environment = {
         PUID = "0";
         PGID = "0";
@@ -227,7 +233,7 @@ in
     };
     
     "${app5}" = {
-      image = "lscr.io/linuxserver/prowlarr:1.30.2.4939-ls105"; # https://github.com/linuxserver/docker-prowlarr/releases
+      image = "lscr.io/linuxserver/${app5}:1.30.2.4939-ls105"; # https://github.com/linuxserver/docker-prowlarr/releases
       autoStart = true;
       volumes = [ "${app5}:/config" ];
       environment = {
@@ -258,14 +264,14 @@ in
     };
 
     "${app7}" = {
-      image = "lscr.io/linuxserver/jellyfin:10.10.6ubu2404-ls53"; # https://github.com/linuxserver/docker-jellyfin/releases
+      image = "lscr.io/linuxserver/${app7}:10.10.6ubu2404-ls53"; # https://github.com/linuxserver/docker-jellyfin/releases
       autoStart = true;
       volumes = [ 
         "${app7}:/config" 
-        #"/home/xixor/hdd1/media/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
-        #"/home/xixor/hdd1/media/movies:/data/movies:ro" # ditto for movies
-        #"/home/xixor/hdd1/media/music:/data/music:ro" # ditto for music
-        #"/home/xixor/hdd1/media/yt-downloads:/data/yt-downloads:ro" # ditto for youtube downloads
+        "/storage/WD-WCC7K4RU947F/media/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
+        "/storage/WD-WCC7K4RU947F/media/movies:/data/movies:ro" # ditto for movies
+        "/storage/WD-WCC7K4RU947F/media/music:/data/music:ro" # ditto for music
+        "/storage/WD-WCC7K4RU947F/media/yt-downloads:/data/yt-downloads:ro" # ditto for youtube downloads
       ];
       log-driver = "journald";
       dependsOn = ["${app1}"];

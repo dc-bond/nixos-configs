@@ -10,7 +10,7 @@
 
 {
 
-  fileSystems."/media/WD-WCC7K4RU947F" = {
+  fileSystems."/storage/WD-WCC7K4RU947F" = {
     device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb";
     fsType = "ext4"; 
     options = [ "defaults" ];
@@ -32,14 +32,14 @@
       "nixos-system/common/nixpkgs.nix"
       "nixos-system/common/cloud-backups.nix"
       "nixos-system/common/sops.nix"
+      "nixos-system/common/keyring.nix"
+      "nixos-system/common/login.nix"
+      "nixos-system/common/bluetooth.nix"
       "nixos-system/common/traefik.nix"
       #"nixos-system/common/postgresql.nix"
       "nixos-system/common/oci-containers.nix"
       "nixos-system/host-specific/aspen/nvidia.nix"
-      "nixos-system/host-specific/aspen/bluetooth.nix"
       "nixos-system/host-specific/aspen/borg-backups.nix"
-      "nixos-system/host-specific/aspen/keyring.nix"
-      "nixos-system/host-specific/aspen/login.nix"
       "nixos-system/host-specific/aspen/networking.nix"
       "nixos-system/host-specific/aspen/sshd.nix"
       "nixos-system/host-specific/aspen/tailscale.nix"

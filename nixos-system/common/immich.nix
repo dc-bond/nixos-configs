@@ -12,23 +12,11 @@ in
 
 {
 
-  #sops = {
-  #  secrets = {
-  #    lldapJwtSecret = {};
-  #    lldapLdapUserPasswd = {};
-  #  };
-  #  templates = {
-  #    "${app}-env".content = ''
-  #      LLDAP_JWT_SECRET=${config.sops.placeholder.lldapJwtSecret}
-  #      LLDAP_LDAP_USER_PASS=${config.sops.placeholder.lldapLdapUserPasswd}
-  #    '';
-  #  };
-  #};
-
   services = {
 
     ${app} = {
       enable = true;
+      #package = pkgs.unstable.immich;
       redis.enable = true;
       environment = {
         IMMICH_LOG_LEVEL = "verbose";
@@ -53,7 +41,7 @@ in
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];
-        rule = "Host(`${app}.${configVars.domain1}`)";
+        rule = "Host(`${app}.${configVars.domain2}`)";
         service = "${app}";
         middlewares = [
           "secure-headers"

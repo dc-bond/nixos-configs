@@ -8,9 +8,9 @@
 
   programs.zsh = {
     shellAliases = {
-      rbaspen = "rebuildLocalAspen";
+      rbasp = "rebuildLocalAspen";
       rbthink = "rebuildRemoteThinkpad";
-      rbcypress = "rebuildRemoteCypress";
+      rbcyp = "rebuildRemoteCypress";
       flakeupdate = "sudo nix flake update --flake ~/nixos-configs";
     };
   };

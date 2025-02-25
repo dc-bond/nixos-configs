@@ -15,7 +15,7 @@
     ];
     config = {
       allowUnfree = true; # allow packages marked as proprietary/unfree
-      allowBroken = false; # do not allow packages marked as broken
+      allowBroken = true; # do not allow packages marked as broken
     };
   };
 
@@ -36,7 +36,6 @@
     gc = { # every hour, delete any generations older than 7 days then garbage-collect unreferenced programs and symlinks
       automatic = true;
       randomizedDelaySec = "60m";
-      #dates = "weekly";
       options = "--delete-older-than 7d";
     };
   };

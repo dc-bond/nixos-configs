@@ -32,7 +32,7 @@ in
   options.backups = {
     borgDir = lib.mkOption {
       type = lib.types.path;
-      default = "/media/WD-WX21DC86RU3P/borgbackup";
+      default = "/storage/WD-WX21DC86RU3P/borgbackup";
       description = "path to the directory for borg backups";
     };
     borgCloudDir = lib.mkOption {
@@ -54,6 +54,7 @@ in
     services.borgbackup.jobs = {
       "${config.networking.hostName}" = {
         archiveBaseName = "${config.networking.hostName}";
+        #repo = "borg@${configVars.thinkpadLanIp}:."; # this automatically picks up the location of the remote borg repository assuming remote is running a nixos borg module
         repo = "${config.backups.borgDir}/${config.networking.hostName}";
         dateFormat = "+%Y.%m.%d-T%H:%M:%S";
         doInit = true; # run borg init if backup directory does not already contain the repository
@@ -68,6 +69,7 @@ in
           passCommand = "cat ${config.sops.secrets.borgCryptPasswd.path}";
         };
         environment = { 
+          #BORG_RSH = "ssh -p 28764 -o StrictHostKeyChecking=no -i /root/.ssh/borg-ed25519-cypress"; # requires manual creation and transfer of private/public keys (see script)
           BORG_RELOCATED_REPO_ACCESS_IS_OK = "yes"; # supress warning about repo location being moved since last backup (e.g. changing directory location or IP address)
         };
         compression = "auto,zstd,8";
