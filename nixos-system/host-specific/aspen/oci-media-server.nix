@@ -174,7 +174,7 @@ in
       autoStart = true;
       volumes = [ 
         "${app2}:/config" 
-        "/storage/WD-WCC7K4RU947F/media/usenet:/media/usenet:rw" # bind mount for downloads
+        "${config.drives.storageDrive1}/media/usenet:/media/usenet:rw" # bind mount for downloads
       ];
       environment = {
         PUID = "0";
@@ -195,7 +195,7 @@ in
       autoStart = true;
       volumes = [ 
         "${app3}:/config" 
-        "/storage/WD-WCC7K4RU947F/media:/media:rw" # bind mount for media access
+        "${config.drives.storageDrive1}/media:/media:rw" # bind mount for media access
       ];
       environment = {
         PUID = "0";
@@ -216,7 +216,7 @@ in
       autoStart = true;
       volumes = [ 
         "${app4}:/config" 
-        "/storage/WD-WCC7K4RU947F/media:/media:rw" # bind mount for media access
+        "${config.drives.storageDrive1}/media:/media:rw" # bind mount for media access
       ];
       environment = {
         PUID = "0";
@@ -268,10 +268,10 @@ in
       autoStart = true;
       volumes = [ 
         "${app7}:/config" 
-        "/storage/WD-WCC7K4RU947F/media/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
-        "/storage/WD-WCC7K4RU947F/media/movies:/data/movies:ro" # ditto for movies
-        "/storage/WD-WCC7K4RU947F/media/music:/data/music:ro" # ditto for music
-        "/storage/WD-WCC7K4RU947F/media/yt-downloads:/data/yt-downloads:ro" # ditto for youtube downloads
+        "${config.drives.storageDrive1}/media/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
+        "${config.drives.storageDrive1}/media/movies:/data/movies:ro" # ditto for movies
+        "${config.drives.storageDrive1}/media/music:/data/music:ro" # ditto for music
+        "${config.drives.storageDrive1}/media/yt-downloads:/data/yt-downloads:ro" # ditto for youtube downloads
       ];
       log-driver = "journald";
       dependsOn = ["${app1}"];

@@ -10,10 +10,39 @@
 
 {
 
-  fileSystems."/storage/WD-WX21DC86RU3P" = {
-    device = "/dev/disk/by-uuid/f3fb53cc-52fa-48e3-8cac-b69d85a8aff1";
-    fsType = "ext4"; 
-    options = [ "defaults" ];
+  options.drives = {
+    storageDrive1 = lib.mkOption {
+      type = lib.types.path;
+      default = "/storage/WD-WX21DC86RU3P";
+      description = "path to storage drive 1";
+    };
+  };
+
+  config = {
+
+    fileSystems."${config.drives.storageDrive1}" = {
+      device = "/dev/disk/by-uuid/f3fb53cc-52fa-48e3-8cac-b69d85a8aff1";
+      fsType = "ext4"; 
+      options = [ "defaults" ];
+    };
+
+    environment.systemPackages = with pkgs; [
+      wget # download tool
+      usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
+      nvd # package version diff info for nix build operations
+      rsync # sync tool
+      git # git
+      dig # dns lookup tool
+      eza # modern replacement for 'ls'
+      pfetch # system info displayed on shell startup
+      btop # system monitor
+      nmap # network scanning
+      ethtool # network tools
+    ];
+
+    # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
+    system.stateVersion = "23.11";
+
   };
 
   imports = lib.flatten [
@@ -41,8 +70,7 @@
       "nixos-system/common/privatebin.nix"
       "nixos-system/common/dcbond-root.nix"
       #"nixos-system/common/unifi-controller.nix" # compile problems with mongodb
-      #"nixos-system/common/oci-media-server.nix"
-      "nixos-system/common/immich.nix"
+      "nixos-system/common/photoprism.nix"
       "nixos-system/common/oci-unifi-controller.nix"
       "nixos-system/common/oci-pihole.nix"
       "nixos-system/common/oci-actual.nix"
@@ -59,22 +87,5 @@
       "nixos-system/host-specific/cypress/tailscale.nix"
     ])
   ];
-
-  environment.systemPackages = with pkgs; [
-    wget # download tool
-    usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
-    nvd # package version diff info for nix build operations
-    rsync # sync tool
-    git # git
-    dig # dns lookup tool
-    eza # modern replacement for 'ls'
-    pfetch # system info displayed on shell startup
-    btop # system monitor
-    nmap # network scanning
-    ethtool # network tools
-  ];
-
-# original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
-  system.stateVersion = "23.11";
 
 }

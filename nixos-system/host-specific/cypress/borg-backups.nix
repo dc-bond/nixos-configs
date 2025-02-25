@@ -32,7 +32,7 @@ in
   options.backups = {
     borgDir = lib.mkOption {
       type = lib.types.path;
-      default = "/storage/WD-WX21DC86RU3P/borgbackup";
+      default = "${config.drives.storageDrive1}/borgbackup";
       description = "path to the directory for borg backups";
     };
     borgCloudDir = lib.mkOption {

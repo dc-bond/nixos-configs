@@ -1,18 +1,39 @@
 {
   pkgs,
+  config,
+  configVars,
   ...
 }: 
 
+let
+
+  app = "photoprism";
+
+in
+
 {
+
+  sops = {
+    secrets = {
+      photoprismAdminPasswd = {
+        owner = "${config.users.users.${app}.name}";
+        group = "${config.users.users.${app}.group}";
+        mode = "0440";
+      };
+    };
+  };
 
   services = {
 
-    photoprism = {
+    ${app} = {
       enable = true;
+      address = "127.0.0.1";
+      originalsPath = "${config.drives.storageDrive1}/family-photos-videos";
+      importPath = "photoprism-import";
+      passwordFile = "${config.sops.secrets.photoprismAdminPasswd.path}";
       settings = {
-        PHOTOPRISM_ADMIN_PASSWORD = "";     # INITIAL PASSWORD FOR "admin" USER, MINIMUM 8 CHARACTERS
         PHOTOPRISM_AUTH_MODE = "password";                                                      # authentication mode (public, password)
-        PHOTOPRISM_SITE_URL = "https://photos.opticon.dev/";                                    # public server URL incl http:// or https:// and /path, :port is optional
+        PHOTOPRISM_SITE_URL = "https://${app}.${configVars.domain2}/";                          # public server URL incl http:// or https:// and /path, :port is optional
         PHOTOPRISM_ORIGINALS_LIMIT = 20000;                                                     # file size limit for originals in MB (increase for high-res video)
         PHOTOPRISM_HTTP_COMPRESSION = "gzip";                                                   # improves transfer speed and bandwidth utilization (none or gzip)
         PHOTOPRISM_LOG_LEVEL = "info";                                                          # log level: trace, debug, info, warning, error, fatal, or panic
@@ -37,7 +58,32 @@
         PHOTOPRISM_SITE_CAPTION = "Bond Private Photo Server";
         PHOTOPRISM_SITE_DESCRIPTION = "Bond Photos";
         PHOTOPRISM_SITE_AUTHOR = "Chris Bond";
-        NVIDIA_VISIBLE_DEVICES = "all";
+        #NVIDIA_VISIBLE_DEVICES = "all";
+      };
+    };
+
+    traefik.dynamicConfigOptions.http = {
+      routers.${app} = {
+        entrypoints = ["websecure"];
+        rule = "Host(`${app}.${configVars.domain2}`)";
+        service = "${app}";
+        middlewares = [
+          "secure-headers"
+        ];
+        tls = {
+          certResolver = "cloudflareDns";
+          options = "tls-13@file";
+        };
+      };
+      services.${app} = {
+        loadBalancer = {
+          passHostHeader = true;
+          servers = [
+          {
+            url = "http://127.0.0.1:2342";
+          }
+          ];
+        };
       };
     };
 

@@ -6,6 +6,10 @@ Photos
 
 Frigate
 
+Wordpress or other website
+
+Recipesage
+
 Crowdsec
 
 Logging Solution
@@ -15,7 +19,6 @@ Recipesage
 Mailserver
 
 Calibre
-
 
 ** Housekeeping **
 
