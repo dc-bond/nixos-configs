@@ -59,19 +59,19 @@
       "nixos-system/common/oci-containers.nix"
       "nixos-system/common/mosquitto.nix"
       "nixos-system/common/uptime-kuma.nix"
-      "nixos-system/common/lldap.nix"
+      "nixos-system/common/lldap.nix" # requires postgresql.nix
       "nixos-system/common/postgresql.nix"
       "nixos-system/common/mysql.nix"
       "nixos-system/common/traefik.nix"
-      "nixos-system/common/nextcloud.nix"
-      "nixos-system/common/home-assistant.nix"
+      "nixos-system/common/nextcloud.nix" # requires postgresql.nix
+      "nixos-system/common/home-assistant.nix" # requires postgresql.nix
       "nixos-system/common/authelia-dcbond.nix"
       "nixos-system/common/stirling-pdf.nix"
-      "nixos-system/common/matrix.nix"
+      "nixos-system/common/matrix.nix" # requires postgresql.nix
       "nixos-system/common/privatebin.nix"
       "nixos-system/common/dcbond-root.nix"
       #"nixos-system/common/unifi-controller.nix" # compile problems with mongodb
-      "nixos-system/common/photoprism.nix"
+      "nixos-system/common/photoprism.nix" # requires mysql.nix
       "nixos-system/common/oci-unifi-controller.nix"
       "nixos-system/common/oci-pihole.nix"
       "nixos-system/common/oci-actual.nix"
