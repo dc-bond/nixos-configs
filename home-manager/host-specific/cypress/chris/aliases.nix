@@ -8,7 +8,7 @@
 
   programs.zsh = {
     shellAliases = {
-      storage = "cd ${config.drives.storageDrive1} ; ls";
+      storage = "cd /storage/WD-WX21DC86RU3P ; ls";
     };
   };
 

@@ -30,7 +30,7 @@ in
       enable = true;
       address = "127.0.0.1";
       originalsPath = "${config.drives.storageDrive1}/family-photos-videos";
-      importPath = "photoprism-import";
+      importPath = "${config.drives.storageDrive1}/family-photos-videos/photoprism-import";
       passwordFile = "${config.sops.secrets.photoprismAdminPasswd.path}";
       settings = {
         PHOTOPRISM_AUTH_MODE = "password";                                                      # authentication mode (public, password)
@@ -52,7 +52,7 @@ in
         PHOTOPRISM_DETECT_NSFW = "false";                                                       # automatically flags photos as private that MAY be offensive (requires TensorFlow)
         PHOTOPRISM_UPLOAD_NSFW = "true";                                                        # allows uploads that MAY be offensive (no effect without TensorFlow)
         PHOTOPRISM_DATABASE_DRIVER = "mysql";                                                   # use MariaDB 10.5+ or MySQL 8+ instead of SQLite for improved performance
-        PHOTOPRISM_DATABASE_SERVER = "/run/mysqld/mysqld.sock:3306";                            # MariaDB or MySQL database server (hostname:port)
+        PHOTOPRISM_DATABASE_SERVER = "/run/mysqld/mysqld.sock";                                 # MariaDB or MySQL database server (hostname:port)
         PHOTOPRISM_DATABASE_NAME = "${app}";                                                    # MariaDB or MySQL database schema name
         PHOTOPRISM_DATABASE_USER = "${app}";                                                    # MariaDB or MySQL database user name
         #PHOTOPRISM_DATABASE_PASSWORD = "";  # MariaDB or MySQL database user password
