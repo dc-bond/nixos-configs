@@ -158,7 +158,6 @@ in
     };
 
     postgresql = {
-      enable = true;
       ensureDatabases = ["${app}"];
       ensureUsers = [
         {

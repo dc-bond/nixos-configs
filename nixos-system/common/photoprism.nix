@@ -62,6 +62,21 @@ in
       };
     };
 
+    mysql = {
+      ensureDatabases = ["${app}"];
+      ensureUsers = [
+        {
+          name = "${app}";
+          #ensureDBOwnership = true;
+          #ensureClauses.createdb = true;
+        }
+      ];
+    };
+
+    mysqlBackup = {
+      databases = ["${app}"];
+    };
+
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];

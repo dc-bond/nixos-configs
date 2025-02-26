@@ -82,14 +82,13 @@ in
 
   services = {
 
-    postgresql = {
-      enable = true;
-      # DOESNT WORK MUST RUN MANUALLY ON FIRST SETUP
-      #initialScript = pkgs.writeText "${app}-init.sql" ''
-      #CREATE USER "matrix-synapse";
-      #CREATE DATABASE "matrix-synapse" ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER "matrix-synapse";
-      #'';
-    };
+    #postgresql = {
+    #  # DOESNT WORK MUST RUN MANUALLY ON FIRST SETUP
+    #  #initialScript = pkgs.writeText "${app}-init.sql" ''
+    #  #CREATE USER "matrix-synapse";
+    #  #CREATE DATABASE "matrix-synapse" ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER "matrix-synapse";
+    #  #'';
+    #};
 
     postgresqlBackup = {
       databases = ["${app}"];
