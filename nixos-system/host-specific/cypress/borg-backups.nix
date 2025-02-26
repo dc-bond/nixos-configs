@@ -86,6 +86,7 @@ in
           systemctl stop home-assistant.service
           systemctl stop mosquitto.service
           systemctl stop traefik.service
+          systemctl stop photoprism.service
           systemctl stop docker-zwavejs-root.target
           systemctl stop docker-pihole-root.target
           systemctl stop docker-actual-root.target
@@ -97,6 +98,7 @@ in
           systemctl start postgresqlBackup-lldap.service
           systemctl start postgresqlBackup-nextcloud.service
           systemctl start postgresqlBackup-matrix-synapse.service
+          systemctl start mysql-backup.service
           sleep 10
         '';
         postHook = ''
@@ -108,6 +110,7 @@ in
           systemctl start docker-pihole-root.target
           systemctl start docker-actual-root.target
           systemctl start traefik.service
+          systemctl start photoprism.service
           systemctl start redis-authelia-dcbond.service
           systemctl start lldap.service
           systemctl start authelia-dcbond.service
