@@ -6,6 +6,7 @@
 {
 
   userName = "chris";
+  userLastName = "Bond";
   userFullName = "Chris Bond";
   userEmail = "chris@dcbond.com";
   #userEmail = inputs.nix-secrets.userEmail;

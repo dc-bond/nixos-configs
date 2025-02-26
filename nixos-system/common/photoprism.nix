@@ -12,16 +12,17 @@ let
 in
 
 {
-
-  sops = {
-    secrets = {
-      photoprismAdminPasswd = {
-        owner = "${config.users.users.${app}.name}";
-        group = "${config.users.users.${app}.group}";
-        mode = "0440";
-      };
-    };
-  };
+  
+  sops.secrets.photoprismAdminPasswd = {};
+  #sops = {
+  #  secrets = {
+  #    photoprismAdminPasswd = {
+  #      owner = "${config.users.users.${app}.name}";
+  #      group = "${config.users.users.${app}.group}";
+  #      mode = "0440";
+  #    };
+  #  };
+  #};
 
   services = {
 
@@ -34,7 +35,7 @@ in
       settings = {
         PHOTOPRISM_AUTH_MODE = "password";                                                      # authentication mode (public, password)
         PHOTOPRISM_SITE_URL = "https://${app}.${configVars.domain2}/";                          # public server URL incl http:// or https:// and /path, :port is optional
-        PHOTOPRISM_ORIGINALS_LIMIT = 20000;                                                     # file size limit for originals in MB (increase for high-res video)
+        PHOTOPRISM_ORIGINALS_LIMIT = "20000";                                                   # file size limit for originals in MB (increase for high-res video)
         PHOTOPRISM_HTTP_COMPRESSION = "gzip";                                                   # improves transfer speed and bandwidth utilization (none or gzip)
         PHOTOPRISM_LOG_LEVEL = "info";                                                          # log level: trace, debug, info, warning, error, fatal, or panic
         PHOTOPRISM_READONLY = "false";                                                          # do not modify originals directory (reduced functionality)
@@ -47,17 +48,17 @@ in
         PHOTOPRISM_DISABLE_CLASSIFICATION = "false";                                            # disables image classification (requires TensorFlow)
         PHOTOPRISM_DISABLE_RAW = "false";                                                       # disables indexing and conversion of RAW files
         PHOTOPRISM_RAW_PRESETS = "false";                                                       # enables applying user presets when converting RAW files (reduces performance)
-        PHOTOPRISM_JPEG_QUALITY = 85;                                                           # a higher value increases the quality and file size of JPEG images and thumbnails (25-100)
+        PHOTOPRISM_JPEG_QUALITY = "100";                                                        # a higher value increases the quality and file size of JPEG images and thumbnails (25-100)
         PHOTOPRISM_DETECT_NSFW = "false";                                                       # automatically flags photos as private that MAY be offensive (requires TensorFlow)
         PHOTOPRISM_UPLOAD_NSFW = "true";                                                        # allows uploads that MAY be offensive (no effect without TensorFlow)
         PHOTOPRISM_DATABASE_DRIVER = "mysql";                                                   # use MariaDB 10.5+ or MySQL 8+ instead of SQLite for improved performance
-        PHOTOPRISM_DATABASE_SERVER = "photoprism-mariadb:3306";                                 # MariaDB or MySQL database server (hostname:port)
-        PHOTOPRISM_DATABASE_NAME = "";      # MariaDB or MySQL database schema name
-        PHOTOPRISM_DATABASE_USER: "";      # MariaDB or MySQL database user name
-        PHOTOPRISM_DATABASE_PASSWORD = "";  # MariaDB or MySQL database user password
-        PHOTOPRISM_SITE_CAPTION = "Bond Private Photo Server";
-        PHOTOPRISM_SITE_DESCRIPTION = "Bond Photos";
-        PHOTOPRISM_SITE_AUTHOR = "Chris Bond";
+        PHOTOPRISM_DATABASE_SERVER = "/run/mysqld/mysqld.sock:3306";                            # MariaDB or MySQL database server (hostname:port)
+        PHOTOPRISM_DATABASE_NAME = "${app}";                                                    # MariaDB or MySQL database schema name
+        PHOTOPRISM_DATABASE_USER = "${app}";                                                    # MariaDB or MySQL database user name
+        #PHOTOPRISM_DATABASE_PASSWORD = "";  # MariaDB or MySQL database user password
+        PHOTOPRISM_SITE_CAPTION = "${configVars.userLastName} Private Photo Server";
+        PHOTOPRISM_SITE_DESCRIPTION = "${configVars.userLastName} Photos";
+        PHOTOPRISM_SITE_AUTHOR = "${configVars.userFullName}";
         #NVIDIA_VISIBLE_DEVICES = "all";
       };
     };
@@ -67,15 +68,12 @@ in
       ensureUsers = [
         {
           name = "${app}";
-          #ensureDBOwnership = true;
-          #ensureClauses.createdb = true;
+          ensurePermissions = { "${app}.*" = "ALL PRIVILEGES"; };
         }
       ];
     };
 
-    mysqlBackup = {
-      databases = ["${app}"];
-    };
+    mysqlBackup = { databases = ["${app}"]; };
 
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {

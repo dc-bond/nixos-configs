@@ -71,7 +71,7 @@
       "nixos-system/common/privatebin.nix"
       "nixos-system/common/dcbond-root.nix"
       #"nixos-system/common/unifi-controller.nix" # compile problems with mongodb
-      #"nixos-system/common/photoprism.nix"
+      "nixos-system/common/photoprism.nix"
       "nixos-system/common/oci-unifi-controller.nix"
       "nixos-system/common/oci-pihole.nix"
       "nixos-system/common/oci-actual.nix"
