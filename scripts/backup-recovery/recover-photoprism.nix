@@ -97,12 +97,12 @@ let
    rsync --progress -avzh ${config.backups.borgCloudDir}/photoprism.gz $HOST:/tmp
    ssh $HOST 'sudo gunzip -c /tmp/photoprism.gz > /tmp/photoprism.sql'
    ssh $HOST 'sudo chown mysql:mysql /tmp/photoprism.sql'
-   ssh $HOST 'sudo mv /tmp/photoprism.sql /var/lib/mysql'
    ssh $HOST 'sudo -u mysql mysql -e "DROP DATABASE IF EXISTS photoprism;"'
    ssh $HOST 'sudo -u mysql mysql -e "CREATE DATABASE photoprism;"'
    ssh $HOST 'sudo -u mysql mysql -e "GRANT ALL PRIVILEGES ON photoprism.* TO \"photoprism\"@\"localhost\";"'
-   ssh $HOST 'sudo -u mysql mysql photoprism < /var/lib/mysql/photoprism.sql'
-   ssh $HOST 'sudo rm -rf /var/lib/mysql/photoprism.sql'
+   ssh $HOST 'sudo -u mysql mysql photoprism < /tmp/photoprism.sql'
+   ssh $HOST 'sudo rm -rf /tmp/photoprism.gz'
+   ssh $HOST 'sudo rm -rf /tmp/photoprism.sql'
    sudo rm -rf ${config.backups.borgCloudDir}/photoprism.gz
 
    { set +x; log "restarting restored photoprism service on $HOST"; } 2>/dev/null
