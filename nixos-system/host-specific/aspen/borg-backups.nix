@@ -75,19 +75,24 @@ in
           set -x
           echo "spinning down services and starting sql database dumps"
           systemctl stop traefik.service
+          systemctl stop photoprism.service
           systemctl stop docker-media-server-root.target
+          sleep 10 
+          systemctl start mysql-backup.service
           sleep 10 
         '';
         postHook = ''
           set -x
           echo "spinning up services"
           systemctl start traefik.service
+          systemctl start photoprism.service
           systemctl start docker-media-server-root.target
           echo "starting cloud backup"
           systemctl start cloudBackup.service
         '';
         paths = [
           "/var/lib/traefik"
+          "/var/lib/private/photoprism"
           "/var/lib/docker/volumes/jellyfin"
           "/var/lib/docker/volumes/jellyseerr"
           "/var/lib/docker/volumes/sabnzbd"

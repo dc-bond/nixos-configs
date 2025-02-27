@@ -128,6 +128,7 @@ in
           "/var/lib/traefik"
           "/var/lib/private/lldap"
           "/var/lib/private/uptime-kuma"
+          "/var/lib/private/photoprism"
           "/var/lib/authelia-dcbond"
           "/var/lib/redis-authelia-dcbond"
           "/var/lib/matrix-synapse"
