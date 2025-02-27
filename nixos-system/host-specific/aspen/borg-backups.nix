@@ -99,6 +99,7 @@ in
           "/var/lib/docker/volumes/prowlarr"
           "/var/lib/docker/volumes/radarr"
           "/var/lib/docker/volumes/sonarr"
+          "/var/backup/mysql/photoprism.gz"
         ];
         prune.keep = {
           daily = 7; # keep the last seven daily archives

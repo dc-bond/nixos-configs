@@ -17,9 +17,9 @@
       nvidiaSettings = true; # enable nvidia settings menu accessible via 'nvidia-settings'
       package = config.boot.kernelPackages.nvidiaPackages.stable;
     };
-    nvidia-container-toolkit = {
-      enable = true;
-    };
+    #nvidia-container-toolkit = { # enable GPU utilization by oci-containers
+    #  enable = true;
+    #};
     opengl = {
       enable = true;
       driSupport = true;
@@ -29,7 +29,7 @@
 
   services.xserver.videoDrivers = [ "nvidia" ]; # load nvidia driver for xorg and wayland
 
-  #virtualisation.docker.rootless.daemon.settings.features.cdi = true;
+  #virtualisation.docker.rootless.daemon.settings.features.cdi = true; # enable GPU utilization by oci-containers
 
   #boot.kernelParams = [ "nvidia-drm.modeset=1" ];
   

@@ -151,6 +151,7 @@ in
           "/var/backup/postgresql/lldap.sql.gz"
           "/var/backup/postgresql/nextcloud.sql.gz"
           "/var/backup/postgresql/matrix-synapse.sql.gz"
+          "/var/backup/mysql/photoprism.gz"
         ];
         prune.keep = {
           daily = 7; # keep the last seven daily archives
