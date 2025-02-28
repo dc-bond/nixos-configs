@@ -12,10 +12,12 @@ in
 {
 
   sops.secrets = {
-    #frigateRtspUser = {};
-    #frigateRtspPasswd = {};
+    frigateRtspUser = {};
+    frigateRtspPasswd = {};
     mqttFrigatePasswd = {};
   };
+
+  environment.etc."media/frigate".source = "/${config.drives.storageDrive1}/media/security-cameras";
 
   services = {
 
@@ -36,22 +38,22 @@ in
         go2rtc = {
           streams = {
             front = [
-              "rtsp://frigate:frigate@${configVars.frontCameraIp}:554/s0"
+              "rtsp://${config.sops.secrets.frigateRtspUser}:${config.sops.secrets.frigateRtspPasswd}@${configVars.frontCameraIp}:554/s0"
             ];
             front-detect = [
-              "rtsp://frigate:frigate@${configVars.frontCameraIp}:554/s2"
+              "rtsp://${config.sops.secrets.frigateRtspUser}:${config.sops.secrets.frigateRtspPasswd}@${configVars.frontCameraIp}:554/s2"
             ];
             garage = [
-              "rtsp://frigate:frigate@${configVars.garageCameraIp}:554/s0"
+              "rtsp://${config.sops.secrets.frigateRtspUser}:${config.sops.secrets.frigateRtspPasswd}@${configVars.garageCameraIp}:554/s0"
             ];
             garage-detect = [
-              "rtsp://frigate:frigate@${configVars.garageCameraIp}:554/s2"
+              "rtsp://${config.sops.secrets.frigateRtspUser}:${config.sops.secrets.frigateRtspPasswd}@${configVars.garageCameraIp}:554/s2"
             ];
             gym = [
-              "rtsp://frigate:frigate@${configVars.gymCameraIp}:554/s0"
+              "rtsp://${config.sops.secrets.frigateRtspUser}:${config.sops.secrets.frigateRtspPasswd}@${configVars.gymCameraIp}:554/s0"
             ];
             gym-detect = [
-              "rtsp://frigate:frigate@${configVars.gymCameraIp}:554/s2"
+              "rtsp://${config.sops.secrets.frigateRtspUser}:${config.sops.secrets.frigateRtspPasswd}@${configVars.gymCameraIp}:554/s2"
             ];
           };
           webrtc = {
