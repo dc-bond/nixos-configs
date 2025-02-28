@@ -79,6 +79,11 @@ in
       ];
     in range;
   };
+  
+  systemd.services."${app}" = {
+    requires = [ "postgresql.service" ];
+    after = [ "postgresql.service" ];
+  };
 
   services = {
 

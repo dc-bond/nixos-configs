@@ -13,9 +13,12 @@ in
 
 {
 
-  sops.secrets.hassSecrets = {
-    owner = "hass";
-    path = "/var/lib/hass/secrets.yaml";
+  sops.secrets = {
+    mqttHassPasswd = {};
+    hassSecrets = {
+      owner = "hass";
+      path = "/var/lib/hass/secrets.yaml";
+    };
   };
 
   systemd.services."${app}" = {
@@ -68,6 +71,17 @@ in
           encryption = "starttls";
         };
       };
+    };
+
+    mosquitto = {
+      listeners = [
+        {
+          users.hass = {
+            acl = [ "readwrite #" ];
+            passwordFile = "${config.sops.secrets.mqttHassPasswd.path}";
+          };
+        }
+      ];
     };
 
     postgresql = {

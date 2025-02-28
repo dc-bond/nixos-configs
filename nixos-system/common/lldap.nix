@@ -24,6 +24,11 @@ in
       '';
     };
   };
+  
+  systemd.services."${app}" = {
+    requires = [ "postgresql.service" ];
+    after = [ "postgresql.service" ];
+  };
 
   services = {
 

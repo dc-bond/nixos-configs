@@ -27,6 +27,10 @@
   unifiUapGarageIp = "192.168.1.191";
   unifiUapLivingRoomIp = "192.168.1.173";
 
+  frontCameraIp = "192.168.1.132";
+  garageCameraIp = "192.168.1.131";
+  gymCameraIp = "192.168.1.30";
+
   domain1 = "dcbond.com";
   domain1Short = "dcbond";
   domain2 = "opticon.dev";

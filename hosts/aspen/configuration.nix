@@ -79,13 +79,16 @@
       #"nixos-system/common/keyring.nix"
       #"nixos-system/common/login.nix"
       "nixos-system/common/bluetooth.nix"
+      #"nixos-system/common/mosquitto.nix"
       #"nixos-system/common/traefik.nix"
       #"nixos-system/common/postgresql.nix"
       #"nixos-system/common/mysql.nix"
       #"nixos-system/common/photoprism.nix" # requires mysql.nix
       #"nixos-system/common/oci-containers.nix"
       #"nixos-system/host-specific/aspen/oci-media-server.nix"
+      #"nixos-system/host-specific/aspen/frigate.nix" # requires mosquitto.nix, nvidia.nix, coral-tpu.nix
       #"nixos-system/host-specific/aspen/nvidia.nix"
+      #"nixos-system/host-specific/aspen/coral-tpu.nix"
       #"nixos-system/host-specific/aspen/borg-backups.nix"
       "nixos-system/host-specific/aspen/networking.nix"
       "nixos-system/host-specific/aspen/sshd.nix"
