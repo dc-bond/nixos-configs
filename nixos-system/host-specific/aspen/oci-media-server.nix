@@ -194,9 +194,7 @@ in
     "${app7}" = {
       image = "lscr.io/linuxserver/${app7}:10.10.6ubu2404-ls53"; # https://github.com/linuxserver/docker-jellyfin/releases
       autoStart = true;
-      environment = {
-        NVIDIA_VISIBLE_DEVICES = "all"; # enable GPU utilization
-      };
+      environment = { NVIDIA_VISIBLE_DEVICES = "all"; }; # enable GPU utilization
       volumes = [ 
         "${app7}:/config" 
         "${config.drives.storageDrive1}/media/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
@@ -210,7 +208,7 @@ in
         "--network=container:${app1}"
         "--tty=true"
         "--stop-signal=SIGINT"
-        "--gpus=all" # enable GPU utilization
+        "--device=nvidia.com/gpu=all"
       ];
     };
 

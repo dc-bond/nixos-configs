@@ -14,27 +14,18 @@ in
 {
   
   sops.secrets.photoprismAdminPasswd = {};
-  #sops = {
-  #  secrets = {
-  #    photoprismAdminPasswd = {
-  #      owner = "${config.users.users.${app}.name}";
-  #      group = "${config.users.users.${app}.group}";
-  #      mode = "0440";
-  #    };
-  #  };
-  #};
 
   services = {
 
     ${app} = {
       enable = true;
       address = "127.0.0.1";
-      originalsPath = "${config.drives.storageDrive1}/family-photos-videos";
-      importPath = "${config.drives.storageDrive1}/family-photos-videos/photoprism-import";
+      originalsPath = "${config.drives.storageDrive1}/media/family-photos-videos";
+      importPath = "${config.drives.storageDrive1}/media/family-photos-videos/photoprism-import";
       passwordFile = "${config.sops.secrets.photoprismAdminPasswd.path}";
       settings = {
         PHOTOPRISM_AUTH_MODE = "password";                                                      # authentication mode (public, password)
-        PHOTOPRISM_SITE_URL = "https://${app}.${configVars.domain2}/";                          # public server URL incl http:// or https:// and /path, :port is optional
+        PHOTOPRISM_SITE_URL = "https://photos.${configVars.domain2}/";                          # public server URL incl http:// or https:// and /path, :port is optional
         PHOTOPRISM_ORIGINALS_LIMIT = "20000";                                                   # file size limit for originals in MB (increase for high-res video)
         PHOTOPRISM_HTTP_COMPRESSION = "gzip";                                                   # improves transfer speed and bandwidth utilization (none or gzip)
         PHOTOPRISM_LOG_LEVEL = "info";                                                          # log level: trace, debug, info, warning, error, fatal, or panic
@@ -55,11 +46,10 @@ in
         PHOTOPRISM_DATABASE_SERVER = "/run/mysqld/mysqld.sock";                                 # MariaDB or MySQL database server (hostname:port)
         PHOTOPRISM_DATABASE_NAME = "${app}";                                                    # MariaDB or MySQL database schema name
         PHOTOPRISM_DATABASE_USER = "${app}";                                                    # MariaDB or MySQL database user name
-        #PHOTOPRISM_DATABASE_PASSWORD = "";  # MariaDB or MySQL database user password
         PHOTOPRISM_SITE_CAPTION = "${configVars.userLastName} Private Photo Server";
         PHOTOPRISM_SITE_DESCRIPTION = "${configVars.userLastName} Photos";
         PHOTOPRISM_SITE_AUTHOR = "${configVars.userFullName}";
-        #NVIDIA_VISIBLE_DEVICES = "all";
+        NVIDIA_VISIBLE_DEVICES = "all";
       };
     };
 
@@ -78,7 +68,7 @@ in
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];
-        rule = "Host(`${app}.${configVars.domain2}`)";
+        rule = "Host(`photos.${configVars.domain2}`)";
         service = "${app}";
         middlewares = [
           "secure-headers"

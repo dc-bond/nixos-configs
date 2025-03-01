@@ -13,7 +13,7 @@ let
   cloudBackupScript = pkgs.writeShellScriptBin "cloudBackup" ''
     #!/bin/bash
     echo "rclone cloud backup to backblaze started at $(date)"
-    ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync ${config.backups.borgDir}/${config.networking.hostName} backblaze-b2:${config.networking.hostName}-backup
+    ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync ${config.backups.borgDir}/${config.networking.hostName} backblaze-b2:${config.networking.hostName}-backup-dcbond
     echo "rclone cloud backup to backblaze finished at $(date)"
     '';
   cloudRestoreScript = pkgs.writeShellScriptBin "cloudRestore" ''
@@ -47,7 +47,7 @@ let
     fi
     echo "creating restoration directory at ${config.backups.borgCloudDir}/$HOST"
     mkdir ${config.backups.borgCloudDir}/$HOST
-    ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync backblaze-b2:$HOST-backup ${config.backups.borgCloudDir}/$HOST
+    ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync backblaze-b2:$HOST-backup-dcbond ${config.backups.borgCloudDir}/$HOST
     echo "change ownership of restoration directory at ${config.backups.borgCloudDir}/$HOST"
     chown -R root:root ${config.backups.borgCloudDir}/$HOST
     echo "rclone cloud restore from backblaze finished at $(date)"

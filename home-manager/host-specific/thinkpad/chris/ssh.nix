@@ -20,16 +20,6 @@
         user = "xixor";
         port = 22;
       };
-      "opticon" = {
-        hostname = "${configVars.opticonLanIp}";
-        user = "xixor";
-        port = 39800;
-      };
-      "opticon-tailscale" = {
-        hostname = "${configVars.opticonTailscaleIp}";
-        user = "xixor";
-        port = 22;
-      };
       "cypress" = {
         hostname = "${configVars.cypressLanIp}";
         user = "${configVars.userName}";

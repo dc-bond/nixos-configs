@@ -27,7 +27,7 @@
     };
 
     environment.systemPackages = with pkgs; [
-      (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
+      #(import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
       age # encryption tool
       mkpasswd # password hashing tool
       dig # dns lookup tool
@@ -56,7 +56,7 @@
     ];
     
     # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
-    system.stateVersion = "23.11";
+    system.stateVersion = "24.11";
 
   };
 
@@ -67,11 +67,11 @@
       "nixos-system/common/audio.nix"
       "nixos-system/common/boot.nix"
       "nixos-system/common/zsh.nix"
-      "nixos-system/common/fonts.nix"
+      #"nixos-system/common/fonts.nix"
       "nixos-system/common/yubikey.nix"
       #"nixos-system/common/thunar.nix"
       #"nixos-system/common/hyprland.nix"
-      "nixos-system/common/printing.nix"
+      #"nixos-system/common/printing.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
       "nixos-system/common/cloud-backups.nix"
@@ -80,16 +80,16 @@
       #"nixos-system/common/login.nix"
       "nixos-system/common/bluetooth.nix"
       #"nixos-system/common/mosquitto.nix"
-      #"nixos-system/common/traefik.nix"
+      "nixos-system/common/traefik.nix"
       #"nixos-system/common/postgresql.nix"
-      #"nixos-system/common/mysql.nix"
-      #"nixos-system/common/photoprism.nix" # requires mysql.nix
-      #"nixos-system/common/oci-containers.nix"
-      #"nixos-system/host-specific/aspen/oci-media-server.nix"
+      "nixos-system/common/mysql.nix"
+      "nixos-system/common/photoprism.nix" # requires mysql.nix
+      "nixos-system/common/oci-containers.nix"
+      "nixos-system/host-specific/aspen/oci-media-server.nix"
       #"nixos-system/host-specific/aspen/frigate.nix" # requires mosquitto.nix, nvidia.nix, coral-tpu.nix
-      #"nixos-system/host-specific/aspen/nvidia.nix"
+      "nixos-system/host-specific/aspen/nvidia.nix"
       #"nixos-system/host-specific/aspen/coral-tpu.nix"
-      #"nixos-system/host-specific/aspen/borg-backups.nix"
+      "nixos-system/host-specific/aspen/borg-backups.nix"
       "nixos-system/host-specific/aspen/networking.nix"
       "nixos-system/host-specific/aspen/sshd.nix"
       "nixos-system/host-specific/aspen/tailscale.nix"

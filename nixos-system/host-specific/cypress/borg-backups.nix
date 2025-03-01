@@ -86,7 +86,6 @@ in
           systemctl stop home-assistant.service
           systemctl stop mosquitto.service
           systemctl stop traefik.service
-          systemctl stop photoprism.service
           systemctl stop docker-zwavejs-root.target
           systemctl stop docker-pihole-root.target
           systemctl stop docker-actual-root.target
@@ -98,7 +97,6 @@ in
           systemctl start postgresqlBackup-lldap.service
           systemctl start postgresqlBackup-nextcloud.service
           systemctl start postgresqlBackup-matrix-synapse.service
-          systemctl start mysql-backup.service
           sleep 10
         '';
         postHook = ''
@@ -110,7 +108,6 @@ in
           systemctl start docker-pihole-root.target
           systemctl start docker-actual-root.target
           systemctl start traefik.service
-          systemctl start photoprism.service
           systemctl start redis-authelia-dcbond.service
           systemctl start lldap.service
           systemctl start authelia-dcbond.service
@@ -128,7 +125,6 @@ in
           "/var/lib/traefik"
           "/var/lib/private/lldap"
           "/var/lib/private/uptime-kuma"
-          "/var/lib/private/photoprism"
           "/var/lib/authelia-dcbond"
           "/var/lib/redis-authelia-dcbond"
           "/var/lib/matrix-synapse"
@@ -151,7 +147,6 @@ in
           "/var/backup/postgresql/lldap.sql.gz"
           "/var/backup/postgresql/nextcloud.sql.gz"
           "/var/backup/postgresql/matrix-synapse.sql.gz"
-          "/var/backup/mysql/photoprism.gz"
         ];
         prune.keep = {
           daily = 7; # keep the last seven daily archives

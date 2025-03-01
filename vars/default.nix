@@ -12,8 +12,8 @@
   #userEmail = inputs.nix-secrets.userEmail;
   userGpgPubKey = "DB9ADBBE6FBD1F0E694AF25D012321D46E090E61";
 
-  aspenLanIp = "192.168.1.189";
-  aspenTailscaleIp = "192.168.1.200";
+  aspenLanIp = "192.168.1.2";
+  aspenTailscaleIp = "100.68.250.108";
   thinkpadLanIp = "192.168.1.62";
   thinkpadTailscaleIp = "100.90.150.101";
   opticonLanIp = "192.168.1.2";

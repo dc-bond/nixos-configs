@@ -12,10 +12,10 @@
       enable = true;
       autoPrune.enable = true;
       storageDriver = "btrfs"; # support for btrfs
-      rootless = {
-        enable = true; # run rootless
-        setSocketVariable = true; # set DOCKER_HOST variable to the rootless docker instance for normal users by default
-      };
+      #rootless = {
+      #  enable = true; # run rootless
+      #  setSocketVariable = true; # set DOCKER_HOST variable to the rootless docker instance for normal users by default
+      #};
       #daemon.settings = {
       #  userland-proxy = false;
       #  experimental = true;
