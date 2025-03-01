@@ -63,7 +63,7 @@ in
           "--progress"
           "--stats"
         ];
-        startAt = "*-*-* 02:30:00"; # everyday at 2:30am
+        startAt = "*-*-* 02:15:00"; # everyday at 2:15am
         encryption = {
           mode = "repokey-blake2"; # encrypt using password and save encryption key inside repository
           passCommand = "cat ${config.sops.secrets.borgCryptPasswd.path}";

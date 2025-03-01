@@ -62,7 +62,7 @@ in
           "--progress"
           "--stats"
         ];
-        startAt = "*-*-* 02:30:00"; # everyday at 2:30am
+        startAt = "*-*-* 02:45:00"; # everyday at 2:45am
         encryption = {
           mode = "repokey-blake2"; # encrypt using password and save encryption key inside repository
           passCommand = "cat ${config.sops.secrets.borgCryptPasswd.path}";
@@ -100,6 +100,7 @@ in
           "/var/lib/docker/volumes/radarr"
           "/var/lib/docker/volumes/sonarr"
           "/var/backup/mysql/photoprism.gz"
+          "${config.drives.storageDrive1}/media/family-photos-videos"
         ];
         prune.keep = {
           daily = 7; # keep the last seven daily archives
