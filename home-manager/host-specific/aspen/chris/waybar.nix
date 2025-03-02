@@ -25,17 +25,12 @@
       "modules-right" = [
         "tray"
 	      "temperature"
-	      "backlight" # not working
 	      "cpu"
 	      "memory"
 	      "disk"
-        #"pulseaudio",
-        "battery"
         "bluetooth"
         "network#tailscale"
-        "network#wifi"
         "network#ethernet"
-        "network#ethernet-dock"
         "clock"
       ];
       "hyprland/workspaces" = {
@@ -89,58 +84,13 @@
         "tooltip-format" = "Tailscale: {ipaddr}";
         "tooltip-format-disconnected" = "Tailscale: Disconnected"; # not working bug
       };
-      "network#wifi" = {
-        "interface" = "wlan0";
-        "format-wifi" = "{signalStrength}% ";
-        "format-disconnected" = "󰖪";
-        "tooltip-format-wifi" = "Wifi: {essid} {ipaddr}";
-        "tooltip-format-disconnected" = "Wifi: Disconnected";
-      };
       "network#ethernet" = {
-        "interface" = "enp0s31f6";
+        "interface" = "enp4s0";
         "format-ethernet" = "󰌗";
         "format-disconnected" = "󰌗";
         "tooltip-format-ethernet" = "Ethernet: {ipaddr}";
         "tooltip-format-disconnected" = "Ethernet: Disconnected";
       };
-      "network#ethernet-dock" = {
-        "interface" = "enp0s20f0u2u1u2";
-        "format-ethernet" = "󰌗";
-        "format-disconnected" = "󰌗";
-        "tooltip-format-ethernet" = "Ethernet-Dock: {ipaddr}";
-        "tooltip-format-disconnected" = "Ethernet-Dock: Disconnected";
-      };
-      "battery" = {
-	      "interval" = 30;
-        "states" = {
-          "good" = 90;
-          "warning" = 30;
-          "critical" = 5;
-        };
-        "format" = "{capacity}% {icon}";
-        "format-charging" = "{capacity}% 󱠵";
-        "format-plugged" = "{capacity}% ";
-        "format-icons" = [" " " " " " " " " "];
-      };
-      #"pulseaudio": {
-      #  "scroll-step": 1,
-      #  "format": "{icon}{volume}%",
-      #  "format-bluetooth": "{volume}% {icon}  {format_source}",
-      #  "format-bluetooth-muted": "{icon}  {format_source}",
-      #  "format-muted": "{format_source} ",
-      #  "format-source": "{volume}% ",
-      #  "format-source-muted": "",
-      #  "format-icons": {
-      #    "headphone": "",
-      #    "hands-free": "",
-      #    "headset": "",
-      #    "phone": "",
-      #    "portable": "",
-      #    "car": "",
-      #    "default": [" ", " ", " "]
-      #  },
-      #  "on-click": "pavucontrol"
-      #},
       "bluetooth" = {
 	      "format" = "";
 	      "format-connected" = " {num_connections}";
@@ -148,11 +98,6 @@
         "format-disabled" = "󰂲";
         "interval" = 5;
         "on-click" = "blueman-manager";
-      };
-      "backlight" = {
-        "device" = "intel_backlight";
-        "format" = "{percent}% {icon}";
-        "format-icons" = ["󰛨"];
       };
     }];
     style = 
@@ -269,37 +214,6 @@
       }
       #bluetooth.disabled {
           color: #77767b;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      #battery {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      #battery.charging, #battery.plugged {
-          color: #ffffff;
-      }
-      @keyframes blink {
-          to {
-              background-color: #ffffff;
-              color: #000000;
-          }
-      }
-      #battery.critical:not(.charging) {
-          background-color: #f53c3c;
-          color: #ffffff;
-          animation-name: blink;
-          animation-duration: 0.5s;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-          animation-direction: alternate;
-      }
-      label:focus {
-          background-color: #000000;
-      }
-      #backlight {
-          color: #ffffff;
           font-size: 14px;
           padding: 1px 10px 1px 10px;
       }
