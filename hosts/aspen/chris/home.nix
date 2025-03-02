@@ -26,13 +26,13 @@
       "home-manager/common/firefox.nix"
       "home-manager/common/theme.nix"
       "home-manager/common/rofi.nix"
-      "home-manager/common/waybar.nix"
       "home-manager/common/wlogout.nix"
       
       "home-manager/host-specific/aspen/chris/aliases.nix"
       "home-manager/host-specific/aspen/chris/ssh.nix"
 
       "home-manager/host-specific/aspen/chris/hyprland.nix"
+      "home-manager/host-specific/aspen/chris/waybar.nix"
     ])
   ];
 
