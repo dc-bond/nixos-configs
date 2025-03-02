@@ -54,6 +54,8 @@
       cool-retro-term # retro terminal
       filelight # disk usage visualizer
     ];
+
+    hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
     
     # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
     system.stateVersion = "24.11";

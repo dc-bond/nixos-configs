@@ -20,7 +20,6 @@
       "home-manager/common/git.nix"
       "home-manager/common/email.nix"
       
-      "home-manager/common/hyprland.nix"
       "home-manager/common/alacritty.nix"
       "home-manager/common/gammastep.nix"
       "home-manager/common/vscodium.nix"
@@ -32,6 +31,8 @@
       
       "home-manager/host-specific/aspen/chris/aliases.nix"
       "home-manager/host-specific/aspen/chris/ssh.nix"
+
+      "home-manager/host-specific/aspen/chris/hyprland.nix"
     ])
   ];
 

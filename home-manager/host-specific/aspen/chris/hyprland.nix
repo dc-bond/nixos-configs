@@ -21,17 +21,13 @@
 
   wayland.windowManager.hyprland = {
     enable = true;
-    extraConfig = 
-    ''
-      device {
-        name=razer-proclickm
-        sensitivity=-0.6
-      }
-      device {
-        name=razer-proclickm-1
-        sensitivity=-0.6
-      }
-    '';
+    #extraConfig = 
+    #''
+    #  device {
+    #    name=razer-proclickm
+    #    sensitivity=-0.6
+    #  }
+    #'';
     settings = {
       "$mod" = "Alt";
       exec-once = [
@@ -44,7 +40,7 @@
       bind = [
         "$mod, RETURN, exec, alacritty"
 	      "$mod, D, exec, rofi -modes run,ssh -show run"
-        "$mod, S, exec, ddcutil -d 1 setvcp D6 05 && systemctl suspend"
+        #"$mod, S, exec, ddcutil -d 1 setvcp D6 05 && systemctl suspend"
         "$mod, Q, killactive"
         "$mod, F, fullscreen"
         "$mod, T, togglefloating"
@@ -55,10 +51,10 @@
         "$mod, F1, exec, ddcutil -d 1 setvcp 60 0x11" # switch monitor input to HDMI1 (work computer)
         "$mod, F2, exec, ddcutil -d 1 setvcp 60 0x12" # switch monitor input to HDMI2 (thinkpad)
         "$mod, F3, exec, ddcutil -d 1 setvcp 60 0x0f" # switch monitor input to DP1 (aspen)
-        "$mod, F8, exec, rfkill toggle wlan"
+        #"$mod, F8, exec, rfkill toggle wlan"
         "$mod, F10, exec, rfkill toggle bluetooth"
-        "$mod, F5, exec, brightnessctl set 10%-"
-        "$mod, F6, exec, brightnessctl set +10%"
+        #"$mod, F5, exec, brightnessctl set 10%-"
+        #"$mod, F6, exec, brightnessctl set +10%"
         "$mod, 1, workspace, 1"
         "$mod, 2, workspace, 2"
         "$mod, 3, workspace, 3"
@@ -97,13 +93,13 @@
         "$mod, mouse:272, movewindow"
         "$mod, mouse:273, resizewindow"
       ];
-      bindl = [
-        ", switch:on:Lid Switch,exec,hyprctl keyword monitor desc:Chimei Innolux Corporation 0x14D4, disable" # when laptop lid is closed, disable laptop screen
-        ", switch:off:Lid Switch,exec,hyprctl keyword monitor desc:Chimei Innolux Corporation 0x14D4, 1920x1080@60, auto-right, 1" # when laptop lid is open, enable laptop screen and put it to the right of 32" external monitor
-      ];
+      #bindl = [
+      #  ", switch:on:Lid Switch,exec,hyprctl keyword monitor desc:Chimei Innolux Corporation 0x14D4, disable" # when laptop lid is closed, disable laptop screen
+      #  ", switch:off:Lid Switch,exec,hyprctl keyword monitor desc:Chimei Innolux Corporation 0x14D4, 1920x1080@60, auto-right, 1" # when laptop lid is open, enable laptop screen and put it to the right of 32" external monitor
+      #];
       monitor = [
         "desc:ASUSTek COMPUTER INC ASUS VG32V 0x0001618C, 2560x1440@100, 0x0, 1" # main 32" monitor
-        "desc:Chimei Innolux Corporation 0x14D4, 1920x1080@60, auto-right, 1" # laptop screen
+        #"desc:Chimei Innolux Corporation 0x14D4, 1920x1080@60, auto-right, 1" # laptop screen
       ];
       env = [
         "SSH_AUTH_SOCK,/run/user/1000/gnupg/S.gpg-agent.ssh" # workaround to ensure ssh_auth_sock variable inherited by all applications instead of just interactive shell when using gpg-agent to serve ssh
@@ -136,12 +132,8 @@
         };
       };
       #device = {
-      #  name = "razer-proclickm";
-      #  sensitivity = "-0.5";
-      #};
-      #device = {
-      #  name = "razer-proclickm-1";
-      #  sensitivity = "-0.5";
+      #  name = "mx-anywhere-3s-mouse";
+      #  sensitivity = "-0.1";
       #};
       general = {
         gaps_in = 0;
@@ -215,7 +207,7 @@
       };
       background = [
         {
-          path = "/home/chris/nixos-configs/home-manager/wallpaper/wallpaper-1.jpg";
+          path = "/home/chris/nixos-configs/wallpaper/wallpaper-1.jpg";
           blur_passes = 3;
           contrast = 1;
           brightness = 0.5;

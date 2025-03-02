@@ -15,8 +15,10 @@
       "home-manager/common/neovim.nix"
       "home-manager/common/gnupg.nix"
       "home-manager/common/zsh.nix"
+      "home-manager/common/pass.nix"
       "home-manager/common/starship.nix"
-      "home-manager/common/hyprland.nix"
+      "home-manager/common/email.nix"
+      
       "home-manager/common/alacritty.nix"
       "home-manager/common/gammastep.nix"
       "home-manager/common/vscodium.nix"
@@ -24,12 +26,13 @@
       "home-manager/common/theme.nix"
       "home-manager/common/rofi.nix"
       "home-manager/common/waybar.nix"
-      "home-manager/common/pass.nix"
       "home-manager/common/git.nix"
       "home-manager/common/wlogout.nix"
-      "home-manager/common/email.nix"
+      
       "home-manager/host-specific/thinkpad/chris/aliases.nix"
       "home-manager/host-specific/thinkpad/chris/ssh.nix"
+
+      "home-manager/host-specific/thinkpad/chris/hyprland.nix"
     ])
   ];
 
