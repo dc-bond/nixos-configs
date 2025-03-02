@@ -17,7 +17,7 @@
       };
       "aspen-tailscale" = {
         hostname = "${configVars.aspenTailscaleIp}";
-        user = "xixor";
+        user = "${configVars.userName}";
         port = 22;
       };
       "cypress" = {
