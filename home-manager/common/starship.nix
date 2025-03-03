@@ -31,7 +31,7 @@
         disabled = false;
         ssh_only = false;
         format = "[$hostname]($style): ";
-        style = "bold blue";
+        style = "bold bright-purple";
       };
       localip = {
         disabled = false;
