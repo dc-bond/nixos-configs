@@ -83,7 +83,7 @@
       "nixos-system/common/printing.nix"
       "nixos-system/common/fonts.nix"
       
-      #"nixos-system/common/mosquitto.nix"
+      "nixos-system/common/mosquitto.nix"
       "nixos-system/common/traefik.nix"
       #"nixos-system/common/postgresql.nix"
       "nixos-system/common/mysql.nix"

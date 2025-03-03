@@ -24,12 +24,22 @@ in
     ${app} = {
       enable = true;
       #hostname = "${app}.${configVars.domain2}"; # requires nginx in front?
-      mqtt = {
-        enable = true;
-        host = "127.0.0.1";
-      };
+      hostname = "${configVars.aspenLanIp}";
       vaapiDriver = "nvidia";
       settings = {
+
+        environment_vars = {
+          FRIGATE_RTSP_USER_FILE = "${config.sops.secrets.frigateRtspUser.path}";
+          FRIGATE_RTSP_PASSWORD_FILE = "${config.sops.secrets.frigateRtspPasswd.path}";
+          FRIGATE_MQTT_PASSWORD_FILE = "${config.sops.secrets.mqttFrigatePasswd.path}";
+        };
+
+        #mqtt = {
+        #  enabled = true;
+        #  host = "127.0.0.1";
+        #  user = "frigate";
+        #  password = "{FRIGATE_MQTT_PASSWORD}";
+        #};
 
         logger = {
           default = "info";
@@ -38,22 +48,22 @@ in
         go2rtc = {
           streams = {
             front = [
-              "rtsp://${config.sops.secrets.frigateRtspUser}:${config.sops.secrets.frigateRtspPasswd}@${configVars.frontCameraIp}:554/s0"
+              "rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@${configVars.frontCameraIp}:554/s0"
             ];
             front-detect = [
-              "rtsp://${config.sops.secrets.frigateRtspUser}:${config.sops.secrets.frigateRtspPasswd}@${configVars.frontCameraIp}:554/s2"
+              "rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@${configVars.frontCameraIp}:554/s2"
             ];
             garage = [
-              "rtsp://${config.sops.secrets.frigateRtspUser}:${config.sops.secrets.frigateRtspPasswd}@${configVars.garageCameraIp}:554/s0"
+              "rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@${configVars.garageCameraIp}:554/s0"
             ];
             garage-detect = [
-              "rtsp://${config.sops.secrets.frigateRtspUser}:${config.sops.secrets.frigateRtspPasswd}@${configVars.garageCameraIp}:554/s2"
+              "rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@${configVars.garageCameraIp}:554/s2"
             ];
             gym = [
-              "rtsp://${config.sops.secrets.frigateRtspUser}:${config.sops.secrets.frigateRtspPasswd}@${configVars.gymCameraIp}:554/s0"
+              "rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@${configVars.gymCameraIp}:554/s0"
             ];
             gym-detect = [
-              "rtsp://${config.sops.secrets.frigateRtspUser}:${config.sops.secrets.frigateRtspPasswd}@${configVars.gymCameraIp}:554/s2"
+              "rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@${configVars.gymCameraIp}:554/s2"
             ];
           };
           webrtc = {

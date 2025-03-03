@@ -10,11 +10,11 @@
   boot = {
     extraModulePackages = with config.boot.kernelPackages; [ 
       gasket 
-      apex 
+      #apex 
     ];
     kernelModules = [ 
       "gasket" 
-      "apex" 
+      #"apex" 
     ];
   };
 
