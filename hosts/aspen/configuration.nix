@@ -89,6 +89,7 @@
       "nixos-system/common/mysql.nix"
       "nixos-system/common/photoprism.nix" # requires mysql.nix
       "nixos-system/common/oci-containers.nix"
+      "nixos-system/common/oci-fava.nix"
       "nixos-system/host-specific/aspen/oci-media-server.nix"
       #"nixos-system/host-specific/aspen/frigate.nix" # requires mosquitto.nix, nvidia.nix, coral-tpu.nix
       "nixos-system/host-specific/aspen/nvidia.nix"

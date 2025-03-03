@@ -34,7 +34,6 @@
       "nixos-system/host-specific/thinkpad/networking.nix"
       "nixos-system/host-specific/thinkpad/tailscale.nix"
       "nixos-system/host-specific/thinkpad/borg-backups.nix"
-      "nixos-system/host-specific/thinkpad/lsyncd.nix"
       "scripts/backup-recovery/recover-traefik.nix"
       "scripts/backup-recovery/recover-homeassistant.nix"
       "scripts/backup-recovery/recover-matrix.nix"

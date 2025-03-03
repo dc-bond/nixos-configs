@@ -73,7 +73,6 @@
       "nixos-system/common/oci-unifi-controller.nix"
       "nixos-system/common/oci-pihole.nix"
       "nixos-system/common/oci-actual.nix"
-      "nixos-system/common/oci-fava.nix"
       "nixos-system/common/oci-zwavejs.nix"
       "nixos-system/common/oci-chromium.nix"
       "nixos-system/common/oci-searxng.nix"

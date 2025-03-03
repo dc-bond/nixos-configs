@@ -23,14 +23,21 @@
       username = {
         style_user = "bold green";
         style_root = "bold red";
-        format = "[$user](style)@";
+        format = "[$user]($style)@";
         disabled = false;
         show_always = true;
       };
       hostname = {
         disabled = false;
         ssh_only = false;
-        format = "[$hostname](bold blue): ";
+        format = "[$hostname]($style): ";
+        style = "bold blue";
+      };
+      localip = {
+        disabled = false;
+        ssh_only = true;
+        format = "[$localipv4]($style) ";
+        style = "bright-yellow";
       };
       nix_shell = {
         symbol = " ";
@@ -38,11 +45,11 @@
       };
       docker_context = {
         symbol = " ";
-        style = "blue bold";
+        style = "bold blue";
       };
       python = {
         symbol = " ";
-        style = "green bold";
+        style = "bold green";
         pyenv_version_name = false;
         python_binary = "python3";
       };
@@ -54,6 +61,7 @@
       };
       cmd_duration = {
         format = "took [$duration]($style) ";
+        style = "dimmed green";
         min_time = 10000;  # show command duration over 10,000 milliseconds (10 sec)
       };
       character = {
