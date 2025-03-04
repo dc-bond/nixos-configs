@@ -53,6 +53,7 @@
       hollywood # fill terminal with melodramatic technobabble
       cool-retro-term # retro terminal
       filelight # disk usage visualizer
+      yai # terminal ai utility
     ];
 
     hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
