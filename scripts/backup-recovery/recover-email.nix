@@ -1,6 +1,7 @@
 { 
   pkgs, 
   config,
+  configVars,
   ...
 }:
 
@@ -51,8 +52,9 @@ let
    cd ${config.backups.borgCloudDir}
 
    { set +x; log "extracting email data from borg repository"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE /home/${configVars.userName}/email --strip-components 2
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE /var/lib/nextcloud/data/'Chris Bond'/files/Personal/email --strip-components 7
    '';
+   #sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE /home/${configVars.userName}/email --strip-components 2
 
 in
 
