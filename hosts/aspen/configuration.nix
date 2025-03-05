@@ -105,6 +105,7 @@
       "scripts/rebuild/rebuild-remote-cypress.nix"
       "scripts/deploy/deploy-thinkpad.nix"
       "scripts/deploy/deploy-cypress.nix"
+      #"scripts/backup-recovery/recover-email.nix"
       #"scripts/backup-recovery/recover-traefik.nix"
       #"scripts/backup-recovery/recover-homeassistant.nix"
       #"scripts/backup-recovery/recover-matrix.nix"

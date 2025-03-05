@@ -21,10 +21,14 @@ in
 
   services = {
 
+    nginx = {
+      virtualHosts."${app}.${configVars.domain2}".listen = [{addr = "127.0.0.1"; port = 4413;}];
+    };
+
     ${app} = {
       enable = true;
-      #hostname = "${app}.${configVars.domain2}"; # requires nginx in front?
-      hostname = "${configVars.aspenLanIp}";
+      hostname = "${app}.${configVars.domain2}"; # requires nginx in front?
+      #hostname = "${configVars.aspenLanIp}";
       vaapiDriver = "nvidia";
       settings = {
 
@@ -213,30 +217,30 @@ in
       ];
     };
 
-    #traefik.dynamicConfigOptions.http = {
-    #  routers.${app} = {
-    #    entrypoints = ["websecure"];
-    #    rule = "Host(`${app}.${configVars.domain2}`)";
-    #    service = "${app}";
-    #    middlewares = [
-    #      "secure-headers"
-    #    ];
-    #    tls = {
-    #      certResolver = "cloudflareDns";
-    #      options = "tls-13@file";
-    #    };
-    #  };
-    #  services.${app} = {
-    #    loadBalancer = {
-    #      passHostHeader = true;
-    #      servers = [
-    #      {
-    #        url = "http://127.0.0.1:5000";
-    #      }
-    #      ];
-    #    };
-    #  };
-    #};
+    traefik.dynamicConfigOptions.http = {
+      routers.${app} = {
+        entrypoints = ["websecure"];
+        rule = "Host(`${app}.${configVars.domain2}`)";
+        service = "${app}";
+        middlewares = [
+          "secure-headers"
+        ];
+        tls = {
+          certResolver = "cloudflareDns";
+          options = "tls-13@file";
+        };
+      };
+      services.${app} = {
+        loadBalancer = {
+          passHostHeader = true;
+          servers = [
+          {
+            url = "http://127.0.0.1:4413";
+          }
+          ];
+        };
+      };
+    };
 
   };
 

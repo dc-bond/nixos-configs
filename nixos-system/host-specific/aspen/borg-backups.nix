@@ -91,6 +91,8 @@ in
           systemctl start cloudBackup.service
         '';
         paths = [
+          "/home/${configVars.userName}/email"
+          "/var/lib/traefik"
           "/var/lib/traefik"
           "/var/lib/private/photoprism"
           "/var/lib/docker/volumes/jellyfin"

@@ -231,7 +231,8 @@
   };
 
   accounts.email = {
-    maildirBasePath = "${config.home.homeDirectory}/nextcloud-client/Personal/email";
+    maildirBasePath = "${config.home.homeDirectory}/email";
+    #maildirBasePath = "${config.home.homeDirectory}/nextcloud-client/Personal/email";
     accounts = {
       "${configVars.userEmail}" = {
         address = "${configVars.userEmail}";
