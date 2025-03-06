@@ -48,13 +48,15 @@ let
 
    { set +x; log "starting backup recovery for email container on aspen"; } 2>/dev/null
 
-   { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
-   cd ${config.backups.borgCloudDir}
+   { set +x; log "changing directory to ${config.backups.borgDir}"; } 2>/dev/null
+   cd ${config.backups.borgDir}
 
    { set +x; log "extracting email data from borg repository"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE /var/lib/nextcloud/data/'Chris Bond'/files/Personal/email --strip-components 7
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/${config.networking.hostName}::$ARCHIVE /home/${configVars.userName}/email --strip-components 2
+
+   { set +x; log "changing ownership of restored application data"; } 2>/dev/null
+   sudo chown -R chris:users ${config.backups.borgDir}/email
    '';
-   #sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE /home/${configVars.userName}/email --strip-components 2
 
 in
 
