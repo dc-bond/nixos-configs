@@ -1,5 +1,3 @@
-Recipesage
-
 Logging Solution
 
 Photo Imports

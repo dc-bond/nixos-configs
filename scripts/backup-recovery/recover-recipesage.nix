@@ -68,18 +68,18 @@ let
 
    { set +x; log "starting backup recovery for recipesage containers on $HOST"; } 2>/dev/null
 
-   { set +x; log "changing directory to ${config.backups.borgDir}"; } 2>/dev/null
-   cd ${config.backups.borgDir}
+   { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
+   cd ${config.backups.borgCloudDir}
 
    { set +x; log "extracting application data from borg repository"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/recipesage-api --strip-components 4
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/recipesage-postgres --strip-components 4
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/recipesage-typesense --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/recipesage-api --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/recipesage-postgres --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/recipesage-typesense --strip-components 4
 
    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
-   sudo chown -R chris:users ${config.backups.borgDir}/recipesage-api
-   sudo chown -R chris:users ${config.backups.borgDir}/recipesage-postgres
-   sudo chown -R chris:users ${config.backups.borgDir}/recipesage-typesense
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/recipesage-api
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/recipesage-postgres
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/recipesage-typesense
 
    { set +x; log "stopping container stack on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl stop docker-recipesage-root.target'
@@ -90,9 +90,9 @@ let
    ssh $HOST 'sudo rm -rf /var/lib/docker/volumes/recipesage-typesense'
 
    { set +x; log "transferring restored data to $HOST"; } 2>/dev/null
-   rsync --progress -avzh ${config.backups.borgDir}/recipesage-api $HOST:/tmp
-   rsync --progress -avzh ${config.backups.borgDir}/recipesage-postgres $HOST:/tmp
-   rsync --progress -avzh ${config.backups.borgDir}/recipesage-typesense $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/recipesage-api $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/recipesage-postgres $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/recipesage-typesense $HOST:/tmp
    ssh $HOST 'sudo mv /tmp/recipesage-api /var/lib/docker/volumes'
    ssh $HOST 'sudo mv /tmp/recipesage-postgres /var/lib/docker/volumes'
    ssh $HOST 'sudo mv /tmp/recipesage-typesense /var/lib/docker/volumes'
@@ -103,9 +103,9 @@ let
    ssh $HOST 'sudo chown -R root:root /var/lib/docker/volumes/recipesage-typesense'
 
    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
-   sudo rm -rf ${config.backups.borgDir}/recipesage-api
-   sudo rm -rf ${config.backups.borgDir}/recipesage-postgres
-   sudo rm -rf ${config.backups.borgDir}/recipesage-typesense
+   sudo rm -rf ${config.backups.borgCloudDir}/recipesage-api
+   sudo rm -rf ${config.backups.borgCloudDir}/recipesage-postgres
+   sudo rm -rf ${config.backups.borgCloudDir}/recipesage-typesense
 
    { set +x; log "restarting restored pihole-unbound container stack on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl start docker-recipesage-root.target'
