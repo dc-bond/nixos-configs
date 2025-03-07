@@ -8,13 +8,13 @@
 
 let
   app = "recipesage";
-  app1 = "proxy";
+  app1 = "proxy"; 
   app2 = "static";
   app3 = "api"; # volume
   app4 = "typesense"; # volume
   app5 = "pushpin"; # bind mount
   app6 = "postgres"; # volume
-  app7 = "browserless";
+  app7 = "browserless"; 
   app8 = "ingredient-instruction-classifier";
 in
 
@@ -109,7 +109,7 @@ in
     };
 
     "${app2}" = {
-      image = "docker.io/julianpoy/recipesage-selfhost:static-v2.15.9";
+      image = "docker.io/julianpoy/recipesage-selfhost:static-v2.15.11";
       autoStart = true;
       log-driver = "journald";
       extraOptions = [
@@ -121,7 +121,7 @@ in
     };
 
     "${app3}" = {
-      image = "docker.io/julianpoy/recipesage-selfhost:api-v2.15.9";
+      image = "docker.io/julianpoy/recipesage-selfhost:api-v2.15.11";
       autoStart = true;
       log-driver = "journald";
       dependsOn = [
@@ -172,7 +172,7 @@ in
       volumes = [ "/etc/start-recipesage-pushpin.sh:/start-recipesage-pushpin.sh" ];
       environment = { 
         GRIP_KEY = "${config.sops.placeholder.recipesageGripKey}";
-        target = "${app3}:3000";
+        TARGET = "${app3}:3000";
       };
       extraOptions = [
         "--network=${app}"
