@@ -473,6 +473,7 @@ in
     volumes = [ 
       "/var/lib/traefik:/traefik:ro" 
       "/etc/turnserver:/output:rw" 
+      "traefik-certs-dumper:/var/lib/docker:rw" # not needed for backup
     ];
     environment = { 
       DOMAIN = "${configVars.domain1}";
@@ -525,10 +526,12 @@ in
         after = [
           "generate-dhparam.service"
           "docker-network-traefik-certs-dumper.service"
+          "docker-volume-traefik-certs-dumper.service"
         ];
         requires = [
           "generate-dhparam.service"
           "docker-network-traefik-certs-dumper.service"
+          "docker-volume-traefik-certs-dumper.service"
         ];
         partOf = [
           "docker-traefik-certs-dumper-root.target"
@@ -536,6 +539,18 @@ in
         wantedBy = [
           "docker-traefik-certs-dumper-root.target"
         ];
+      };
+      "docker-volume-traefik-certs-dumper" = {
+        path = [pkgs.docker];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        script = ''
+          docker volume inspect traefik-certs-dumper || docker volume create traefik-certs-dumper
+        '';
+        partOf = ["docker-traefik-certs-dumper-root.target"];
+        wantedBy = ["docker-traefik-certs-dumper-root.target"];
       };
       "docker-network-traefik-certs-dumper" = {
         path = [pkgs.docker];
