@@ -92,6 +92,7 @@ in
           systemctl stop docker-chromium-root.target
           systemctl stop docker-searxng-root.target
           systemctl stop docker-unifi-controller-root.target
+          systemctl stop docker-recipesage-root.target
           sleep 10 
           systemctl start postgresqlBackup-hass.service
           systemctl start postgresqlBackup-lldap.service
@@ -118,6 +119,7 @@ in
           systemctl start mosquitto.service
           systemctl start docker-chromium-root.target
           systemctl start docker-searxng-root.target
+          systemctl start docker-recipesage-root.target
           echo "starting cloud backup"
           systemctl start cloudBackup.service
         '';
@@ -140,6 +142,9 @@ in
           "/var/lib/docker/volumes/actual"
           "/var/lib/docker/volumes/searxng"
           "/var/lib/docker/volumes/chromium"
+          "/var/lib/docker/volumes/recipesage-api"
+          "/var/lib/docker/volumes/recipesage-postgres"
+          "/var/lib/docker/volumes/recipesage-typesense"
           "/var/lib/docker/volumes/unifi-controller"
           "/var/lib/docker/volumes/unifi-controller-mongodb-db"
           "/var/lib/docker/volumes/unifi-controller-mongodb-configdb"
