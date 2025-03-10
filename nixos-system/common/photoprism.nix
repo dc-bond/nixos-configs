@@ -21,7 +21,6 @@ in
       enable = true;
       address = "127.0.0.1";
       originalsPath = "${config.drives.storageDrive1}/media/family-photos-videos";
-      importPath = "${config.drives.storageDrive1}/media/family-photos-videos/photoprism-import";
       passwordFile = "${config.sops.secrets.photoprismAdminPasswd.path}";
       settings = {
         PHOTOPRISM_AUTH_MODE = "password";                                                      # authentication mode (public, password)
@@ -50,6 +49,7 @@ in
         PHOTOPRISM_SITE_DESCRIPTION = "${configVars.userLastName} Photos";
         PHOTOPRISM_SITE_AUTHOR = "${configVars.userFullName}";
         NVIDIA_VISIBLE_DEVICES = "all";
+        PHOTOPRISM_INDEX_SCHEDULE = "@every 1h";
       };
     };
 

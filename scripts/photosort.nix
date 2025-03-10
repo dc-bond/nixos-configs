@@ -49,7 +49,7 @@ pkgs.writeShellScriptBin "photosort" ''
   
   while IFS= read -r -d $'\0' file; do
      mime=$( file -b --mime-type "$file" )
-     case "${mime%%/*}" in
+     case "\${mime%%/*}" in
         image)
            output="$DIR2"
            ((num_images++))

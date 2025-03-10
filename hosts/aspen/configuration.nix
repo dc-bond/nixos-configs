@@ -101,6 +101,7 @@
       "nixos-system/host-specific/aspen/sshd.nix"
       "nixos-system/host-specific/aspen/tailscale.nix"
       "nixos-system/host-specific/aspen/users.nix"
+      "nixos-system/host-specific/aspen/filebeat.nix"
       "scripts/rebuild/rebuild-local-aspen.nix"
       "scripts/rebuild/rebuild-remote-thinkpad.nix"
       "scripts/rebuild/rebuild-remote-cypress.nix"

@@ -107,7 +107,7 @@ let
    sudo rm -rf ${config.backups.borgCloudDir}/recipesage-postgres
    sudo rm -rf ${config.backups.borgCloudDir}/recipesage-typesense
 
-   { set +x; log "restarting restored pihole-unbound container stack on $HOST"; } 2>/dev/null
+   { set +x; log "restarting restored container stack on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl start docker-recipesage-root.target'
    '';
 
