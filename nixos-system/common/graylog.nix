@@ -16,11 +16,8 @@ in
 
     ${app} = {
       enable = true;
-      rootUsername = "${configVars.userEmail}";
       passwordSecret = "3LgC0W6UenLkPdPGhT94rO7V7Sar6RN2mN7DhNpi2kQHhON1TsA5QhZxdTHTijkdeMoPQTAtYElyxL8GlZkXVrb2dv2tNKEF";
       rootPasswordSha2 = "0ea98db27a78fd15d23172feb03e583ba9b055d21520ed6607eb331ac92bc570";
-      #passwordSecret = config.sops.secrets.graylog-passwordSecret.path;
-      #rootPasswordSha2 = config.sops.secrets.graylog-rootPasswordSha2.path;
       extraConfig = ''
         http_external_uri = https://${app}.${configVars.domain2}/
       '';
@@ -28,6 +25,7 @@ in
     };
     mongodb = {
       enable = true;
+      package = pkgs.mongodb-ce;
     };
     opensearch = {
       enable = true;

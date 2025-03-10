@@ -36,7 +36,7 @@
     gc = { # every hour, delete any generations older than 7 days then garbage-collect unreferenced programs and symlinks
       automatic = true;
       randomizedDelaySec = "60m";
-      options = "--delete-older-than 7d";
+      options = "--delete-older-than +3"; # keep last three generations
     };
   };
 
