@@ -14,18 +14,56 @@ in
 
   networking.firewall.allowedUDPPorts = [ 12201 ];
 
+  sops.secrets = {
+    graylogPasswdSecret = {
+      owner = config.users.users."${app}".name;
+      group = config.users.users."${app}".group;
+      mode = "0440";
+    };
+    graylogRootPasswdSha2 = {
+      owner = config.users.users."${app}".name;
+      group = config.users.users."${app}".group;
+      mode = "0440";
+    };
+    graylogUserEmailPasswd = {
+      owner = config.users.users."${app}".name;
+      group = config.users.users."${app}".group;
+      mode = "0440";
+    };
+  };
+
+  systemd.services.graylog = {
+    environment = {
+      GRAYLOG_PASSWORD_SECRET = "${config.sops.secrets.graylogPasswdSecret.path}";
+      GRAYLOG_ROOT_PASSWORD_SHA2 = "${config.sops.secrets.graylogRootPasswdSha2.path}";
+      GRAYLOG_USER_EMAIL_PASSWORD = "${config.sops.secrets.graylogUserEmailPasswd.path}";
+    };
+  };
+
   services = {
 
     ${app} = {
       enable = true;
-      passwordSecret = "3LgC0W6UenLkPdPGhT94rO7V7Sar6RN2mN7DhNpi2kQHhON1TsA5QhZxdTHTijkdeMoPQTAtYElyxL8GlZkXVrb2dv2tNKEF";
-      rootPasswordSha2 = "0ea98db27a78fd15d23172feb03e583ba9b055d21520ed6607eb331ac92bc570";
+      passwordSecret = "$GRAYLOG_PASSWORD_SECRET";
+      rootPasswordSha2 = "$GRAYLOG_ROOT_PASSWORD_SHA2";
       rootUsername = "${configVars.userEmail}";
       extraConfig = ''
         http_external_uri = https://${app}.${configVars.domain2}/
         java.net.preferIPv4Stack = true
         root_timezone = America/New_York
         root_email = ${configVars.userEmail}
+        transport_email_enabled = true
+        transport_email_hostname = mail.privateemail.com
+        transport_email_port = 465
+        transport_email_use_tls = false
+        transport_email_use_ssl = true
+        transport_email_use_auth = true
+        transport_email_auth_username = ${configVars.userEmail}
+        transport_email_auth_password = $GRAYLOG_USER_EMAIL_PASSWORD
+        transport_email_from_email = graylog@${configVars.domain1}
+        transport_email_web_interface_url = https://${app}.${configVars.domain2}
+        transport_email_socket_connection_timeout = 30s
+        transport_email_socket_timeout = 30s
       '';
       elasticsearchHosts = [ "http://127.0.0.1:9200" ];
     };
