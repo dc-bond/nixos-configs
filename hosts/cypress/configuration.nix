@@ -83,6 +83,7 @@
       "nixos-system/host-specific/cypress/sshd.nix"
       "nixos-system/host-specific/cypress/networking.nix"
       "nixos-system/host-specific/cypress/tailscale.nix"
+      "nixos-system/host-specific/cypress/journal2gelf.nix"
     ])
   ];
 
