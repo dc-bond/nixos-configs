@@ -11,8 +11,8 @@ let
 in
 
 {
-  
-  networking.firewall.allowedTCPPorts = [ 5044 ];
+
+  networking.firewall.allowedTCPPorts = [ 12201 ];
 
   services = {
 
