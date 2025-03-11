@@ -12,7 +12,7 @@ in
 
 {
 
-  networking.firewall.allowedTCPPorts = [ 12201 ];
+  networking.firewall.allowedUDPPorts = [ 12201 ];
 
   services = {
 
@@ -22,6 +22,7 @@ in
       rootPasswordSha2 = "0ea98db27a78fd15d23172feb03e583ba9b055d21520ed6607eb331ac92bc570";
       extraConfig = ''
         http_external_uri = https://${app}.${configVars.domain2}/
+        java.net.preferIPv4Stack = true
       '';
       elasticsearchHosts = [ "http://127.0.0.1:9200" ];
     };
