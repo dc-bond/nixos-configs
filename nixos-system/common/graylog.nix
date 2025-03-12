@@ -52,19 +52,20 @@ in
         java.net.preferIPv4Stack = true
         root_timezone = America/New_York
         root_email = ${configVars.userEmail}
+        allow_highlighting = true
         transport_email_enabled = true
-        transport_email_hostname = mail.privateemail.com
+        transport_email_hostname = ssl://mail.privateemail.com
         transport_email_port = 465
         transport_email_use_tls = false
         transport_email_use_ssl = true
         transport_email_use_auth = true
         transport_email_auth_username = ${configVars.userEmail}
         transport_email_auth_password = $GRAYLOG_USER_EMAIL_PASSWORD
-        transport_email_from_email = graylog@${configVars.domain1}
-        transport_email_web_interface_url = https://${app}.${configVars.domain2}
         transport_email_socket_connection_timeout = 30s
         transport_email_socket_timeout = 30s
       '';
+        #transport_email_from_email = graylog@${configVars.domain1}
+        #transport_email_web_interface_url = https://${app}.${configVars.domain2}
       elasticsearchHosts = [ "http://127.0.0.1:9200" ];
     };
     mongodb = {

@@ -22,13 +22,12 @@ in
   services = {
 
     nginx = {
-      virtualHosts."${app}.${configVars.domain2}".listen = [{addr = "127.0.0.1"; port = 4413;}];
+      virtualHosts."${app}.${configVars.domain2}".listen = [{addr = "127.0.0.1"; port = 4395;}];
     };
 
     ${app} = {
       enable = true;
-      hostname = "${app}.${configVars.domain2}"; # requires nginx in front?
-      #hostname = "${configVars.aspenLanIp}";
+      hostname = "${app}.${configVars.domain2}";
       vaapiDriver = "nvidia";
       settings = {
 
@@ -38,12 +37,13 @@ in
           FRIGATE_MQTT_PASSWORD_FILE = "${config.sops.secrets.mqttFrigatePasswd.path}";
         };
 
-        #mqtt = {
-        #  enabled = true;
-        #  host = "127.0.0.1";
-        #  user = "frigate";
-        #  password = "{FRIGATE_MQTT_PASSWORD}";
-        #};
+        mqtt = {
+          enabled = false;
+          #enabled = true;
+          #host = "127.0.0.1";
+          #user = "frigate";
+          #password = "{FRIGATE_MQTT_PASSWORD}";
+        };
 
         logger = {
           default = "info";
@@ -182,12 +182,12 @@ in
           };
         };
 
-        detectors = { # global detector configuration for all cameras
-          "${config.networking.hostName}-tpu" = {
-            type = "edgetpu";
-            device = "pci";
-          };
-        };
+        #detectors = { # global detector configuration for all cameras
+        #  "${config.networking.hostName}-tpu" = {
+        #    type = "edgetpu";
+        #    device = "pci";
+        #  };
+        #};
 
         snapshots = { # global snapshot configuration for all cameras, requires object detection turned on
           enabled = true;
@@ -206,16 +206,16 @@ in
       };
     };
 
-    mosquitto = {
-      listeners = [
-        {
-          users.frigate = {
-            acl = [ "readwrite #" ];
-            passwordFile = "${config.sops.secrets.mqttFrigatePasswd.path}";
-          };
-        }
-      ];
-    };
+    #mosquitto = {
+    #  listeners = [
+    #    {
+    #      users.frigate = {
+    #        acl = [ "readwrite #" ];
+    #        passwordFile = "${config.sops.secrets.mqttFrigatePasswd.path}";
+    #      };
+    #    }
+    #  ];
+    #};
 
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
@@ -235,7 +235,7 @@ in
           passHostHeader = true;
           servers = [
           {
-            url = "http://127.0.0.1:4413";
+            url = "http://127.0.0.1:4395";
           }
           ];
         };

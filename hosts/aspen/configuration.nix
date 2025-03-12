@@ -123,6 +123,7 @@
       #"scripts/backup-recovery/recover-pihole.nix"
       #"scripts/backup-recovery/recover-unifi-controller.nix"
       "scripts/backup-recovery/recover-recipesage.nix"
+      "scripts/backup-recovery/recover-roundcube.nix"
     ])
   ];
 

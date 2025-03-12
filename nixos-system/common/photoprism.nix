@@ -33,12 +33,12 @@ in
         PHOTOPRISM_DISABLE_CHOWN = "false";                                                     # disables updating storage permissions via chmod and chown on startup
         PHOTOPRISM_DISABLE_WEBDAV = "false";                                                    # disables built-in WebDAV server
         PHOTOPRISM_DISABLE_SETTINGS = "false";                                                  # disables settings UI and API
-        PHOTOPRISM_DISABLE_TENSORFLOW = "false";                                                # disables all features depending on TensorFlow
-        PHOTOPRISM_DISABLE_FACES = "false";                                                     # disables face detection and recognition (requires TensorFlow)
-        PHOTOPRISM_DISABLE_CLASSIFICATION = "false";                                            # disables image classification (requires TensorFlow)
+        PHOTOPRISM_DISABLE_TENSORFLOW = "true";                                                 # disables all features depending on TensorFlow
+        PHOTOPRISM_DISABLE_FACES = "true";                                                      # disables face detection and recognition (requires TensorFlow)
+        PHOTOPRISM_DISABLE_CLASSIFICATION = "true";                                             # disables image classification (requires TensorFlow)
         PHOTOPRISM_DISABLE_RAW = "false";                                                       # disables indexing and conversion of RAW files
         PHOTOPRISM_RAW_PRESETS = "false";                                                       # enables applying user presets when converting RAW files (reduces performance)
-        PHOTOPRISM_JPEG_QUALITY = "100";                                                        # a higher value increases the quality and file size of JPEG images and thumbnails (25-100)
+        PHOTOPRISM_JPEG_QUALITY = "30";                                                         # a higher value increases the quality and file size of JPEG images and thumbnails (25-100)
         PHOTOPRISM_DETECT_NSFW = "false";                                                       # automatically flags photos as private that MAY be offensive (requires TensorFlow)
         PHOTOPRISM_UPLOAD_NSFW = "true";                                                        # allows uploads that MAY be offensive (no effect without TensorFlow)
         PHOTOPRISM_DATABASE_DRIVER = "mysql";                                                   # use MariaDB 10.5+ or MySQL 8+ instead of SQLite for improved performance
