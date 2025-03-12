@@ -12,6 +12,12 @@ in
 
 {
 
+  sops.secrets.userEmailPasswd = {};
+
+  systemd.services.${app}.environment = { 
+    SMTP_PASS = "${config.sops.secrets.userEmailPasswd.path}";
+  };
+
   services = {
 
     ${app} = {
@@ -22,6 +28,15 @@ in
       database.host = "localhost";
       database.username = "${app}";
       database.dbname = "${app}";
+      extraConfig = ''
+        $config['default_host'] = 'ssl://mail.privateemail.com';
+        $config['default_port'] = 993;
+        $config['smtp_server'] = 'ssl://mail.privateemail.com';
+        $config['smtp_port'] = 465;
+        $config['smtp_user'] = '${configVars.userEmail}';
+        $config['smtp_pass'] = '$SMTP_PASS';
+        $config['smtp_auth_type'] = 'LOGIN';
+      '';
     };
 
     nginx = {
