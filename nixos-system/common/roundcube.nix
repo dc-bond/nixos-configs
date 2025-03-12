@@ -14,23 +14,59 @@ in
 
   services = {
 
+    ${app} = {
+      enable = true;
+      configureNginx = false;
+      maxAttachmentSize = 30;
+      dicts = with pkgs.aspellDicts; [ en ];
+      database.host = "localhost";
+      database.username = "${app}";
+      database.dbname = "${app}";
+    };
+
     nginx = {
+      enable = true;
       recommendedGzipSettings = true;
       recommendedOptimisation = true;
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
-      virtualHosts."${app}.${configVars.domain2}".listen = [{addr = "127.0.0.1"; port = 4415;}];
-    };
-
-    ${app} = {
-      enable = true;
-      configureNginx = true;
-      hostName = "${app}.${configVars.domain2}";
-      maxAttachmentSize = 30;
-      dicts = with pkgs.aspellDicts; [ en ];
-      database.host = "127.0.0.1";
-      databse.username = "${app}";
-      databse.dbname = "${app}";
+      virtualHosts = {
+        "${app}.${configVars.domain2}" = {
+          forceSSL = false;
+          enableACME = false;
+          root = pkgs.roundcube;
+          locations."/" = {
+            index = "index.php";
+            priority = 1100;
+            extraConfig = ''
+              add_header Cache-Control 'public, max-age=604800, must-revalidate';
+            '';
+          };
+          locations."~ ^/(SQL|bin|config|logs|temp|vendor)/" = {
+            priority = 3110;
+            extraConfig = ''
+              return 404;
+            '';
+          };
+          locations."~ ^/(CHANGELOG.md|INSTALL|LICENSE|README.md|SECURITY.md|UPGRADING|composer.json|composer.lock)" =
+            {
+              priority = 3120;
+              extraConfig = ''
+                return 404;
+              '';
+            };
+          locations."~* \\.php(/|$)" = {
+            priority = 3130;
+            extraConfig = ''
+              fastcgi_pass unix:${config.services.phpfpm.pools.roundcube.socket};
+              fastcgi_param PATH_INFO $fastcgi_path_info;
+              fastcgi_split_path_info ^(.+\.php)(/.+)$;
+              include ${config.services.nginx.package}/conf/fastcgi.conf;
+            '';
+          };
+          listen = [{addr = "127.0.0.1"; port = 4415;}];
+        };
+      };
     };
 
     traefik.dynamicConfigOptions.http = {
