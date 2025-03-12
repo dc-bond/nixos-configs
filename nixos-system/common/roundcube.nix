@@ -38,6 +38,10 @@ in
         $config['smtp_auth_type'] = 'LOGIN';
       '';
     };
+    
+    postgresqlBackup = {
+      databases = [ "${app}" ];
+    };
 
     nginx = {
       enable = true;

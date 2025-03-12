@@ -86,6 +86,7 @@ in
           systemctl stop home-assistant.service
           systemctl stop mosquitto.service
           systemctl stop traefik.service
+          systemctl stop roundcube.service
           systemctl stop docker-zwavejs-root.target
           systemctl stop docker-pihole-root.target
           systemctl stop docker-actual-root.target
@@ -98,6 +99,7 @@ in
           systemctl start postgresqlBackup-lldap.service
           systemctl start postgresqlBackup-nextcloud.service
           systemctl start postgresqlBackup-matrix-synapse.service
+          systemctl start postgresqlBackup-roundcube.service
           sleep 10
         '';
         postHook = ''
@@ -117,6 +119,7 @@ in
           systemctl start uptime-kuma.service
           systemctl start home-assistant.service
           systemctl start mosquitto.service
+          systemctl start roundcube.service
           systemctl start docker-chromium-root.target
           systemctl start docker-searxng-root.target
           systemctl start docker-recipesage-root.target
@@ -135,6 +138,7 @@ in
           "/var/lib/redis-nextcloud"
           "/var/lib/hass"
           "/var/lib/mosquitto"
+          "/var/lib/roundcube"
           "/var/lib/tailscale"
           "/var/lib/docker/volumes/zwavejs"
           "/var/lib/docker/volumes/pihole"
@@ -152,6 +156,7 @@ in
           "/var/backup/postgresql/lldap.sql.gz"
           "/var/backup/postgresql/nextcloud.sql.gz"
           "/var/backup/postgresql/matrix-synapse.sql.gz"
+          "/var/backup/postgresql/roundcube.sql.gz"
         ];
         prune.keep = {
           daily = 7; # keep the last seven daily archives
