@@ -61,10 +61,10 @@ in
         transport_email_use_auth = true
         transport_email_auth_username = ${configVars.userEmail}
         transport_email_auth_password = $GRAYLOG_USER_EMAIL_PASSWORD
+        transport_email_from_email = ${configVars.userEmail}
         transport_email_socket_connection_timeout = 30s
         transport_email_socket_timeout = 30s
       '';
-        #transport_email_from_email = graylog@${configVars.domain1}
         #transport_email_web_interface_url = https://${app}.${configVars.domain2}
       elasticsearchHosts = [ "http://127.0.0.1:9200" ];
     };

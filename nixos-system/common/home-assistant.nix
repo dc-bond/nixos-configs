@@ -60,15 +60,14 @@ in
           platform = "smtp";
           sender = "!secret notifySenderEmail";
           sender_name = "!secret notifySenderAlias";
-          recipient = [ 
-            "!secret notifyDefaultRecipient"
-          ];
+          recipient = [ "!secret notifyDefaultRecipient" ];
           server = "!secret notifyEmailServer";
           port = "!secret notifyEmailPort";
           timeout = 60;
           username = "!secret notifyEmailUsername";
           password = "!secret notifyEmailPasswd";
-          encryption = "starttls";
+          #encryption = "starttls";
+          encryption = "tls";
         };
       };
     };
