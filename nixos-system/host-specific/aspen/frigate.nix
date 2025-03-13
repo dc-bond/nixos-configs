@@ -19,6 +19,8 @@ in
 
   environment.etc."media/frigate".source = "/${config.drives.storageDrive1}/media/security-cameras";
 
+  hardware.coral.pcie.enable = true;
+
   services = {
 
     nginx = {
@@ -182,12 +184,12 @@ in
           };
         };
 
-        #detectors = { # global detector configuration for all cameras
-        #  "${config.networking.hostName}-tpu" = {
-        #    type = "edgetpu";
-        #    device = "pci";
-        #  };
-        #};
+        detectors = { # global detector configuration for all cameras
+          "${config.networking.hostName}-tpu" = {
+            type = "edgetpu";
+            device = "pci";
+          };
+        };
 
         snapshots = { # global snapshot configuration for all cameras, requires object detection turned on
           enabled = true;
