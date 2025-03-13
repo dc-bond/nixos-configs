@@ -46,6 +46,7 @@ in
       enable = true;
       passwordSecret = "$GRAYLOG_PASSWORD_SECRET";
       rootPasswordSha2 = "$GRAYLOG_ROOT_PASSWORD_SHA2";
+      #rootUsername = "admin";
       rootUsername = "${configVars.userEmail}";
       extraConfig = ''
         http_external_uri = https://${app}.${configVars.domain2}/
@@ -62,10 +63,10 @@ in
         transport_email_auth_username = ${configVars.userEmail}
         transport_email_auth_password = $GRAYLOG_USER_EMAIL_PASSWORD
         transport_email_from_email = ${configVars.userEmail}
+        transport_email_web_interface_url = https://${app}.${configVars.domain2}
         transport_email_socket_connection_timeout = 30s
         transport_email_socket_timeout = 30s
       '';
-        #transport_email_web_interface_url = https://${app}.${configVars.domain2}
       elasticsearchHosts = [ "http://127.0.0.1:9200" ];
     };
     mongodb = {
