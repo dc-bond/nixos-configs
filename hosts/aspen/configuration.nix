@@ -102,7 +102,7 @@
       "nixos-system/host-specific/aspen/tailscale.nix"
       "nixos-system/host-specific/aspen/users.nix"
       "nixos-system/host-specific/aspen/journal2gelf.nix"
-      #"nixos-system/host-specific/aspen/gaming.nix"
+      "nixos-system/host-specific/aspen/gaming.nix"
       "scripts/rebuild/rebuild-local-aspen.nix"
       "scripts/rebuild/rebuild-remote-thinkpad.nix"
       "scripts/rebuild/rebuild-remote-cypress.nix"
