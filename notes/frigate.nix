@@ -1,5 +1,6 @@
 { 
-  pkgs, 
+  pkgs,
+  lib,
   config,
   configVars,
   ... 
@@ -12,19 +13,54 @@ in
 {
 
   sops.secrets = {
-    frigateRtspUser = {};
-    frigateRtspPasswd = {};
+    go2rtcRtspUser = {};
+    go2rtcRtspPasswd = {};
     mqttFrigatePasswd = {};
   };
 
-  environment.etc."media/frigate".source = "/${config.drives.storageDrive1}/media/security-cameras";
+  environment = {
+    etc."media/frigate".source = "/${config.drives.storageDrive1}/media/security-cameras";
+    systemPackages = with pkgs; [ ffmpeg-full ];
+  };
 
   hardware.coral.pcie.enable = true;
+
+  systemd.services = {
+    frigate.path = lib.mkBefore [ pkgs.ffmpeg-full ];
+    go2rtc.environment = {
+      GO2RTC_RTSP_USER = "${config.sops.secrets.go2rtcRtspUser.path}";
+      GO2RTC_RTSP_PASSWD = "${config.sops.secrets.go2rtcRtspPasswd.path}";
+    };
+  };
 
   services = {
 
     nginx = {
       virtualHosts."${app}.${configVars.domain2}".listen = [{addr = "127.0.0.1"; port = 4395;}];
+    };
+
+    go2rtc = {
+      enable = true;
+      settings = {
+        ffmpeg.bin = lib.getExe pkgs.ffmpeg-full;
+        api.listen = "127.0.0.1:1984";
+        streams = {
+          front = "rtsp://$GO2RTC_RTSP_USER:$GO2RTC_RTSP_PASSWD@${configVars.frontCameraIp}:554/s0";
+          front-detect = "rtsp://$GO2RTC_RTSP_USER:$GO2RTC_RTSP_PASSWD@${configVars.frontCameraIp}:554/s2";
+          garage = "rtsp://$GO2RTC_RTSP_USER:$GO2RTC_RTSP_PASSWD@${configVars.garageCameraIp}:554/s0";
+          garage-detect = "rtsp://$GO2RTC_RTSP_USER:$GO2RTC_RTSP_PASSWD@${configVars.garageCameraIp}:554/s2";
+          gym = "rtsp://$GO2RTC_RTSP_USER:$GO2RTC_RTSP_PASSWD@${configVars.gymCameraIp}:554/s0";
+          gym-detect = "rtsp://$GO2RTC_RTSP_USER:$GO2RTC_RTSP_PASSWD@${configVars.gymCameraIp}:554/s2";
+        };
+        webrtc = {
+          listen = ":8555/tcp";
+          candidates = [
+            "${configVars.aspenLanIp}:8555"
+            #"${configVars.aspenTailscaleIp}:8555"
+            #"stun:8555"
+          ];
+        };
+      };
     };
 
     ${app} = {
@@ -33,51 +69,24 @@ in
       vaapiDriver = "nvidia";
       settings = {
 
-        environment_vars = {
-          FRIGATE_RTSP_USER_FILE = "${config.sops.secrets.frigateRtspUser.path}";
-          FRIGATE_RTSP_PASSWORD_FILE = "${config.sops.secrets.frigateRtspPasswd.path}";
-          FRIGATE_MQTT_PASSWORD_FILE = "${config.sops.secrets.mqttFrigatePasswd.path}";
-        };
+        #environment_vars = {
+        #  FRIGATE_RTSP_USER_FILE = "${config.sops.secrets.go2rtcRtspUser.path}";
+        #  FRIGATE_RTSP_PASSWORD_FILE = "${config.sops.secrets.go2rtcRtspPasswd.path}";
+        #  FRIGATE_MQTT_PASSWORD_FILE = "${config.sops.secrets.mqttFrigatePasswd.path}";
+        #};
 
-        mqtt = {
-          enabled = false;
-          #enabled = true;
-          #host = "127.0.0.1";
-          #user = "frigate";
-          #password = "{FRIGATE_MQTT_PASSWORD}";
-        };
+        auth.enabled = "false";
+
+        #mqtt = {
+        #  enabled = false;
+        #  #enabled = true;
+        #  #host = "127.0.0.1";
+        #  #user = "frigate";
+        #  #password = "{FRIGATE_MQTT_PASSWORD}";
+        #};
 
         logger = {
           default = "info";
-        };
-
-        go2rtc = {
-          streams = {
-            front = [
-              "rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@${configVars.frontCameraIp}:554/s0"
-            ];
-            front-detect = [
-              "rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@${configVars.frontCameraIp}:554/s2"
-            ];
-            garage = [
-              "rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@${configVars.garageCameraIp}:554/s0"
-            ];
-            garage-detect = [
-              "rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@${configVars.garageCameraIp}:554/s2"
-            ];
-            gym = [
-              "rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@${configVars.gymCameraIp}:554/s0"
-            ];
-            gym-detect = [
-              "rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@${configVars.gymCameraIp}:554/s2"
-            ];
-          };
-          webrtc = {
-            candidates = [
-              "${configVars.aspenLanIp}:8555"
-              "stun:8555"
-            ];
-          };
         };
 
         cameras = {
@@ -99,7 +108,7 @@ in
               enabled = true;
               width = 1024;
               height = 576;
-              fps = 15;
+              fps = 5;
             };
           };
           garage = {
@@ -120,7 +129,7 @@ in
               enabled = true;
               width = 1024;
               height = 576;
-              fps = 15;
+              fps = 5;
             };
           };
           gym = {
@@ -141,7 +150,7 @@ in
               enabled = true;
               width = 1024;
               height = 576;
-              fps = 15;
+              fps = 5;
             };
           };
         };
