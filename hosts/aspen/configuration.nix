@@ -45,15 +45,12 @@
       pfetch # system info displayed on shell startup
       btop # system monitor
       nmap # network scanning
-      brightnessctl # screen brightness application
       ddcutil # query and change monitor settings using DDC/CI and USB
       i2c-tools # hardware interface tools required by ddcutil
       libreoffice-still # office suite
       element-desktop # matrix chat app
       hollywood # fill terminal with melodramatic technobabble
       cool-retro-term # retro terminal
-      filelight # disk usage visualizer
-      yai # terminal ai utility
     ];
 
     hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
@@ -92,6 +89,7 @@
       #"nixos-system/common/graylog.nix"
       "nixos-system/common/oci-containers.nix"
       "nixos-system/common/oci-fava.nix"
+
       "nixos-system/host-specific/aspen/oci-media-server.nix"
       #"nixos-system/host-specific/aspen/oci-frigate.nix" # requires nvidia.nix
       #"nixos-system/host-specific/aspen/frigate.nix" # requires mosquitto.nix, nvidia.nix
@@ -102,7 +100,8 @@
       "nixos-system/host-specific/aspen/tailscale.nix"
       "nixos-system/host-specific/aspen/users.nix"
       "nixos-system/host-specific/aspen/journal2gelf.nix"
-      "nixos-system/host-specific/aspen/gaming.nix"
+      #"nixos-system/host-specific/aspen/gaming.nix"
+
       "scripts/rebuild/rebuild-local-aspen.nix"
       "scripts/rebuild/rebuild-remote-thinkpad.nix"
       "scripts/rebuild/rebuild-remote-cypress.nix"
