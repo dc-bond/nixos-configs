@@ -3,14 +3,14 @@
   config 
 }:
 
-pkgs.writeShellScriptBin "renumber" ''
+pkgs.writeShellScriptBin "renumberPhotos" ''
   #!/bin/sh
-  #cd /home/xixor/hdd1/media/photos/all-photos
-  #find $test -type f -print0 | xargs -0 chmod 644
+  cd ${config.drives.storageDrive1}/media/family-photos-videos/photos
+  find $test -type f -print0 | xargs -0 chmod 644
   
   counter=1
   
-  find /home/xixor/hdd1/media/photos/all-photos -type f -name '*.jpg' |
+  find ${config.drives.storageDrive1}/media/family-photos-videos/photos -type f -name '*.jpg' |
       sort -nk2 -t- | while read -r file; do
       ext=${file##*[0-9]} filename=${file%-*}
       [ ! -e  "$filename-$counter$ext" ] &&
