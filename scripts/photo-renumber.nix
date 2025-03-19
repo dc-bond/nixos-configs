@@ -7,11 +7,11 @@
 
 let
 
-  photoRenumberScript = writeShellScriptBin "photoRenumber" ''
+  photoRenumberScript = pkgs.writeShellScriptBin "photoRenumber" ''
     #!/bin/sh
   
-    BASE_DIR="${config.drives.storageDrive1}/media/family-photos-videos/photos-test"
-    LOG_FILE="/home/chris/rename_log.txt"
+    BASE_DIR="${config.drives.storageDrive1}/media/family-photos-videos/photos"
+    LOG_FILE="/home/chris/rename-photos.txt"
 
     cd "$BASE_DIR" || { echo "Error: Directory not found" | tee -a "$LOG_FILE"; exit 1; } 
     

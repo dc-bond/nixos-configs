@@ -3,22 +3,6 @@
   config 
 }:
 
-pkgs.writeShellScriptBin "renumberPhotos" ''
-  #!/bin/sh
-  cd ${config.drives.storageDrive1}/media/family-photos-videos/photos
-  find $test -type f -print0 | xargs -0 chmod 644
-  
-  counter=1
-  
-  find ${config.drives.storageDrive1}/media/family-photos-videos/photos -type f -name '*.jpg' |
-      sort -nk2 -t- | while read -r file; do
-      ext=${file##*[0-9]} filename=${file%-*}
-      [ ! -e  "$filename-$counter$ext" ] &&
-      mv -v "$file" "$filename-$counter$ext"
-      counter=$((counter+1))
-  done # 2>&1 | tee log.txt
-'';
-
 pkgs.writeShellScriptBin "photosort" ''
   #!/bin/bash
   
