@@ -51,6 +51,8 @@
       element-desktop # matrix chat app
       hollywood # fill terminal with melodramatic technobabble
       cool-retro-term # retro terminal
+      imagemagic # photo tool
+      ffmpeg-full # video tool
     ];
 
     hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
@@ -125,6 +127,7 @@
       "scripts/backup-recovery/recover-recipesage.nix"
       "scripts/backup-recovery/recover-roundcube.nix"
       "scripts/photo-renumber.nix"
+      "scripts/media-test.nix"
     ])
   ];
 
