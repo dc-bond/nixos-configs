@@ -10,12 +10,12 @@ let
     #!/bin/bash
 
     # Configuration
-    DIR_A="${config.drives.storageDrive1}/media/family-photos-videos/videos-test2"  # Directory containing original video files
-    DIR_B="${config.drives.storageDrive1}/media/family-photos-videos/media-processing"  # Directory for non-video files
+    DIR_A="${config.drives.storageDrive1}/media/family-photos-videos/videos-test"  # Directory containing original video files
+    DIR_B="${config.drives.storageDrive1}/media/family-photos-videos/manual-review"  # Directory for non-video files
     EMAIL="chris@dcbond.com"  # Email recipient
     
     # Start terminal output and email content capture
-    EMAIL_CONTENT_FILE="${config.drives.storageDrive1}/media/family-photos-videos/media-processing/email_content.txt"
+    EMAIL_CONTENT_FILE="${config.drives.storageDrive1}/media/family-photos-videos/email_content.txt"
     > "$EMAIL_CONTENT_FILE"
     
     # Function for error logging
