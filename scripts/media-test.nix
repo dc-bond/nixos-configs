@@ -10,110 +10,108 @@ let
     #!/bin/bash
 
     # Configuration
-    DIR_A="${config.drives.storageDrive1}/media/family-photos-videos/videos-test"  # Directory containing original video files
-    DIR_B="${config.drives.storageDrive1}/media/family-photos-videos/manual-review"  # Directory for non-video files
+    DIR_A="${config.drives.storageDrive1}/media/videos-test"  # Directory containing original video files
+    DIR_B="${config.drives.storageDrive1}/media/processing-manual-review"  # Directory for failed conversions and non-video files
     EMAIL="chris@dcbond.com"  # Email recipient
-    
-    # Start terminal output and email content capture
     EMAIL_CONTENT_FILE="${config.drives.storageDrive1}/media/family-photos-videos/email_content.txt"
-    > "$EMAIL_CONTENT_FILE"
+    > "$EMAIL_CONTENT_FILE"  # Clear email content file
     
-    # Function for error logging
-    log_error() {
-        echo "[ERROR] $1"
-        echo "[ERROR] $1" >> "$EMAIL_CONTENT_FILE"
-    }
+    # Logging functions (for email)
+    log_error() { echo "[ERROR] $1" >&2; }
+    log_info() { echo "$1" | tee -a "$EMAIL_CONTENT_FILE"; }
     
-    # Function for logging actions
-    log_info() {
-        echo "[INFO] $1"
-        echo "[INFO] $1" >> "$EMAIL_CONTENT_FILE"
-    }
+    # Check if directories exist and are writable
+    log_info "Checking if directories exist and are writable..."
+    for dir in "$DIR_A" "$DIR_B"; do
+        if [ ! -d "$dir" ]; then
+            log_error "Directory $dir does not exist. Exiting."
+            exit 1
+        elif [ ! -w "$dir" ]; then
+            log_error "Directory $dir is not writable. Exiting."
+            exit 1
+        fi
+    done
     
-    # 1) Check if directories exist
-    log_info "Checking if directories exist..."
-    if [ ! -d "$DIR_A" ] || [ ! -d "$DIR_B" ]; then
-        log_error "One or both of the directories do not exist. Exiting."
-        exit 1
-    fi
+    # Ensure all files in DIR_A have read, write, and execute permissions for everyone and are owned by chris:users
+    log_info "Setting permissions and ownership for all files in $DIR_A..."
+    file_count=$(find "$DIR_A" -type f | wc -l)
+    log_info "$file_count files found in $DIR_A. Setting permissions and ownership..."
     
-    # 2) Identify and move non-video files
-    log_info "Scanning $DIR_A for non-video files..."
-    non_video_files=$(find "$DIR_A" -type f | wc -l)
-    if [ "$non_video_files" -gt 0 ]; then
-        find "$DIR_A" -type f | pv -l -s "$non_video_files" | while read -r file; do
-            if ! ffprobe -v error -select_streams v -show_entries stream=codec_type -of csv=p=0 "$file" 2>/dev/null | grep -q "video"; then
-                log_info "Moving non-video file: $file → $DIR_B"
-                mv "$file" "$DIR_B" || log_error "Failed to move: $file"
-            fi
-        done
-    else
-        log_info "No non-video files found."
-    fi
+    find "$DIR_A" -type f -print0 | while IFS= read -r -d ''' file; do
+        chmod 777 "$file" || log_error "Failed to set permissions for: $file"
+        chown chris:users "$file" || log_error "Failed to change ownership for: $file"
+    done
+    log_info "Permissions and ownership set successfully!"
     
-    # 3) Convert all videos to .mkv losslessly
-    log_info "Converting all video files to .mkv..."
-    video_files=$(find "$DIR_A" -type f ! -iname "*.mkv" | wc -l)
-    if [ "$video_files" -gt 0 ]; then
-        find "$DIR_A" -type f ! -iname "*.mkv" | pv -l -s "$video_files" | while read -r file; do
-            output_file="''${file%.*}.mkv"
-            log_info "Converting $file → $output_file"
-            if ffmpeg -i "$file" -c copy "$output_file" 2>/dev/null; then
-                rm "$file" || log_error "Failed to remove original: $file"
-            else
-                log_error "Conversion failed for: $file"
-                mv "$file" "$DIR_B/" || log_error "Failed to move failed conversion: $file"
-            fi
-        done
-    else
-        log_info "No video files found to convert."
-    fi
+    # Define file types that are typically video files
+    video_extensions="mp4|mkv|mov|avi|flv|webm|mpg|mpeg|m4v|wmv|vob|ogv|3gp|h264|ts|asf|rm|rmvb|f4v|dat|divx|xvid|swf|tsv|drc|mp2"
     
-    # 4) Check for duplicate files and remove them
-    log_info "Checking for duplicate .mkv files..."
-    declare -A seen
-    mkv_files=$(find "$DIR_A" -type f -iname "*.mkv" | wc -l)
-    if [ "$mkv_files" -gt 0 ]; then
-        find "$DIR_A" -type f -iname "*.mkv" | pv -l -s "$mkv_files" | while read -r file; do
-            checksum=$(md5sum "$file" | awk '{print $1}')
-            if [[ -n "''${seen[$checksum]}" ]]; then
-                log_info "Duplicate found: $file → Removing duplicate."
-                rm "$file" || log_error "Failed to delete duplicate: $file"
-            else
-                seen[$checksum]="$file"
-            fi
-        done
-    else
-        log_info "No .mkv files found to check for duplicates."
-    fi
+    # Move non-video files to DIR_B
+    log_info "Moving non-video files to $DIR_B..."
+    moved_count=0
+    find "$DIR_A" -type f -print0 | while IFS= read -r -d ''' file; do
+        if ! echo "$file" | grep -i -qE ".*($video_extensions).*"; then
+            mv "$file" "$DIR_B/" || log_error "Failed to move: $file"
+            ((moved_count++))
+            continue
+        fi
+        if ! ffprobe -v error -select_streams v -show_entries stream=codec_type -of csv=p=0 "$file" 2>/dev/null | grep -q "video"; then
+            mv "$file" "$DIR_B/" || log_error "Failed to move: $file"
+            ((moved_count++))
+        fi
+    done
+    log_info "$moved_count non-video files moved to $DIR_B."
     
-    # 5) Rename .mkv files to "video-(date).mkv"
-    log_info "Renaming .mkv files..."
-    mkv_rename_files=$(find "$DIR_A" -type f -iname "*.mkv" | wc -l)
-    if [ "$mkv_rename_files" -gt 0 ]; then
-        find "$DIR_A" -type f -iname "*.mkv" | pv -l -s "$mkv_rename_files" | while read -r file; do
-            timestamp=$(date +%Y.%m.%d@%H:%M:%S)
-            new_name="$DIR_A/video-$timestamp.mkv"
-            log_info "Renaming: $file → $new_name"
-            mv "$file" "$new_name" || log_error "Failed to rename: $file"
-            sleep 1  # Ensure unique timestamps for different files
-        done
-    else
-        log_info "No .mkv files found to rename."
-    fi
+    # Convert remaining video files to .mkv format
+    log_info "Converting non-MKV video files in $DIR_A to .mkv format..."
+    converted_count=0
+    find "$DIR_A" -type f -print0 | while IFS= read -r -d ''' input_file; do
+        if [[ "$input_file" =~ \.mkv$ ]]; then
+            continue
+        fi
+        output_file="''${input_file%.*}.mkv"
+        ffmpeg -i "$input_file" -c copy "$output_file" 2>/dev/null
+        if [ $? -eq 0 ]; then
+            rm "$input_file" || log_error "Failed to remove original file: $input_file"
+            ((converted_count++))
+        else
+            mv "$input_file" "$DIR_B/" || log_error "Failed to move failed conversion: $input_file"
+        fi
+    done
+    log_info "$converted_count files converted to MKV."
     
+    # Rename all remaining files in DIR_A to the format: video-(date processed)-(random hash).mkv
+    log_info "Renaming all MKV files in $DIR_A..."
+    renamed_count=0
+    current_date=$(date +"%Y%m%d")
+    find "$DIR_A" -type f -iname "*.mkv" -print0 | while IFS= read -r -d ''' file; do
+        random_hash=$(openssl rand -hex 4)
+        new_filename="video-''${current_date}-''${random_hash}.mkv"
+        new_filepath="''${DIR_A}/''${new_filename}"
+        mv "$file" "$new_filepath" || log_error "Failed to rename: $file"
+        ((renamed_count++))
+    done
+    log_info "$renamed_count files renamed."
+    
+    # Final summary for email
     log_info "Processing complete!"
+    log_info "Summary of Processing Steps:" >> "$EMAIL_CONTENT_FILE"
+    log_info "----------------------------------------------------" >> "$EMAIL_CONTENT_FILE"
+    log_info "Files processed and actions:" >> "$EMAIL_CONTENT_FILE"
+    log_info "Permissions and ownership: $file_count files" >> "$EMAIL_CONTENT_FILE"
+    log_info "Moved to $DIR_B: $moved_count files" >> "$EMAIL_CONTENT_FILE"
+    log_info "Converted to MKV: $converted_count files" >> "$EMAIL_CONTENT_FILE"
+    log_info "Renamed files: $renamed_count files" >> "$EMAIL_CONTENT_FILE"
     
-    # 6) Email the terminal output using msmtp
+    # Email the terminal output using msmtp
     log_info "Sending terminal output via email..."
-    
     {
         echo "Subject: Video Processing Report"
         echo "To: $EMAIL"
         echo "From: chris@dcbond.com"
         echo ""
         cat "$EMAIL_CONTENT_FILE"
-    } | msmtp -a default -t "$EMAIL"
+    } | msmtp -a default -t
     
     # Clean up the temporary email content file
     rm -f "$EMAIL_CONTENT_FILE"
@@ -122,9 +120,7 @@ let
 in
 
 {
-
-  environment.systemPackages = with pkgs; [ 
+  environment.systemPackages = with pkgs; [
     mediaTestScript
   ];
-
 }
