@@ -129,7 +129,7 @@
       "scripts/backup-recovery/recover-roundcube.nix"
       
       "scripts/photo-renumber.nix"
-      "scripts/media-test.nix"
+      "scripts/media-transfer.nix"
     ])
   ];
 

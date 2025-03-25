@@ -6,11 +6,11 @@
 
 let
 
-  mediaTestScript = pkgs.writeShellScriptBin "mediaTest" ''
+  mediaTransferScript = pkgs.writeShellScriptBin "mediaTransfer" ''
     #!/bin/bash
 
     # Configuration
-    DIR_A="/home/chris/nextcloud-client/Bond\ Family/media-transfer"  # Directory containing original files to be processed
+    DIR_A="/home/chris/nextcloud-client/Bond Family/media-transfer"  # Directory containing original files to be processed
     DIR_B="${config.drives.storageDrive1}/media/media-transfer-review"  # Directory for manual review after processing
     DIR_C="${config.drives.storageDrive1}/media/family-media"  # Directory for final disposition of processed photos and videos
     EMAIL="chris@dcbond.com"  # Email recipient
@@ -192,8 +192,34 @@ let
 in
 
 {
+
+  systemd.user = {
+    services."mediaTransfer" = {
+      Unit = {
+        Description = "transfer media files to photoprism";
+        After = [ "network-online.target" ];
+      };
+      Service = {
+        ExecStart = "${pkgs.mediaTransferScript}/bin/mediaTransfer";
+        StandardOutput = "journal";
+        StandardError = "journal";
+      };
+      Install = { WantedBy = [ "default.target" ]; };
+    };
+    timers."mediaTransfer" = {
+      Unit = {
+        Description = "transfer media to photoprism everyday at 12:05am";
+      };
+      Timer = {
+        OnCalendar = "*-*-* 00:05:00";
+        Persistent = true; # ensure job is run if it was missed due to the system being down
+      };
+      Install = { WantedBy = [ "timers.target" ]; };
+    };
+  };
+
   environment.systemPackages = with pkgs; [
-    mediaTestScript
+    mediaTransferScript
     openssl
     rdfind
   ];

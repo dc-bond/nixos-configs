@@ -45,8 +45,8 @@ in
         PHOTOPRISM_DATABASE_SERVER = "/run/mysqld/mysqld.sock";                                 # MariaDB or MySQL database server (hostname:port)
         PHOTOPRISM_DATABASE_NAME = "${app}";                                                    # MariaDB or MySQL database schema name
         PHOTOPRISM_DATABASE_USER = "${app}";                                                    # MariaDB or MySQL database user name
-        PHOTOPRISM_SITE_CAPTION = "${configVars.userLastName} Private Photo Server";
-        PHOTOPRISM_SITE_DESCRIPTION = "${configVars.userLastName} Photos";
+        PHOTOPRISM_SITE_CAPTION = "${configVars.userLastName} Private Family Photo and Video Server";
+        PHOTOPRISM_SITE_DESCRIPTION = "${configVars.userLastName} Family Photos and Videos";
         PHOTOPRISM_SITE_AUTHOR = "${configVars.userFullName}";
         NVIDIA_VISIBLE_DEVICES = "all";
         PHOTOPRISM_INDEX_SCHEDULE = "@every 1h";
