@@ -102,7 +102,7 @@ in
           "/var/lib/docker/volumes/radarr"
           "/var/lib/docker/volumes/sonarr"
           "/var/backup/mysql/photoprism.gz"
-          "${config.drives.storageDrive1}/media/family-photos-videos"
+          "${config.drives.storageDrive1}/media/family-media"
         ];
         prune.keep = {
           daily = 7; # keep the last seven daily archives

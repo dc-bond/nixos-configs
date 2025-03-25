@@ -20,7 +20,7 @@ in
     ${app} = {
       enable = true;
       address = "127.0.0.1";
-      originalsPath = "${config.drives.storageDrive1}/media/family-photos-videos";
+      originalsPath = "${config.drives.storageDrive1}/media/family-media";
       passwordFile = "${config.sops.secrets.photoprismAdminPasswd.path}";
       settings = {
         PHOTOPRISM_AUTH_MODE = "password";                                                      # authentication mode (public, password)
