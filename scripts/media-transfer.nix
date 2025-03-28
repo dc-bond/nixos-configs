@@ -1,10 +1,13 @@
 { 
   pkgs, 
+  configVars,
   config,
   ... 
 }:
 
 let
+
+  chrisEmailPasswd = "/run/secrets/chrisEmailPasswd";
 
   mediaTransferScript = pkgs.writeShellScriptBin "mediaTransfer" ''
     #!/bin/bash
@@ -13,7 +16,6 @@ let
     DIR_A="/home/chris/nextcloud-client/Bond Family/media-transfer"  # Directory containing original files to be processed
     DIR_B="${config.drives.storageDrive1}/media/media-transfer-review"  # Directory for manual review after processing
     DIR_C="${config.drives.storageDrive1}/media/family-media"  # Directory for final disposition of processed photos and videos
-    EMAIL="chris@dcbond.com"  # Email recipient
     EMAIL_CONTENT_FILE="${config.drives.storageDrive1}/media/email_content.txt"
     > "$EMAIL_CONTENT_FILE"  # Clear email content file
 
@@ -99,10 +101,10 @@ let
         while [[ -z "$NEW_FILEPATH" || -e "$DIR_C/$NEW_FILENAME" ]]; do
             if [[ "$VIDEO_EXTENSIONS" =~ (^|[|])"$EXTENSION"($|[|]) ]]; then
                 # It's a video file
-                NEW_FILENAME="video-$(openssl rand -hex 4).$EXTENSION"
+                NEW_FILENAME="video-$(${pkgs.openssl}/bin/openssl rand -hex 4).$EXTENSION"
             elif [[ "$PHOTO_EXTENSIONS" =~ (^|[|])"$EXTENSION"($|[|]) ]]; then
                 # It's a photo file
-                NEW_FILENAME="photo-$(openssl rand -hex 4).$EXTENSION"
+                NEW_FILENAME="photo-$(${pkgs.openssl}/bin/openssl rand -hex 4).$EXTENSION"
             else
                 continue 2  # Skip unsupported extensions, continue the next iteration of the outer loop
             fi
@@ -137,10 +139,10 @@ let
     
     # Run rdfind to find and remove duplicate files in DIR_C
     log_info "Identifying duplicate files using rdfind in $DIR_C..."
-    RDFIND_OUTPUT=$(rdfind -deleteduplicates true "$DIR_C")
+    RDFIND_OUTPUT=$(${pkgs.rdfind}/bin/rdfind -deleteduplicates true "$DIR_C")
     
     # Extract the number of deleted duplicate files by looking for the line starting with 'Deleted'
-    DELETED_DUPLICATES=$(echo "$RDFIND_OUTPUT" | awk '/^Deleted/{print $2}')
+    DELETED_DUPLICATES=$(echo "$RDFIND_OUTPUT" | ${pkgs.gawk}/bin/awk '/^Deleted/{print $2}')
     
     # Validate the number extracted is an integer; defaulting to 0 if it's not
     if ! [[ "$DELETED_DUPLICATES" =~ ^[0-9]+$ ]]; then
@@ -167,8 +169,8 @@ let
     if [[ "$FILE_COUNT" -gt 0 ]]; then
         {
             echo "Subject: Bond Media-Transfer Processing Report - $CURRENT_DATETIME"
-            echo "To: $EMAIL"
-            echo "From: $EMAIL"
+            echo "To: ${configVars.userEmail}, dmiller208@gmail.com"
+            echo "From: ${configVars.userEmail}"
             echo ""
             echo "Summary of Media Transfer Actions:"
             echo "---------------------------------------------"
@@ -179,7 +181,16 @@ let
         } > "$EMAIL_CONTENT_FILE"
     
         # Send email summary
-        msmtp -a default -t < "$EMAIL_CONTENT_FILE"
+        ${pkgs.msmtp}/bin/msmtp \
+        --host=mail.privateemail.com \
+        --port=465 \
+        --auth=on \
+        --user="${configVars.userEmail}" \
+        --passwordeval "cat ${chrisEmailPasswd}" \
+        --tls=on \
+        --tls-starttls=off \
+        --from="${configVars.userEmail}" \
+        -t < "$EMAIL_CONTENT_FILE"
     
         # Clean up
         rm -f "$EMAIL_CONTENT_FILE"
@@ -191,36 +202,35 @@ let
 
 in
 
-{
+ {
 
-  systemd.user = {
-    services."mediaTransfer" = {
-      Unit = {
-        Description = "transfer media files to photoprism";
-        After = [ "network-online.target" ];
-      };
-      Service = {
-        ExecStart = "${pkgs.mediaTransferScript}/bin/mediaTransfer";
-        StandardOutput = "journal";
-        StandardError = "journal";
-      };
-      Install = { WantedBy = [ "default.target" ]; };
-    };
-    timers."mediaTransfer" = {
-      Unit = {
-        Description = "transfer media to photoprism everyday at 12:05am";
-      };
-      Timer = {
-        OnCalendar = "*-*-* 00:05:00";
-        Persistent = true; # ensure job is run if it was missed due to the system being down
-      };
-      Install = { WantedBy = [ "timers.target" ]; };
-    };
-  };
+  sops.secrets.chrisEmailPasswd = {};
 
+   systemd = {
+     services."mediaTransfer" = {
+       description = "Transfer media files to PhotoPrism";
+       after = [ "network-online.target" ];
+       wants = [ "network-online.target" ];
+       wantedBy = [ "multi-user.target" ];
+       serviceConfig = {
+         ExecStart = "${mediaTransferScript}/bin/mediaTransfer";
+         StandardOutput = "journal";
+         StandardError = "journal";
+       };
+     };
+   
+     timers."mediaTransfer" = {
+       description = "Timer for transferring media to PhotoPrism every day at 12:05 AM";
+       wantedBy = [ "timers.target" ];
+       timerConfig = {
+         OnCalendar = "*-*-* 00:05:00";
+         Persistent = true; # ensure job runs if missed due to system downtime
+       };
+     };
+   };
+ 
   environment.systemPackages = with pkgs; [
     mediaTransferScript
-    openssl
-    rdfind
   ];
+
 }
