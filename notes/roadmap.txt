@@ -1,7 +1,5 @@
 Logging Solution
 
-Photo Imports
-
 Frigate
 
 Wordpress or other website

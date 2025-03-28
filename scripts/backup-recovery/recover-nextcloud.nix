@@ -68,16 +68,16 @@ let
 
    { set +x; log "starting backup recovery for nextcloud on $HOST"; } 2>/dev/null
 
-   { set +x; log "changing directory to ${config.backups.borgDir}"; } 2>/dev/null
-   cd ${config.backups.borgDir}
+   { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
+   cd ${config.backups.borgCloudDir}
 
    { set +x; log "extracting application data for nextcloud from borg repository"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/nextcloud --strip-components 2
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/redis-nextcloud --strip-components 2
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/nextcloud --strip-components 2
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/redis-nextcloud --strip-components 2
 
    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
-   sudo chown -R chris:users ${config.backups.borgDir}/nextcloud
-   sudo chown -R chris:users ${config.backups.borgDir}/redis-nextcloud
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/nextcloud
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/redis-nextcloud
 
    { set +x; log "stopping nextcloud stack on $HOST"; } 2>/dev/null
    ssh $HOST 'nextcloud-occ maintenance:mode --on'
@@ -88,8 +88,8 @@ let
    ssh $HOST 'sudo rm -rf /var/lib/redis-nextcloud'
 
    { set +x; log "transferring restored data to $HOST"; } 2>/dev/null
-   rsync --progress -avzh ${config.backups.borgDir}/nextcloud $HOST:/tmp
-   rsync --progress -avzh ${config.backups.borgDir}/redis-nextcloud $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/nextcloud $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/redis-nextcloud $HOST:/tmp
    ssh $HOST 'sudo mv /tmp/nextcloud /var/lib'
    ssh $HOST 'sudo mv /tmp/redis-nextcloud /var/lib'
 
@@ -98,13 +98,13 @@ let
    ssh $HOST 'sudo chown -R nextcloud:nextcloud /var/lib/redis-nextcloud'
 
    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
-   sudo rm -rf ${config.backups.borgDir}/nextcloud
-   sudo rm -rf ${config.backups.borgDir}/redis-nextcloud
+   sudo rm -rf ${config.backups.borgCloudDir}/nextcloud
+   sudo rm -rf ${config.backups.borgCloudDir}/redis-nextcloud
 
    { set +x; log "restoring PostgreSQL backup for nextcloud"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/backup/postgresql/nextcloud.sql.gz --strip-components 3
-   sudo chown chris:users ${config.backups.borgDir}/nextcloud.sql.gz
-   rsync --progress -avzh ${config.backups.borgDir}/nextcloud.sql.gz $HOST:/tmp
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/backup/postgresql/nextcloud.sql.gz --strip-components 3
+   sudo chown chris:users ${config.backups.borgCloudDir}/nextcloud.sql.gz
+   rsync --progress -avzh ${config.backups.borgCloudDir}/nextcloud.sql.gz $HOST:/tmp
    ssh $HOST 'sudo gunzip -c /tmp/nextcloud.sql.gz > /tmp/nextcloud.sql'
    ssh $HOST 'sudo chown postgres:postgres /tmp/nextcloud.sql'
    ssh $HOST 'sudo mv /tmp/nextcloud.sql /var/lib/postgresql'
@@ -113,7 +113,7 @@ let
    ssh $HOST 'sudo -u postgres psql -U postgres -d template1 -c "CREATE DATABASE \"nextcloud\" OWNER \"nextcloud\";"'
    ssh $HOST 'sudo -u postgres psql -U postgres -d nextcloud -f /var/lib/postgresql/nextcloud.sql'
    ssh $HOST 'sudo rm -rf /var/lib/postgresql/nextcloud.sql'
-   sudo rm -rf ${config.backups.borgDir}/nextcloud.sql.gz
+   sudo rm -rf ${config.backups.borgCloudDir}/nextcloud.sql.gz
 
    { set +x; log "restarting restored nextcloud service on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl start redis-nextcloud.service'
