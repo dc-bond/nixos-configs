@@ -115,7 +115,7 @@
       #"scripts/backup-recovery/recover-homeassistant.nix"
       #"scripts/backup-recovery/recover-matrix.nix"
       #"scripts/backup-recovery/recover-photoprism.nix"
-      #"scripts/backup-recovery/recover-nextcloud.nix"
+      "scripts/backup-recovery/recover-nextcloud.nix"
       #"scripts/backup-recovery/recover-uptime-kuma.nix"
       #"scripts/backup-recovery/recover-zwavejs.nix"
       #"scripts/backup-recovery/recover-media-server.nix"
