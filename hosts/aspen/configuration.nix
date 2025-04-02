@@ -102,7 +102,7 @@
       "nixos-system/host-specific/aspen/sshd.nix"
       "nixos-system/host-specific/aspen/tailscale.nix"
       "nixos-system/host-specific/aspen/users.nix"
-      "nixos-system/host-specific/aspen/journal2gelf.nix"
+      #"nixos-system/host-specific/aspen/journal2gelf.nix"
       #"nixos-system/host-specific/aspen/gaming.nix"
 
       "scripts/rebuild/rebuild-local-aspen.nix"
@@ -110,12 +110,14 @@
       "scripts/rebuild/rebuild-remote-cypress.nix"
       "scripts/deploy/deploy-thinkpad.nix"
       "scripts/deploy/deploy-cypress.nix"
-      "scripts/backup-recovery/recover-email.nix"
+      "scripts/photo-renumber.nix"
+      "scripts/media-transfer.nix"
+      #"scripts/backup-recovery/recover-email.nix"
       #"scripts/backup-recovery/recover-traefik.nix"
       #"scripts/backup-recovery/recover-homeassistant.nix"
       #"scripts/backup-recovery/recover-matrix.nix"
       #"scripts/backup-recovery/recover-photoprism.nix"
-      "scripts/backup-recovery/recover-nextcloud.nix"
+      #"scripts/backup-recovery/recover-nextcloud.nix"
       #"scripts/backup-recovery/recover-uptime-kuma.nix"
       #"scripts/backup-recovery/recover-zwavejs.nix"
       #"scripts/backup-recovery/recover-media-server.nix"
@@ -125,11 +127,8 @@
       #"scripts/backup-recovery/recover-actual.nix"
       #"scripts/backup-recovery/recover-pihole.nix"
       #"scripts/backup-recovery/recover-unifi-controller.nix"
-      "scripts/backup-recovery/recover-recipesage.nix"
-      "scripts/backup-recovery/recover-roundcube.nix"
-      
-      "scripts/photo-renumber.nix"
-      "scripts/media-transfer.nix"
+      #"scripts/backup-recovery/recover-recipesage.nix"
+      #"scripts/backup-recovery/recover-roundcube.nix"
     ])
   ];
 

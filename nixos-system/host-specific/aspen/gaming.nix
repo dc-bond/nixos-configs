@@ -12,7 +12,6 @@
     systemPackages = with pkgs; [ 
       mangohud 
       protonup
-      #protonplus
     ];
     sessionVariables = {
       STEAM_EXTRA_COMPAT_TOOLS_PATHS = 
@@ -23,9 +22,6 @@
   programs = {
     steam = {
       enable = true;
-      #gamescopeSession = {
-      #  enable = true;
-      #};
     };
     gamemode.enable = true;
   };
