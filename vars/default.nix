@@ -83,5 +83,8 @@
 
   arrStackSubnet = "172.21.12.0/25";
   arrVpnIp = "172.21.12.2";
+
+  frigateSubnet = "172.21.13.0/25";
+  frigateIp = "172.21.13.2";
   
 }

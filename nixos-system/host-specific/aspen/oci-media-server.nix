@@ -208,7 +208,7 @@ in
         "--network=container:${app1}"
         "--tty=true"
         "--stop-signal=SIGINT"
-        "--device=nvidia.com/gpu=all"
+        "--device=nvidia.com/gpu=all" # enable GPU utilization
       ];
     };
 
