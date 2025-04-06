@@ -33,7 +33,7 @@ in
 
   environment = {
     systemPackages = with pkgs; [ ffmpeg-full ];
-    etc."${app1}.yml" = {
+    etc."${app}.yml" = {
       text = ''
         logger:
           default: info
@@ -88,7 +88,7 @@ in
               enabled: true
               width: 1024
               height: 576
-              fps: 15
+              fps: 5
           garage:
             enabled: true
             ffmpeg:
@@ -105,7 +105,7 @@ in
               enabled: true
               width: 1024
               height: 576
-              fps: 15
+              fps: 5
           gym:
             enabled: true
             ffmpeg:
@@ -122,7 +122,7 @@ in
               enabled: true
               width: 1024
               height: 576
-              fps: 15
+              fps: 5
         
         ffmpeg: # global ffmpeg configuration for all cameras
           hwaccel_args: preset-nvidia-h264 # adds nvidia gpu hardware acceleration
@@ -144,20 +144,25 @@ in
         
         record: # global record configuration for all cameras
           enabled: true
-          retain:
+          retain: # retain all clips containing any kind of motion for 3 days
             days: 3 
             mode: motion
-          events:
-            pre_capture: 3
-            post_capture: 5
+          alerts: # retain all clips containing any kind of alert for 30 days 
             retain:
-              default: 3
-              mode: active_objects
+              days: 30
+              mode: motion
+          detections: # retain all clips containing any detection configured for 30 days
+            retain:
+              days: 30
+              mode: motion
         
         detectors: # global detector configuration for all cameras
-          opticon-tpu:
-            type: edgetpu
-            device: pci
+          opticon-cpu:
+            type: cpu
+            num_threads: 3
+          #opticon-tpu:
+          #  type: edgetpu
+          #  device: pci
         
         snapshots: # global snapshot configuration for all cameras, requires object detection turned on
           enabled: true
@@ -168,7 +173,7 @@ in
           retain:
             default: 3
             objects:
-              person: 14
+              person: 30
       '';
       mode = "0755";
     };
@@ -179,21 +184,21 @@ in
   virtualisation.oci-containers.containers = {
 
     "${app}" = {
-      image = "ghcr.io/blackeblackshear/${app}:0.15.0"; # https://github.com/blakeblackshear/frigate/releases
+      image = "ghcr.io/blakeblackshear/${app}:0.15.0"; # https://github.com/blakeblackshear/frigate/releases
       autoStart = true;
       environmentFiles = [ 
         config.sops.templates."${app}-env".path 
       ];
       log-driver = "journald";
       ports = [
-        "5000:5000/tcp" # main web view port
+        #"5000:5000/tcp" # main web view port
         "8554:8554/tcp" # RTSP feeds
         "8555:8555/tcp" # WebRTC over tcp
         "8555:8555/udp" # WebRTC over udp
       ];
       volumes = [ 
         "/etc/localtime:/etc/localtime:ro" 
-        "/etc/${app}.yml:config/config.yml:ro"
+        "/etc/${app}.yml:/config/config.yml:ro"
         "${config.drives.storageDrive1}/media/security-cameras:/media/frigate"
         "${app}:/sqlite"
       ]; 
@@ -204,17 +209,18 @@ in
         "--stop-signal=SIGINT"
         "--privileged" # ensure container access to udev rules for Coral device
         "--device=nvidia.com/gpu=all" # enable GPU utilization
-        "--device=/dev/apex_0:/dev/apex_0" # enable PCIe Coral device utilization
+        #"--device=/dev/apex_0:/dev/apex_0" # enable PCIe Coral device utilization
+        "--shm-size=512m"
       ];
-      #labels = {
-      #  "traefik.enable" = "true";
-      #  "traefik.http.routers.${app}.entrypoints" = "websecure";
-      #  "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
-      #  "traefik.http.routers.${app}.tls" = "true";
-      #  "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-      #  "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
-      #  "traefik.http.services.${app}.loadbalancer.server.port" = "5000"; # port for web view
-      #};
+      labels = {
+        "traefik.enable" = "true";
+        "traefik.http.routers.${app}.entrypoints" = "websecure";
+        "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
+        "traefik.http.routers.${app}.tls" = "true";
+        "traefik.http.routers.${app}.tls.options" = "tls-13@file";
+        "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
+        "traefik.http.services.${app}.loadbalancer.server.port" = "5000"; # port for web view
+      };
     };
 
   };
