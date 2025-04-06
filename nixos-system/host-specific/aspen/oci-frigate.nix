@@ -157,12 +157,12 @@ in
               mode: motion
         
         detectors: # global detector configuration for all cameras
-          opticon-cpu:
-            type: cpu
-            num_threads: 3
-          #opticon-tpu:
-          #  type: edgetpu
-          #  device: pci
+          #opticon-cpu:
+          #  type: cpu
+          #  num_threads: 3
+          opticon-tpu:
+            type: edgetpu
+            device: pci
         
         snapshots: # global snapshot configuration for all cameras, requires object detection turned on
           enabled: true
