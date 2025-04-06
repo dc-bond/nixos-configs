@@ -84,7 +84,7 @@ let
     #!/bin/bash
 
     # define available hosts
-    HOSTS=("aspen", "cypress" "thinkpad")
+    HOSTS=("aspen" "cypress" "thinkpad")
     
     # display menu options for hosts
     echo "Select a host:"
