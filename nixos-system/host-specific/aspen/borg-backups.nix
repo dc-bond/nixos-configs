@@ -93,7 +93,6 @@ in
         paths = [
           "/home/${configVars.userName}/email"
           "/var/lib/traefik"
-          "/var/lib/traefik"
           "/var/lib/private/photoprism"
           "/var/lib/docker/volumes/jellyfin"
           "/var/lib/docker/volumes/jellyseerr"
