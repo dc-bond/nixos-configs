@@ -46,8 +46,7 @@ in
       enable = true;
       passwordSecret = "$GRAYLOG_PASSWORD_SECRET";
       rootPasswordSha2 = "$GRAYLOG_ROOT_PASSWORD_SHA2";
-      #rootUsername = "admin";
-      rootUsername = "${configVars.userEmail}";
+      #rootUsername = "${configVars.userEmail}";
       extraConfig = ''
         http_external_uri = https://${app}.${configVars.domain2}/
         java.net.preferIPv4Stack = true

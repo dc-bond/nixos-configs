@@ -53,7 +53,6 @@
       cool-retro-term # retro terminal
       imagemagick # photo tool
       ffmpeg-full # video tool
-      pv # tool to monitor progress of data through the pipeline
     ];
 
     hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
@@ -101,7 +100,7 @@
       "nixos-system/host-specific/aspen/sshd.nix"
       "nixos-system/host-specific/aspen/tailscale.nix"
       "nixos-system/host-specific/aspen/users.nix"
-      #"nixos-system/host-specific/aspen/journal2gelf.nix"
+      "nixos-system/host-specific/aspen/journal2gelf.nix"
       #"nixos-system/host-specific/aspen/gaming.nix"
 
       "scripts/rebuild/rebuild-local-aspen.nix"
@@ -111,6 +110,8 @@
       "scripts/deploy/deploy-cypress.nix"
       "scripts/photo-renumber.nix"
       "scripts/media-transfer.nix"
+      
+      "scripts/backup-recovery/recover-family-media.nix"
       #"scripts/backup-recovery/recover-email.nix"
       #"scripts/backup-recovery/recover-traefik.nix"
       #"scripts/backup-recovery/recover-homeassistant.nix"
