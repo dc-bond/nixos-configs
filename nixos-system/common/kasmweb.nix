@@ -20,10 +20,6 @@ in
       listenPort = 4432;
     };
     
-    postgresqlBackup = {
-      databases = [ "${app}" ];
-    };
-
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];
