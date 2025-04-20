@@ -17,28 +17,32 @@ in
     ${app} = {
       enable = true;
       networkSubnet = "${configVars.kasmwebSubnet}";
-      listenPort = 4432;
+      listenAddress = "127.0.0.1";
+      listenPort = 8377;
     };
-    
-    traefik.dynamicConfigOptions.http = {
-      routers.${app} = {
-        entrypoints = ["websecure"];
-        rule = "Host(`${app}.${configVars.domain2}`)";
-        service = "${app}";
-        middlewares = [ "secure-headers" ];
-        tls = {
-          certResolver = "cloudflareDns";
-          options = "tls-13@file";
+
+    traefik = {
+      staticConfigOptions.serversTransport.insecureSkipVerify = true; 
+      dynamicConfigOptions.http = {
+        routers.${app} = {
+          entrypoints = ["websecure"];
+          rule = "Host(`${app}.${configVars.domain2}`)";
+          service = "${app}";
+          middlewares = [ "secure-headers" ];
+          tls = {
+            certResolver = "cloudflareDns";
+            options = "tls-13@file";
+          };
         };
-      };
-      services.${app} = {
-        loadBalancer = {
-          passHostHeader = true;
-          servers = [
-          {
-            url = "http://127.0.0.1:4432";
-          }
-          ];
+        services.${app} = {
+          loadBalancer = {
+            passHostHeader = true;
+            servers = [
+            {
+              url = "https://127.0.0.1:8377";
+            }
+            ];
+          };
         };
       };
     };
