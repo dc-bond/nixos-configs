@@ -88,5 +88,6 @@
   frigateIp = "172.21.13.2";
 
   kasmwebSubnet = "172.21.14.0/25";
+  kasmVpnIp = "172.21.14.99";
   
 }

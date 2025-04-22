@@ -39,6 +39,15 @@ in
         content = ''
           registration_shared_secret: ${config.sops.placeholder.matrixSynapseRegistrationSharedSecret}
           macaroon_secret_key: ${config.sops.placeholder.matrixSynapseMacaroonSecretKey}
+          retention: 
+            enabled: true
+            default_policy:
+              min_lifetime: 1d 
+              max_lifetime: 1d
+            allowed_lifetime_min: 1d
+            allowed_lifetime_max: 1d
+            purge_jobs:
+              - interval: 12h
           email:
             smtp_host: mail.privateemail.com
             smtp_port: 465
