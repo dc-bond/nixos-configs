@@ -73,7 +73,7 @@ in
       log-driver = "journald";
       environmentFiles = [ config.sops.templates."${app2}-env".path ];
       extraOptions = [
-        "--network=kasm_default_network"
+        "--network=${app2}"
         "--ip=${configVars.kasmVpnIp}"
         "--sysctl=net.ipv6.conf.all.disable_ipv6=1"
         "--cap-add=NET_ADMIN"
@@ -87,6 +87,19 @@ in
 
   systemd = {
     services = { 
+      "docker-network-${app2}" = {
+        path = [pkgs.docker];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app2}";
+        };
+        script = ''
+          docker network inspect ${app2} || docker network create --subnet ${configVars.kasmVpnSubnet} --driver bridge --scope local --attachable ${app2}
+        '';
+        partOf = [ "docker-${app2}-root.target" ];
+        wantedBy = [ "docker-${app2}-root.target" ];
+      };
       "docker-${app2}" = {
         serviceConfig = {
           Restart = lib.mkOverride 500 "always";
@@ -94,19 +107,17 @@ in
           RestartSec = lib.mkOverride 500 "100ms";
           RestartSteps = lib.mkOverride 500 9;
         };
-        partOf = [
-          "docker-${app2}-root.target"
-        ];
-        wantedBy = [
-          "docker-${app2}-root.target"
-        ];
+        after = [ "docker-network-${app2}.service" ];
+        requires = [ "docker-network-${app2}.service" ];
+        partOf = [ "docker-${app2}-root.target" ];
+        wantedBy = [ "docker-${app2}-root.target" ];
       };
     };
     targets."docker-${app2}-root" = {
       unitConfig = {
         Description = "root target for ${app2} container stack";
       };
-      wantedBy = ["multi-user.target"];
+      wantedBy = [ "multi-user.target" ];
     };
   }; 
 

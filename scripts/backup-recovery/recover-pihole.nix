@@ -68,18 +68,18 @@ let
 
    { set +x; log "starting backup recovery for pihole-unbound containers on $HOST"; } 2>/dev/null
 
-   { set +x; log "changing directory to ${config.backups.borgDir}"; } 2>/dev/null
-   cd ${config.backups.borgDir}
+   { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
+   cd ${config.backups.borgCloudDir}
 
    { set +x; log "extracting application data for pihole from borg repository"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/pihole --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/pihole --strip-components 4
 
    { set +x; log "extracting application data for unbound from borg repository"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/unbound --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/unbound --strip-components 4
 
    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
-   sudo chown -R chris:users ${config.backups.borgDir}/pihole
-   sudo chown -R chris:users ${config.backups.borgDir}/unbound
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/pihole
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/unbound
 
    { set +x; log "stopping pihole-unbound container stack on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl stop docker-pihole-root.target'
@@ -89,8 +89,8 @@ let
    ssh $HOST 'sudo rm -rf /var/lib/docker/volumes/unbound'
 
    { set +x; log "transferring restored data to $HOST"; } 2>/dev/null
-   rsync --progress -avzh ${config.backups.borgDir}/pihole $HOST:/tmp
-   rsync --progress -avzh ${config.backups.borgDir}/unbound $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/pihole $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/unbound $HOST:/tmp
    ssh $HOST 'sudo mv /tmp/pihole /var/lib/docker/volumes'
    ssh $HOST 'sudo mv /tmp/unbound /var/lib/docker/volumes'
 
@@ -99,8 +99,8 @@ let
    ssh $HOST 'sudo chown -R root:root /var/lib/docker/volumes/unbound'
 
    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
-   sudo rm -rf ${config.backups.borgDir}/pihole
-   sudo rm -rf ${config.backups.borgDir}/unbound
+   sudo rm -rf ${config.backups.borgCloudDir}/pihole
+   sudo rm -rf ${config.backups.borgCloudDir}/unbound
 
    { set +x; log "restarting restored pihole-unbound container stack on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl start docker-pihole-root.target'
