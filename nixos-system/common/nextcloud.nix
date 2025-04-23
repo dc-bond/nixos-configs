@@ -9,22 +9,22 @@
 
 let
   app = "nextcloud"; # first-time install will fail, must delete /var/lib/nextcloud/config/config.php file and rebuild then should work
-  nextcloudMaintenanceOnScript = pkgs.writeShellScriptBin "nextcloudMaintenanceOn" ''
-    #!/bin/bash
-    ${lib.getExe config.services.nextcloud.occ} maintenance:mode --on
-    '';
-  nextcloudMaintenanceOffScript = pkgs.writeShellScriptBin "nextcloudMaintenanceOff" ''
-    #!/bin/bash
-    ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off
-    '';
+  #nextcloudMaintenanceOnScript = pkgs.writeShellScriptBin "nextcloudMaintenanceOn" ''
+  #  #!/bin/bash
+  #  ${lib.getExe config.services.nextcloud.occ} maintenance:mode --on
+  #  '';
+  #nextcloudMaintenanceOffScript = pkgs.writeShellScriptBin "nextcloudMaintenanceOff" ''
+  #  #!/bin/bash
+  #  ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off
+  #  '';
 in
 
 {
 
-  environment.systemPackages = with pkgs; [ 
-    nextcloudMaintenanceOnScript
-    nextcloudMaintenanceOffScript
-  ];
+  #environment.systemPackages = with pkgs; [ 
+  #  nextcloudMaintenanceOnScript
+  #  nextcloudMaintenanceOffScript
+  #];
   
   sops = {
     secrets = {

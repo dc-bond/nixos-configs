@@ -73,10 +73,11 @@ in
           BORG_RELOCATED_REPO_ACCESS_IS_OK = "yes"; # supress warning about repo location being moved since last backup (e.g. changing directory location or IP address)
         };
         compression = "auto,zstd,8";
+        readWritePaths = [ "/var/lib/nextcloud/" ]; # needed to allow borgbackup readwrite access to nextcloud directory containing occ command execution (for turning on/off maintenance mode)
         preHook = ''
           set -x
           echo "spinning down services and starting sql database dumps"
-          systemctl start nextcloudMaintenanceOn.service
+         	${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1
           systemctl stop authelia-dcbond.service
           systemctl stop redis-authelia-dcbond.service
           systemctl stop matrix-synapse.service
@@ -103,7 +104,7 @@ in
         postHook = ''
           set -x
           echo "spinning up services"
-          systemctl start nextcloudMaintenanceOff.service
+          ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1
           systemctl start docker-unifi-controller-root.target
           systemctl start docker-zwavejs-root.target
           systemctl start docker-pihole-root.target
