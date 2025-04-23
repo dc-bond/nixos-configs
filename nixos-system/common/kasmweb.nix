@@ -77,6 +77,7 @@ in
         "--ip=${configVars.kasmVpnIp}"
         "--sysctl=net.ipv6.conf.all.disable_ipv6=1"
         "--cap-add=NET_ADMIN"
+        "--cap-add=NET_RAW"
         "--privileged"
         "--tty=true"
         "--stop-signal=SIGINT"
@@ -95,7 +96,13 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app2}";
         };
         script = ''
-          docker network inspect ${app2} || docker network create --subnet ${configVars.kasmVpnSubnet} --driver bridge --scope local --attachable ${app2}
+          docker network inspect ${app2} || docker network create \
+          --subnet ${configVars.kasmVpnSubnet} \
+          --driver bridge \
+          --scope local \
+          --opt icc=true \
+          --attachable \
+          ${app2}
         '';
         partOf = [ "docker-${app2}-root.target" ];
         wantedBy = [ "docker-${app2}-root.target" ];
