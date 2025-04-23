@@ -9,7 +9,7 @@
     loader = {
       systemd-boot = {
         enable = true;
-        configurationLimit = 5; # only display last 5 generations
+        configurationLimit = 3; # only display last 3 generations
       };
       efi.canTouchEfiVariables = true;
     };
