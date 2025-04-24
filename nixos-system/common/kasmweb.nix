@@ -76,6 +76,7 @@ in
         "--network=${app2}"
         "--ip=${configVars.kasmVpnIp}"
         "--sysctl=net.ipv6.conf.all.disable_ipv6=1"
+        "--sysctl=net.ipv4.ip_forward=1"
         "--cap-add=NET_ADMIN"
         "--cap-add=NET_RAW"
         "--privileged"
@@ -100,8 +101,8 @@ in
           --subnet ${configVars.kasmVpnSubnet} \
           --driver bridge \
           --scope local \
-          --opt icc=true \
           --attachable \
+          --opt icc=true \
           ${app2}
         '';
         partOf = [ "docker-${app2}-root.target" ];

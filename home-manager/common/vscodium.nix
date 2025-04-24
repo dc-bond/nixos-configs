@@ -58,7 +58,7 @@
         "fontFamily" = "\"SauceCodePro NF\"";
         "fontSize" = 15;
         "fontLigatures" = false;
-        "cursorStyle" = "block";
+        "cursorStyle" = "line";
         "cursorBlinking" = "solid";
       };
       "remote" = {
