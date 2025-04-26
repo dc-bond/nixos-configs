@@ -3,6 +3,14 @@
   ...
 }: 
 
-builtins.mapAttrsToList
-  (name: _: import (./. + "/${name}") { inherit inputs; })
-  (builtins.removeAttrs (builtins.readDir ./.) [ "default.nix" ])
+{
+
+# unstable nixpkgs set (declared in the flake inputs) will be accessible through 'pkgs.unstable'
+  unstable-packages = final: _prev: {
+    unstable = import inputs.nixpkgs-unstable {
+      system = final.system;
+      config.allowUnfree = true;
+    };
+  };
+
+}
