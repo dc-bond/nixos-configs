@@ -90,6 +90,7 @@
       #"nixos-system/common/mosquitto.nix"
       #"nixos-system/common/graylog.nix"
       "nixos-system/common/kasmweb.nix"
+      "nixos-system/common/writefreely.nix" # requires mysql.nix
       "nixos-system/common/oci-containers.nix"
       "nixos-system/common/oci-fava.nix"
 
@@ -101,7 +102,7 @@
       "nixos-system/host-specific/aspen/sshd.nix"
       "nixos-system/host-specific/aspen/tailscale.nix"
       "nixos-system/host-specific/aspen/users.nix"
-      "nixos-system/host-specific/aspen/journal2gelf.nix"
+      #"nixos-system/host-specific/aspen/journal2gelf.nix"
       #"nixos-system/host-specific/aspen/gaming.nix"
 
       "scripts/rebuild/rebuild-local-aspen.nix"
