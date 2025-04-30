@@ -13,7 +13,18 @@ in
 
 {
   
-  sops.secrets.writefreelyAdminPasswd = {};
+  sops.secrets = {
+    writefreelyAdminPasswd = {
+      owner = config.users.users."${app}".name;
+      group = config.users.users."${app}".group;
+      mode = "0440";
+    };
+    writefreelyDbPasswd = { 
+      owner = config.users.users."${app}".name;
+      group = config.users.users."${app}".group;
+      mode = "0440";
+    };
+  };
 
   services = {
 
@@ -30,8 +41,8 @@ in
         name = "${app}";
         port = 3306;
         migrate = true;
-        #host = "127.0.0.1";
-        host = "/run/mysqld/mysqld.sock";
+        host = "127.0.0.1";
+        passwordFile = "${config.sops.secrets.writefreelyDbPasswd.path}";
         createLocally = true;
       };
       admin = {
