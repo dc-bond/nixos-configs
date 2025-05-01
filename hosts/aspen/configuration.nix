@@ -90,7 +90,7 @@
       #"nixos-system/common/mosquitto.nix"
       #"nixos-system/common/graylog.nix"
       "nixos-system/common/kasmweb.nix"
-      "nixos-system/common/writefreely.nix" # requires mysql.nix
+      #"nixos-system/common/writefreely.nix" # requires mysql.nix
       "nixos-system/common/oci-containers.nix"
       "nixos-system/common/oci-fava.nix"
 

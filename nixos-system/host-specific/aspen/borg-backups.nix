@@ -76,7 +76,6 @@ in
           echo "spinning down services and starting sql database dumps"
           systemctl stop traefik.service
           systemctl stop photoprism.service
-          systemctl stop writefreely.service
           systemctl stop docker-media-server-root.target
           sleep 10 
           systemctl start mysql-backup.service
@@ -87,7 +86,6 @@ in
           echo "spinning up services"
           systemctl start traefik.service
           systemctl start photoprism.service
-          systemctl start writefreely.service
           systemctl start docker-media-server-root.target
           echo "starting cloud backup"
           systemctl start cloudBackup.service
@@ -95,7 +93,6 @@ in
         paths = [
           "/home/${configVars.userName}/email"
           "/var/lib/traefik"
-          "/var/lib/writefreely"
           "/var/lib/private/photoprism"
           "/var/lib/docker/volumes/jellyfin"
           "/var/lib/docker/volumes/jellyseerr"
@@ -104,7 +101,6 @@ in
           "/var/lib/docker/volumes/radarr"
           "/var/lib/docker/volumes/sonarr"
           "/var/backup/mysql/photoprism.gz"
-          "/var/backup/mysql/writefreely.gz"
           "${config.drives.storageDrive1}/media/family-media"
         ];
         prune.keep = {
