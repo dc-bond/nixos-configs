@@ -41,20 +41,20 @@ in
       requires = [ "postgresql.service" ];
       after = [ "postgresql.service" ];
     };
-    "nextcloudMaintenanceOn" = {
-      description = "turn on nextcloud maintenance mode";
-      serviceConfig = {
-        ExecStart = "${nextcloudMaintenanceOnScript}/bin/nextcloudMaintenanceOn";
-        Restart = "on-failure";
-      };
-    };
-    "nextcloudMaintenanceOff" = {
-      description = "turn off nextcloud maintenance mode";
-      serviceConfig = {
-        ExecStart = "${nextcloudMaintenanceOffScript}/bin/nextcloudMaintenanceOff";
-        Restart = "on-failure";
-      };
-    };
+    #"nextcloudMaintenanceOn" = {
+    #  description = "turn on nextcloud maintenance mode";
+    #  serviceConfig = {
+    #    ExecStart = "${nextcloudMaintenanceOnScript}/bin/nextcloudMaintenanceOn";
+    #    Restart = "on-failure";
+    #  };
+    #};
+    #"nextcloudMaintenanceOff" = {
+    #  description = "turn off nextcloud maintenance mode";
+    #  serviceConfig = {
+    #    ExecStart = "${nextcloudMaintenanceOffScript}/bin/nextcloudMaintenanceOff";
+    #    Restart = "on-failure";
+    #  };
+    #};
   };
 
   services = {
