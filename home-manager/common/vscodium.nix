@@ -53,6 +53,7 @@
         "copyOnSelection" = true;
         "cursorStyle" = "block";
         "cursorBlinking" = false;
+        "defaultProfile.linux" = "zsh";
       };
       "editor" = {
         "fontFamily" = "\"SauceCodePro NF\"";
