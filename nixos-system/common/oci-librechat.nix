@@ -29,7 +29,7 @@ in
   
   sops = {
     secrets = {
-      #recipesagePostgresUser = {};
+      librechatOpenaiApiKey = {};
     };
     templates = {
 
@@ -210,7 +210,7 @@ in
         # OpenAI     #
         #============#
         
-        OPENAI_API_KEY=user_provided
+        OPENAI_API_KEY=${config.sops.placeholder.librechatOpenaiApiKey}
         # OPENAI_MODELS=o1,o1-mini,o1-preview,gpt-4o,gpt-4.5-preview,chatgpt-4o-latest,gpt-4o-mini,gpt-3.5-turbo-0125,gpt-3.5-turbo-0301,gpt-3.5-turbo,gpt-4,gpt-4-0613,gpt-4-vision-preview,gpt-3.5-turbo-0613,gpt-3.5-turbo-16k-0613,gpt-4-0125-preview,gpt-4-turbo-preview,gpt-4-1106-preview,gpt-3.5-turbo-1106,gpt-3.5-turbo-instruct,gpt-3.5-turbo-instruct-0914,gpt-3.5-turbo-16k
         
         DEBUG_OPENAI=false
@@ -612,13 +612,6 @@ in
         #=====================================================#
         OPENWEATHER_API_KEY=
       '';
-
-      #"${app6}-env".content = ''
-      #  POSTGRES_DB=${config.sops.placeholder.recipesagePostgresDb}
-      #  POSTGRES_USER=${config.sops.placeholder.recipesagePostgresUser}
-      #  POSTGRES_PASSWORD=${config.sops.placeholder.recipesagePostgresPasswd}
-      #'';
-
     };
   };
 
