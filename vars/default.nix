@@ -91,5 +91,12 @@
 
   kasmVpnSubnet = "172.21.15.0/25";
   kasmVpnIp = "172.21.15.99";
+
+  librechatSubnet = "172.21.16.0/25";
+  librechatApiIp = "172.21.16.2";
+  librechatMongoIp = "172.21.16.3";
+  librechatMeiliIp = "172.21.16.4";
+  librechatVectorIp = "172.21.16.5";
+  librechatRagIp = "172.21.16.6";
   
 }
