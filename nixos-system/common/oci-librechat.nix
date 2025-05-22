@@ -28,6 +28,7 @@ in
   sops = {
     secrets = {
       librechatOpenaiApiKey = {};
+      librechatAnthropicApiKey = {};
     };
     templates = {
       "${app}-env" = {
@@ -95,7 +96,7 @@ in
           #                     Endpoints                     #
           #===================================================#
           
-          ENDPOINTS=openAI
+          ENDPOINTS=openAI,anthropic
           # ENDPOINTS=openAI,assistants,azureOpenAI,google,gptPlugins,anthropic
           
           PROXY=
@@ -125,8 +126,8 @@ in
           # Anthropic  #
           #============#
           
-          # ANTHROPIC_API_KEY=user_provided
-          # ANTHROPIC_MODELS=claude-3-7-sonnet-latest,claude-3-7-sonnet-20250219,claude-3-5-haiku-20241022,claude-3-5-sonnet-20241022,claude-3-5-sonnet-latest,claude-3-5-sonnet-20240620,claude-3-opus-20240229,claude-3-sonnet-20240229,claude-3-haiku-20240307,claude-2.1,claude-2,claude-1.2,claude-1,claude-1-100k,claude-instant-1,claude-instant-1-100k
+          ANTHROPIC_API_KEY=${config.sops.placeholder.librechatAnthropicApiKey}
+          ANTHROPIC_MODELS=claude-3-7-sonnet-latest
           # ANTHROPIC_REVERSE_PROXY=
           
           #============#
@@ -213,8 +214,7 @@ in
           #============#
           
           OPENAI_API_KEY=${config.sops.placeholder.librechatOpenaiApiKey}
-          # OPENAI_API_KEY=user_provided
-          # OPENAI_MODELS=o1,o1-mini,o1-preview,gpt-4o,gpt-4.5-preview,chatgpt-4o-latest,gpt-4o-mini,gpt-3.5-turbo-0125,gpt-3.5-turbo-0301,gpt-3.5-turbo,gpt-4,gpt-4-0613,gpt-4-vision-preview,gpt-3.5-turbo-0613,gpt-3.5-turbo-16k-0613,gpt-4-0125-preview,gpt-4-turbo-preview,gpt-4-1106-preview,gpt-3.5-turbo-1106,gpt-3.5-turbo-instruct,gpt-3.5-turbo-instruct-0914,gpt-3.5-turbo-16k
+          OPENAI_MODELS=chatgpt-4o-latest
           
           DEBUG_OPENAI=false
           
@@ -565,9 +565,9 @@ in
           #                        UI                         #
           #===================================================#
           
-          APP_TITLE=BondAIChat
-          # CUSTOM_FOOTER="My custom footer"
-          HELP_AND_FAQ_URL=https://librechat.ai
+          APP_TITLE=Bond AI 
+          CUSTOM_FOOTER="Bond AI"
+          # HELP_AND_FAQ_URL=https://librechat.ai
           
           # SHOW_BIRTHDAY_ICON=true
           
@@ -630,6 +630,7 @@ in
         "${app}-${app2}"
         "${app}-${app5}"
       ];
+      environmentFiles = [ config.sops.templates."${app}-env".path ];
       environment = { 
         HOST = "0.0.0.0";
         MONGO_URI = "${app2}://${app}-${app2}:27017/LibreChat";
@@ -638,7 +639,7 @@ in
         RAG_API_URL = "http://${app}-${app5}:8000";
       };
       volumes = [ 
-        "/run/secrets/rendered/${app}-env:/app/.env" # bind mount rendered sops env file to /app/.env inside container
+        #"/run/secrets/rendered/${app}-env:/app/.env" # bind mount rendered sops env file to /app/.env inside container
         "${app}-${app1}-images:/app/client/public/images"
         "${app}-${app1}-uploads:/app/uploads" 
         "${app}-${app1}-logs:/app/api/logs" 
