@@ -115,10 +115,10 @@ in
                 policy = "bypass";
               }
               {
-                domain = [ # bypass authelia when connecting to authelia itself
+                domain = [
                   "lldap.${configVars.domain1}"
                 ];
-                subject = [ # only allow admin and danielle-bond users to access lldap and only require one factor
+                subject = [ # only allow the following users to access lldap and only require one factor
                   "user:admin"
                   "user:danielle-bond"
                 ];

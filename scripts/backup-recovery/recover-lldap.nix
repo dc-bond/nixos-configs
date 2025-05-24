@@ -68,14 +68,14 @@ let
 
    { set +x; log "starting backup recovery for lldap on $HOST"; } 2>/dev/null
 
-   { set +x; log "changing directory to ${config.backups.borgDir}"; } 2>/dev/null
-   cd ${config.backups.borgDir}
+   { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
+   cd ${config.backups.borgCloudDir}
 
    { set +x; log "extracting application data from borg repository"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/private/lldap --strip-components 3
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/private/lldap --strip-components 3
 
    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
-   sudo chown -R chris:users ${config.backups.borgDir}/lldap
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/lldap
 
    { set +x; log "stopping lldap.service on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl stop lldap.service'
@@ -85,16 +85,16 @@ let
    ssh $HOST 'sudo rm -rf /var/lib/private/lldap'
 
    { set +x; log "transferring restored data to $HOST"; } 2>/dev/null
-   rsync --progress -avzh ${config.backups.borgDir}/lldap $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/lldap $HOST:/tmp
    ssh $HOST 'sudo mv /tmp/lldap /var/lib/private'
 
    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
-   sudo rm -rf ${config.backups.borgDir}/lldap
+   sudo rm -rf ${config.backups.borgCloudDir}/lldap
 
    { set +x; log "restoring PostgreSQL backup for lldap"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/backup/postgresql/lldap.sql.gz --strip-components 3
-   sudo chown chris:users ${config.backups.borgDir}/lldap.sql.gz
-   rsync --progress -avzh ${config.backups.borgDir}/lldap.sql.gz $HOST:/tmp
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/backup/postgresql/lldap.sql.gz --strip-components 3
+   sudo chown chris:users ${config.backups.borgCloudDir}/lldap.sql.gz
+   rsync --progress -avzh ${config.backups.borgCloudDir}/lldap.sql.gz $HOST:/tmp
    ssh $HOST 'sudo gunzip -c /tmp/lldap.sql.gz > /tmp/lldap.sql'
    ssh $HOST 'sudo chown postgres:postgres /tmp/lldap.sql'
    ssh $HOST 'sudo mv /tmp/lldap.sql /var/lib/postgresql'
@@ -103,7 +103,7 @@ let
    ssh $HOST 'sudo -u postgres psql -U postgres -d template1 -c "CREATE DATABASE \"lldap\" OWNER \"lldap\";"'
    ssh $HOST 'sudo -u postgres psql -U postgres -d lldap -f /var/lib/postgresql/lldap.sql'
    ssh $HOST 'sudo rm -rf /var/lib/postgresql/lldap.sql'
-   sudo rm -rf ${config.backups.borgDir}/lldap.sql.gz
+   sudo rm -rf ${config.backups.borgCloudDir}/lldap.sql.gz
 
    { set +x; log "restarting restored lldap service on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl start lldap.service'

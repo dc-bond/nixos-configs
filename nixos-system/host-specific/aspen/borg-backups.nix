@@ -76,9 +76,13 @@ in
           echo "spinning down services and starting sql database dumps"
           systemctl stop traefik.service
           systemctl stop photoprism.service
+          systemctl stop lldap.service
+          systemctl stop authelia-dcbond.service
+          systemctl stop redis-authelia-dcbond.service
           systemctl stop docker-media-server-root.target
           sleep 10 
           systemctl start mysql-backup.service
+          systemctl start postgresqlBackup-lldap.service
           sleep 10 
         '';
         postHook = ''
@@ -86,6 +90,9 @@ in
           echo "spinning up services"
           systemctl start traefik.service
           systemctl start photoprism.service
+          systemctl start lldap.service
+          systemctl start redis-authelia-dcbond.service
+          systemctl start authelia-dcbond.service
           systemctl start docker-media-server-root.target
           echo "starting cloud backup"
           systemctl start cloudBackup.service
@@ -94,6 +101,9 @@ in
           "/home/${configVars.userName}/email"
           "/var/lib/traefik"
           "/var/lib/private/photoprism"
+          "/var/lib/private/lldap"
+          "/var/lib/authelia-dcbond"
+          "/var/lib/redis-authelia-dcbond"
           "/var/lib/docker/volumes/jellyfin"
           "/var/lib/docker/volumes/jellyseerr"
           "/var/lib/docker/volumes/sabnzbd"
@@ -101,6 +111,7 @@ in
           "/var/lib/docker/volumes/radarr"
           "/var/lib/docker/volumes/sonarr"
           "/var/backup/mysql/photoprism.gz"
+          "/var/backup/postgresql/lldap.sql.gz"
           "${config.drives.storageDrive1}/media/family-media"
         ];
         prune.keep = {

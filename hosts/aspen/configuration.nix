@@ -106,7 +106,7 @@
       "nixos-system/common/postgresql.nix"
       "nixos-system/common/mysql.nix"
       "nixos-system/common/photoprism.nix" # requires mysql.nix
-      #"nixos-system/common/lldap.nix" # requires postgresql.nix
+      "nixos-system/common/lldap.nix" # requires postgresql.nix
       #"nixos-system/common/mosquitto.nix"
       #"nixos-system/common/uptime-kuma.nix"
       #"nixos-system/common/graylog.nix"

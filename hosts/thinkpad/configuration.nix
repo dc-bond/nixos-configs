@@ -64,6 +64,7 @@
       "nixos-system/host-specific/thinkpad/borg-backups.nix"
       "scripts/backup-recovery/recover-family-media.nix"
       "scripts/backup-recovery/recover-traefik.nix"
+      "scripts/backup-recovery/recover-authelia-dcbond.nix"
       "scripts/backup-recovery/recover-homeassistant.nix"
       "scripts/backup-recovery/recover-matrix.nix"
       "scripts/backup-recovery/recover-nextcloud.nix"
