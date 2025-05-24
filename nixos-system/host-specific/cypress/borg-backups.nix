@@ -73,16 +73,15 @@ in
           BORG_RELOCATED_REPO_ACCESS_IS_OK = "yes"; # supress warning about repo location being moved since last backup (e.g. changing directory location or IP address)
         };
         compression = "auto,zstd,8";
-        readWritePaths = [ "/var/lib/nextcloud/" ]; # needed to allow borgbackup readwrite access to nextcloud directory containing occ command execution (for turning on/off maintenance mode)
+        #readWritePaths = [ "/var/lib/nextcloud/" ]; # needed to allow borgbackup readwrite access to nextcloud directory containing occ command execution (for turning on/off maintenance mode)
         preHook = ''
           set -x
           echo "spinning down services and starting sql database dumps"
-         	${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1
-          systemctl stop authelia-dcbond.service
-          systemctl stop redis-authelia-dcbond.service
-          systemctl stop matrix-synapse.service
-          systemctl stop redis-matrix-synapse.service
-          systemctl stop lldap.service
+          #systemctl stop authelia-dcbond.service
+          #systemctl stop redis-authelia-dcbond.service
+          #systemctl stop matrix-synapse.service
+          #systemctl stop redis-matrix-synapse.service
+          #systemctl stop lldap.service
           systemctl stop uptime-kuma.service
           systemctl stop home-assistant.service
           systemctl stop mosquitto.service
@@ -94,49 +93,56 @@ in
           systemctl stop docker-searxng-root.target
           systemctl stop docker-unifi-controller-root.target
           systemctl stop docker-recipesage-root.target
+          systemctl stop docker-librechat-root.target
           sleep 10 
           systemctl start postgresqlBackup-hass.service
-          systemctl start postgresqlBackup-lldap.service
-          systemctl start postgresqlBackup-nextcloud.service
-          systemctl start postgresqlBackup-matrix-synapse.service
+          #systemctl start postgresqlBackup-lldap.service
+          #systemctl start postgresqlBackup-nextcloud.service
+          #systemctl start postgresqlBackup-matrix-synapse.service
           sleep 10
         '';
         postHook = ''
           set -x
           echo "spinning up services"
-          ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1
           systemctl start docker-unifi-controller-root.target
           systemctl start docker-zwavejs-root.target
           systemctl start docker-pihole-root.target
           systemctl start docker-actual-root.target
           systemctl start traefik.service
-          systemctl start redis-authelia-dcbond.service
-          systemctl start lldap.service
-          systemctl start authelia-dcbond.service
-          systemctl start redis-matrix-synapse.service
-          systemctl start matrix-synapse.service
+          #systemctl start redis-authelia-dcbond.service
+          #systemctl start lldap.service
+          #systemctl start authelia-dcbond.service
+          #systemctl start redis-matrix-synapse.service
+          #systemctl start matrix-synapse.service
           systemctl start uptime-kuma.service
           systemctl start home-assistant.service
           systemctl start mosquitto.service
           systemctl start docker-chromium-root.target
           systemctl start docker-searxng-root.target
           systemctl start docker-recipesage-root.target
+          systemctl start docker-librechat-root.target
           echo "starting cloud backup"
           systemctl start cloudBackup.service
         '';
         paths = [
           "/var/lib/traefik"
-          "/var/lib/private/lldap"
+          #"/var/lib/private/lldap"
           "/var/lib/private/uptime-kuma"
-          "/var/lib/authelia-dcbond"
-          "/var/lib/redis-authelia-dcbond"
-          "/var/lib/matrix-synapse"
-          "/var/lib/redis-matrix-synapse"
-          "/var/lib/nextcloud"
-          "/var/lib/redis-nextcloud"
+          #"/var/lib/authelia-dcbond"
+          #"/var/lib/redis-authelia-dcbond"
+          #"/var/lib/matrix-synapse"
+          #"/var/lib/redis-matrix-synapse"
+          #"/var/lib/nextcloud"
+          #"/var/lib/redis-nextcloud"
           "/var/lib/hass"
           "/var/lib/mosquitto"
-          "/var/lib/tailscale"
+          #"/var/lib/tailscale"
+          "/var/lib/docker/volumes/librechat-api-images"
+          "/var/lib/docker/volumes/librechat-api-logs"
+          "/var/lib/docker/volumes/librechat-api-uploads"
+          "/var/lib/docker/volumes/librechat-meilisearch"
+          "/var/lib/docker/volumes/librechat-mongodb"
+          "/var/lib/docker/volumes/librechat-vectordb"
           "/var/lib/docker/volumes/zwavejs"
           "/var/lib/docker/volumes/pihole"
           "/var/lib/docker/volumes/unbound"
@@ -150,9 +156,9 @@ in
           "/var/lib/docker/volumes/unifi-controller-mongodb-db"
           "/var/lib/docker/volumes/unifi-controller-mongodb-configdb"
           "/var/backup/postgresql/hass.sql.gz"
-          "/var/backup/postgresql/lldap.sql.gz"
-          "/var/backup/postgresql/nextcloud.sql.gz"
-          "/var/backup/postgresql/matrix-synapse.sql.gz"
+          #"/var/backup/postgresql/lldap.sql.gz"
+          #"/var/backup/postgresql/nextcloud.sql.gz"
+          #"/var/backup/postgresql/matrix-synapse.sql.gz"
         ];
         prune.keep = {
           daily = 7; # keep the last seven daily archives

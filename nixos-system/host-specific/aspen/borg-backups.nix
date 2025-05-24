@@ -71,28 +71,37 @@ in
           BORG_RELOCATED_REPO_ACCESS_IS_OK = "yes"; # supress warning about repo location being moved since last backup (e.g. changing directory location or IP address)
         };
         compression = "auto,zstd,8";
+        readWritePaths = [ "/var/lib/nextcloud/" ]; # needed to allow borgbackup readwrite access to nextcloud directory containing occ command execution (for turning on/off maintenance mode)
         preHook = ''
           set -x
           echo "spinning down services and starting sql database dumps"
+         	${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1
           systemctl stop traefik.service
           systemctl stop photoprism.service
           systemctl stop lldap.service
           systemctl stop authelia-dcbond.service
           systemctl stop redis-authelia-dcbond.service
+          systemctl stop matrix-synapse.service
+          systemctl stop redis-matrix-synapse.service
           systemctl stop docker-media-server-root.target
           sleep 10 
           systemctl start mysql-backup.service
           systemctl start postgresqlBackup-lldap.service
+          systemctl start postgresqlBackup-matrix-synapse.service
+          systemctl start postgresqlBackup-nextcloud.service
           sleep 10 
         '';
         postHook = ''
           set -x
           echo "spinning up services"
+          ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1
           systemctl start traefik.service
           systemctl start photoprism.service
           systemctl start lldap.service
           systemctl start redis-authelia-dcbond.service
           systemctl start authelia-dcbond.service
+          systemctl start redis-matrix-synapse.service
+          systemctl start matrix-synapse.service
           systemctl start docker-media-server-root.target
           echo "starting cloud backup"
           systemctl start cloudBackup.service
@@ -104,6 +113,10 @@ in
           "/var/lib/private/lldap"
           "/var/lib/authelia-dcbond"
           "/var/lib/redis-authelia-dcbond"
+          "/var/lib/matrix-synapse"
+          "/var/lib/redis-matrix-synapse"
+          "/var/lib/nextcloud"
+          "/var/lib/redis-nextcloud"
           "/var/lib/docker/volumes/jellyfin"
           "/var/lib/docker/volumes/jellyseerr"
           "/var/lib/docker/volumes/sabnzbd"
@@ -112,6 +125,8 @@ in
           "/var/lib/docker/volumes/sonarr"
           "/var/backup/mysql/photoprism.gz"
           "/var/backup/postgresql/lldap.sql.gz"
+          "/var/backup/postgresql/matrix-synapse.sql.gz"
+          "/var/backup/postgresql/nextcloud.sql.gz"
           "${config.drives.storageDrive1}/media/family-media"
         ];
         prune.keep = {

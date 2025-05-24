@@ -108,6 +108,7 @@ in
         log_type = "file";
         loglevel = 2; # info
         maintenance_window_start = 1;
+        #trashbin_retention_obligation = "auto, 7";
         
         ## openid connect oidc:
         #allow_user_to_change_display_name = false;

@@ -112,14 +112,14 @@
       #"nixos-system/common/graylog.nix"
       #"nixos-system/common/kasmweb.nix"
       #"nixos-system/common/writefreely.nix" # requires mysql.nix
-      #"nixos-system/common/nextcloud.nix" # requires postgresql.nix
+      "nixos-system/common/nextcloud.nix" # requires postgresql.nix
       #"nixos-system/common/home-assistant.nix" # requires postgresql.nix, mosquitto.nix
       "nixos-system/common/authelia-dcbond.nix" # requires lldap.nix
-      #"nixos-system/common/stirling-pdf.nix"
+      "nixos-system/common/stirling-pdf.nix"
       #"nixos-system/common/roundcube.nix" # requires postgresl.nix
-      #"nixos-system/common/matrix.nix" # requires postgresql.nix
-      #"nixos-system/common/privatebin.nix"
-      #"nixos-system/common/dcbond-root.nix"
+      "nixos-system/common/matrix.nix" # requires postgresql.nix
+      "nixos-system/common/privatebin.nix"
+      "nixos-system/common/dcbond-root.nix"
       #"nixos-system/common/unifi-controller.nix" # compile problems with mongodb
       "nixos-system/common/oci-containers.nix"
       "nixos-system/common/oci-fava.nix"

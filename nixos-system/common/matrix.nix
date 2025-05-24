@@ -25,7 +25,7 @@ in
 
   sops = {
     secrets = {
-      userEmailPasswd = {};
+      chrisEmailPasswd = {};
       matrixSynapseRegistrationSharedSecret = {};
       matrixSynapseMacaroonSecretKey = {};
       coturnStaticAuthSecret = {
@@ -53,7 +53,7 @@ in
             smtp_port: 465
             force_tls: true
             smtp_user: ${configVars.userEmail}
-            smtp_pass: '${config.sops.placeholder.userEmailPasswd}'
+            smtp_pass: '${config.sops.placeholder.chrisEmailPasswd}'
             notif_from: "Bond Encrypted Communications <noreply@dcbond.com>"
           encryption_enabled_by_default_for_room_type: all
           user_directory:
