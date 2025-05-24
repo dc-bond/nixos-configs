@@ -114,7 +114,7 @@
       #"nixos-system/common/writefreely.nix" # requires mysql.nix
       #"nixos-system/common/nextcloud.nix" # requires postgresql.nix
       #"nixos-system/common/home-assistant.nix" # requires postgresql.nix, mosquitto.nix
-      #"nixos-system/common/authelia-dcbond.nix" # requires lldap.nix
+      "nixos-system/common/authelia-dcbond.nix" # requires lldap.nix
       #"nixos-system/common/stirling-pdf.nix"
       #"nixos-system/common/roundcube.nix" # requires postgresl.nix
       #"nixos-system/common/matrix.nix" # requires postgresql.nix

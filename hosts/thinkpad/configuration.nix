@@ -76,6 +76,7 @@
       "scripts/backup-recovery/recover-chromium.nix"
       "scripts/backup-recovery/recover-actual.nix"
       "scripts/backup-recovery/recover-pihole.nix"
+      "scripts/backup-recovery/recover-privatebin.nix"
       "scripts/backup-recovery/recover-unifi-controller.nix"
       "scripts/backup-recovery/recover-photoprism.nix"
       "scripts/rebuild/rebuild-local-thinkpad.nix"

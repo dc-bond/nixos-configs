@@ -68,16 +68,18 @@ let
 
    { set +x; log "starting backup recovery for matrix on $HOST"; } 2>/dev/null
 
-   { set +x; log "changing directory to ${config.backups.borgDir}"; } 2>/dev/null
-   cd ${config.backups.borgDir}
+   { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
+   cd ${config.backups.borgCloudDir}
 
    { set +x; log "extracting application data from borg repository"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/matrix-synapse --strip-components 2
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/redis-matrix-synapse --strip-components 2
+   #sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/matrix-synapse --strip-components 2
+   #sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/redis-matrix-synapse --strip-components 2
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE var/lib/matrix-synapse --strip-components 2
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE var/lib/redis-matrix-synapse --strip-components 2
 
    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
-   sudo chown -R chris:users ${config.backups.borgDir}/matrix-synapse
-   sudo chown -R chris:users ${config.backups.borgDir}/redis-matrix-synapse
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/matrix-synapse
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/redis-matrix-synapse
 
    { set +x; log "stopping matrix-synapse stack on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl stop matrix-synapse.service'
@@ -88,8 +90,8 @@ let
    ssh $HOST 'sudo rm -rf /var/lib/redis-matrix-synapse'
 
    { set +x; log "transferring restored data to $HOST"; } 2>/dev/null
-   rsync --progress -avzh ${config.backups.borgDir}/matrix-synapse $HOST:/tmp
-   rsync --progress -avzh ${config.backups.borgDir}/redis-matrix-synapse $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/matrix-synapse $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/redis-matrix-synapse $HOST:/tmp
    ssh $HOST 'sudo mv /tmp/matrix-synapse /var/lib'
    ssh $HOST 'sudo mv /tmp/redis-matrix-synapse /var/lib'
 
@@ -98,13 +100,14 @@ let
    ssh $HOST 'sudo chown -R matrix-synapse:matrix-synapse /var/lib/redis-matrix-synapse'
 
    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
-   sudo rm -rf ${config.backups.borgDir}/matrix-synapse
-   sudo rm -rf ${config.backups.borgDir}/redis-matrix-synapse
+   sudo rm -rf ${config.backups.borgCloudDir}/matrix-synapse
+   sudo rm -rf ${config.backups.borgCloudDir}/redis-matrix-synapse
 
    { set +x; log "restoring PostgreSQL backup for matrix-synapse"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/backup/postgresql/matrix-synapse.sql.gz --strip-components 3
-   sudo chown chris:users ${config.backups.borgDir}/matrix-synapse.sql.gz
-   rsync --progress -avzh ${config.backups.borgDir}/matrix-synapse.sql.gz $HOST:/tmp
+   #sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/backup/postgresql/matrix-synapse.sql.gz --strip-components 3
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/cypress::$ARCHIVE var/backup/postgresql/matrix-synapse.sql.gz --strip-components 3
+   sudo chown chris:users ${config.backups.borgCloudDir}/matrix-synapse.sql.gz
+   rsync --progress -avzh ${config.backups.borgCloudDir}/matrix-synapse.sql.gz $HOST:/tmp
    ssh $HOST 'sudo gunzip -c /tmp/matrix-synapse.sql.gz > /tmp/matrix-synapse.sql'
    ssh $HOST 'sudo chown postgres:postgres /tmp/matrix-synapse.sql'
    ssh $HOST 'sudo mv /tmp/matrix-synapse.sql /var/lib/postgresql'
@@ -113,7 +116,7 @@ let
    ssh $HOST 'sudo -u postgres psql -U postgres -d template1 -c "CREATE DATABASE \"matrix-synapse\" ENCODING \"UTF8\" LC_COLLATE \"C\" LC_CTYPE \"C\" TEMPLATE \"template0\" OWNER \"matrix-synapse\";"'
    ssh $HOST 'sudo -u postgres psql -U postgres -d matrix-synapse -f /var/lib/postgresql/matrix-synapse.sql'
    ssh $HOST 'sudo rm -rf /var/lib/postgresql/matrix-synapse.sql'
-   sudo rm -rf ${config.backups.borgDir}/matrix-synapse.sql.gz
+   sudo rm -rf ${config.backups.borgCloudDir}/matrix-synapse.sql.gz
 
    { set +x; log "restarting restored matrix-synapse service on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl start redis-matrix-synapse.service'

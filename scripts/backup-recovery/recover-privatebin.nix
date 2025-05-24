@@ -8,7 +8,7 @@ let
 
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
 
-  recoverAutheliaDcbondScript = pkgs.writeShellScriptBin "recoverAutheliaDcbond" ''
+  recoverPrivatebinScript = pkgs.writeShellScriptBin "recoverPrivatebin" ''
    #!/bin/bash
 
    # track errors
@@ -66,45 +66,35 @@ let
    # enable tracing of commands
    set -x
 
-   { set +x; log "starting backup recovery for authelia-dcbond on $HOST"; } 2>/dev/null
+   { set +x; log "starting backup recovery for privatebin on $HOST"; } 2>/dev/null
 
    { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
    cd ${config.backups.borgCloudDir}
 
    { set +x; log "extracting application data from borg repository"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/authelia-dcbond --strip-components 2
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/redis-authelia-dcbond --strip-components 2
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/privatebin --strip-components 2
 
    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
-   sudo chown -R chris:users ${config.backups.borgCloudDir}/authelia-dcbond
-   sudo chown -R chris:users ${config.backups.borgCloudDir}/redis-authelia-dcbond
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/privatebin
 
-   { set +x; log "stopping authelia-dcbond stack on $HOST"; } 2>/dev/null
-   ssh $HOST 'sudo systemctl stop authelia-dcbond.service'
-   ssh $HOST 'sudo systemctl stop redis-authelia-dcbond.service'
+   { set +x; log "stopping privatebin stack on $HOST"; } 2>/dev/null
+   ssh $HOST 'sudo systemctl stop privatebin.service'
 
    { set +x; log "removing existing application data on $HOST"; } 2>/dev/null
-   ssh $HOST 'sudo rm -rf /var/lib/authelia-dcbond'
-   ssh $HOST 'sudo rm -rf /var/lib/redis-authelia-dcbond'
+   ssh $HOST 'sudo rm -rf /var/lib/privatebin'
 
    { set +x; log "transferring restored data to $HOST"; } 2>/dev/null
-   rsync --progress -avzh ${config.backups.borgCloudDir}/authelia-dcbond $HOST:/tmp
-   rsync --progress -avzh ${config.backups.borgCloudDir}/redis-authelia-dcbond $HOST:/tmp
-   ssh $HOST 'sudo mv /tmp/authelia-dcbond /var/lib'
-   ssh $HOST 'sudo mv /tmp/redis-authelia-dcbond /var/lib'
+   rsync --progress -avzh ${config.backups.borgCloudDir}/privatebin $HOST:/tmp
+   ssh $HOST 'sudo mv /tmp/privatebin /var/lib'
 
    { set +x; log "changing ownership of restored application data"; } 2>/dev/null
-   ssh $HOST 'sudo chown -R authelia-dcbond:authelia-dcbond /var/lib/authelia-dcbond'
-   ssh $HOST 'sudo chown -R authelia-dcbond:authelia-dcbond /var/lib/redis-authelia-dcbond'
+   ssh $HOST 'sudo chown -R root:root /var/lib/privatebin'
 
    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
-   sudo rm -rf ${config.backups.borgCloudDir}/authelia-dcbond
-   sudo rm -rf ${config.backups.borgCloudDir}/redis-authelia-dcbond
+   sudo rm -rf ${config.backups.borgCloudDir}/privatebin
 
-   { set +x; log "restarting restored authelia-dcbond service on $HOST"; } 2>/dev/null
-   ssh $HOST 'sudo systemctl start redis-authelia-dcbond.service'
-   sleep 5 
-   ssh $HOST 'sudo systemctl start authelia-dcbond.service'
+   { set +x; log "restarting restored privatebin service on $HOST"; } 2>/dev/null
+   ssh $HOST 'sudo systemctl start privatebin.service'
    '';
 
 in
@@ -114,7 +104,7 @@ in
   sops.secrets.borgCryptPasswd = {};
 
   environment.systemPackages = with pkgs; [ 
-    recoverAutheliaDcbondScript
+    recoverPrivatebinScript
   ];
 
 }  
