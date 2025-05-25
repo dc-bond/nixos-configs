@@ -108,7 +108,7 @@
       "nixos-system/common/photoprism.nix" # requires mysql.nix
       "nixos-system/common/lldap.nix" # requires postgresql.nix
       #"nixos-system/common/mosquitto.nix"
-      #"nixos-system/common/uptime-kuma.nix"
+      "nixos-system/common/uptime-kuma.nix"
       #"nixos-system/common/graylog.nix"
       #"nixos-system/common/kasmweb.nix"
       #"nixos-system/common/writefreely.nix" # requires mysql.nix
@@ -130,9 +130,9 @@
       #"nixos-system/common/oci-actual.nix"
       #"nixos-system/common/oci-zwavejs.nix"
       #"nixos-system/common/oci-chromium.nix"
-      #"nixos-system/common/oci-searxng.nix"
+      "nixos-system/common/oci-searxng.nix"
       #"nixos-system/common/oci-wordpress-dcbond.nix"
-      #"nixos-system/common/oci-recipesage.nix"
+      "nixos-system/common/oci-recipesage.nix"
       #"nixos-system/common/oci-librechat.nix"
 
       #"scripts/rebuild/rebuild-local-aspen.nix"

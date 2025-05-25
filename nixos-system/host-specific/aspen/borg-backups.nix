@@ -83,7 +83,10 @@ in
           systemctl stop redis-authelia-dcbond.service
           systemctl stop matrix-synapse.service
           systemctl stop redis-matrix-synapse.service
+          systemctl stop uptime-kuma.service
+          systemctl stop docker-searxng-root.target
           systemctl stop docker-media-server-root.target
+          systemctl stop docker-recipesage-root.target
           sleep 10 
           systemctl start mysql-backup.service
           systemctl start postgresqlBackup-lldap.service
@@ -102,7 +105,10 @@ in
           systemctl start authelia-dcbond.service
           systemctl start redis-matrix-synapse.service
           systemctl start matrix-synapse.service
+          systemctl start uptime-kuma.service
+          systemctl start docker-searxng-root.target
           systemctl start docker-media-server-root.target
+          systemctl start docker-recipesage-root.target
           echo "starting cloud backup"
           systemctl start cloudBackup.service
         '';
@@ -111,6 +117,7 @@ in
           "/var/lib/traefik"
           "/var/lib/private/photoprism"
           "/var/lib/private/lldap"
+          "/var/lib/private/uptime-kuma"
           "/var/lib/authelia-dcbond"
           "/var/lib/redis-authelia-dcbond"
           "/var/lib/matrix-synapse"
@@ -123,6 +130,10 @@ in
           "/var/lib/docker/volumes/prowlarr"
           "/var/lib/docker/volumes/radarr"
           "/var/lib/docker/volumes/sonarr"
+          "/var/lib/docker/volumes/searxng"
+          "/var/lib/docker/volumes/recipesage-api"
+          "/var/lib/docker/volumes/recipesage-postgres"
+          "/var/lib/docker/volumes/recipesage-typesense"
           "/var/backup/mysql/photoprism.gz"
           "/var/backup/postgresql/lldap.sql.gz"
           "/var/backup/postgresql/matrix-synapse.sql.gz"
