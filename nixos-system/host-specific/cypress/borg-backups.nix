@@ -83,7 +83,6 @@ in
           systemctl stop docker-zwavejs-root.target
           systemctl stop docker-pihole-root.target
           systemctl stop docker-actual-root.target
-          systemctl stop docker-chromium-root.target
           systemctl stop docker-unifi-controller-root.target
           systemctl stop docker-librechat-root.target
           sleep 10 
@@ -98,6 +97,7 @@ in
           #systemctl stop uptime-kuma.service
           #systemctl stop docker-searxng-root.target
           #systemctl stop docker-recipesage-root.target
+          #systemctl stop docker-chromium-root.target
           #systemctl start postgresqlBackup-lldap.service
           #systemctl start postgresqlBackup-nextcloud.service
           #systemctl start postgresqlBackup-matrix-synapse.service
@@ -111,7 +111,6 @@ in
           systemctl start traefik.service
           systemctl start home-assistant.service
           systemctl start mosquitto.service
-          systemctl start docker-chromium-root.target
           systemctl start docker-librechat-root.target
           echo "starting cloud backup"
           systemctl start cloudBackup.service
@@ -124,6 +123,7 @@ in
           #systemctl start uptime-kuma.service
           #systemctl start docker-searxng-root.target
           #systemctl start docker-recipesage-root.target
+          #systemctl start docker-chromium-root.target
         paths = [
           "/var/lib/traefik"
           #"/var/lib/private/lldap"
@@ -148,7 +148,7 @@ in
           "/var/lib/docker/volumes/unbound"
           "/var/lib/docker/volumes/actual"
           #"/var/lib/docker/volumes/searxng"
-          "/var/lib/docker/volumes/chromium"
+          #"/var/lib/docker/volumes/chromium"
           #"/var/lib/docker/volumes/recipesage-api"
           #"/var/lib/docker/volumes/recipesage-postgres"
           #"/var/lib/docker/volumes/recipesage-typesense"

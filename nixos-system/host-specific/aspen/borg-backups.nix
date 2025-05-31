@@ -87,6 +87,7 @@ in
           systemctl stop docker-searxng-root.target
           systemctl stop docker-media-server-root.target
           systemctl stop docker-recipesage-root.target
+          systemctl stop docker-chromium-root.target
           sleep 10 
           systemctl start mysql-backup.service
           systemctl start postgresqlBackup-lldap.service
@@ -109,6 +110,7 @@ in
           systemctl start docker-searxng-root.target
           systemctl start docker-media-server-root.target
           systemctl start docker-recipesage-root.target
+          systemctl start docker-chromium-root.target
           echo "starting cloud backup"
           systemctl start cloudBackup.service
         '';
@@ -134,6 +136,7 @@ in
           "/var/lib/docker/volumes/recipesage-api"
           "/var/lib/docker/volumes/recipesage-postgres"
           "/var/lib/docker/volumes/recipesage-typesense"
+          "/var/lib/docker/volumes/chromium"
           "/var/backup/mysql/photoprism.gz"
           "/var/backup/postgresql/lldap.sql.gz"
           "/var/backup/postgresql/matrix-synapse.sql.gz"

@@ -16,7 +16,7 @@ in
     image = "docker.io/yegle/${app}:v1.27"; # https://hub.docker.com/r/yegle/fava/tags
     autoStart = true;
     log-driver = "journald";
-    volumes = [ "/home/chris/nextcloud-client/Bond Family/Financial/bond-ledger:/bean" ];
+    volumes = [ "/var/lib/nextcloud/data/Chris Bond/files/Bond Family/Financial/bond-ledger:/bean" ];
     environment = { 
       BEANCOUNT_FILE = "/bean/master.beancount";
     };

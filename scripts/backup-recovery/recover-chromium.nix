@@ -68,14 +68,14 @@ let
    
    { set +x; log "starting backup recovery for chromium-vpn container stack on $HOST"; } 2>/dev/null
 
-   { set +x; log "changing directory to ${config.backups.borgDir}"; } 2>/dev/null
-   cd ${config.backups.borgDir}
+   { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
+   cd ${config.backups.borgCloudDir}
 
    { set +x; log "extracting application data from borg repository"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/chromium --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/chromium --strip-components 4
 
    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
-   sudo chown -R chris:users ${config.backups.borgDir}/chromium
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/chromium
 
    { set +x; log "stopping chromium-vpn container stack on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl stop docker-chromium-root.target'
@@ -84,14 +84,14 @@ let
    ssh $HOST 'sudo rm -rf /var/lib/docker/volumes/chromium'
 
    { set +x; log "transferring restored data to $HOST"; } 2>/dev/null
-   rsync --progress -avzh ${config.backups.borgDir}/chromium $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/chromium $HOST:/tmp
    ssh $HOST 'sudo mv /tmp/chromium /var/lib/docker/volumes'
 
    { set +x; log "changing ownership of restored application data"; } 2>/dev/null
    ssh $HOST 'sudo chown root:root /var/lib/docker/volumes/chromium'
 
    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
-   sudo rm -rf ${config.backups.borgDir}/chromium
+   sudo rm -rf ${config.backups.borgCloudDir}/chromium
 
    { set +x; log "restarting restored chromium-vpn container stack on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl start docker-chromium-root.target'
