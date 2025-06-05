@@ -133,7 +133,7 @@
       "nixos-system/common/oci-searxng.nix"
       #"nixos-system/common/oci-wordpress-dcbond.nix"
       "nixos-system/common/oci-recipesage.nix"
-      "nixos-system/common/oci-librechat.nix"
+      #"nixos-system/common/oci-librechat.nix"
 
       #"scripts/rebuild/rebuild-local-aspen.nix"
       #"scripts/rebuild/rebuild-remote-thinkpad.nix"
