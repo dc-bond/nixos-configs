@@ -24,7 +24,7 @@ in
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];
-        rule = "Host(`unifi-controller.${configVars.domain2}`)";
+        rule = "Host(`unifi-controller-test.${configVars.domain2}`)";
         service = "${app}";
         middlewares = [
           "secure-headers"
