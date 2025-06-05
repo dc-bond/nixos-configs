@@ -68,18 +68,18 @@ let
 
    { set +x; log "starting backup recovery for unifi-controller containers on $HOST"; } 2>/dev/null
 
-   { set +x; log "changing directory to ${config.backups.borgDir}"; } 2>/dev/null
-   cd ${config.backups.borgDir}
+   { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
+   cd ${config.backups.borgCloudDir}
 
    { set +x; log "extracting application data from borg repository"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/unifi-controller --strip-components 4
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/unifi-controller-mongodb-db --strip-components 4
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/docker/volumes/unifi-controller-mongodb-configdb --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/unifi-controller --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/unifi-controller-mongodb-db --strip-components 4
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/docker/volumes/unifi-controller-mongodb-configdb --strip-components 4
 
    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
-   sudo chown -R chris:users ${config.backups.borgDir}/unifi-controller
-   sudo chown -R chris:users ${config.backups.borgDir}/unifi-controller-mongodb-db
-   sudo chown -R chris:users ${config.backups.borgDir}/unifi-controller-mongodb-configdb
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/unifi-controller
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/unifi-controller-mongodb-db
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/unifi-controller-mongodb-configdb
 
    { set +x; log "stopping container stack on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl stop docker-unifi-controller-root.target'
@@ -91,9 +91,9 @@ let
    ssh $HOST 'sudo rm -rf /var/lib/docker/volumes/unifi-controller-mongodb-configdb'
 
    { set +x; log "transferring restored data to $HOST"; } 2>/dev/null
-   rsync --progress -avzh ${config.backups.borgDir}/unifi-controller $HOST:/tmp
-   rsync --progress -avzh ${config.backups.borgDir}/unifi-controller-mongodb-db $HOST:/tmp
-   rsync --progress -avzh ${config.backups.borgDir}/unifi-controller-mongodb-configdb $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/unifi-controller $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/unifi-controller-mongodb-db $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/unifi-controller-mongodb-configdb $HOST:/tmp
    ssh $HOST 'sudo mv /tmp/unifi-controller /var/lib/docker/volumes'
    ssh $HOST 'sudo mv /tmp/unifi-controller-mongodb-db /var/lib/docker/volumes'
    ssh $HOST 'sudo mv /tmp/unifi-controller-mongodb-configdb /var/lib/docker/volumes'
@@ -106,9 +106,9 @@ let
    ssh $HOST 'sudo chown -R nscd:nscd /var/lib/docker/volumes/unifi-controller-mongodb-configdb/_data'
 
    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
-   sudo rm -rf ${config.backups.borgDir}/unifi-controller
-   sudo rm -rf ${config.backups.borgDir}/unifi-controller-mongodb-db
-   sudo rm -rf ${config.backups.borgDir}/unifi-controller-mongodo-configdb
+   sudo rm -rf ${config.backups.borgCloudDir}/unifi-controller
+   sudo rm -rf ${config.backups.borgCloudDir}/unifi-controller-mongodb-db
+   sudo rm -rf ${config.backups.borgCloudDir}/unifi-controller-mongodo-configdb
 
    { set +x; log "restarting restored unifi-controller container stack on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl start docker-unifi-controller-root.target'

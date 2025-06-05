@@ -89,6 +89,7 @@ in
           systemctl stop docker-recipesage-root.target
           systemctl stop docker-chromium-root.target
           systemctl stop docker-actual-root.target
+          systemctl stop docker-pihole-root.target
           sleep 10 
           systemctl start mysql-backup.service
           systemctl start postgresqlBackup-lldap.service
@@ -108,6 +109,7 @@ in
           systemctl start redis-matrix-synapse.service
           systemctl start matrix-synapse.service
           systemctl start uptime-kuma.service
+          systemctl start docker-pihole-root.target
           systemctl start docker-searxng-root.target
           systemctl start docker-media-server-root.target
           systemctl start docker-recipesage-root.target
@@ -128,6 +130,7 @@ in
           "/var/lib/redis-matrix-synapse"
           "/var/lib/nextcloud"
           "/var/lib/redis-nextcloud"
+          "/var/lib/docker/volumes/pihole"
           "/var/lib/docker/volumes/jellyfin"
           "/var/lib/docker/volumes/jellyseerr"
           "/var/lib/docker/volumes/sabnzbd"
