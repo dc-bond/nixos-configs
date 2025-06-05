@@ -82,13 +82,13 @@ in
           systemctl stop traefik.service
           systemctl stop docker-zwavejs-root.target
           systemctl stop docker-pihole-root.target
-          systemctl stop docker-actual-root.target
           systemctl stop docker-unifi-controller-root.target
-          systemctl stop docker-librechat-root.target
           sleep 10 
           systemctl start postgresqlBackup-hass.service
           sleep 10
         '';
+          #systemctl stop docker-librechat-root.target
+          #systemctl stop docker-actual-root.target
           #systemctl stop authelia-dcbond.service
           #systemctl stop redis-authelia-dcbond.service
           #systemctl stop matrix-synapse.service
@@ -107,14 +107,14 @@ in
           systemctl start docker-unifi-controller-root.target
           systemctl start docker-zwavejs-root.target
           systemctl start docker-pihole-root.target
-          systemctl start docker-actual-root.target
           systemctl start traefik.service
           systemctl start home-assistant.service
           systemctl start mosquitto.service
-          systemctl start docker-librechat-root.target
           echo "starting cloud backup"
           systemctl start cloudBackup.service
         '';
+          #systemctl start docker-librechat-root.target
+          #systemctl start docker-actual-root.target
           #systemctl start redis-authelia-dcbond.service
           #systemctl start lldap.service
           #systemctl start authelia-dcbond.service
@@ -137,16 +137,16 @@ in
           "/var/lib/hass"
           "/var/lib/mosquitto"
           #"/var/lib/tailscale"
-          "/var/lib/docker/volumes/librechat-api-images"
-          "/var/lib/docker/volumes/librechat-api-logs"
-          "/var/lib/docker/volumes/librechat-api-uploads"
-          "/var/lib/docker/volumes/librechat-meilisearch"
-          "/var/lib/docker/volumes/librechat-mongodb"
-          "/var/lib/docker/volumes/librechat-vectordb"
+          #"/var/lib/docker/volumes/librechat-api-images"
+          #"/var/lib/docker/volumes/librechat-api-logs"
+          #"/var/lib/docker/volumes/librechat-api-uploads"
+          #"/var/lib/docker/volumes/librechat-meilisearch"
+          #"/var/lib/docker/volumes/librechat-mongodb"
+          #"/var/lib/docker/volumes/librechat-vectordb"
           "/var/lib/docker/volumes/zwavejs"
           "/var/lib/docker/volumes/pihole"
           "/var/lib/docker/volumes/unbound"
-          "/var/lib/docker/volumes/actual"
+          #"/var/lib/docker/volumes/actual"
           #"/var/lib/docker/volumes/searxng"
           #"/var/lib/docker/volumes/chromium"
           #"/var/lib/docker/volumes/recipesage-api"

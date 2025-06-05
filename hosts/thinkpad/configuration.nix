@@ -80,6 +80,7 @@
       "scripts/backup-recovery/recover-unifi-controller.nix"
       "scripts/backup-recovery/recover-photoprism.nix"
       "scripts/backup-recovery/recover-recipesage.nix"
+      "scripts/backup-recovery/recover-librechat.nix"
       "scripts/rebuild/rebuild-local-thinkpad.nix"
       "scripts/rebuild/rebuild-remote-aspen.nix"
       "scripts/rebuild/rebuild-remote-cypress.nix"

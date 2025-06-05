@@ -127,13 +127,13 @@
       "nixos-system/common/oci-frigate.nix" # requires nvidia.nix
       #"nixos-system/common/oci-unifi-controller.nix"
       #"nixos-system/common/oci-pihole.nix"
-      #"nixos-system/common/oci-actual.nix"
+      "nixos-system/common/oci-actual.nix"
       #"nixos-system/common/oci-zwavejs.nix"
       "nixos-system/common/oci-chromium.nix"
       "nixos-system/common/oci-searxng.nix"
       #"nixos-system/common/oci-wordpress-dcbond.nix"
       "nixos-system/common/oci-recipesage.nix"
-      #"nixos-system/common/oci-librechat.nix"
+      "nixos-system/common/oci-librechat.nix"
 
       #"scripts/rebuild/rebuild-local-aspen.nix"
       #"scripts/rebuild/rebuild-remote-thinkpad.nix"

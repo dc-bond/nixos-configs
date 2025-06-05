@@ -88,6 +88,8 @@ in
           systemctl stop docker-media-server-root.target
           systemctl stop docker-recipesage-root.target
           systemctl stop docker-chromium-root.target
+          systemctl stop docker-actual-root.target
+          systemctl stop docker-librechat-root.target
           sleep 10 
           systemctl start mysql-backup.service
           systemctl start postgresqlBackup-lldap.service
@@ -111,6 +113,8 @@ in
           systemctl start docker-media-server-root.target
           systemctl start docker-recipesage-root.target
           systemctl start docker-chromium-root.target
+          systemctl start docker-actual-root.target
+          systemctl start docker-librechat-root.target
           echo "starting cloud backup"
           systemctl start cloudBackup.service
         '';
@@ -137,6 +141,13 @@ in
           "/var/lib/docker/volumes/recipesage-postgres"
           "/var/lib/docker/volumes/recipesage-typesense"
           "/var/lib/docker/volumes/chromium"
+          "/var/lib/docker/volumes/actual"
+          "/var/lib/docker/volumes/librechat-api-images"
+          "/var/lib/docker/volumes/librechat-api-logs"
+          "/var/lib/docker/volumes/librechat-api-uploads"
+          "/var/lib/docker/volumes/librechat-meilisearch"
+          "/var/lib/docker/volumes/librechat-mongodb"
+          "/var/lib/docker/volumes/librechat-vectordb"
           "/var/backup/mysql/photoprism.gz"
           "/var/backup/postgresql/lldap.sql.gz"
           "/var/backup/postgresql/matrix-synapse.sql.gz"
