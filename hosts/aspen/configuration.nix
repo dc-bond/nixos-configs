@@ -135,7 +135,7 @@
       "nixos-system/common/oci-recipesage.nix"
       #"nixos-system/common/oci-librechat.nix"
 
-      #"scripts/rebuild/rebuild-local-aspen.nix"
+      "scripts/rebuild/rebuild-local-aspen.nix"
       #"scripts/rebuild/rebuild-remote-thinkpad.nix"
       #"scripts/rebuild/rebuild-remote-cypress.nix"
       #"scripts/deploy/deploy-thinkpad.nix"
