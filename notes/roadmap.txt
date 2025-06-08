@@ -34,3 +34,9 @@ vscode manual extension setup
 
 nextcloud-occ config:app:set --value=0 user_oidc allow_multiple_user_backends
 nextcloud-occ maintenance:repair --include-expensive
+
+To migrate Unifi Controller
+turn off old
+dns for web ui
+restore new
+update override inform host in new

@@ -81,11 +81,11 @@ in
           systemctl stop mosquitto.service
           systemctl stop traefik.service
           systemctl stop docker-zwavejs-root.target
-          systemctl stop docker-unifi-controller-root.target
           sleep 10 
           systemctl start postgresqlBackup-hass.service
           sleep 10
         '';
+          #systemctl stop docker-unifi-controller-root.target
           #systemctl stop docker-pihole-root.target
           #systemctl stop docker-librechat-root.target
           #systemctl stop docker-actual-root.target
@@ -104,7 +104,6 @@ in
         postHook = ''
           set -x
           echo "spinning up services"
-          systemctl start docker-unifi-controller-root.target
           systemctl start docker-zwavejs-root.target
           systemctl start traefik.service
           systemctl start home-assistant.service
@@ -112,6 +111,7 @@ in
           echo "starting cloud backup"
           systemctl start cloudBackup.service
         '';
+          #systemctl start docker-unifi-controller-root.target
           #systemctl start docker-pihole-root.target
           #systemctl start docker-librechat-root.target
           #systemctl start docker-actual-root.target
@@ -145,16 +145,16 @@ in
           #"/var/lib/docker/volumes/librechat-vectordb"
           "/var/lib/docker/volumes/zwavejs"
           #"/var/lib/docker/volumes/pihole"
-          "/var/lib/docker/volumes/unbound"
+          #"/var/lib/docker/volumes/unbound"
           #"/var/lib/docker/volumes/actual"
           #"/var/lib/docker/volumes/searxng"
           #"/var/lib/docker/volumes/chromium"
           #"/var/lib/docker/volumes/recipesage-api"
           #"/var/lib/docker/volumes/recipesage-postgres"
           #"/var/lib/docker/volumes/recipesage-typesense"
-          "/var/lib/docker/volumes/unifi-controller"
-          "/var/lib/docker/volumes/unifi-controller-mongodb-db"
-          "/var/lib/docker/volumes/unifi-controller-mongodb-configdb"
+          #"/var/lib/docker/volumes/unifi-controller"
+          #"/var/lib/docker/volumes/unifi-controller-mongodb-db"
+          #"/var/lib/docker/volumes/unifi-controller-mongodb-configdb"
           "/var/backup/postgresql/hass.sql.gz"
           #"/var/backup/postgresql/lldap.sql.gz"
           #"/var/backup/postgresql/nextcloud.sql.gz"

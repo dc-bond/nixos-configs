@@ -13,7 +13,7 @@ let
     #!/bin/bash
 
     # Configuration
-    DIR_A="/home/chris/nextcloud-client/Bond Family/media-transfer"  # Directory containing original files to be processed
+    DIR_A="/var/lib/nextcloud/data/Chris Bond/files/Bond Family/media-transfer"  # Directory containing original files to be processed
     DIR_B="${config.drives.storageDrive1}/media/media-transfer-review"  # Directory for manual review after processing
     DIR_C="${config.drives.storageDrive1}/media/family-media"  # Directory for final disposition of processed photos and videos
     EMAIL_CONTENT_FILE="${config.drives.storageDrive1}/media/email_content.txt"

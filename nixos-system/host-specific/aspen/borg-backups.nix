@@ -90,6 +90,7 @@ in
           systemctl stop docker-chromium-root.target
           systemctl stop docker-actual-root.target
           systemctl stop docker-pihole-root.target
+          systemctl stop docker-unifi-controller-root.target
           sleep 10 
           systemctl start mysql-backup.service
           systemctl start postgresqlBackup-lldap.service
@@ -109,6 +110,7 @@ in
           systemctl start redis-matrix-synapse.service
           systemctl start matrix-synapse.service
           systemctl start uptime-kuma.service
+          systemctl start docker-unifi-controller-root.target
           systemctl start docker-pihole-root.target
           systemctl start docker-searxng-root.target
           systemctl start docker-media-server-root.target
@@ -131,6 +133,7 @@ in
           "/var/lib/nextcloud"
           "/var/lib/redis-nextcloud"
           "/var/lib/docker/volumes/pihole"
+          "/var/lib/docker/volumes/unbound"
           "/var/lib/docker/volumes/jellyfin"
           "/var/lib/docker/volumes/jellyseerr"
           "/var/lib/docker/volumes/sabnzbd"
@@ -143,6 +146,9 @@ in
           "/var/lib/docker/volumes/recipesage-typesense"
           "/var/lib/docker/volumes/chromium"
           "/var/lib/docker/volumes/actual"
+          "/var/lib/docker/volumes/unifi-controller"
+          "/var/lib/docker/volumes/unifi-controller-mongodb-db"
+          "/var/lib/docker/volumes/unifi-controller-mongodb-configdb"
           "/var/backup/mysql/photoprism.gz"
           "/var/backup/postgresql/lldap.sql.gz"
           "/var/backup/postgresql/matrix-synapse.sql.gz"

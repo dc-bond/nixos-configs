@@ -120,12 +120,12 @@
       "nixos-system/common/matrix.nix" # requires postgresql.nix
       "nixos-system/common/privatebin.nix"
       "nixos-system/common/dcbond-root.nix"
-      "nixos-system/common/unifi-controller.nix" # compile problems with mongodb
+      #"nixos-system/common/unifi-controller.nix" # compile problems with mongodb
       "nixos-system/common/oci-containers.nix"
       "nixos-system/common/oci-fava.nix"
       "nixos-system/common/oci-media-server.nix" # requires nvidia.nix
       "nixos-system/common/oci-frigate.nix" # requires nvidia.nix
-      #"nixos-system/common/oci-unifi-controller.nix"
+      "nixos-system/common/oci-unifi-controller.nix"
       "nixos-system/common/oci-pihole.nix"
       "nixos-system/common/oci-actual.nix"
       #"nixos-system/common/oci-zwavejs.nix"
