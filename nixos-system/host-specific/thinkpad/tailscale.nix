@@ -21,7 +21,7 @@
       extraUpFlags = [
         "-ssh" # enable tailscale-ssh
         "--accept-routes" # autmatically discover and accept subnet routes advertised by other nodes
-        "--exit-node=${configVars.cypressTailscaleIp}" # use exit node
+        "--exit-node=${configVars.aspenTailscaleIp}" # use exit node
       ];
     };
   };

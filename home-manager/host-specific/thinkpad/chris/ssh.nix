@@ -15,6 +15,11 @@
         user = "${configVars.userName}";
         port = 28766;
       };
+      "aspen-wan" = {
+        hostname = "ssh.${configVars.domain1}";
+        user = "${configVars.userName}";
+        port = 28766;
+      };
       "aspen-tailscale" = {
         hostname = "${configVars.aspenTailscaleIp}";
         user = "${configVars.userName}";
@@ -25,11 +30,11 @@
         user = "${configVars.userName}";
         port = 28761;
       };
-      "cypress-tailscale" = {
-        hostname = "${configVars.cypressTailscaleIp}";
-        user = "${configVars.userName}";
-        port = 22;
-      };
+      #"cypress-tailscale" = {
+      #  hostname = "${configVars.cypressTailscaleIp}";
+      #  user = "${configVars.userName}";
+      #  port = 22;
+      #};
       "unifi-usg" = {
         hostname = "${configVars.unifiUsgIp}";
         user = "dcbond";
