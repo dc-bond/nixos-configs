@@ -111,7 +111,6 @@
       "nixos-system/common/uptime-kuma.nix"
       #"nixos-system/common/graylog.nix"
       #"nixos-system/common/kasmweb.nix"
-      #"nixos-system/common/writefreely.nix" # requires mysql.nix
       "nixos-system/common/nextcloud.nix" # requires postgresql.nix
       #"nixos-system/common/home-assistant.nix" # requires postgresql.nix, mosquitto.nix
       "nixos-system/common/authelia-dcbond.nix" # requires lldap.nix
@@ -135,11 +134,6 @@
       "nixos-system/common/oci-recipesage.nix"
       #"nixos-system/common/oci-librechat.nix"
 
-      "scripts/rebuild/rebuild-local-aspen.nix"
-      #"scripts/rebuild/rebuild-remote-thinkpad.nix"
-      #"scripts/rebuild/rebuild-remote-cypress.nix"
-      #"scripts/deploy/deploy-thinkpad.nix"
-      #"scripts/deploy/deploy-cypress.nix"
       "scripts/photo-renumber.nix"
       "scripts/media-transfer.nix"
     ])
