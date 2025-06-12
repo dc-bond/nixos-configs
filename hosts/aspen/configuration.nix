@@ -107,12 +107,12 @@
       "nixos-system/common/mysql.nix"
       "nixos-system/common/photoprism.nix" # requires mysql.nix
       "nixos-system/common/lldap.nix" # requires postgresql.nix
-      #"nixos-system/common/mosquitto.nix"
+      "nixos-system/common/mosquitto.nix"
       "nixos-system/common/uptime-kuma.nix"
       #"nixos-system/common/graylog.nix"
       #"nixos-system/common/kasmweb.nix"
       "nixos-system/common/nextcloud.nix" # requires postgresql.nix
-      #"nixos-system/common/home-assistant.nix" # requires postgresql.nix, mosquitto.nix
+      "nixos-system/common/home-assistant.nix" # requires postgresql.nix, mosquitto.nix
       "nixos-system/common/authelia-dcbond.nix" # requires lldap.nix
       "nixos-system/common/stirling-pdf.nix"
       #"nixos-system/common/roundcube.nix" # requires postgresl.nix
@@ -127,7 +127,7 @@
       "nixos-system/common/oci-unifi-controller.nix"
       "nixos-system/common/oci-pihole.nix"
       "nixos-system/common/oci-actual.nix"
-      #"nixos-system/common/oci-zwavejs.nix"
+      "nixos-system/common/oci-zwavejs.nix"
       "nixos-system/common/oci-chromium.nix"
       "nixos-system/common/oci-searxng.nix"
       #"nixos-system/common/oci-wordpress-dcbond.nix"

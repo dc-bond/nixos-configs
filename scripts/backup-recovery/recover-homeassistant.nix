@@ -68,14 +68,14 @@ let
 
    { set +x; log "starting backup recovery for homeassistant"; } 2>/dev/null
 
-   { set +x; log "changing directory to ${config.backups.borgDir}"; } 2>/dev/null
-   cd ${config.backups.borgDir}
+   { set +x; log "changing directory to ${config.backups.borgCloudDir}"; } 2>/dev/null
+   cd ${config.backups.borgCloudDir}
 
    { set +x; log "extracting application data from borg repository"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/lib/hass --strip-components 2
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/lib/hass --strip-components 2
 
    { set +x; log "changing ownership of extracted application data"; } 2>/dev/null
-   sudo chown -R chris:users ${config.backups.borgDir}/hass
+   sudo chown -R chris:users ${config.backups.borgCloudDir}/hass
 
    { set +x; log "stopping homeassistant service on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl stop home-assistant.service'
@@ -84,19 +84,19 @@ let
    ssh $HOST 'sudo rm -rf /var/lib/hass'
 
    { set +x; log "transferring restored data to $HOST"; } 2>/dev/null
-   rsync --progress -avzh ${config.backups.borgDir}/hass $HOST:/tmp
+   rsync --progress -avzh ${config.backups.borgCloudDir}/hass $HOST:/tmp
    ssh $HOST 'sudo mv /tmp/hass /var/lib'
    
    { set +x; log "changing ownership of restored application data"; } 2>/dev/null
    ssh $HOST 'sudo chown -R hass:hass /var/lib/hass'
 
    { set +x; log "cleaning up local restore directory"; } 2>/dev/null
-   sudo rm -rf ${config.backups.borgDir}/hass
+   sudo rm -rf ${config.backups.borgCloudDir}/hass
 
    { set +x; log "restoring PostgreSQL backup for homeassistant"; } 2>/dev/null
-   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgDir}/$HOST::$ARCHIVE var/backup/postgresql/hass.sql.gz --strip-components 3
-   sudo chown chris:users ${config.backups.borgDir}/hass.sql.gz
-   rsync --progress -avzh ${config.backups.borgDir}/hass.sql.gz $HOST:/tmp
+   sudo -E ${pkgs.borgbackup}/bin/borg extract --verbose --list ${config.backups.borgCloudDir}/$HOST::$ARCHIVE var/backup/postgresql/hass.sql.gz --strip-components 3
+   sudo chown chris:users ${config.backups.borgCloudDir}/hass.sql.gz
+   rsync --progress -avzh ${config.backups.borgCloudDir}/hass.sql.gz $HOST:/tmp
    ssh $HOST 'sudo gunzip -c /tmp/hass.sql.gz > /tmp/hass.sql'
    ssh $HOST 'sudo chown postgres:postgres /tmp/hass.sql'
    ssh $HOST 'sudo mv /tmp/hass.sql /var/lib/postgresql'
@@ -105,7 +105,7 @@ let
    ssh $HOST 'sudo -u postgres psql -U postgres -d template1 -c "CREATE DATABASE \"hass\" OWNER \"hass\";"'
    ssh $HOST 'sudo -u postgres psql -U postgres -d hass -f /var/lib/postgresql/hass.sql'
    ssh $HOST 'sudo rm -rf /var/lib/postgresql/hass.sql'
-   sudo rm -rf ${config.backups.borgDir}/hass.sql.gz
+   sudo rm -rf ${config.backups.borgCloudDir}/hass.sql.gz
 
    { set +x; log "restarting restored homeassistant service on $HOST"; } 2>/dev/null
    ssh $HOST 'sudo systemctl start home-assistant.service'

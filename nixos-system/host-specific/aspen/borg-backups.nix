@@ -84,6 +84,9 @@ in
           systemctl stop matrix-synapse.service
           systemctl stop redis-matrix-synapse.service
           systemctl stop uptime-kuma.service
+          systemctl stop home-assistant.service
+          systemctl stop mosquitto.service
+          systemctl stop docker-zwavejs-root.target
           systemctl stop docker-searxng-root.target
           systemctl stop docker-media-server-root.target
           systemctl stop docker-recipesage-root.target
@@ -95,6 +98,7 @@ in
           systemctl start mysql-backup.service
           systemctl start postgresqlBackup-lldap.service
           systemctl start postgresqlBackup-matrix-synapse.service
+          systemctl start postgresqlBackup-hass.service
           systemctl start postgresqlBackup-nextcloud.service
           sleep 10 
         '';
@@ -110,7 +114,10 @@ in
           systemctl start redis-matrix-synapse.service
           systemctl start matrix-synapse.service
           systemctl start uptime-kuma.service
+          systemctl start home-assistant.service
+          systemctl start mosquitto.service
           systemctl start docker-unifi-controller-root.target
+          systemctl start docker-zwavejs-root.target
           systemctl start docker-pihole-root.target
           systemctl start docker-searxng-root.target
           systemctl start docker-media-server-root.target
@@ -131,6 +138,8 @@ in
           "/var/lib/matrix-synapse"
           "/var/lib/redis-matrix-synapse"
           "/var/lib/nextcloud"
+          "/var/lib/hass"
+          "/var/lib/mosquitto"
           "/var/lib/redis-nextcloud"
           "/var/lib/docker/volumes/pihole"
           "/var/lib/docker/volumes/unbound"
@@ -141,6 +150,7 @@ in
           "/var/lib/docker/volumes/radarr"
           "/var/lib/docker/volumes/sonarr"
           "/var/lib/docker/volumes/searxng"
+          "/var/lib/docker/volumes/zwavejs"
           "/var/lib/docker/volumes/recipesage-api"
           "/var/lib/docker/volumes/recipesage-postgres"
           "/var/lib/docker/volumes/recipesage-typesense"
@@ -151,6 +161,7 @@ in
           "/var/lib/docker/volumes/unifi-controller-mongodb-configdb"
           "/var/backup/mysql/photoprism.gz"
           "/var/backup/postgresql/lldap.sql.gz"
+          "/var/backup/postgresql/hass.sql.gz"
           "/var/backup/postgresql/matrix-synapse.sql.gz"
           "/var/backup/postgresql/nextcloud.sql.gz"
           "${config.drives.storageDrive1}/media/family-media"
