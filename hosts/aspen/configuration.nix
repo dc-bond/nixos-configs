@@ -39,30 +39,8 @@
       nmap # network scanning
       #(import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
       #age # encryption tool
-      #mkpasswd # password hashing tool
-      #dig # dns lookup tool
       #sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
-      #wget # download tool
-      #rsync # sync tool
-      #usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
-      #nvd # package version diff info for nix build operations
-      #nix-tree # table view of package dependencies
-      #ethtool # network tools
-      #inetutils # more network tools like telnet
-      #unzip # utility to unzip directories
-      #git # git
-      #eza # modern replacement for 'ls'
-      #pfetch # system info displayed on shell startup
-      #btop # system monitor
-      #nmap # network scanning
-      #ddcutil # query and change monitor settings using DDC/CI and USB
-      #i2c-tools # hardware interface tools required by ddcutil
-      #libreoffice-still # office suite
-      #element-desktop # matrix chat app
-      #hollywood # fill terminal with melodramatic technobabble
-      #cool-retro-term # retro terminal
       #imagemagick # photo tool
-      #ffmpeg-full # video tool
     ];
 
     #hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
