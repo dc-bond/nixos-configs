@@ -36,6 +36,7 @@
     element-desktop # matrix chat app
     hollywood # fill terminal with melodramatic technobabble
     cool-retro-term # retro terminal
+    feh # simple image viewer
   ];
 
   imports = lib.flatten [
