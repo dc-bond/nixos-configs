@@ -23,7 +23,7 @@ in
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];
-        rule = "Host(`${app}.${configVars.domain1}`)";
+        rule = "Host(`${app}.${configVars.domain2}`)";
         service = "${app}";
         middlewares = [
           "secure-headers"
