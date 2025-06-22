@@ -87,6 +87,7 @@
       "nixos-system/common/lldap.nix" # requires postgresql.nix
       "nixos-system/common/mosquitto.nix"
       "nixos-system/common/uptime-kuma.nix"
+      "nixos-system/common/calibre.nix"
       #"nixos-system/common/graylog.nix"
       #"nixos-system/common/kasmweb.nix"
       "nixos-system/common/nextcloud.nix" # requires postgresql.nix
