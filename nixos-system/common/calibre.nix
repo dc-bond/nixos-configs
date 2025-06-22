@@ -17,7 +17,7 @@ in
     "${app}" = {
       enable = true;
       port = 7189;
-      libraries = [ "${config.drives.storageDrive1}/media/ebooks/calibre" ];
+      libraries = [ "${config.drives.storageDrive1}/media/ebooks/calibre/" ];
     };
 
     traefik.dynamicConfigOptions.http = {
