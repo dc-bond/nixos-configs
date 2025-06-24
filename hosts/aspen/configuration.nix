@@ -89,7 +89,7 @@
       "nixos-system/common/uptime-kuma.nix"
       "nixos-system/common/calibre.nix"
       #"nixos-system/common/graylog.nix"
-      #"nixos-system/common/kasmweb.nix"
+      "nixos-system/common/kasmweb.nix"
       "nixos-system/common/nextcloud.nix" # requires postgresql.nix
       "nixos-system/common/home-assistant.nix" # requires postgresql.nix, mosquitto.nix
       "nixos-system/common/authelia-dcbond.nix" # requires lldap.nix
