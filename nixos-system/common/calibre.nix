@@ -24,7 +24,10 @@ in
     "${app2}" = {
       enable = true;
       user = "calibre-server";
-      listen.port = 7190;
+      listen = {
+       ip = "127.0.0.1";
+       port = 7190;
+      };
       options = {
         reverseProxyAuth.enable = true;
         calibreLibrary = "${config.drives.storageDrive1}/media/ebooks/calibre/";
