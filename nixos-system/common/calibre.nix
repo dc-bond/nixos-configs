@@ -31,6 +31,7 @@ in
       options = {
         reverseProxyAuth.enable = true;
         calibreLibrary = "${config.drives.storageDrive1}/media/ebooks/calibre/";
+        enableBookUploading = true;
       };
     };
 
