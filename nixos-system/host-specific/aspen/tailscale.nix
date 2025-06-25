@@ -10,7 +10,14 @@
 
   sops.secrets.tailscaleAuthKey = {};
 
-  networking.firewall.trustedInterfaces = ["tailscale0"];
+  networking = {
+    firewall.trustedInterfaces = ["tailscale0"];
+    nat = { # enable subnet routing for tailscale without needing to serve as exit-node
+      enable = true;
+      internalInterfaces = [ "tailscale0" ];
+      externalInterface = "enp4s0";
+    };
+  };
 
   services = {
     tailscale = {

@@ -37,6 +37,7 @@
     hollywood # fill terminal with melodramatic technobabble
     cool-retro-term # retro terminal
     feh # simple image viewer
+    wgnord # nordvpn
   ];
 
   imports = lib.flatten [
