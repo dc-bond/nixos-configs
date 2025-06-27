@@ -113,7 +113,6 @@
       "nixos-system/common/oci-recipesage.nix"
       #"nixos-system/common/oci-librechat.nix"
 
-      "scripts/photo-renumber.nix"
       "scripts/media-transfer.nix"
     ])
   ];
