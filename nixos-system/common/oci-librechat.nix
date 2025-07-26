@@ -54,8 +54,8 @@ in
           
           #MONGO_URI=mongodb://127.0.0.1:27017/LibreChat
           
-          DOMAIN_CLIENT=https://librechat.opticon.dev
-          DOMAIN_SERVER=https://librechat.opticon.dev
+          DOMAIN_CLIENT=https://bond-ai.opticon.dev
+          DOMAIN_SERVER=https://bond-ai.opticon.dev
           
           NO_INDEX=true
           # Use the address that is at most n number of hops away from the Express application. 
@@ -419,7 +419,7 @@ in
           #========================#
           
           ALLOW_EMAIL_LOGIN=true
-          ALLOW_REGISTRATION=false
+          ALLOW_REGISTRATION=true
           ALLOW_SOCIAL_LOGIN=false
           ALLOW_SOCIAL_REGISTRATION=false
           ALLOW_PASSWORD_RESET=false
@@ -653,7 +653,8 @@ in
       labels = {
         "traefik.enable" = "true";
         "traefik.http.routers.${app}.entrypoints" = "websecure";
-        "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
+        #"traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
+        "traefik.http.routers.${app}.rule" = "Host(`bond-ai.${configVars.domain2}`)";
         "traefik.http.routers.${app}.tls" = "true";
         "traefik.http.routers.${app}.tls.options" = "tls-13@file";
         "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
