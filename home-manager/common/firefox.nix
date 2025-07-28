@@ -211,14 +211,14 @@ in
         Camera = {
           #Allow = [https =//example.org,https =//example.org =1234];
           #Block = [https =//example.edu];
-          BlockNewRequests = true;
-          Locked = true;
+          BlockNewRequests = false;
+          Locked = false;
         };
         Microphone = {
           #Allow = [https =//example.org];
           #Block = [https =//example.edu];
-          BlockNewRequests = true;
-          Locked = true;
+          BlockNewRequests = false;
+          Locked = false;
         };
         Location = {
           #Allow = [https =//example.org];
