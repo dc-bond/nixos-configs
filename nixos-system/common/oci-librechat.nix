@@ -88,8 +88,8 @@ in
           #===============#
           # Configuration #
           #===============#
+
           # Use an absolute path, a relative path, or a URL
-          
           # CONFIG_PATH="/alternative/path/to/librechat.yaml"
           
           #===================================================#
@@ -127,7 +127,7 @@ in
           #============#
           
           ANTHROPIC_API_KEY=${config.sops.placeholder.librechatAnthropicApiKey}
-          ANTHROPIC_MODELS=claude-3-7-sonnet-latest
+          ANTHROPIC_MODELS=claude-opus-4-20250514,claude-sonnet-4-20250514
           # ANTHROPIC_REVERSE_PROXY=
           
           #============#
