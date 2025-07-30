@@ -8,6 +8,11 @@ lib,
 
 {
 
+  systemd.tmpfiles.rules = [
+    "d /var/www 0755 root root -"
+    "d /var/www/2025-hawaii 0755 root root -"
+  ];
+
   services = {
 
     nginx = {
@@ -20,10 +25,7 @@ lib,
         "2025-hawaii.${configVars.domain2}" = {
           enableACME = false;
           forceSSL = false;
-          locations."/" = {
-            return = "200 '<html><head><title>Nope</title></head><body><h1>Hawaii.</h1></body></html>'";
-            extraConfig = "default_type text/html;";
-          };
+          root = "/var/www/2025-hawaii";
           listen = [
             {
               addr = "127.0.0.1"; 
