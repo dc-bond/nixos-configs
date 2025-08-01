@@ -127,7 +127,7 @@ in
           #============#
           
           ANTHROPIC_API_KEY=${config.sops.placeholder.librechatAnthropicApiKey}
-          ANTHROPIC_MODELS=claude-opus-4-20250514,claude-sonnet-4-20250514
+          ANTHROPIC_MODELS=claude-opus-4-20250514,claude-sonnet-4-20250514,claude-3-5-haiku-20241022
           # ANTHROPIC_REVERSE_PROXY=
           
           #============#
@@ -214,7 +214,7 @@ in
           #============#
           
           OPENAI_API_KEY=${config.sops.placeholder.librechatOpenaiApiKey}
-          OPENAI_MODELS=chatgpt-4o-latest
+          OPENAI_MODELS=gpt-4.1,gpt-4o-mini
           
           DEBUG_OPENAI=false
           
