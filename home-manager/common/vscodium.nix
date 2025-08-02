@@ -18,7 +18,6 @@
       signageos.signageos-vscode-sops
       ms-python.python
       arrterian.nix-env-selector
-      genieai.chatgpt-vscode
       # manually install 'Open Remote - SSH' from extension marketplace, delete .vscodium-server directory on host machine before first connection
       # manually install 'Beancount' from extension marketplace
     ];

@@ -12,13 +12,28 @@ in
 
 {
 
+  environment.etc."searxng/settings.yml" = {
+    text = ''
+      use_default_settings: true
+      server:
+        secret_key: "searxng-testing12345"
+      search:
+        formats:
+          - html
+          - json
+    '';
+    mode = "0644";
+  };
+
   virtualisation.oci-containers.containers."${app}" = {
-    image = "docker.io/${app}/${app}:2025.1.29-738906358"; # https://hub.docker.com/r/searxng/searxng/tags
+    image = "docker.io/${app}/${app}:2025.8.1-3d96414"; # https://hub.docker.com/r/searxng/searxng/tags
     autoStart = true;
     log-driver = "journald";
-    volumes = [ "${app}:/etc/${app}" ];
+    volumes = [ "/etc/searxng/settings.yml:/etc/searxng/settings.yml:ro" ];
     environment = { SEARXNG_BASE_URL = "https://search.${configVars.domain2}"; };
     extraOptions = [
+      "--tmpfs=/etc/searxng"
+      "--tmpfs=/var/cache/searxng" 
       "--network=${app}"
       "--ip=${configVars.searxngIp}"
       "--tty=true"
@@ -52,11 +67,9 @@ in
         };
         after = [
           "docker-network-${app}.service"
-          "docker-volume-${app}.service"
         ];
         requires = [
           "docker-network-${app}.service"
-          "docker-volume-${app}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -74,18 +87,6 @@ in
         };
         script = ''
           docker network inspect ${app} || docker network create --subnet ${configVars.searxngSubnet} --driver bridge --scope local --attachable ${app}
-        '';
-        partOf = ["docker-${app}-root.target"];
-        wantedBy = ["docker-${app}-root.target"];
-      };
-      "docker-volume-${app}" = {
-        path = [pkgs.docker];
-        serviceConfig = {
-          Type = "oneshot";
-          RemainAfterExit = true;
-        };
-        script = ''
-          docker volume inspect ${app} || docker volume create ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
