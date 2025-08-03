@@ -44,6 +44,7 @@ in
       "--cap-add=SETUID"
       "--cap-add=DAC_OVERRIDE"
     ];
+
     labels = {
       "traefik.enable" = "true";
       "traefik.http.routers.${app}.service" = "${app}";
