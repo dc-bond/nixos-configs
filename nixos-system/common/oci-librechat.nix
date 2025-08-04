@@ -616,6 +616,9 @@ in
           "docker-volume-${app}-${app1}-images.service"
           "docker-volume-${app}-${app1}-uploads.service"
           "docker-volume-${app}-${app1}-logs.service"
+          "docker-chown-${app}-${app1}-images.service"
+          "docker-chown-${app}-${app1}-uploads.service"
+          "docker-chown-${app}-${app1}-logs.service"
           "docker-${app}-${app2}.service"
           "docker-${app}-${app5}.service"
         ];
@@ -670,6 +673,36 @@ in
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
+      };
+      "docker-chown-${app}-${app1}-images" = {
+        path = [ pkgs.docker ];
+        script = ''
+          docker run --rm -v ${app}-${app1}-images:/volume busybox chown -R 1000:1000 /volume
+        '';
+        wantedBy = [ "docker-${app}-root.target" ];
+        after = [ "docker-volume-${app}-${app1}-images.service" ];
+        before = [ "docker-${app}-${app1}.service" ];
+        requires = [ "docker-volume-${app}-${app1}-images.service" ];
+      };
+      "docker-chown-${app}-${app1}-uploads" = {
+        path = [ pkgs.docker ];
+        script = ''
+          docker run --rm -v ${app}-${app1}-uploads:/volume busybox chown -R 1000:1000 /volume
+        '';
+        wantedBy = [ "docker-${app}-root.target" ];
+        after = [ "docker-volume-${app}-${app1}-uploads.service" ];
+        before = [ "docker-${app}-${app1}.service" ];
+        requires = [ "docker-volume-${app}-${app1}-uploads.service" ];
+      };
+      "docker-chown-${app}-${app1}-logs" = {
+        path = [ pkgs.docker ];
+        script = ''
+          docker run --rm -v ${app}-${app1}-logs:/volume busybox chown -R 1000:1000 /volume
+        '';
+        wantedBy = [ "docker-${app}-root.target" ];
+        after = [ "docker-volume-${app}-${app1}-logs.service" ];
+        before = [ "docker-${app}-${app1}.service" ];
+        requires = [ "docker-volume-${app}-${app1}-logs.service" ];
       };
       
       "docker-${app}-${app2}" = {
