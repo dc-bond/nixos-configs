@@ -1,5 +1,6 @@
 { 
   pkgs, 
+  lib,
   configVars,
   config,
   ... 
@@ -162,6 +163,10 @@ let
         log_info "results.txt does not exist or has already been removed."
     fi
 
+    # Update nextcloud database to ensure deleted files are accounted for
+    log_info "Updating Nextcloud database to ensure deleted files are accounted for..."
+    ${lib.getExe config.services.nextcloud.occ} files:scan --all
+    
     # Generate a date-time string for email subject
     CURRENT_DATETIME=$(date "+%Y-%m-%d %H:%M:%S")
 
