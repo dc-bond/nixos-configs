@@ -352,15 +352,15 @@ in
           #============#
           
           ANTHROPIC_API_KEY=${config.sops.placeholder.librechatAnthropicApiKey}
-          ANTHROPIC_MODELS=claude-opus-4-20250514,claude-sonnet-4-20250514,claude-3-5-haiku-20241022
+          ANTHROPIC_MODELS=claude-opus-4-20250514,claude-sonnet-4-20250514
           
           #============#
           # OpenAI     #
           #============#
           
-          OPENAI_API_KEY=${config.sops.placeholder.librechatOpenaiApiKey}
-          OPENAI_MODELS=gpt-4.1,gpt-4o-mini
-          DEBUG_OPENAI=false
+          #OPENAI_API_KEY=${config.sops.placeholder.librechatOpenaiApiKey}
+          #OPENAI_MODELS=gpt-5,gpt-5-mini,gpt-5-nano
+          #DEBUG_OPENAI=false
           
           #====================#
           #   Assistants API   #
