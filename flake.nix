@@ -108,6 +108,24 @@
           }
         ];
       };
+
+      juniper = nixpkgs.lib.nixosSystem {
+        system = "x86_64-linux";
+        inherit specialArgs;
+        modules = [
+          ./hosts/juniper/configuration.nix
+          home-manager.nixosModules.home-manager
+          {
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              users.chris = import ./hosts/juniper/chris/home.nix;
+              users.root = import ./hosts/juniper/root/home.nix;
+              extraSpecialArgs = specialArgs;
+            };
+          }
+        ];
+      };
       
     };
   };

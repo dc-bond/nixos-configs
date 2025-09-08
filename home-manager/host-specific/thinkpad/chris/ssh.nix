@@ -35,6 +35,16 @@
       #  user = "${configVars.userName}";
       #  port = 22;
       #};
+      "juniper" = {
+        hostname = "${configVars.juniperIp}";
+        user = "${configVars.userName}";
+        port = 28764;
+      };
+      "juniper-tailscale" = {
+        hostname = "${configVars.juniperTailscaleIp}";
+        user = "${configVars.userName}";
+        port = 22;
+      };
       "unifi-usg" = {
         hostname = "${configVars.unifiUsgIp}";
         user = "dcbond";

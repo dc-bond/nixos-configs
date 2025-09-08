@@ -10,8 +10,6 @@
 
 {
 
-  environment.variables.NIXOS_OZONE_WL = "1";
-
   environment.systemPackages = with pkgs; [
     (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
     age # encryption tool
@@ -40,7 +38,6 @@
     cool-retro-term # retro terminal
     feh # simple image viewer
     wgnord # nordvpn
-    brave # web browser
   ];
 
   imports = lib.flatten [
@@ -89,8 +86,10 @@
       "scripts/rebuild/rebuild-local-thinkpad.nix"
       "scripts/rebuild/rebuild-remote-aspen.nix"
       "scripts/rebuild/rebuild-remote-cypress.nix"
+      "scripts/rebuild/rebuild-remote-juniper.nix"
       "scripts/deploy/deploy-aspen.nix"
       "scripts/deploy/deploy-cypress.nix"
+      "scripts/deploy/deploy-juniper.nix"
     ])
   ];
 

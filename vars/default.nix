@@ -16,10 +16,10 @@
   aspenTailscaleIp = "100.68.250.108";
   thinkpadLanIp = "192.168.1.62";
   thinkpadTailscaleIp = "100.90.150.101";
-  opticonLanIp = "192.168.1.2";
-  opticonTailscaleIp = "100.92.225.78";
   cypressLanIp = "192.168.1.89";
   cypressTailscaleIp = "100.84.248.69";
+  #juniperIp = "192.168.1.888";
+  #juniperTailscaleIp = "100.92.225.78";
 
   unifiUsgIp = "192.168.1.1";
   unifiSwitch8Ip = "192.168.1.199";
