@@ -9,7 +9,7 @@
 let
 
   HOST = "juniper";
-  IPV4 = ""; # set to correct ipv4 address
+  IPV4 = "178.156.133.218";
   
   deployJuniperScript = pkgs.writeShellScriptBin "deployJuniper" ''
     #!/usr/bin/env bash

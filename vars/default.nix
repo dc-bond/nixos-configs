@@ -18,8 +18,8 @@
   thinkpadTailscaleIp = "100.90.150.101";
   cypressLanIp = "192.168.1.89";
   cypressTailscaleIp = "100.84.248.69";
-  #juniperIp = "192.168.1.888";
-  #juniperTailscaleIp = "100.92.225.78";
+  juniperIp = "178.156.133.218";
+  juniperTailscaleIp = "100.91.225.78";
 
   unifiUsgIp = "192.168.1.1";
   unifiSwitch8Ip = "192.168.1.199";

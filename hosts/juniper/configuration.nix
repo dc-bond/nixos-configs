@@ -27,7 +27,6 @@
       "hosts/juniper/hardware-configuration.nix"
 
       #"nixos-system/common/cloud-backups.nix"
-      "nixos-system/common/boot.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/zsh.nix"
       "nixos-system/common/sops.nix"
@@ -44,6 +43,7 @@
       "nixos-system/host-specific/juniper/users.nix"
       "nixos-system/host-specific/juniper/sshd.nix"
       "nixos-system/host-specific/juniper/networking.nix"
+      "nixos-system/host-specific/juniper/boot.nix"
       #"nixos-system/host-specific/juniper/tailscale.nix"
     ])
   ];

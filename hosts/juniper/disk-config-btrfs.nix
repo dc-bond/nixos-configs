@@ -14,21 +14,26 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/nvme"; # REPLACE WITH ACTUAL DEVICE PATH
+        device = "/dev/sda";
         content = {
           type = "gpt";
           partitions = {
   
-            ESP = {
-              size = "512M";
-              type = "EF00";
-              content = {
-                type = "filesystem";
-                format = "vfat";
-                mountpoint = "/boot";
-                mountOptions = [ "umask=0077" ];
-              };
+            bios-grub = {
+              size = "2M";
+              type = "EF02";
             };
+
+            #ESP = {
+            #  size = "512M";
+            #  type = "EF00";
+            #  content = {
+            #    type = "filesystem";
+            #    format = "vfat";
+            #    mountpoint = "/boot";
+            #    mountOptions = [ "umask=0077" ];
+            #  };
+            #};
   
             root = {
               size = "100%";
