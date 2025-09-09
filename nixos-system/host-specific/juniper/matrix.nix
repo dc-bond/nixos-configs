@@ -127,28 +127,6 @@ in
           locations."= /.well-known/matrix/server".extraConfig = mkWellKnown serverConfig;
           locations."= /.well-known/matrix/client".extraConfig = mkWellKnown clientConfig;
         };
-        #"comms.${configVars.domain2}" = {
-        #  enableACME = false;
-        #  forceSSL = false;
-        #  root = pkgs.element-web.override {
-        #    conf = {
-        #      #default_theme = "dark";
-        #      default_server_config = {
-        #        "m.homeserver" = {
-        #          "base_url" = "https://matrix.${configVars.domain2}";
-        #          "server_name" = "${configVars.domain2}";
-        #        };
-        #      };
-        #      brand = "Bond Encrypted Communications";
-        #    };
-        #  };
-        #  listen = [
-        #    {
-        #      addr = "127.0.0.1"; 
-        #      port = 8077;
-        #    }
-        #  ];
-        #};
         "matrix.${configVars.domain2}" = {
           enableACME = false;
           forceSSL = false;
