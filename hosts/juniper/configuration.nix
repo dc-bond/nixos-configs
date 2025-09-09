@@ -18,6 +18,7 @@
     pfetch # system info displayed on shell startup
     btop # system monitor
     ethtool # network tools
+    dig # dns lookup tool
   ];
 
 
@@ -30,7 +31,6 @@
       "nixos-system/common/misc.nix"
       "nixos-system/common/zsh.nix"
       "nixos-system/common/sops.nix"
-      "nixos-system/common/fonts.nix"
       "nixos-system/common/nixpkgs.nix"
       #"nixos-system/common/oci-containers.nix"
       #"nixos-system/common/lldap.nix" # requires postgresql.nix

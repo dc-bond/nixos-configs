@@ -115,6 +115,7 @@
             rule = "Host(`traefik-${config.networking.hostName}.${configVars.domain2}`)";
             service = "api@internal";
             middlewares = [
+              "private-whitelist"
               "secure-headers"
             ];
             tls = {
@@ -133,6 +134,17 @@
             };
           };
           middlewares = {
+            private-whitelist = {
+              ipAllowList = {
+                sourceRange = [
+                  "192.168.1.0/24" # LAN
+                  "${configVars.thinkpadTailscaleIp}" # thinkpad tailscale IP
+                  "${configVars.chrisIphone15TailscaleIp}" # chris iPhone tailscale IP
+                  "${configVars.daniellePixel7aTailscaleIp}" # danielle pixel 7a tailscale IP
+                  #"${configVars.sydneyIphone6TailscaleIp}" # sydney iphone 6 tailscale IP
+                ];
+              };
+            };
             secure-headers = {
               headers = {
                 sslRedirect = true;

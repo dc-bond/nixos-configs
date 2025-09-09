@@ -76,7 +76,6 @@
       "nixos-system/common/authelia-dcbond.nix" # requires lldap.nix
       "nixos-system/common/stirling-pdf.nix"
       "nixos-system/common/matrix.nix" # requires postgresql.nix
-      "nixos-system/common/privatebin.nix"
       "nixos-system/common/dcbond-root.nix"
       "nixos-system/common/oci-containers.nix"
       "nixos-system/common/oci-fava.nix"

@@ -49,7 +49,7 @@ in
         PHOTOPRISM_SITE_DESCRIPTION = "${configVars.userLastName} Family Photos and Videos";
         PHOTOPRISM_SITE_AUTHOR = "${configVars.userFullName}";
         NVIDIA_VISIBLE_DEVICES = "all";
-        PHOTOPRISM_INDEX_SCHEDULE = "@every 1h";
+        PHOTOPRISM_INDEX_SCHEDULE = "";
       };
     };
 
@@ -72,6 +72,7 @@ in
         service = "${app}";
         middlewares = [
           "secure-headers"
+          "private-whitelist"
         ];
         tls = {
           certResolver = "cloudflareDns";

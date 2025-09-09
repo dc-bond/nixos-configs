@@ -20,6 +20,7 @@ in
       rule = "Host(`${app}.${configVars.domain2}`)";
       service = "${app}";
       middlewares = [
+        "private-whitelist"
         "secure-headers"
       ];
       tls = {

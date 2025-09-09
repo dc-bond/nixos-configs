@@ -48,7 +48,7 @@ in
       "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
       "traefik.http.routers.${app}.tls" = "true";
       "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-      "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
+      "traefik.http.routers.${app}.middlewares" = "private-whitelist@file,secure-headers@file";
       "traefik.http.services.${app}.loadbalancer.server.port" = "8091"; # port for browser interface
     };
   };

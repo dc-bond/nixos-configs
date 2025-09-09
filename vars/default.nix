@@ -20,6 +20,9 @@
   cypressTailscaleIp = "100.84.248.69";
   juniperIp = "178.156.133.218";
   juniperTailscaleIp = "100.70.221.14";
+  chrisIphone15TailscaleIp = "100.123.43.13";
+  daniellePixel7aTailscaleIp = "100.91.224.34";
+  sydneyIphone6TailscaleIp = "100.122.145.11";
 
   unifiUsgIp = "192.168.1.1";
   unifiSwitch8Ip = "192.168.1.199";

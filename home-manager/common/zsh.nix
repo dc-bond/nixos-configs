@@ -21,7 +21,8 @@
       #strategy = ["history"];
     };
     defaultKeymap = "viins";
-    initExtra = # added to zsh interactive shell (.zshrc)
+    #initExtra = # added to zsh interactive shell (.zshrc)
+    initContent = # added to zsh interactive shell (.zshrc)
     ''
       pfetch     
     '';

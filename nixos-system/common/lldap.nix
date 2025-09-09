@@ -68,8 +68,9 @@ in
         rule = "Host(`${app}.${configVars.domain1}`)";
         service = "${app}";
         middlewares = [
-          #"authelia-dcbond"
+          "authelia-dcbond"
           "secure-headers"
+          "private-whitelist"
         ];
         tls = {
           certResolver = "cloudflareDns";

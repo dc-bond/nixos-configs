@@ -10,10 +10,9 @@ lib,
 
 let
   app = "matrix-synapse";
-  fqdn = "matrix.${configVars.domain2}";
+  fqdn = "matrix.${configVars.domain1}";
   baseUrl = "https://${fqdn}";
   clientConfig."m.homeserver".base_url = baseUrl;
-  serverConfig."m.server" = "${fqdn}:443";
   mkWellKnown = data: ''
     default_type application/json;
     add_header Access-Control-Allow-Origin *;
@@ -115,7 +114,7 @@ in
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
       virtualHosts = {
-        "${configVars.domain2}" = {
+        "${configVars.domain1}" = {
           enableACME = false;
           forceSSL = false;
           listen = [
@@ -124,10 +123,9 @@ in
               port = 8076;
             }
           ];
-          locations."= /.well-known/matrix/server".extraConfig = mkWellKnown serverConfig;
           locations."= /.well-known/matrix/client".extraConfig = mkWellKnown clientConfig;
         };
-        "matrix.${configVars.domain2}" = {
+        "matrix.${configVars.domain1}" = {
           enableACME = false;
           forceSSL = false;
           locations."/" = {
@@ -168,13 +166,10 @@ in
         };
         version = 1;
       };
-      #plugins = with config.services.matrix-synapse.package.plugins; [
-      #  matrix-synapse-ldap3
-      #];
       settings = {
         redis.enabled = true;
-        server_name = configVars.domain2;
-        public_baseurl = "https://matrix.${configVars.domain2}";
+        server_name = configVars.domain1;
+        public_baseurl = "https://matrix.${configVars.domain1}";
         enable_registration = false;
         enable_metrics = false;
         database = {
@@ -195,7 +190,6 @@ in
               {
                 names = [ 
                   "client" 
-                  "federation" 
                 ];
                 compress = true;
               } 
@@ -203,31 +197,13 @@ in
           }
         ];
         turn_uris = [
-          #"turn:turn.${configVars.domain2}:3478?transport=tcp" # force UDP
-          "turn:turn.${configVars.domain2}:3478?transport=udp" 
-          #"turns:turn.${configVars.domain2}:5349?transport=tcp" # force UDP
-          "turns:turn.${configVars.domain2}:5349?transport=udp" 
+          #"turn:turn.${configVars.domain1}:3478?transport=tcp" # force UDP
+          "turn:turn.${configVars.domain1}:3478?transport=udp" 
+          #"turns:turn.${configVars.domain1}:5349?transport=tcp" # force UDP
+          "turns:turn.${configVars.domain1}:5349?transport=udp" 
         ];
         turn_user_lifetime = "1h";
         turn_allow_guests = false;
-        #workers = {
-        #  "client" = {
-        #    worker_listeners = [
-        #      {
-        #        type = "http";
-        #        port = 9094;
-        #        bind_addresses = [ "127.0.0.1" ];
-        #        tls = false;
-        #        x_forwarded = true;
-        #        resources = [
-        #          {
-        #          names = [ "client" ];
-        #          }
-        #        ];
-        #      }
-        #    ];
-        #  };
-        #};
       };
       extraConfigFiles = [
         "/run/secrets/rendered/matrix-extra-conf"
@@ -241,15 +217,15 @@ in
       no-udp = false;
       no-tcp-relay = true; # force UDP only
       no-udp-relay = false;
-      listening-ips = [ "192.168.1.89" ];
+      listening-ips = [ "${configVars.juniperIp}" ];
       listening-port = 3478;
       tls-listening-port = 5349;
-      relay-ips = ["192.168.1.89" ];
+      relay-ips = ["${configVars.juniperIp}" ];
       min-port = 50100;
       max-port = 50200; # only anticipate a handful of concurrent calls, so only opening 100 ports which should still be on the liberal side
       use-auth-secret = true;
       static-auth-secret-file = "${config.sops.secrets.coturnStaticAuthSecret.path}";
-      realm = "turn.${configVars.domain2}";
+      realm = "turn.${configVars.domain1}";
       cert = "/etc/turnserver/cert.pem";
       pkey = "/etc/turnserver/key.pem";
       dh-file = "/etc/turnserver/dh.pem";
@@ -282,17 +258,11 @@ in
         
     traefik = {
 
-      staticConfigOptions.entryPoints = {
-        matrix-federation = {
-          address = ":8448/tcp";
-        };
-      };
-
       dynamicConfigOptions.http = {
         routers = {
           "matrix-web" = {
             entrypoints = ["websecure"];
-            rule = "Host(`matrix.${configVars.domain2}`)";
+            rule = "Host(`matrix.${configVars.domain1}`)";
             service = "matrix-web";
             middlewares = [
               "secure-headers"
@@ -304,7 +274,7 @@ in
           };
           "matrix-client-api" = {
             entrypoints = ["websecure"];
-            rule = "Host(`matrix.${configVars.domain2}`) && PathPrefix(`/_matrix`)";
+            rule = "Host(`matrix.${configVars.domain1}`) && PathPrefix(`/_matrix`)";
             service = "${app}";
             middlewares = [
               "matrix-headers"
@@ -317,47 +287,12 @@ in
           };
           "synapse-client-api" = {
             entrypoints = ["websecure"];
-            rule = "Host(`matrix.${configVars.domain2}`) && PathPrefix(`/_synapse/client`)";
+            rule = "Host(`matrix.${configVars.domain1}`) && PathPrefix(`/_synapse/client`)";
             service = "${app}";
             middlewares = [
               "matrix-headers"
               "matrix-body-limit"
             ];
-            tls = {
-              certResolver = "cloudflareDns";
-              options = "tls-13@file";
-            };
-          };
-          "matrix-federation-api" = {
-            entrypoints = ["matrix-federation"];
-            rule = "Host(`matrix.${configVars.domain2}`) && PathPrefix(`/_matrix`)";
-            service = "${app}";
-            middlewares = [
-              "matrix-headers"
-              "matrix-body-limit"
-            ];
-            tls = {
-              certResolver = "cloudflareDns";
-              options = "tls-13@file";
-            };
-          };
-          "synapse-federation-api" = {
-            entrypoints = ["matrix-federation"];
-            rule = "Host(`matrix.${configVars.domain2}`) && PathPrefix(`/_synapse/client`)";
-            service = "${app}";
-            middlewares = [
-              "matrix-headers"
-              "matrix-body-limit"
-            ];
-            tls = {
-              certResolver = "cloudflareDns";
-              options = "tls-13@file";
-            };
-          };
-          "matrix-wellknown-server" = {
-            entrypoints = ["websecure"];
-            rule = "Host(`${configVars.domain2}`) && PathPrefix(`/.well-known/matrix/server`)";
-            service = "matrix-wellknown";
             tls = {
               certResolver = "cloudflareDns";
               options = "tls-13@file";
@@ -365,25 +300,13 @@ in
           };
           "matrix-wellknown-client" = {
             entrypoints = ["websecure"];
-            rule = "Host(`${configVars.domain2}`) && PathPrefix(`/.well-known/matrix/client`)";
+            rule = "Host(`${configVars.domain1}`) && PathPrefix(`/.well-known/matrix/client`)";
             service = "matrix-wellknown";
             tls = {
               certResolver = "cloudflareDns";
               options = "tls-13@file";
             };
           };
-          #"element-web" = {
-          #  entrypoints = ["websecure"];
-          #  rule = "Host(`comms.${configVars.domain2}`)";
-          #  service = "element-web";
-          #  middlewares = [
-          #    "secure-headers"
-          #  ];
-          #  tls = {
-          #    certResolver = "cloudflareDns";
-          #    options = "tls-13@file";
-          #  };
-          #};
         };
         middlewares = {
           matrix-body-limit.buffering = {
@@ -407,16 +330,6 @@ in
               ];
             };
           };
-          #"matrix-client-worker" = {
-          #  loadBalancer = {
-          #    passHostHeader = true;
-          #    servers = [
-          #      {
-          #        url = "http://127.0.0.1:9094";
-          #      }
-          #    ];
-          #  };
-          #};
           "matrix-web" = {
             loadBalancer = {
               passHostHeader = true;
@@ -437,16 +350,6 @@ in
               ];
             };
           };
-          #"element-web" = {
-          #  loadBalancer = {
-          #    passHostHeader = true;
-          #    servers = [
-          #      {
-          #        url = "http://127.0.0.1:8077";
-          #      }
-          #    ];
-          #  };
-          #};
         };
       };
     };
@@ -463,7 +366,7 @@ in
       "traefik-certs-dumper:/var/lib/docker:rw" # not needed for backup
     ];
     environment = { 
-      DOMAIN = "${configVars.domain2}";
+      DOMAIN = "${configVars.domain1}";
       OVERRIDE_UID = "249"; # turnserver user
       OVERRIDE_GID = "249"; # turnserver group
     };

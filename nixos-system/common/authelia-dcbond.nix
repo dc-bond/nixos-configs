@@ -59,7 +59,7 @@ in
             disable = false;
             display_name = "Two-Factor Authentication (2FA)";
             attestation_conveyance_preference = "indirect";
-            user_verification = "preferred";
+            selection_criteria.user_verification = "preferred";
             timeout = "30s";
           };
           log = {
