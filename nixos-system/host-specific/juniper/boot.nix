@@ -9,7 +9,6 @@
     loader = {
       grub = {
         enable = true;
-        device = "/dev/sda";
         efiSupport = false;
         configurationLimit = 3; # only display last 3 generations
       };

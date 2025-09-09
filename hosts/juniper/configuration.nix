@@ -44,7 +44,7 @@
       "nixos-system/host-specific/juniper/sshd.nix"
       "nixos-system/host-specific/juniper/networking.nix"
       "nixos-system/host-specific/juniper/boot.nix"
-      #"nixos-system/host-specific/juniper/tailscale.nix"
+      "nixos-system/host-specific/juniper/tailscale.nix"
     ])
   ];
 
