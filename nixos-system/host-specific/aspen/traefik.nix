@@ -30,11 +30,12 @@
     CF_API_KEY_FILE = "${config.sops.secrets.cloudflareApiKey.path}"; 
   };
 
+  users.users.traefik.extraGroups = [ "docker" ]; # add traefik to docker group to enable docker socket access
+
   services = {
 
     traefik = {
       enable = true;
-      group = "docker";
 
       staticConfigOptions = {
         api = {
@@ -54,6 +55,29 @@
             "500-599"
           ];
         };
+        #log = { # logs to journal under traefik.service in json format
+        #  level = "WARN";
+        #  format = "json";
+        #  noColor = false;
+        #};
+        #accessLog = { # logs to journal under traefik.service in json format
+        #  addInternals = false;
+        #  format = "json";
+        #  bufferingSize = 100;
+        #  filters.statusCodes = [ "200-599" ];
+        #  fields = {
+        #    defaultMode = "keep";
+        #    names.ClientUsername = "drop";
+        #    headers = {
+        #      defaultMode = "keep"; 
+        #      names = {
+        #        "User-Agent" = "redact";      # redact UA to avoid filling logs with attacker UA spam
+        #        "Authorization" = "drop";     # never log credentials
+        #        "Cookie" = "drop";            # drop cookies; often session tokens
+        #      };
+        #    };
+        #  };
+        #};
         entryPoints = {
           web = {
             address = ":80/tcp";
@@ -91,7 +115,7 @@
                 "1.1.1.1:53" 
                 "1.0.0.1:53"
               ];
-              delayBeforeCheck = 5;
+              propagation.delayBeforeChecks = 5;
             };
             email = configVars.userEmail;
             keyType = "RSA4096";

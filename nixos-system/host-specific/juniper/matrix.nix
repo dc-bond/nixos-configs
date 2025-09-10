@@ -10,14 +10,6 @@ lib,
 
 let
   app = "matrix-synapse";
-  fqdn = "matrix.${configVars.domain1}";
-  baseUrl = "https://${fqdn}";
-  clientConfig."m.homeserver".base_url = baseUrl;
-  mkWellKnown = data: ''
-    default_type application/json;
-    add_header Access-Control-Allow-Origin *;
-    return 200 '${builtins.toJSON data}';
-  '';
 in 
 
 {
@@ -114,17 +106,6 @@ in
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
       virtualHosts = {
-        "${configVars.domain1}" = {
-          enableACME = false;
-          forceSSL = false;
-          listen = [
-            {
-              addr = "127.0.0.1"; 
-              port = 8076;
-            }
-          ];
-          locations."= /.well-known/matrix/client".extraConfig = mkWellKnown clientConfig;
-        };
         "matrix.${configVars.domain1}" = {
           enableACME = false;
           forceSSL = false;
@@ -197,9 +178,9 @@ in
           }
         ];
         turn_uris = [
-          #"turn:turn.${configVars.domain1}:3478?transport=tcp" # force UDP
+          #"turn:turn.${configVars.domain1}:3478?transport=tcp" # coturn is only listening on UDP, so commented out to not provide TCP option
           "turn:turn.${configVars.domain1}:3478?transport=udp" 
-          #"turns:turn.${configVars.domain1}:5349?transport=tcp" # force UDP
+          #"turns:turn.${configVars.domain1}:5349?transport=tcp" # coturn is only listening on UDP, so commented out to not provide TCP option
           "turns:turn.${configVars.domain1}:5349?transport=udp" 
         ];
         turn_user_lifetime = "1h";
@@ -237,10 +218,8 @@ in
         udp-self-balance
         cipher-list=TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256 dh2066
         denied-peer-ip=10.0.0.0-10.255.255.255    
-        #denied-peer-ip=192.168.0.0-192.168.255.255
         denied-peer-ip=172.16.0.0-172.31.255.255  
         denied-peer-ip=0.0.0.0-0.255.255.255       
-        #denied-peer-ip=100.64.0.0-100.127.255.255  
         denied-peer-ip=127.0.0.0-127.255.255.255   
         denied-peer-ip=169.254.0.0-169.254.255.255 
         denied-peer-ip=192.0.0.0-192.0.0.255       
@@ -253,6 +232,8 @@ in
         denied-peer-ip=::1                         
         denied-peer-ip=fc00::-fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
         denied-peer-ip=fe80::-febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff
+        #denied-peer-ip=192.168.0.0-192.168.255.255 # commented out to allow VOIP while on LAN
+        #denied-peer-ip=100.64.0.0-100.127.255.255 # commented out to allow VOIP while on tailscale
       '';
     };
         
@@ -298,15 +279,6 @@ in
               options = "tls-13@file";
             };
           };
-          "matrix-wellknown-client" = {
-            entrypoints = ["websecure"];
-            rule = "Host(`${configVars.domain1}`) && PathPrefix(`/.well-known/matrix/client`)";
-            service = "matrix-wellknown";
-            tls = {
-              certResolver = "cloudflareDns";
-              options = "tls-13@file";
-            };
-          };
         };
         middlewares = {
           matrix-body-limit.buffering = {
@@ -336,16 +308,6 @@ in
               servers = [
                 {
                   url = "http://127.0.0.1:8078";
-                }
-              ];
-            };
-          };
-          "matrix-wellknown" = {
-            loadBalancer = {
-              passHostHeader = true;
-              servers = [
-                {
-                  url = "http://127.0.0.1:8076";
                 }
               ];
             };

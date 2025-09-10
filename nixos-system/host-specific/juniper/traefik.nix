@@ -25,11 +25,12 @@
     CF_API_KEY_FILE = "${config.sops.secrets.cloudflareApiKey.path}"; 
   };
 
+  users.users.traefik.extraGroups = [ "docker" ]; # add traefik to docker group to enable docker socket access
+
   services = {
 
     traefik = {
       enable = true;
-      group = "docker";
 
       staticConfigOptions = {
         api = {
@@ -37,12 +38,12 @@
           insecure = false;
         };
         log = { # logs to journal under traefik.service
-          level = "INFO";
+          level = "WARN";
           noColor = false;
         };
         accessLog = { # logs to journal under traefik.service
-          addInternals = false;
-          bufferingSize = 100;
+          addInternals = true; # also show requests for the traefik dashboard
+          bufferingSize = 1;
           filters.statusCodes = [
             "200-206"
             "400-499"
@@ -86,7 +87,7 @@
                 "1.1.1.1:53" 
                 "1.0.0.1:53"
               ];
-              delayBeforeCheck = 5;
+              propagation.delayBeforeChecks = 5;
             };
             email = configVars.userEmail;
             keyType = "RSA4096";

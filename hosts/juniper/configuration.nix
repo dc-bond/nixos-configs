@@ -19,6 +19,7 @@
     btop # system monitor
     ethtool # network tools
     dig # dns lookup tool
+    jq # json parsing tool
   ];
 
 
@@ -32,12 +33,10 @@
       "nixos-system/common/zsh.nix"
       "nixos-system/common/sops.nix"
       "nixos-system/common/nixpkgs.nix"
-      #"nixos-system/common/oci-containers.nix"
+      "nixos-system/common/oci-containers.nix"
       #"nixos-system/common/lldap.nix" # requires postgresql.nix
-      #"nixos-system/common/postgresql.nix"
-      #"nixos-system/common/traefik.nix"
+      "nixos-system/common/postgresql.nix"
       #"nixos-system/common/authelia-dcbond.nix" # requires lldap.nix
-      #"nixos-system/common/matrix.nix" # requires postgresql.nix
 
       #"nixos-system/host-specific/juniper/borg-backups.nix"
       "nixos-system/host-specific/juniper/users.nix"
@@ -46,6 +45,7 @@
       "nixos-system/host-specific/juniper/boot.nix"
       "nixos-system/host-specific/juniper/tailscale.nix"
       "nixos-system/host-specific/juniper/traefik.nix"
+      "nixos-system/host-specific/juniper/matrix.nix"
     ])
   ];
 

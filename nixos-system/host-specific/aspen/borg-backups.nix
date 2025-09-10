@@ -81,8 +81,6 @@ in
           systemctl stop lldap.service
           systemctl stop authelia-dcbond.service
           systemctl stop redis-authelia-dcbond.service
-          systemctl stop matrix-synapse.service
-          systemctl stop redis-matrix-synapse.service
           systemctl stop uptime-kuma.service
           systemctl stop home-assistant.service
           systemctl stop mosquitto.service
@@ -97,11 +95,13 @@ in
           sleep 10 
           systemctl start mysql-backup.service
           systemctl start postgresqlBackup-lldap.service
-          systemctl start postgresqlBackup-matrix-synapse.service
           systemctl start postgresqlBackup-hass.service
           systemctl start postgresqlBackup-nextcloud.service
           sleep 10 
         '';
+          #systemctl stop matrix-synapse.service
+          #systemctl stop redis-matrix-synapse.service
+          #systemctl start postgresqlBackup-matrix-synapse.service
         postHook = ''
           set -x
           echo "spinning up services"
@@ -111,8 +111,6 @@ in
           systemctl start lldap.service
           systemctl start redis-authelia-dcbond.service
           systemctl start authelia-dcbond.service
-          systemctl start redis-matrix-synapse.service
-          systemctl start matrix-synapse.service
           systemctl start uptime-kuma.service
           systemctl start home-assistant.service
           systemctl start mosquitto.service
@@ -127,6 +125,8 @@ in
           echo "starting cloud backup"
           systemctl start cloudBackup.service
         '';
+          #systemctl start redis-matrix-synapse.service
+          #systemctl start matrix-synapse.service
         paths = [
           "/home/${configVars.userName}/email"
           "/var/lib/traefik"
@@ -135,8 +135,6 @@ in
           "/var/lib/private/uptime-kuma"
           "/var/lib/authelia-dcbond"
           "/var/lib/redis-authelia-dcbond"
-          "/var/lib/matrix-synapse"
-          "/var/lib/redis-matrix-synapse"
           "/var/lib/nextcloud"
           "/var/lib/hass"
           "/var/lib/mosquitto"
@@ -162,10 +160,12 @@ in
           "/var/backup/mysql/photoprism.gz"
           "/var/backup/postgresql/lldap.sql.gz"
           "/var/backup/postgresql/hass.sql.gz"
-          "/var/backup/postgresql/matrix-synapse.sql.gz"
           "/var/backup/postgresql/nextcloud.sql.gz"
           "${config.drives.storageDrive1}/media/family-media"
         ];
+          #"/var/lib/matrix-synapse"
+          #"/var/lib/redis-matrix-synapse"
+          #"/var/backup/postgresql/matrix-synapse.sql.gz"
         prune.keep = {
           daily = 7; # keep the last seven daily archives
           monthly = 3; # keep the last three monthly archives
