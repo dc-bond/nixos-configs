@@ -60,9 +60,9 @@
       "nixos-system/host-specific/aspen/networking.nix"
       "nixos-system/host-specific/aspen/sshd.nix"
       "nixos-system/host-specific/aspen/tailscale.nix"
+      "nixos-system/host-specific/aspen/traefik.nix"
       "nixos-system/host-specific/aspen/users.nix"
       
-      "nixos-system/common/traefik.nix"
       "nixos-system/common/postgresql.nix"
       "nixos-system/common/mysql.nix"
       "nixos-system/common/photoprism.nix" # requires mysql.nix

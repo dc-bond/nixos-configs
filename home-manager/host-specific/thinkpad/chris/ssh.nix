@@ -82,7 +82,7 @@
     sshKeys = [ # adds keygrip identifier to .gnupg/sshcontrol file and load gpg auth private key into gpg-agent
       "DB9ADBBE6FBD1F0E694AF25D012321D46E090E61"
     ];
-    pinentryPackage = pkgs.pinentry-rofi; # when enabling rofi in a compositor, requires rofi.nix module active
+    pinentry.package = pkgs.pinentry-rofi; # when enabling rofi in a compositor, requires rofi.nix module active
   };
 
 }

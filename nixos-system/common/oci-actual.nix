@@ -29,7 +29,7 @@ in
       "traefik.http.routers.${app}.rule" = "Host(`chris-allowance.${configVars.domain2}`)";
       "traefik.http.routers.${app}.tls" = "true";
       "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-      "traefik.http.routers.${app}.middlewares" = "private-whitelist@file,secure-headers@file";
+      "traefik.http.routers.${app}.middlewares" = "trusted-allow@file,secure-headers@file";
       "traefik.http.services.${app}.loadbalancer.server.port" = "5006";
     };
   };

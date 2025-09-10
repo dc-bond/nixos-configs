@@ -45,6 +45,7 @@
       "nixos-system/host-specific/juniper/networking.nix"
       "nixos-system/host-specific/juniper/boot.nix"
       "nixos-system/host-specific/juniper/tailscale.nix"
+      "nixos-system/host-specific/juniper/traefik.nix"
     ])
   ];
 

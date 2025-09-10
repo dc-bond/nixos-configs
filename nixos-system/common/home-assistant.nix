@@ -104,7 +104,7 @@ in
         service = "${app}";
         middlewares = [
           #"authelia" # ios app does not support authentication provider sittnig in front of home assistant
-          "private-whitelist"
+          "trusted-allow"
           "secure-headers"
         ];
         tls = {

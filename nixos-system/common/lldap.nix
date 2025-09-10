@@ -70,7 +70,7 @@ in
         middlewares = [
           "authelia-dcbond"
           "secure-headers"
-          "private-whitelist"
+          "trusted-allow"
         ];
         tls = {
           certResolver = "cloudflareDns";

@@ -72,7 +72,7 @@ in
         service = "${app}";
         middlewares = [
           "secure-headers"
-          "private-whitelist"
+          "trusted-allow"
         ];
         tls = {
           certResolver = "cloudflareDns";

@@ -40,7 +40,7 @@ lib,
             rule = "Host(`2025-hawaii.${configVars.domain2}`)";
             service = "2025-hawaii";
             middlewares = [
-              "private-whitelist"
+              "trusted-allow"
               "secure-headers"
             ];
             tls = {

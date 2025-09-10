@@ -65,7 +65,7 @@
           };
           websecure = {
             address = ":443/tcp";
-            forwardedHeaders.trustedIPs = [
+            forwardedHeaders.trustedIPs = [ # only trust forwarding headers from Cloudflare - https://www.cloudflare.com/ips/
               "173.245.48.0/20"
               "103.21.244.0/22"
               "103.22.200.0/22"
@@ -115,7 +115,7 @@
             rule = "Host(`traefik-${config.networking.hostName}.${configVars.domain2}`)";
             service = "api@internal";
             middlewares = [
-              "private-whitelist"
+              "trusted-allow"
               "secure-headers"
             ];
             tls = {
@@ -134,14 +134,13 @@
             };
           };
           middlewares = {
-            private-whitelist = {
+            trusted-allow = {
               ipAllowList = {
                 sourceRange = [
                   "192.168.1.0/24" # LAN
                   "${configVars.thinkpadTailscaleIp}" # thinkpad tailscale IP
                   "${configVars.chrisIphone15TailscaleIp}" # chris iPhone tailscale IP
                   "${configVars.daniellePixel7aTailscaleIp}" # danielle pixel 7a tailscale IP
-                  #"${configVars.sydneyIphone6TailscaleIp}" # sydney iphone 6 tailscale IP
                 ];
               };
             };
@@ -154,8 +153,8 @@
                 stsPreload = true; # force browsers to only connect over https
                 forceSTSHeader = true; # force browsers to only connect over https
                 contentTypeNosniff = true; # sets x-content-type-options header value to "nosniff", reduces risk of drive-by downloads
-                #frameDeny = true; # sets x-frame-options header value to "deny", prevents attacker from spoofing website in order to fool users into clicking something that is not there
-                customFrameOptionsValue = "SAMEORIGIN"; # suggested by nextcloud, overrides frameDeny
+                frameDeny = true; # sets x-frame-options header value to "deny", prevents attacker from spoofing website in order to fool users into clicking something that is not there
+                #customFrameOptionsValue = "SAMEORIGIN"; # suggested by nextcloud, overrides frameDeny
                 browserXssFilter = true; # sets x-xss-protection header value to "1; mode=block", which prevents page from loading if detecting a cross-site scripting attack
                 contentSecurityPolicy = [ # sets content-security-policy header to suggested value
                   "default-src"
