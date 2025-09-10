@@ -152,20 +152,6 @@ in
         fi
       '';
     };
-    #"cloudRestore" = {
-    #  description = "rclone restore from backblaze cloud storage";
-    #  serviceConfig = {
-    #    ExecStart = "${cloudRestoreScript}/bin/cloudRestore";
-    #    Restart = "on-failure";
-    #    EnvironmentFile = "${rcloneConf}";
-    #  };
-    #  preStart = ''
-    #    if [ ! -f "${rcloneConf}" ]; then
-    #      echo "rclone configuration file not found at ${rcloneConf}"
-    #      exit 1
-    #    fi
-    #  '';
-    #};
   };
 
 }

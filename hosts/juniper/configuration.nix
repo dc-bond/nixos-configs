@@ -19,7 +19,6 @@
     btop # system monitor
     ethtool # network tools
     dig # dns lookup tool
-    jq # json parsing tool
   ];
 
 
@@ -28,17 +27,15 @@
       "hosts/juniper/disk-config-btrfs.nix"
       "hosts/juniper/hardware-configuration.nix"
 
-      #"nixos-system/common/cloud-backups.nix"
+      "nixos-system/common/cloud-backups.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/zsh.nix"
       "nixos-system/common/sops.nix"
       "nixos-system/common/nixpkgs.nix"
       "nixos-system/common/oci-containers.nix"
-      #"nixos-system/common/lldap.nix" # requires postgresql.nix
       "nixos-system/common/postgresql.nix"
-      #"nixos-system/common/authelia-dcbond.nix" # requires lldap.nix
 
-      #"nixos-system/host-specific/juniper/borg-backups.nix"
+      "nixos-system/host-specific/juniper/borg-backups.nix"
       "nixos-system/host-specific/juniper/users.nix"
       "nixos-system/host-specific/juniper/sshd.nix"
       "nixos-system/host-specific/juniper/networking.nix"
