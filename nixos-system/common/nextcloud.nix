@@ -71,7 +71,7 @@ in
     ${app} = {
       enable = true;
       hostName = "nextcloud.${configVars.domain1}";
-      package = pkgs.nextcloud30; # manually increment with upgrades
+      package = pkgs.nextcloud31; # manually increment with upgrades
       database.createLocally = false; # enables postgres service if true, manual setup below
       configureRedis = true; # creates redis instance
       caching.redis = true; # load redis into nextcloud php
