@@ -32,7 +32,7 @@ let
     read -p "Enter the number of your choice for a host: " CHOICE
     
     # validate host selection
-    if [[ ! "$CHOICE" =~ ^[1-3]$ ]]; then
+    if [[ ! "$CHOICE" =~ ^[1-4]$ ]]; then
       echo "Error: Invalid selection."
       exit 1
     fi
@@ -68,7 +68,7 @@ let
     read -p "Enter the number of your choice for a host: " CHOICE
     
     # validate host selection
-    if [[ ! "$CHOICE" =~ ^[1-3]$ ]]; then
+    if [[ ! "$CHOICE" =~ ^[1-4]$ ]]; then
       echo "Error: Invalid selection."
       exit 1
     fi
@@ -96,7 +96,7 @@ let
     read -p "Enter the number of your choice for a host: " CHOICE
     
     # validate host selection
-    if [[ ! "$CHOICE" =~ ^[1-3]$ ]]; then
+    if [[ ! "$CHOICE" =~ ^[1-4]$ ]]; then
       echo "Error: Invalid selection."
       exit 1
     fi
