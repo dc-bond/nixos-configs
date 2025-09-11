@@ -8,14 +8,14 @@
 
 {
 
-  sops.secrets.tailscaleAuthKey = {};
+  sops.secrets.juniperTailscaleAuthKey = {};
 
   networking.firewall.trustedInterfaces = ["tailscale0"];
 
   services = {
     tailscale = {
       enable = true;
-      authKeyFile = "${config.sops.secrets.tailscaleAuthKey.path}";
+      authKeyFile = "${config.sops.secrets.juniperTailscaleAuthKey.path}";
       useRoutingFeatures = "server";
       extraDaemonFlags = ["--no-logs-no-support"];
       extraUpFlags = [

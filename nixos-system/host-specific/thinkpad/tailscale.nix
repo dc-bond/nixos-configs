@@ -8,14 +8,14 @@
 
 {
 
-  sops.secrets.tailscaleAuthKey = {};
+  sops.secrets.thinkpadTailscaleAuthKey = {};
 
   networking.firewall.trustedInterfaces = ["tailscale0"];
 
   services = {
     tailscale = {
       enable = true;
-      authKeyFile = "${config.sops.secrets.tailscaleAuthKey.path}";
+      authKeyFile = "${config.sops.secrets.thinkpadTailscaleAuthKey.path}";
       useRoutingFeatures = "client";
       extraDaemonFlags = ["--no-logs-no-support"];
       extraUpFlags = [

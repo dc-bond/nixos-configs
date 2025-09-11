@@ -8,7 +8,7 @@
 
 {
 
-  sops.secrets.tailscaleAuthKey = {};
+  sops.secrets.aspenTailscaleAuthKey = {};
 
   networking = {
     firewall.trustedInterfaces = ["tailscale0"];
@@ -22,7 +22,7 @@
   services = {
     tailscale = {
       enable = true;
-      authKeyFile = "${config.sops.secrets.tailscaleAuthKey.path}";
+      authKeyFile = "${config.sops.secrets.aspenTailscaleAuthKey.path}";
       useRoutingFeatures = "server";
       extraDaemonFlags = ["--no-logs-no-support"];
       extraUpFlags = [

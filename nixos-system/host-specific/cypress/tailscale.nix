@@ -8,14 +8,14 @@
 
 {
 
-  sops.secrets.tailscaleAuthKey = {};
+  sops.secrets.cypressTailscaleAuthKey = {};
 
   networking.firewall.trustedInterfaces = ["tailscale0"];
 
   services = {
     tailscale = {
       enable = true;
-      authKeyFile = "${config.sops.secrets.tailscaleAuthKey.path}";
+      authKeyFile = "${config.sops.secrets.cypressTailscaleAuthKey.path}";
       useRoutingFeatures = "server";
       extraDaemonFlags = ["--no-logs-no-support"];
       extraUpFlags = [
