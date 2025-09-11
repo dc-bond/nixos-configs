@@ -17,4 +17,4 @@ creation_rules: # when sops creates/edits a secrets.yaml file it encrypts using 
         - *aspen
         - *juniper
 
-# run 'sops updatekeys /home/chris/nixos-configs/hosts/[insert]/secrets.yaml' on the encrypted secrets file to update with new user or host encryption keys when added above
+# run 'sops updatekeys /home/chris/nixos-configs/secrets.yaml' on the encrypted secrets file to update with new user or host encryption keys when added above
