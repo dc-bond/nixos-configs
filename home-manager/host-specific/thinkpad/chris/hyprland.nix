@@ -117,9 +117,9 @@
         "size 451 607, class:(org.gnome.Calculator)"
       ];
       windowrule = [
-        "float, ^(com.saivert.pwvucontrol)$"
-        "float, ^(org.gnome.Calculator)$"
-        "float, ^(com.nextcloud.desktopclient.nextcloud)$"
+        "float, class:^(com.saivert.pwvucontrol)$"
+        "float, class:^(org.gnome.Calculator)$"
+        "float, class:^(com.nextcloud.desktopclient.nextcloud)$"
       ];
       input = {
         kb_layout = "us";

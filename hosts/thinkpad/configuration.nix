@@ -38,6 +38,7 @@
     cool-retro-term # retro terminal
     feh # simple image viewer
     wgnord # nordvpn
+    firejail # sandboxing tool
   ];
 
   imports = lib.flatten [
