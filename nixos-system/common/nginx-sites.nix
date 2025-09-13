@@ -17,6 +17,7 @@ lib,
       recommendedProxySettings = true;
       recommendedTlsSettings = true;
       virtualHosts = {
+
         "2025-hawaii.${configVars.domain2}" = {
           enableACME = false;
           forceSSL = false;
@@ -28,6 +29,19 @@ lib,
             }
           ];
         };
+
+        "gym-timers.${configVars.domain2}" = {
+          enableACME = false;
+          forceSSL = false;
+          root = "/var/www/gym-timers.opticon.dev";
+          listen = [
+            {
+              addr = "127.0.0.1"; 
+              port = 9016;
+            }
+          ];
+        };
+        
       };
     };
        
@@ -35,6 +49,7 @@ lib,
 
       dynamicConfigOptions.http = {
         routers = {
+
           "2025-hawaii" = {
             entrypoints = ["websecure"];
             rule = "Host(`2025-hawaii.${configVars.domain2}`)";
@@ -48,8 +63,24 @@ lib,
               options = "tls-13@file";
             };
           };
+
+          "gym-timers" = {
+            entrypoints = ["websecure"];
+            rule = "Host(`gym-timers.${configVars.domain2}`)";
+            service = "gym-timers";
+            middlewares = [
+              "trusted-allow"
+              "secure-headers"
+            ];
+            tls = {
+              certResolver = "cloudflareDns";
+              options = "tls-13@file";
+            };
+          };
         };
+
         services = {
+
           "2025-hawaii" = {
             loadBalancer = {
               passHostHeader = true;
@@ -60,6 +91,18 @@ lib,
               ];
             };
           };
+
+          "gym-timers" = {
+            loadBalancer = {
+              passHostHeader = true;
+              servers = [
+                {
+                  url = "http://127.0.0.1:9016";
+                }
+              ];
+            };
+          };
+          
         };
       };
     };
