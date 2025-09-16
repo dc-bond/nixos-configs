@@ -59,7 +59,6 @@
       "nixos-system/common/keyring.nix"
       "nixos-system/common/login.nix"
       "nixos-system/common/bluetooth.nix"
-      "nixos-system/common/firejail.nix"
       "nixos-system/host-specific/thinkpad/users.nix"
       "nixos-system/host-specific/thinkpad/sshd.nix"
       "nixos-system/host-specific/thinkpad/networking.nix"

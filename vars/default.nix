@@ -9,7 +9,6 @@
   userLastName = "Bond";
   userFullName = "Chris Bond";
   userEmail = "chris@dcbond.com";
-  #userEmail = inputs.nix-secrets.userEmail;
   userGpgPubKey = "DB9ADBBE6FBD1F0E694AF25D012321D46E090E61";
 
   aspenLanIp = "192.168.1.2";
