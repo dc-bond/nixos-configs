@@ -1,5 +1,6 @@
 { 
   pkgs,
+  lib,
   config,
   configVars,
   ... 
@@ -10,6 +11,20 @@ let
 in
 
 {
+  
+  users = {
+    users.pinchflat = {
+      isSystemUser = true;
+      group = "pinchflat";
+    };
+    groups.pinchflat = {};
+  };
+
+  systemd.services.pinchflat.serviceConfig = {
+    DynamicUser = lib.mkForce false;
+    User = "pinchflat";
+    Group = "pinchflat";
+  };
 
   sops = {
     secrets.pinchflatSecretKeyBase = {};
@@ -22,8 +37,8 @@ in
 
   services.${app} = {
     enable = true;
-    logLevel = "warn";
-    secretsFile = "/run/secrets/rendered/pinchflat";
+    logLevel = "warning";
+    secretsFile = "/run/secrets/rendered/pinchflat-env";
     mediaDir = "${config.drives.storageDrive1}/media/yt-downloads";
     extraConfig = {
       TZ = "America/New_York";
