@@ -1,5 +1,6 @@
 { 
-  pkgs, 
+  pkgs,
+  config,
   configVars,
   ... 
 }: 
@@ -10,14 +11,22 @@ in
 
 {
 
-  sops.secrets.pinchflatSecretKeyBase = {};
+  sops = {
+    secrets.pinchflatSecretKeyBase = {};
+    templates."pinchflat-env" = {
+      content = ''
+        SECRET_KEY_BASE = ${config.sops.placeholder.pinchflatSecretKeyBase}
+      '';
+    };
+  };
 
   services.${app} = {
     enable = true;
-    logLevel = "debug";
+    logLevel = "warn";
+    secretsFile = "/run/secrets/rendered/pinchflat";
+    mediaDir = "${config.drives.storageDrive1}/media/yt-downloads";
     extraConfig = {
       TZ = "America/New_York";
-      SECRET_KEY_BASE = "${config.sops.placeholder.pinchflatSecretKeyBase}";
     };
   };
 
