@@ -88,6 +88,7 @@
       "nixos-system/common/oci-searxng.nix"
       "nixos-system/common/oci-recipesage.nix"
       "nixos-system/common/oci-librechat.nix"
+      "nixos-system/common/pinchflat.nix"
 
       "scripts/media-transfer.nix"
     ])
