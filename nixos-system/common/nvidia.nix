@@ -16,10 +16,6 @@
       open = false; # use open source nvidia kernel module, only works on Turning or newer cards and driver 515.43.04+ (GTX1060 is older)
       nvidiaSettings = false; # enable nvidia settings menu accessible via 'nvidia-settings'
       package = config.boot.kernelPackages.nvidiaPackages.stable;
-      #prime = {
-      #  sync.enable = true;
-      #  nvidiaBusId = "PCI:9:0:0";
-      #};
     };
     nvidia-container-toolkit.enable = true;  # enable GPU utilization by oci-containers
   };
@@ -33,15 +29,5 @@
   ];
   
   virtualisation.docker.daemon.settings.features.cdi = true;
-  #virtualisation.docker.rootless.daemon.settings.features.cdi = true; # enable GPU utilization by oci-containers
-
-  #boot.kernelParams = [ "nvidia-drm.modeset=1" ];
-  
-  # Enable GBM (Generic Buffer Manager) for Wayland support
-  #environment.variables = {
-  #  GBM_BACKEND = "nvidia";
-  #  __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-  #  WLR_NO_HARDWARE_CURSORS = "1";  # Fix cursor issues in Wayland
-  #};
 
 }

@@ -258,6 +258,19 @@ in
               summaryModel: "togethercomputer/llama-2-7b-chat"
               forcePrompt: false
               modelDisplayLabel: "together.ai"
+
+            - name: "Local Models"
+                apiKey: ""
+                baseURL: "http://127.0.0.1:11438/v1"
+                models:
+                  default: ["mistral"]
+                  fetch: true
+                titleConvo: true
+                titleModel: "mistral"
+                summarize: false
+                summaryModel: "mistral"
+                forcePrompt: false
+                modelDisplayLabel: "Local Mistral"
       '';
       mode = "0644";
     };
