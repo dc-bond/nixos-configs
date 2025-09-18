@@ -90,6 +90,7 @@
       "nixos-system/common/oci-librechat.nix"
       "nixos-system/common/pinchflat.nix"
       "nixos-system/common/ollama.nix"
+      "nixos-system/common/n8n.nix"
 
       "scripts/media-transfer.nix"
     ])

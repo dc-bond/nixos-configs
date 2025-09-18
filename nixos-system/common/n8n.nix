@@ -43,16 +43,6 @@ in
         N8N_RUNNERS_ENABLED = true;
         NODE_ENV = "production";
         WEBHOOK_URL = "https://${app}.${configVars.domain2}/";
-
-        #database = {
-        #  type = "postgresdb";
-        #  postgresdb = {
-        #    host = "127.0.0.1";
-        #    port = 5432;
-        #    database = "${app}";
-        #    user = "${app}";
-        #  };
-        #};
       };
     };
 
