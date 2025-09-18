@@ -8,7 +8,7 @@
 
   programs.zsh = {
     shellAliases = {
-      rb = "rebuildLocalThinkpad";
+      rb = "sudo nixos-rebuild switch --flake github:dc-bond/nixos-configs#thinkpad";
       rbcypress = "rebuildRemoteCypress";
       rbaspen = "rebuildRemoteAspen";
       rbjuniper = "rebuildRemoteJuniper";
