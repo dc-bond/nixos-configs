@@ -7,6 +7,12 @@
 
 {
 
+  nixpkgs.config.packageOverrides = pkgs: {
+    ollama = pkgs.ollama.override {
+      cudaArches = [ "61" ]; # ensure ollama builds with cuda 6.1 for GTX 1060
+    };
+  };
+
   services.ollama = {
     enable = true;
     user = "ollama";

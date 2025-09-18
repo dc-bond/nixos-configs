@@ -40,22 +40,22 @@ in
         registration:
           socialLogins: ["discord", "facebook", "github", "google", "openid"]
          
-        #endpoints:
-        #  custom:
-        #    - name: "Ollama"
-        #      apiKey: "ollama"
-        #      baseURL: "http://192.168.1.2:11434/v1"
-        #      models:
-        #        default: [
-        #          "mistral"
-        #        ]
-        #        fetch: true
-        #      titleConvo: true
-        #      titleModel: "current_model"
-        #      summarize: false
-        #      summaryModel: "current_model"
-        #      forcePrompt: false
-        #      modelDisplayLabel: "Ollama"
+        endpoints:
+          custom:
+            - name: "Ollama"
+              apiKey: "ollama"
+              baseURL: "http://192.168.1.2:11434/v1"
+              models:
+                default: [
+                  "mistral"
+                ]
+                fetch: true
+              titleConvo: true
+              titleModel: "current_model"
+              summarize: false
+              summaryModel: "current_model"
+              forcePrompt: false
+              modelDisplayLabel: "Ollama"
       '';
       mode = "0644";
     };
@@ -122,7 +122,7 @@ in
           #                     Endpoints                     #
           #===================================================#
           
-          ENDPOINTS=openAI,anthropic
+          ENDPOINTS=openAI,anthropic,custom
           PROXY=
           
           #===================================#
