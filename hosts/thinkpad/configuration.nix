@@ -34,8 +34,6 @@
     i2c-tools # hardware interface tools required by ddcutil
     libreoffice-still # office suite
     element-desktop # matrix chat app
-    hollywood # fill terminal with melodramatic technobabble
-    cool-retro-term # retro terminal
     feh # simple image viewer
     wgnord # nordvpn
   ];
@@ -84,10 +82,6 @@
       "scripts/backup-recovery/recover-photoprism.nix"
       "scripts/backup-recovery/recover-recipesage.nix"
       "scripts/backup-recovery/recover-librechat.nix"
-      "scripts/rebuild/rebuild-local-thinkpad.nix"
-      "scripts/rebuild/rebuild-remote-aspen.nix"
-      "scripts/rebuild/rebuild-remote-cypress.nix"
-      "scripts/rebuild/rebuild-remote-juniper.nix"
       "scripts/deploy/deploy-aspen.nix"
       "scripts/deploy/deploy-cypress.nix"
       "scripts/deploy/deploy-juniper.nix"
