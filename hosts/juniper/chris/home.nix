@@ -16,7 +16,7 @@
       "home-manager/common/zsh.nix"
       "home-manager/common/starship.nix"
       "home-manager/host-specific/juniper/chris/ssh.nix"
-      #"home-manager/host-specific/juniper/chris/aliases.nix"
+      "home-manager/host-specific/juniper/chris/aliases.nix"
     ])
   ];
 
