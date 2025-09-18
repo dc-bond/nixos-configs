@@ -30,10 +30,10 @@ lib,
           ];
         };
 
-        "gym-timers.${configVars.domain2}" = {
+        "weekly-recipes.${configVars.domain2}" = {
           enableACME = false;
           forceSSL = false;
-          root = "/var/www/gym-timers.opticon.dev";
+          root = "/var/www/weekly-recipes.opticon.dev";
           listen = [
             {
               addr = "127.0.0.1"; 
@@ -64,10 +64,10 @@ lib,
             };
           };
 
-          "gym-timers" = {
+          "weekly-recipes" = {
             entrypoints = ["websecure"];
-            rule = "Host(`gym-timers.${configVars.domain2}`)";
-            service = "gym-timers";
+            rule = "Host(`weekly-recipes.${configVars.domain2}`)";
+            service = "weekly-recipes";
             middlewares = [
               "trusted-allow"
               "secure-headers"
@@ -92,7 +92,7 @@ lib,
             };
           };
 
-          "gym-timers" = {
+          "weekly-recipes" = {
             loadBalancer = {
               passHostHeader = true;
               servers = [
