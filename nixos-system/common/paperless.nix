@@ -47,13 +47,21 @@ in
       configureTika = true;
       settings = {
         PAPERLESS_ADMIN_USER = "${configVars.userEmail}";
-        PAPERLESS_REDIS = "redis://127.0.0.1:6379";
+        PAPERLESS_REDIS = "redis-${app}://127.0.0.1:6379";
         PAPERLESS_DBHOST = "127.0.0.1";
         PAPERLESS_DBENGINE = "postgresql";
         PAPERLESS_DBPORT = "5432";
         PAPERLESS_DBNAME = "${app}";
         PAPERLESS_DBUSER = "${app}";  
       };
+    };
+
+    redis.servers."${app}" = { # service name will be "redis-paperless"
+      enable = true;
+      user = "${app}";   
+      port = 0;
+      unixSocket = "/run/redis-${app}/redis.sock";
+      unixSocketPerm = 600;
     };
 
     postgresql = {
