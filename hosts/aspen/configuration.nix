@@ -90,7 +90,8 @@
       "nixos-system/common/oci-librechat.nix"
       "nixos-system/common/pinchflat.nix"
       "nixos-system/common/ollama.nix"
-      #"nixos-system/common/n8n.nix" # broken
+      #"nixos-system/common/n8n.nix" # won't build n8n package from source...
+      "nixos-system/common/paperless.nix"
 
       "scripts/media-transfer.nix"
     ])
