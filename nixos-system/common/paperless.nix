@@ -14,22 +14,13 @@ in
   sops = {
     secrets = {
       paperlessAdminPasswd = {};
+      paperlessPostgresPasswd = {};
     };
-    #templates = {
-    #  "${app}-env".content = ''
-    #    POSTGRES_DB=${config.sops.placeholder.recipesagePostgresDb}
-    #    POSTGRES_USER=${config.sops.placeholder.recipesagePostgresUser}
-    #    POSTGRES_PASSWORD=${config.sops.placeholder.recipesagePostgresPasswd}
-    #    POSTGRES_PORT=5432
-    #    POSTGRES_HOST=${app6}
-    #    POSTGRES_SSL=false
-    #    POSTGRES_LOGGING=false
-    #    DATABASE_URL=postgresql://${config.sops.placeholder.recipesagePostgresUser}:${config.sops.placeholder.recipesagePostgresPasswd}@${app6}:5432/${config.sops.placeholder.recipesagePostgresDb}
-    #  '';
-    #  "${app}-passwd".content = ''
-    #    ${config.sops.placeholder.paperlessAdminPasswd}
-    #  '';
-    #};
+    templates = {
+      "${app}-env".content = ''
+        PAPERLESS_DBPASS=${config.sops.placeholder.paperlessPostgresPasswd}
+      '';
+    };
   };
 
   services = {
@@ -41,9 +32,8 @@ in
       consumptionDir = "/var/lib/paperless/consumption";
       user = "${app}";
       database.createLocally = false; # manually set below
-      #environmentFile = [ config.sops.templates."${app}-env".path ];
+      environmentFile = [ config.sops.templates."${app}-env".path ];
       passwordFile = "${config.sops.secrets.paperlessAdminPasswd.path}";
-      #passwordFile = [ config.sops.templates."${app}-passwd".path ];
       configureTika = true;
       settings = {
         PAPERLESS_ADMIN_USER = "${configVars.userEmail}";
