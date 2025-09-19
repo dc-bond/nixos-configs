@@ -32,7 +32,7 @@ in
       consumptionDir = "/var/lib/paperless/consumption";
       user = "${app}";
       database.createLocally = false; # manually set below
-      environmentFile = [ config.sops.templates."${app}-env".path ];
+      environmentFile = "{config.sops.templates."${app}-env".path}";
       passwordFile = "${config.sops.secrets.paperlessAdminPasswd.path}";
       configureTika = true;
       settings = {
