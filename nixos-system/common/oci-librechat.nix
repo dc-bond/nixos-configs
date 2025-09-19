@@ -157,7 +157,7 @@ in
           #============#
           
           OPENAI_API_KEY=${config.sops.placeholder.librechatOpenaiApiKey}
-          OPENAI_MODELS=o3-2025-04-16
+          OPENAI_MODELS=gpt-4.1-2025-04-14
           #DEBUG_OPENAI=false
           
           #====================#
