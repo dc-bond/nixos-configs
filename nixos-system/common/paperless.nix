@@ -16,11 +16,11 @@ in
       paperlessAdminPasswd = {};
       paperlessPostgresPasswd = {};
     };
-    templates = {
-      "${app}-env".content = ''
-        PAPERLESS_DBPASS=${config.sops.placeholder.paperlessPostgresPasswd}
-      '';
-    };
+    #templates = {
+    #  "${app}-env".content = ''
+    #    PAPERLESS_DBPASS=${config.sops.placeholder.paperlessPostgresPasswd}
+    #  '';
+    #};
   };
 
   systemd.services = {
@@ -39,7 +39,7 @@ in
       consumptionDir = "/var/lib/paperless/consumption";
       user = "${app}";
       database.createLocally = false; # manually set below
-      environmentFile = "${config.sops.templates."${app}-env".path}";
+      #environmentFile = "${config.sops.templates."${app}-env".path}";
       passwordFile = "${config.sops.secrets.paperlessAdminPasswd.path}";
       configureTika = true;
       settings = {
@@ -50,6 +50,7 @@ in
         PAPERLESS_DBPORT = "5432";
         PAPERLESS_DBNAME = "${app}";
         PAPERLESS_DBUSER = "${app}";  
+        PAPERLESS_DBPASS = "${app}";  
       };
     };
 
