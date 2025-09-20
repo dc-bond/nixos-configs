@@ -11,16 +11,9 @@ in
 
 {
 
-  sops = {
-    secrets = {
-      paperlessAdminPasswd = {};
-      paperlessPostgresPasswd = {};
-    };
-    #templates = {
-    #  "${app}-env".content = ''
-    #    PAPERLESS_DBPASS=${config.sops.placeholder.paperlessPostgresPasswd}
-    #  '';
-    #};
+  sops.secrets = {
+    paperlessAdminPasswd = {};
+    paperlessPostgresPasswd = {};
   };
 
   systemd.services = {
@@ -39,7 +32,6 @@ in
       consumptionDir = "/var/lib/paperless/consumption";
       user = "${app}";
       database.createLocally = false; # manually set below
-      #environmentFile = "${config.sops.templates."${app}-env".path}";
       passwordFile = "${config.sops.secrets.paperlessAdminPasswd.path}";
       configureTika = true;
       settings = {
@@ -50,9 +42,11 @@ in
         PAPERLESS_DBPORT = "5432";
         PAPERLESS_DBNAME = "${app}";
         PAPERLESS_DBUSER = "${app}";  
-        #PAPERLESS_DBPASS = "${app}";  
+        PAPERLESS_GOTENBERG_URL = "http://127.0.0.1:${toString config.services.gotenberg.port}";
       };
     };
+
+    gotenberg.port = 3277;
 
     redis.servers."${app}" = { # service name will be "redis-paperless"
       enable = true;
