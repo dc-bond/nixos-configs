@@ -35,7 +35,7 @@ in
       configureTika = true;
       settings = {
         PAPERLESS_ADMIN_USER = "${configVars.userEmail}";
-        PAPERLESS_REDIS = "unix:///run/redis-${app}/redis.sock?db=0";
+        PAPERLESS_REDIS = "unix:///run/redis-${app}/redis.sock";
         PAPERLESS_DBHOST = "/run/postgresql";
         PAPERLESS_DBENGINE = "postgresql";
         PAPERLESS_DBPORT = "5432";
