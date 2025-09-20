@@ -13,7 +13,6 @@ in
 
   sops.secrets = {
     paperlessAdminPasswd = {};
-    paperlessPostgresPasswd = {};
   };
 
   systemd.services = {
@@ -31,7 +30,7 @@ in
       mediaDir = "/var/lib/paperless/media";
       consumptionDir = "/var/lib/paperless/consumption";
       user = "${app}";
-      address = "https://paperless.${configVars.domain2}";
+      address = "https://${app}.${configVars.domain2}";
       database.createLocally = false; # manually set below
       passwordFile = "${config.sops.secrets.paperlessAdminPasswd.path}";
       configureTika = true;
