@@ -30,7 +30,6 @@ in
       mediaDir = "/var/lib/paperless/media";
       consumptionDir = "/var/lib/paperless/consumption";
       user = "${app}";
-      address = "https://${app}.${configVars.domain2}";
       database.createLocally = false; # manually set below
       passwordFile = "${config.sops.secrets.paperlessAdminPasswd.path}";
       configureTika = true;
@@ -43,6 +42,7 @@ in
         PAPERLESS_DBNAME = "${app}";
         PAPERLESS_DBUSER = "${app}";  
         PAPERLESS_GOTENBERG_URL = "http://127.0.0.1:${toString config.services.gotenberg.port}";
+        PAPERLESS_URL = "https://${app}.${configVars.domain2}";
       };
     };
 
