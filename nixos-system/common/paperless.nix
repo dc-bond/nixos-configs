@@ -45,12 +45,12 @@ in
       settings = {
         PAPERLESS_ADMIN_USER = "${configVars.userEmail}";
         PAPERLESS_REDIS = "redis-${app}://127.0.0.1:6379";
-        PAPERLESS_DBHOST = "127.0.0.1";
+        PAPERLESS_DBHOST = "/run/postgresql";
         PAPERLESS_DBENGINE = "postgresql";
         PAPERLESS_DBPORT = "5432";
         PAPERLESS_DBNAME = "${app}";
         PAPERLESS_DBUSER = "${app}";  
-        PAPERLESS_DBPASS = "${app}";  
+        #PAPERLESS_DBPASS = "${app}";  
       };
     };
 
