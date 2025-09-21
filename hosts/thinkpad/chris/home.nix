@@ -17,7 +17,7 @@
       "home-manager/common/zsh.nix"
       "home-manager/common/pass.nix"
       "home-manager/common/starship.nix"
-      #"home-manager/common/email.nix"
+      "home-manager/common/email.nix"
       
       "home-manager/common/alacritty.nix"
       "home-manager/common/gammastep.nix"

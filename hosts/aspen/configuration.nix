@@ -45,9 +45,9 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      
       "hosts/aspen/disk-config-btrfs.nix"
       "hosts/aspen/hardware-configuration.nix"
+      
       "nixos-system/common/boot.nix"
       "nixos-system/common/zsh.nix"
       "nixos-system/common/misc.nix"

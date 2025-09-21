@@ -42,6 +42,7 @@
     (map configLib.relativeToRoot [
       "hosts/thinkpad/disk-config-btrfs-luks.nix"
       "hosts/thinkpad/hardware-configuration.nix"
+      
       "nixos-system/common/audio.nix"
       "nixos-system/common/boot.nix"
       "nixos-system/common/zsh.nix"
@@ -58,11 +59,13 @@
       "nixos-system/common/login.nix"
       "nixos-system/common/bluetooth.nix"
       "nixos-system/common/firejail.nix"
+
       "nixos-system/host-specific/thinkpad/users.nix"
       "nixos-system/host-specific/thinkpad/sshd.nix"
       "nixos-system/host-specific/thinkpad/networking.nix"
       "nixos-system/host-specific/thinkpad/tailscale.nix"
       "nixos-system/host-specific/thinkpad/borg-backups.nix"
+
       "scripts/backup-recovery/recover-family-media.nix"
       "scripts/backup-recovery/recover-traefik.nix"
       "scripts/backup-recovery/recover-authelia-dcbond.nix"
@@ -82,9 +85,12 @@
       "scripts/backup-recovery/recover-photoprism.nix"
       "scripts/backup-recovery/recover-recipesage.nix"
       "scripts/backup-recovery/recover-librechat.nix"
+      
       "scripts/deploy/deploy-aspen.nix"
       "scripts/deploy/deploy-cypress.nix"
       "scripts/deploy/deploy-juniper.nix"
+
+      "scripts/get-pass-repo.nix"
     ])
   ];
 

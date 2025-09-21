@@ -38,7 +38,7 @@
   '';
 
   programs = {
-    zsh.shellAliases.email = "mbsync --all; notmuch new; neomutt";
+    zsh.shellAliases."email" = "mbsync --all; notmuch new; neomutt";
     mbsync.enable = true;
     msmtp.enable = true;
     notmuch = {
@@ -53,12 +53,12 @@
         "spam"
       ];
     };
-    thunderbird = {
-      enable = true;
-      profiles."${configVars.userEmail}" = {
-        isDefault = true;
-      };
-    };
+    #thunderbird = {
+    #  enable = true;
+    #  profiles."${configVars.userEmail}" = {
+    #    isDefault = true;
+    #  };
+    #};
     neomutt = {
       enable = true;
       sourcePrimaryAccount = true;
