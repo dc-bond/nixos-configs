@@ -66,6 +66,11 @@
       sort = "reverse-date-received";
       binds = [
         {
+          action = "flag-message";
+          key = "+";
+          map = [ "index" "pager" ];
+        }
+        {
           action = "delete-message";
           key = "D";
           map = [ "index" "pager" ];
