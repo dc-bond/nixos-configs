@@ -43,6 +43,7 @@ in
         PAPERLESS_DBUSER = "${app}";  
         PAPERLESS_GOTENBERG_URL = "http://127.0.0.1:${toString config.services.gotenberg.port}";
         PAPERLESS_URL = "https://${app}.${configVars.domain2}";
+        PAPERLESS_APP_TITLE = "Bond Digital Archives";
       };
     };
 
