@@ -1,6 +1,5 @@
 { 
-  pkgs,
-  ...
+  pkgs
 }:
 
 pkgs.writeShellScriptBin "getPassRepo" ''
