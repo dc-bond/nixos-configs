@@ -3,7 +3,7 @@
   config
 }:
 
-pkgs.writeShellScriptBin "get-pass-repo" 
+pkgs.writeShellScriptBin "getPassRepo" 
 ''
   cd ~
   git clone git@github.com:dc-bond/.password-store.git

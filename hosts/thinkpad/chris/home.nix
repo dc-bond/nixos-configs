@@ -33,9 +33,11 @@
 
       "home-manager/host-specific/thinkpad/chris/hyprland.nix"
       "home-manager/host-specific/thinkpad/chris/waybar.nix"
-
-      "scripts/get-pass-repo.nix"
     ])
+  ];
+
+  home.packages = with pkgs; [
+    (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
   ];
 
 # home-manager module settings
