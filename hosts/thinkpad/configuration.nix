@@ -36,6 +36,7 @@
     element-desktop # matrix chat app
     feh # simple image viewer
     wgnord # nordvpn
+    openssl # openssl command line tool
   ];
 
   imports = lib.flatten [

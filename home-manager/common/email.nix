@@ -279,9 +279,9 @@
             "Trash"
           ];
         };
-        thunderbird = {
-          enable = true;
-        };
+        #thunderbird = {
+        #  enable = true;
+        #};
         mbsync = {
           enable = true;
           create = "maildir";
