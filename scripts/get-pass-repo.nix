@@ -3,7 +3,8 @@
   config
 }:
 
-pkgs.writeShellScriptBin "getPassRepo" ''
+pkgs.writeShellScriptBin "getPassRepo" 
+''
   cd ~
   git clone git@github.com:dc-bond/.password-store.git
   cat > ~/.password-store/.git/hooks/post-commit << 'END'
