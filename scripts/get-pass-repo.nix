@@ -19,4 +19,4 @@ let
 
 in
 
-  pkgs.writeShellScriptBin "getPassRepo" getPassRepoScript;
+  pkgs.writeShellScriptBin "getPassRepo" getPassRepoScript
