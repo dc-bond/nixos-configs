@@ -11,7 +11,7 @@
 {
 
   environment.systemPackages = with pkgs; [
-    (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
+    #(import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
     age # encryption tool
     mkpasswd # password hashing tool
     dig # dns lookup tool
