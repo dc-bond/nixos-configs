@@ -89,8 +89,6 @@
       "scripts/deploy/deploy-aspen.nix"
       "scripts/deploy/deploy-cypress.nix"
       "scripts/deploy/deploy-juniper.nix"
-
-      "scripts/get-pass-repo.nix"
     ])
   ];
 

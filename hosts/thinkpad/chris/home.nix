@@ -33,6 +33,8 @@
 
       "home-manager/host-specific/thinkpad/chris/hyprland.nix"
       "home-manager/host-specific/thinkpad/chris/waybar.nix"
+
+      "scripts/get-pass-repo.nix"
     ])
   ];
 
