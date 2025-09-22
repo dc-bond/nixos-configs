@@ -131,7 +131,6 @@
       };
       extraConfig = ''
         # general
-        set folder = ~/email/chris@dcbond.com
         set wait_key = no
         set timeout = 3
         set mail_check = 0
@@ -251,7 +250,7 @@
         userName = "${configVars.userEmail}";
         realName = "${configVars.userFullName}";
         passwordCommand = "pass email/${configVars.userEmail}";
-        primary = true;
+        #primary = true;
         imap = {
           host = "mail.privateemail.com";
           port = 993; 
