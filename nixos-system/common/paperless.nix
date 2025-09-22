@@ -15,20 +15,27 @@ in
     paperlessAdminPasswd = {};
   };
 
-  systemd.services = {
-    "${app}-scheduler" = {
-      requires = [ "postgresql.service" ];
-      after = [ "postgresql.service" ];
+  systemd = {
+    services = {
+      "${app}-scheduler" = {
+        requires = [ "postgresql.service" ];
+        after = [ "postgresql.service" ];
+      };
     };
+    tmpfiles.rules = [
+      "d /srv/${app}/consumption 2770 ${app} ${app}-ingest - -"
+    ];
   };
+
+  users.groups."${app}-ingest".members = [ "${app}" "chris" ];
 
   services = {
 
     ${app} = {
       enable = true;
-      dataDir = "/var/lib/paperless/data";
-      mediaDir = "/var/lib/paperless/media";
-      consumptionDir = "/var/lib/paperless/consumption";
+      dataDir = "/var/lib/${app}/data";
+      mediaDir = "/var/lib/${app}/media";
+      consumptionDir = "/srv/${app}/consumption";
       user = "${app}";
       database.createLocally = false; # manually set below
       passwordFile = "${config.sops.secrets.paperlessAdminPasswd.path}";
