@@ -102,7 +102,7 @@
       ];
       macros = [
         {
-          action = "<enter-command>echo 'Synchronizing neomutt and exiting...'<enter><sync-mailbox><quit>";
+          action = "<enter-command>echo 'Synchronizing neomutt and exiting...'<enter><sync-mailbox><shell-escape>mbsync -a<enter><quit>";
           key = "q";
           map = [ "index" "pager" ];
         }
