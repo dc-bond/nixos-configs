@@ -128,7 +128,6 @@ in
           #systemctl start redis-matrix-synapse.service
           #systemctl start matrix-synapse.service
         paths = [
-          "/home/${configVars.userName}/email"
           "/var/lib/traefik"
           "/var/lib/private/photoprism"
           "/var/lib/private/lldap"
