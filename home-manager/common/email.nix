@@ -53,12 +53,6 @@
         "spam"
       ];
     };
-    #thunderbird = {
-    #  enable = true;
-    #  profiles."${configVars.userEmail}" = {
-    #    isDefault = true;
-    #  };
-    #};
     neomutt = {
       enable = true;
       sourcePrimaryAccount = true;
@@ -109,7 +103,6 @@
       macros = [
         {
           action = "<enter-command>echo 'Synchronizing neomutt and exiting...'<enter><sync-mailbox><quit>";
-          #action = "<enter-command>echo 'Synchronizing neomutt and exiting...'<enter><sync-mailbox><execute>/bin/zsh -c 'mbsync -all'<enter><quit>";
           key = "q";
           map = [ "index" "pager" ];
         }
@@ -250,7 +243,7 @@
         userName = "${configVars.userEmail}";
         realName = "${configVars.userFullName}";
         passwordCommand = "pass email/${configVars.userEmail}";
-        #primary = true;
+        primary = true;
         imap = {
           host = "mail.privateemail.com";
           port = 993; 
@@ -285,9 +278,6 @@
             "Trash"
           ];
         };
-        #thunderbird = {
-        #  enable = true;
-        #};
         mbsync = {
           enable = true;
           create = "maildir";
