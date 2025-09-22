@@ -131,6 +131,7 @@
       };
       extraConfig = ''
         # general
+        set folder = ~/email/chris@dcbond.com
         set wait_key = no
         set timeout = 3
         set mail_check = 0
