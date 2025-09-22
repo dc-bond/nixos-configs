@@ -277,6 +277,7 @@
           showDefaultMailbox = false; # show "Inbox" in the sidebar
           mailboxType = "maildir"; 
           extraMailboxes = [ # show other mailboxes in the sidebar
+            "Inbox"
             "Sent"
             "Drafts"
             "Spam"
