@@ -122,7 +122,7 @@ in
           #                     Endpoints                     #
           #===================================================#
           
-          ENDPOINTS=openAI,anthropic,custom
+          ENDPOINTS=anthropic,custom
           PROXY=
           
           #===================================#
@@ -150,14 +150,14 @@ in
           #============#
           
           ANTHROPIC_API_KEY=${config.sops.placeholder.librechatAnthropicApiKey}
-          ANTHROPIC_MODELS=claude-opus-4-20250514
+          ANTHROPIC_MODELS=claude-opus-4-1-20250805,claude-sonnet-4-20250514
           
           #============#
           # OpenAI     #
           #============#
           
-          OPENAI_API_KEY=${config.sops.placeholder.librechatOpenaiApiKey}
-          OPENAI_MODELS=gpt-4.1-2025-04-14
+          #OPENAI_API_KEY=${config.sops.placeholder.librechatOpenaiApiKey}
+          #OPENAI_MODELS=
           #DEBUG_OPENAI=false
           
           #====================#
