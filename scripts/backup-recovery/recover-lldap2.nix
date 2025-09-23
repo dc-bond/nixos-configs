@@ -35,6 +35,8 @@ let
     # track errors
     set -euo pipefail
 
+    ARCHIVE=""
+
     # set borg passphrase environment variable
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
