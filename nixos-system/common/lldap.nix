@@ -30,6 +30,17 @@ in
     after = [ "postgresql.service" ];
   };
 
+  backups.serviceHooks = {
+    preStop = lib.mkAfter [
+      "systemctl stop ${app}.service"
+      "sleep 2"
+      "systemctl start postgresqlBackup-${app}.service"
+    ];
+    postStart = lib.mkAfter [
+      "systemctl start ${app}.service"
+    ];
+  };
+
   services = {
 
     ${app} = {
@@ -61,6 +72,11 @@ in
     postgresqlBackup = {
       databases = [ "${app}" ];
     };
+
+    borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [
+      "/var/lib/private/${app}"
+      "/var/backup/postgresql/${app}.sql.gz"
+    ];
 
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {

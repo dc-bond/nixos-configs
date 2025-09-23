@@ -40,6 +40,18 @@ in
       default = "${config.backups.borgDir}/cloud-restore";
       description = "path to the directory for borg backups restored from cloud storage (e.g. backblaze)";
     };
+    serviceHooks = {
+      preStop = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "Commands to run before stopping services";
+      };
+      postStart = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "Commands to run after starting services";
+      };
+    };
   };
   
   config = {
@@ -72,13 +84,13 @@ in
         };
         compression = "auto,zstd,8";
         readWritePaths = [ "/var/lib/nextcloud/" ]; # needed to allow borgbackup readwrite access to nextcloud directory containing occ command execution (for turning on/off maintenance mode)
-        preHook = ''
+        preHook = lib.mkDefault ''
           set -x
           echo "spinning down services and starting sql database dumps"
+          ${lib.concatStringsSep "\n" config.backups.serviceHooks.preStop}
          	${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1
           systemctl stop traefik.service
           systemctl stop photoprism.service
-          systemctl stop lldap.service
           systemctl stop authelia-dcbond.service
           systemctl stop redis-authelia-dcbond.service
           systemctl stop uptime-kuma.service
@@ -94,21 +106,17 @@ in
           systemctl stop docker-unifi-controller-root.target
           sleep 10 
           systemctl start mysql-backup.service
-          systemctl start postgresqlBackup-lldap.service
           systemctl start postgresqlBackup-hass.service
           systemctl start postgresqlBackup-nextcloud.service
           sleep 10 
         '';
-          #systemctl stop matrix-synapse.service
-          #systemctl stop redis-matrix-synapse.service
-          #systemctl start postgresqlBackup-matrix-synapse.service
-        postHook = ''
+        postHook = lib.mkDefault ''
           set -x
           echo "spinning up services"
+          ${lib.concatStringsSep "\n" config.backups.serviceHooks.postStart}
           ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1
           systemctl start traefik.service
           systemctl start photoprism.service
-          systemctl start lldap.service
           systemctl start redis-authelia-dcbond.service
           systemctl start authelia-dcbond.service
           systemctl start uptime-kuma.service
@@ -125,12 +133,10 @@ in
           echo "starting cloud backup"
           systemctl start cloudBackup.service
         '';
-          #systemctl start redis-matrix-synapse.service
-          #systemctl start matrix-synapse.service
+        #paths = lib.mkDefault [];
         paths = [
           "/var/lib/traefik"
           "/var/lib/private/photoprism"
-          "/var/lib/private/lldap"
           "/var/lib/private/uptime-kuma"
           "/var/lib/authelia-dcbond"
           "/var/lib/redis-authelia-dcbond"
@@ -157,14 +163,10 @@ in
           "/var/lib/docker/volumes/unifi-controller-mongodb-db"
           "/var/lib/docker/volumes/unifi-controller-mongodb-configdb"
           "/var/backup/mysql/photoprism.gz"
-          "/var/backup/postgresql/lldap.sql.gz"
           "/var/backup/postgresql/hass.sql.gz"
           "/var/backup/postgresql/nextcloud.sql.gz"
           "${config.drives.storageDrive1}/media/family-media"
         ];
-          #"/var/lib/matrix-synapse"
-          #"/var/lib/redis-matrix-synapse"
-          #"/var/backup/postgresql/matrix-synapse.sql.gz"
         prune.keep = {
           daily = 7; # keep the last seven daily archives
           monthly = 3; # keep the last three monthly archives
