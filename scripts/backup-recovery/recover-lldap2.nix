@@ -15,7 +15,7 @@ let
     cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/private/lldap"
-      "/var/backup/postgresql/hass.sql.gz"
+      "/var/backup/postgresql/lldap.sql.gz"
     ];
     db = {
       user = "lldap";
@@ -96,7 +96,7 @@ in
   sops.secrets.borgCryptPasswd = {};
 
   environment.systemPackages = with pkgs; [ 
-    recoverHomeassistantScript
+    recoverLldapScript
   ];
 
 }  
