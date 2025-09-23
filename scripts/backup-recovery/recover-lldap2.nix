@@ -63,12 +63,12 @@ let
     
     # drop and recreate database
     echo "Dropping and recreating clean database ${recoveryPlan.db.name} ..."
-    -u postgres dropdb --if-exists ${recoveryPlan.db.name}
-    -u postgres createdb -O ${recoveryPlan.db.user} ${recoveryPlan.db.name}
+    su - postgres dropdb --if-exists ${recoveryPlan.db.name}
+    su - postgres createdb -O ${recoveryPlan.db.user} ${recoveryPlan.db.name}
     
     # restore database from dump backup
     echo "Restoring database from ${recoveryPlan.db.dump} ..."
-    gunzip -c ${recoveryPlan.db.dump} | -u postgres psql ${recoveryPlan.db.name}
+    gunzip -c ${recoveryPlan.db.dump} | su - postgres psql ${recoveryPlan.db.name}
 
     # start services
     for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
