@@ -35,26 +35,13 @@ let
     # track errors
     set -euo pipefail
 
-    ARCHIVE=""
-
     # set borg passphrase environment variable
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
     REPO="${recoveryPlan.localRestoreRepoPath}"
+    ARCHIVE="aspen-2025.09.23-T02:45:00"
 
-    if [ -z "${ARCHIVE:-}" ]; then
-      archive_names=($(${pkgs.borgbackup}/bin/borg list --short "$REPO"))
-      echo "Available Archives:"
-      select ARCHIVE in "''${archive_names[@]}"; do
-        if [[ -n "$ARCHIVE" ]]; then
-          echo "Selected archive: $ARCHIVE"
-          break
-        else
-          echo "Invalid selection."
-        fi
-      done
-    fi
 
     # stop services
     for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
