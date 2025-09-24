@@ -22,9 +22,6 @@ let
       name = "${app}";
       dump = "/var/backup/postgresql/${app}.sql.gz";
     };
-    permissions = [
-      { path = "/var/lib/private/${app}"; owner = "${app}"; group = "${app}"; recursive = true; }
-    ];
     stopServices = [ "${app}" ];
     startServices = [ "${app}" ];
   };
@@ -38,7 +35,16 @@ let
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
-    REPO="${recoveryPlan.localRestoreRepoPath}"
+    # repo selection
+    read -p "Use cloud repo? (y/N): " use_cloud
+    if [[ "$use_cloud" =~ ^[Yy]$ ]]; then
+      REPO="${recoveryPlan.cloudRestoreRepoPath}"
+      echo "Using cloud repo"
+    else
+      REPO="${recoveryPlan.localRestoreRepoPath}"
+      echo "Using local repo"
+    fi
+
     ARCHIVE="aspen-2025.09.23-T02:45:00"
 
     # stop services
@@ -51,13 +57,6 @@ let
     cd /
     echo "Extracting data from $REPO::$ARCHIVE ..."
     ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
-    
-    # ensure permissions are set correctly
-    echo "Setting permissions on restored data ..."
-    ${lib.concatMapStringsSep "\n"
-      (perm: "chown ${if perm.recursive then "-R " else ""}${perm.owner}:${perm.group} ${perm.path} || true")
-      recoveryPlan.permissions
-    }
     
     # drop and recreate database
     echo "Dropping and recreating clean database ${recoveryPlan.db.name} ..."
@@ -179,3 +178,14 @@ in
   };
 
 }
+
+
+    #permissions = [
+    #  { path = "/var/lib/private/${app}"; owner = "${app}"; group = "${app}"; recursive = true; }
+    #];
+    ## ensure permissions are set correctly
+    #echo "Setting permissions on restored data ..."
+    #${lib.concatMapStringsSep "\n"
+    #  (perm: "chown ${if perm.recursive then "-R " else ""}${perm.owner}:${perm.group} ${perm.path} || true")
+    #  recoveryPlan.permissions
+    #}
