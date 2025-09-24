@@ -27,7 +27,7 @@
       "hosts/juniper/disk-config-btrfs.nix"
       "hosts/juniper/hardware-configuration.nix"
 
-      "nixos-system/common/cloud-backups.nix"
+      "nixos-system/common/backups.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/zsh.nix"
       "nixos-system/common/sops.nix"
@@ -42,7 +42,7 @@
       "nixos-system/host-specific/juniper/networking.nix"
       "nixos-system/host-specific/juniper/boot.nix"
       "nixos-system/host-specific/juniper/tailscale.nix"
-      "nixos-system/host-specific/juniper/matrix.nix"
+      "nixos-system/host-specific/juniper/matrix-synapse.nix"
     ])
   ];
 
