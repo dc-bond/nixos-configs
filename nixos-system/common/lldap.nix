@@ -46,13 +46,13 @@ let
     fi
 
     # archive selection
-    echo "Available archives:"
+    echo "Available archives at $REPO:"
+    echo ""
     archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
     echo "$archives" | nl -w2 -s') '
     echo ""
     read -p "Enter number: " num
     ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
-    
     if [ -z "$ARCHIVE" ]; then
       echo "Invalid selection"
       exit 1
@@ -85,7 +85,7 @@ let
       systemctl start "$svc" || true
     done
 
-    echo "Restore complete. Check status with: sudo systemctl status ${recoveryPlan.serviceName}"
+    echo "Recovery complete!
   '';
 in
 
