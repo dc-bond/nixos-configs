@@ -45,7 +45,19 @@ let
       echo "Using local repo"
     fi
 
-    ARCHIVE="aspen-2025.09.23-T02:45:00"
+    # archive selection
+    echo "Available archives:"
+    archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
+    echo "$archives" | nl -w2 -s') '
+    echo ""
+    read -p "Enter number: " num
+    ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
+    
+    if [ -z "$ARCHIVE" ]; then
+      echo "Invalid selection"
+      exit 1
+    fi
+    echo "Selected: $ARCHIVE"
 
     # stop services
     for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
