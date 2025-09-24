@@ -22,6 +22,8 @@
   chrisIphone15TailscaleIp = "100.123.43.13";
   daniellePixel7aTailscaleIp = "100.91.224.34";
   sydneyIphone6TailscaleIp = "100.122.145.11";
+  rokuGymVlanIp = "192.168.4.9";
+  rokuLivingroomVlanIp = "192.168.4.10";
 
   unifiUsgIp = "192.168.1.1";
   unifiSwitch8Ip = "192.168.1.199";

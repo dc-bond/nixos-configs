@@ -6,8 +6,6 @@ Crowdsec
 
 Mailserver
 
-Calibre
-
 ** Housekeeping **
 
 hass email notifications
@@ -40,3 +38,10 @@ turn off old
 dns for web ui
 restore new
 update override inform host in new
+
+backup check aspen traefik
+restore check aspen traefik
+backup check juniper matrix-synapse, traefik
+restore check juniper matrix-synapse, traefik
+backup check thinkpad email
+restore check thinkpad email
