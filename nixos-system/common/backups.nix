@@ -157,7 +157,7 @@ in
         paths = lib.mkDefault [];
         prune.keep = {
           daily = 7; # keep the last seven daily archives
-          monthly = 3; # keep the last three monthly archives
+          monthly = 4; # keep the last four monthly archives
         };
       };
     };

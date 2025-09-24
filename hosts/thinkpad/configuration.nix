@@ -54,7 +54,7 @@
       "nixos-system/common/printing.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
-      "nixos-system/common/cloud-backups.nix"
+      "nixos-system/common/backups.nix"
       "nixos-system/common/sops.nix"
       "nixos-system/common/keyring.nix"
       "nixos-system/common/login.nix"
@@ -65,7 +65,6 @@
       "nixos-system/host-specific/thinkpad/sshd.nix"
       "nixos-system/host-specific/thinkpad/networking.nix"
       "nixos-system/host-specific/thinkpad/tailscale.nix"
-      "nixos-system/host-specific/thinkpad/borg-backups.nix"
 
       "scripts/backup-recovery/recover-family-media.nix"
       "scripts/backup-recovery/recover-traefik.nix"
