@@ -47,7 +47,6 @@ let
 
     # archive selection
     echo "Available archives:"
-    echo ""
     archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
     echo "$archives" | nl -w2 -s') '
     echo ""
