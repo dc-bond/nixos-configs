@@ -35,6 +35,7 @@ in
   };
 
   services.traefik.dynamicConfigOptions.http.middlewares.jellyfin-trusted-allow.ipAllowList.sourceRange = [
+    "192.168.1.0/24" # Home-VLAN
     "192.168.4.0/27" # IOT-VLAN for Rokus
     "${configVars.aspenLanIp}" # for Uptime Kuma
     "${configVars.thinkpadTailscaleIp}" # thinkpad tailscale IP
