@@ -36,7 +36,6 @@
       "nixos-system/common/postgresql.nix"
       "nixos-system/common/traefik.nix"
 
-      "nixos-system/host-specific/juniper/borg-backups.nix"
       "nixos-system/host-specific/juniper/users.nix"
       "nixos-system/host-specific/juniper/sshd.nix"
       "nixos-system/host-specific/juniper/networking.nix"
