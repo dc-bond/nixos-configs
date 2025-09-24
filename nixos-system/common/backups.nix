@@ -91,26 +91,24 @@ in
     };
   };
   
-  sops = {
-    secrets = {
-      borgCryptPasswd = {};
-      backblazeMasterAppKeyId = {}; # aka "account" for rclone
-      backblazeMasterAppKey = {}; # aka "key" for rclone
-    };
-    templates = {
-      "rclone.conf".content = ''
-        [backblaze-b2]
-        type = b2
-        account = ${config.sops.placeholder.backblazeMasterAppKeyId}
-        key = ${config.sops.placeholder.backblazeMasterAppKey}
-        hard_delete = true
-      '';
-    };
-  };
-  
   config = {
 
-    sops.secrets.borgCryptPasswd = {};
+    sops = {
+      secrets = {
+        borgCryptPasswd = {};
+        backblazeMasterAppKeyId = {}; # aka "account" for rclone
+        backblazeMasterAppKey = {}; # aka "key" for rclone
+      };
+      templates = {
+        "rclone.conf".content = ''
+          [backblaze-b2]
+          type = b2
+          account = ${config.sops.placeholder.backblazeMasterAppKeyId}
+          key = ${config.sops.placeholder.backblazeMasterAppKey}
+          hard_delete = true
+        '';
+      };
+    };
     
     environment.systemPackages = with pkgs; [ 
       listLocalArchivesScript
