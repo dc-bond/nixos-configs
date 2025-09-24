@@ -90,10 +90,15 @@ in
     borgCryptPasswd = {};
   };
 
-  systemd.services.${app}.environment = {
-    CF_API_EMAIL = configVars.userEmail; 
-    CF_API_KEY_FILE = "${config.sops.secrets.cloudflareApiKey.path}"; 
-  };
+  systemd.services.${app} = {
+    serviceConfig = {
+      WorkingDirectory = "/var/lib/${app}/";
+    };
+    environment = {
+      CF_API_EMAIL = configVars.userEmail; 
+      CF_API_KEY_FILE = "${config.sops.secrets.cloudflareApiKey.path}"; 
+    };
+  }; 
 
   users.users.${app}.extraGroups = [ "docker" ]; # add traefik to docker group to enable docker socket access
 
@@ -270,10 +275,6 @@ in
 
     borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "/var/lib/${app}" ];
 
-  };
-
-  systemd.services.${app}.serviceConfig = {
-    WorkingDirectory = "/var/lib/${app}/";
   };
 
 }
