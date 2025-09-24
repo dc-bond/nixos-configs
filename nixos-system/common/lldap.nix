@@ -85,7 +85,7 @@ let
       systemctl start "$svc" || true
     done
 
-    echo "Recovery complete!
+    echo "Recovery complete!"
   '';
 in
 
