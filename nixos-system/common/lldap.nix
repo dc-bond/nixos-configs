@@ -151,9 +151,7 @@ in
       ];
     };
 
-    postgresqlBackup = {
-      databases = [ "${app}" ];
-    };
+    postgresqlBackup.databases = [ "${app}" ];
 
     borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [
       "/var/lib/private/${app}"
