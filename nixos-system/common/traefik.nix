@@ -225,7 +225,7 @@ in
                   "${configVars.thinkpadTailscaleIp}" # thinkpad tailscale IP
                   "${configVars.chrisIphone15TailscaleIp}" # chris iPhone tailscale IP
                   "${configVars.daniellePixel7aTailscaleIp}" # danielle pixel 7a tailscale IP
-                  "${configVars.sydneyIphone7TailscaleIp}" # sydney iPhone tailscale IP
+                  "${configVars.sydneyIphone6TailscaleIp}" # sydney iPhone tailscale IP
                 ];
               };
             };
