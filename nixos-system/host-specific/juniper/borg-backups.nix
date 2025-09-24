@@ -15,7 +15,7 @@ let
     #!/bin/bash
     export BORG_PASSPHRASE=$(sudo cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-    sudo -E ${pkgs.borgbackup}/bin/borg list ${config.backups.borgDir}/${config.networking.hostName}
+    sudo -E ${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName}
   '';
 
   infoLocalArchivesScript = pkgs.writeShellScriptBin "infoLocalArchives" ''
@@ -32,7 +32,7 @@ in
   options.backups = {
     borgDir = lib.mkOption {
       type = lib.types.path;
-      default = "/var/lib/borgbackup";
+      default = "${config.drives.storageDrive1}/borgbackup";
       description = "path to the directory for borg backups";
     };
     borgCloudDir = lib.mkOption {
@@ -40,8 +40,20 @@ in
       default = "${config.backups.borgDir}/cloud-restore";
       description = "path to the directory for borg backups restored from cloud storage (e.g. backblaze)";
     };
+    serviceHooks = {
+      preStop = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "Commands to run before stopping services";
+      };
+      postStart = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "Commands to run after starting services";
+      };
+    };
   };
-
+  
   config = {
 
     sops.secrets.borgCryptPasswd = {};
@@ -62,7 +74,7 @@ in
           "--progress"
           "--stats"
         ];
-        startAt = "*-*-* 03:05:00"; # everyday at 3:05am
+        startAt = "*-*-* 02:45:00"; # everyday at 2:45am
         encryption = {
           mode = "repokey-blake2"; # encrypt using password and save encryption key inside repository
           passCommand = "cat ${config.sops.secrets.borgCryptPasswd.path}";
@@ -71,32 +83,32 @@ in
           BORG_RELOCATED_REPO_ACCESS_IS_OK = "yes"; # supress warning about repo location being moved since last backup (e.g. changing directory location or IP address)
         };
         compression = "auto,zstd,8";
-        preHook = ''
+        preHook = lib.mkDefault ''
           set -x
           echo "spinning down services and starting sql database dumps"
+          ${lib.concatStringsSep "\n" config.backups.serviceHooks.preStop}
           systemctl stop matrix-synapse.service
           systemctl stop redis-matrix-synapse.service
-          systemctl stop traefik.service
           sleep 10 
           #systemctl start postgresqlBackup-matrix-synapse.service
           sleep 10
         '';
-        postHook = ''
+        postHook = lib.mkDefault ''
           set -x
           echo "spinning up services"
-          systemctl start traefik.service
+          ${lib.concatStringsSep "\n" config.backups.serviceHooks.postStart}
           systemctl start redis-matrix-synapse.service
           systemctl start matrix-synapse.service
           echo "starting cloud backup"
           systemctl start cloudBackup.service
         '';
         paths = [
-          "/var/lib/traefik"
           "/var/lib/matrix-synapse"
           "/var/lib/redis-matrix-synapse"
           "/var/lib/tailscale"
           "/var/backup/postgresql/matrix-synapse.sql.gz"
         ];
+        #paths = lib.mkDefault [];
         prune.keep = {
           daily = 7; # keep the last seven daily archives
           monthly = 3; # keep the last three monthly archives

@@ -34,6 +34,7 @@
       "nixos-system/common/nixpkgs.nix"
       "nixos-system/common/oci-containers.nix"
       "nixos-system/common/postgresql.nix"
+      "nixos-system/common/traefik.nix"
 
       "nixos-system/host-specific/juniper/borg-backups.nix"
       "nixos-system/host-specific/juniper/users.nix"
@@ -41,7 +42,6 @@
       "nixos-system/host-specific/juniper/networking.nix"
       "nixos-system/host-specific/juniper/boot.nix"
       "nixos-system/host-specific/juniper/tailscale.nix"
-      "nixos-system/host-specific/juniper/traefik.nix"
       "nixos-system/host-specific/juniper/matrix.nix"
     ])
   ];

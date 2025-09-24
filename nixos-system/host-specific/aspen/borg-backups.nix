@@ -89,7 +89,6 @@ in
           echo "spinning down services and starting sql database dumps"
           ${lib.concatStringsSep "\n" config.backups.serviceHooks.preStop}
          	${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1
-          systemctl stop traefik.service
           systemctl stop photoprism.service
           systemctl stop authelia-dcbond.service
           systemctl stop redis-authelia-dcbond.service
@@ -115,7 +114,6 @@ in
           echo "spinning up services"
           ${lib.concatStringsSep "\n" config.backups.serviceHooks.postStart}
           ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1
-          systemctl start traefik.service
           systemctl start photoprism.service
           systemctl start redis-authelia-dcbond.service
           systemctl start authelia-dcbond.service
@@ -135,7 +133,6 @@ in
         '';
         #paths = lib.mkDefault [];
         paths = [
-          "/var/lib/traefik"
           "/var/lib/private/photoprism"
           "/var/lib/private/uptime-kuma"
           "/var/lib/authelia-dcbond"

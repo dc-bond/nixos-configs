@@ -5,6 +5,74 @@
   ... 
 }: 
 
+let
+  app = "traefik";
+  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
+  recoveryPlan = {
+    serviceName = "${app}";
+    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
+    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
+    restoreItems = [
+      "/var/lib/${app}"
+    ];
+    stopServices = [ "${app}" ];
+    startServices = [ "${app}" ];
+  };
+  recoverTraefikScript = pkgs.writeShellScriptBin "recoverTraefik" ''
+    #!/bin/bash
+   
+    # track errors
+    set -euo pipefail
+
+    # set borg passphrase environment variable
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+    # repo selection
+    read -p "Use cloud repo? (y/N): " use_cloud
+    if [[ "$use_cloud" =~ ^[Yy]$ ]]; then
+      REPO="${recoveryPlan.cloudRestoreRepoPath}"
+      echo "Using cloud repo"
+    else
+      REPO="${recoveryPlan.localRestoreRepoPath}"
+      echo "Using local repo"
+    fi
+
+    # archive selection
+    echo "Available archives at $REPO:"
+    echo ""
+    archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
+    echo "$archives" | nl -w2 -s') '
+    echo ""
+    read -p "Enter number: " num
+    ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
+    if [ -z "$ARCHIVE" ]; then
+      echo "Invalid selection"
+      exit 1
+    fi
+    echo "Selected: $ARCHIVE"
+
+    # stop services
+    for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
+      echo "Stopping $svc ..."
+      systemctl stop "$svc" || true
+    done
+
+    # extract data from archive and overwrite existing data
+    cd /
+    echo "Extracting data from $REPO::$ARCHIVE ..."
+    ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
+    
+    # start services
+    for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
+      echo "Starting $svc ..."
+      systemctl start "$svc" || true
+    done
+
+    echo "Recovery complete!"
+  '';
+in
+
 {
 
   networking.firewall.allowedTCPPorts = [
@@ -14,27 +82,34 @@
   
   sops.secrets = {
     cloudflareApiKey = {
-      owner = config.users.users.traefik.name;
-      group = config.users.users.traefik.group;
+      owner = config.users.users.${app}.name;
+      group = config.users.users.${app}.group;
       mode = "0440";
     };
-    #traefikBasicAuth = {
-    #  owner = config.users.users.traefik.name;
-    #  group = config.users.users.traefik.group;
-    #  mode = "0440";
-    #};
+    borgCryptPasswd = {};
   };
 
-  systemd.services.traefik.environment = {
+  systemd.services.${app}.environment = {
     CF_API_EMAIL = configVars.userEmail; 
     CF_API_KEY_FILE = "${config.sops.secrets.cloudflareApiKey.path}"; 
   };
 
-  users.users.traefik.extraGroups = [ "docker" ]; # add traefik to docker group to enable docker socket access
+  users.users.${app}.extraGroups = [ "docker" ]; # add traefik to docker group to enable docker socket access
+
+  backups.serviceHooks = {
+    preStop = lib.mkAfter [
+      "systemctl stop ${app}.service"
+    ];
+    postStart = lib.mkAfter [
+      "systemctl start ${app}.service"
+    ];
+  };
+
+  environment.systemPackages = with pkgs; [ recoverTraefikScript ];
 
   services = {
 
-    traefik = {
+    ${app} = {
       enable = true;
 
       staticConfigOptions = {
@@ -43,11 +118,11 @@
           insecure = false;
         };
         log = { # logs to journal under traefik.service
-          level = "INFO";
+          level = "WARN";
           noColor = false;
         };
         accessLog = { # logs to journal under traefik.service
-          addInternals = false;
+          addInternals = false; # do not show requests for the traefik dashboard
           bufferingSize = 100;
           filters.statusCodes = [
             "200-206"
@@ -55,29 +130,6 @@
             "500-599"
           ];
         };
-        #log = { # logs to journal under traefik.service in json format
-        #  level = "WARN";
-        #  format = "json";
-        #  noColor = false;
-        #};
-        #accessLog = { # logs to journal under traefik.service in json format
-        #  addInternals = false;
-        #  format = "json";
-        #  bufferingSize = 100;
-        #  filters.statusCodes = [ "200-599" ];
-        #  fields = {
-        #    defaultMode = "keep";
-        #    names.ClientUsername = "drop";
-        #    headers = {
-        #      defaultMode = "keep"; 
-        #      names = {
-        #        "User-Agent" = "redact";      # redact UA to avoid filling logs with attacker UA spam
-        #        "Authorization" = "drop";     # never log credentials
-        #        "Cookie" = "drop";            # drop cookies; often session tokens
-        #      };
-        #    };
-        #  };
-        #};
         entryPoints = {
           web = {
             address = ":80/tcp";
@@ -120,7 +172,7 @@
             email = configVars.userEmail;
             keyType = "RSA4096";
             certificatesDuration = 180;
-            storage = "/var/lib/traefik/acme.json"; # where acme certificates live
+            storage = "/var/lib/${app}/acme.json"; # where acme certificates live
             caServer = "https://acme-v02.api.letsencrypt.org/directory";
           };
         };
@@ -134,9 +186,9 @@
 
       dynamicConfigOptions = {
         http = {
-          routers.traefik-dashboard = {
+          routers.${app}-dashboard = {
             entrypoints = ["websecure"];
-            rule = "Host(`traefik-${config.networking.hostName}.${configVars.domain2}`)";
+            rule = "Host(`${app}-${config.networking.hostName}.${configVars.domain2}`)";
             service = "api@internal";
             middlewares = [
               "trusted-allow"
@@ -161,10 +213,8 @@
             trusted-allow = {
               ipAllowList = {
                 sourceRange = [
-                  "192.168.1.0/24" # LAN
                   "${configVars.thinkpadTailscaleIp}" # thinkpad tailscale IP
                   "${configVars.chrisIphone15TailscaleIp}" # chris iPhone tailscale IP
-                  "${configVars.daniellePixel7aTailscaleIp}" # danielle pixel 7a tailscale IP
                 ];
               };
             };
@@ -178,7 +228,6 @@
                 forceSTSHeader = true; # force browsers to only connect over https
                 contentTypeNosniff = true; # sets x-content-type-options header value to "nosniff", reduces risk of drive-by downloads
                 frameDeny = true; # sets x-frame-options header value to "deny", prevents attacker from spoofing website in order to fool users into clicking something that is not there
-                #customFrameOptionsValue = "SAMEORIGIN"; # suggested by nextcloud, overrides frameDeny
                 browserXssFilter = true; # sets x-xss-protection header value to "1; mode=block", which prevents page from loading if detecting a cross-site scripting attack
                 contentSecurityPolicy = [ # sets content-security-policy header to suggested value
                   "default-src"
@@ -218,10 +267,12 @@
 
     };
 
+    borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "/var/lib/${app}" ];
+
   };
 
-  systemd.services.traefik.serviceConfig = {
-    WorkingDirectory = "/var/lib/traefik/";
+  systemd.services.${app}.serviceConfig = {
+    WorkingDirectory = "/var/lib/${app}/";
   };
 
 }
