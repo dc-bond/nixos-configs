@@ -32,7 +32,7 @@ in
   options.backups = {
     borgDir = lib.mkOption {
       type = lib.types.path;
-      default = "${config.drives.storageDrive1}/borgbackup";
+      default = "/var/lib/borgbackup";
       description = "path to the directory for borg backups";
     };
     borgCloudDir = lib.mkOption {
