@@ -94,7 +94,6 @@
       "nixos-system/common/paperless.nix"
 
       "scripts/media-transfer.nix"
-      "scripts/backup-recovery/recover-lldap2.nix"
     ])
   ];
 
