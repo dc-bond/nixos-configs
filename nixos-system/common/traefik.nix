@@ -186,7 +186,7 @@ in
 
       dynamicConfigOptions = {
         http = {
-          routers.${app}-dashboard = {
+          routers."${app}-dashboard" = {
             entrypoints = ["websecure"];
             rule = "Host(`${app}-${config.networking.hostName}.${configVars.domain2}`)";
             service = "api@internal";
