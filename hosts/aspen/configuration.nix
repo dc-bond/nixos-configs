@@ -26,6 +26,8 @@
       options = [ "defaults" ];
     };
 
+    #backups.borgDir = "${config.drives.storageDrive1}/borgbackup"; # override default borg directory declared in backups.nix
+
     environment.systemPackages = with pkgs; [
       wget # download tool
       usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in

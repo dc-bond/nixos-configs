@@ -52,6 +52,7 @@ let
     #!/bin/bash
     export BORG_PASSPHRASE=$(sudo cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+    export BORG_CACHE_DIR=/tmp/borg-cloud-cache
     sudo -E ${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgCloudDir}/${config.networking.hostName}
   '';
 
@@ -59,6 +60,7 @@ let
     #!/bin/bash
     export BORG_PASSPHRASE=$(sudo cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+    export BORG_CACHE_DIR=/tmp/borg-cloud-cache
     sudo -E ${pkgs.borgbackup}/bin/borg info ${config.backups.borgCloudDir}/${config.networking.hostName}
   '';
 
