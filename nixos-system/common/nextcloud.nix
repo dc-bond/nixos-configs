@@ -9,25 +9,94 @@
 
 let
   app = "nextcloud"; # first-time install will fail, must delete /var/lib/nextcloud/config/config.php file and rebuild then should work
-  #nextcloudMaintenanceOnScript = pkgs.writeShellScriptBin "nextcloudMaintenanceOn" ''
-  #  #!/bin/bash
-  #  ${lib.getExe config.services.nextcloud.occ} maintenance:mode --on
-  #  '';
-  #nextcloudMaintenanceOffScript = pkgs.writeShellScriptBin "nextcloudMaintenanceOff" ''
-  #  #!/bin/bash
-  #  ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off
-  #  '';
+  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
+  recoveryPlan = {
+    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
+    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
+    restoreItems = [
+      "/var/lib/${app}"
+      "/var/lib/redis-${app}"
+      "/var/backup/postgresql/${app}.sql.gz"
+    ];
+    db = {
+      user = "${app}";
+      name = "${app}";
+      dump = "/var/backup/postgresql/${app}.sql.gz";
+    };
+  };
+  recoverNextcloudScript = pkgs.writeShellScriptBin "recoverNextcloud" ''
+    #!/bin/bash
+   
+    # track errors
+    set -euo pipefail
+
+    # set borg passphrase environment variable
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+    # repo selection
+    read -p "Use cloud repo? (y/N): " use_cloud
+    if [[ "$use_cloud" =~ ^[Yy]$ ]]; then
+      REPO="${recoveryPlan.cloudRestoreRepoPath}"
+      echo "Using cloud repo"
+    else
+      REPO="${recoveryPlan.localRestoreRepoPath}"
+      echo "Using local repo"
+    fi
+
+    # archive selection
+    echo "Available archives at $REPO:"
+    echo ""
+    archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
+    echo "$archives" | nl -w2 -s') '
+    echo ""
+    read -p "Enter number: " num
+    ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
+    if [ -z "$ARCHIVE" ]; then
+      echo "Invalid selection"
+      exit 1
+    fi
+    echo "Selected: $ARCHIVE"
+
+    # turn on nextcloud maintenance mode
+    echo "Initiating nextcloud maintenance mode ..."
+    ${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || {
+      echo "Failed to enable maintenance mode"
+      exit 1
+    }
+
+    # extract data from archive and overwrite existing data
+    cd /
+    echo "Extracting data from $REPO::$ARCHIVE ..."
+    ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
+    
+    # drop and recreate database
+    echo "Dropping and recreating clean database ${recoveryPlan.db.name} ..."
+    su - postgres -c "dropdb --if-exists ${recoveryPlan.db.name}"
+    su - postgres -c "createdb -O ${recoveryPlan.db.user} ${recoveryPlan.db.name}"
+    
+    # restore database from dump backup
+    echo "Restoring database from ${recoveryPlan.db.dump} ..."
+    gunzip -c ${recoveryPlan.db.dump} | su - postgres -c "psql ${recoveryPlan.db.name}"
+
+    # turn off nextcloud maintenance mode
+    echo "Deactivating nextcloud maintenance mode ..."
+    ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || {
+      echo "Failed to deactivate maintenance mode"
+      exit 1
+    }
+
+    echo "Recovery complete!"
+  '';
 in
 
 {
 
-  #environment.systemPackages = with pkgs; [ 
-  #  nextcloudMaintenanceOnScript
-  #  nextcloudMaintenanceOffScript
-  #];
+  environment.systemPackages = with pkgs; [ recoverNextcloudScript ];
   
   sops = {
     secrets = {
+      borgCryptPasswd = {};
       nextcloudAdminPasswd = {
         owner = "${config.users.users.${app}.name}";
         group = "${config.users.users.${app}.group}";
@@ -41,20 +110,17 @@ in
       requires = [ "postgresql.service" ];
       after = [ "postgresql.service" ];
     };
-    #"nextcloudMaintenanceOn" = {
-    #  description = "turn on nextcloud maintenance mode";
-    #  serviceConfig = {
-    #    ExecStart = "${nextcloudMaintenanceOnScript}/bin/nextcloudMaintenanceOn";
-    #    Restart = "on-failure";
-    #  };
-    #};
-    #"nextcloudMaintenanceOff" = {
-    #  description = "turn off nextcloud maintenance mode";
-    #  serviceConfig = {
-    #    ExecStart = "${nextcloudMaintenanceOffScript}/bin/nextcloudMaintenanceOff";
-    #    Restart = "on-failure";
-    #  };
-    #};
+  };
+
+  backups.serviceHooks = {
+    preStop = lib.mkOrder 500 [  # runs earlier than other service backup preStop hooks
+      "${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1"
+    ] ++ lib.mkAfter [
+      "systemctl start postgresqlBackup-${app}.service"
+    ];
+    postStart = lib.mkOrder 500 [  # runs earlier than other service backup postStart hooks
+      "${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1"
+    ];
   };
 
   services = {
@@ -169,14 +235,21 @@ in
       ];
     };
 
-    postgresqlBackup = {
-      databases = ["${app}"];
+    postgresqlBackup.databases = ["${app}"];
+
+    borgbackup.jobs."${config.networking.hostName}" = {
+      readWritePaths = lib.mkAfter [ "/var/lib/${app}/" ]; # needed to allow borgbackup readwrite access to nextcloud directory containing occ command execution (for turning on/off maintenance mode)
+      paths = lib.mkAfter [
+        "/var/lib/${app}"
+        "/var/lib/redis-${app}"
+        "/var/backup/postgresql/${app}.sql.gz"
+      ];
     };
   
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];
-        rule = "Host(`nextcloud.${configVars.domain1}`)";
+        rule = "Host(`${app}.${configVars.domain1}`)";
         service = "${app}";
         middlewares = [
           "nextcloud-headers"

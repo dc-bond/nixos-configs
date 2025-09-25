@@ -188,14 +188,3 @@ in
   };
 
 }
-
-
-    #permissions = [
-    #  { path = "/var/lib/private/${app}"; owner = "${app}"; group = "${app}"; recursive = true; }
-    #];
-    ## ensure permissions are set correctly
-    #echo "Setting permissions on restored data ..."
-    #${lib.concatMapStringsSep "\n"
-    #  (perm: "chown ${if perm.recursive then "-R " else ""}${perm.owner}:${perm.group} ${perm.path} || true")
-    #  recoveryPlan.permissions
-    #}
