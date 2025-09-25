@@ -445,6 +445,7 @@ in
         after = [ "postgresql.service" ];
         before = [ "${app}.service" ];
         wantedBy = [ "multi-user.target" ];
+        path = [ config.services.postgresql.package ];
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
