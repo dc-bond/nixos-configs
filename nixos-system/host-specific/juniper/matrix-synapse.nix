@@ -76,7 +76,7 @@ let
     # drop and recreate database
     echo "Dropping and recreating clean database ${recoveryPlan.db.name} ..."
     su - postgres -c "dropdb --if-exists ${recoveryPlan.db.name}"
-    su - postgres -c "createdb -O ${recoveryPlan.db.user} ${recoveryPlan.db.name}"
+    su - postgres -c "createdb -O ${recoveryPlan.db.user} -E UTF8 -l C -T template0 ${recoveryPlan.db.name}"
     
     # restore database from dump backup
     echo "Restoring database from ${recoveryPlan.db.dump} ..."
