@@ -183,7 +183,7 @@ in
   services = {
 
     #postgresql = {
-    #  # DOESNT WORK MUST RUN MANUALLY ON FIRST SETUP
+    #  # DOESNT WORK MUST RUN MANUALLY ON FIRST SETUP OR SEE SYSTEMD SERVICE BELOW
     #  #initialScript = pkgs.writeText "${app}-init.sql" ''
     #  #CREATE USER "matrix-synapse";
     #  #CREATE DATABASE "matrix-synapse" ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER "matrix-synapse";
@@ -439,10 +439,49 @@ in
 
   systemd = {
     services = { 
-      "${app}" = {
-        requires = [ "postgresql.service" ];
+
+      "${app}-postgres-init" = {
+        description = "Initialize postgres database for ${app}";
         after = [ "postgresql.service" ];
+        before = [ "${app}.service" ];
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          User = "postgres";
+        };
+        script = ''
+          # check if database exists with wrong settings and recreate if needed
+          if psql -lqt | cut -d \| -f 1 | grep -qw "${app}"; then
+            # database exists, check if it has correct settings
+            ENCODING=$(psql -d "${app}" -t -c "SELECT pg_encoding_to_char(encoding) FROM pg_database WHERE datname = '${app}';")
+            COLLATE=$(psql -d "${app}" -t -c "SELECT datcollate FROM pg_database WHERE datname = '${app}';")
+            
+            if [[ "$ENCODING" != " UTF8" ]] || [[ "$COLLATE" != " C" ]]; then
+              echo "database exists but has wrong settings, recreating..."
+              dropdb "${app}" || true
+              createdb -O "${app}" -E UTF8 -l C -T template0 "${app}"
+            fi
+          else
+            # database doesn't exist, create it
+            echo "Creating database ..."
+            createuser "${app}" || true
+            createdb -O "${app}" -E UTF8 -l C -T template0 "${app}"
+          fi
+        '';
       };
+
+      "${app}" = {
+        requires = [ 
+          "postgresql.service" 
+          "${app}-postgres-init.service" 
+        ];
+        after = [ 
+          "postgresql.service" 
+          "${app}-postgres-init.service" 
+        ];
+      };
+
       "generate-dhparam" = {
         description = "generate diffie-hellman parameters for coturn";
         after = [ "network.target" ];
