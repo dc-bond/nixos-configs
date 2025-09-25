@@ -13,15 +13,15 @@ let
     serviceName = "${app}";
     localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
     cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
+    restoreItems = [
+      "/var/lib/private/${app}"
+      "/var/backup/mysql/${app}.gz"
+    ];
     db = {
       user = "${app}";
       name = "${app}";
       dump = "/var/backup/mysql/${app}.gz";
     };
-    restoreItems = [
-      "/var/lib/private/${app}"
-      db.dump
-    ];
     stopServices = [ "${app}" ];
     startServices = [ "${app}" ];
   };

@@ -13,16 +13,16 @@ let
   recoveryPlan = {
     localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
     cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
+    restoreItems = [
+      "/var/lib/${app}"
+      "/var/lib/redis-${app}"
+      "/var/backup/postgresql/${app}.sql.gz"
+    ];
     db = {
       user = "${app}";
       name = "${app}";
       dump = "/var/backup/postgresql/${app}.sql.gz";
     };
-    restoreItems = [
-      "/var/lib/${app}"
-      "/var/lib/redis-${app}"
-      db.dump
-    ];
   };
   recoverNextcloudScript = pkgs.writeShellScriptBin "recoverNextcloud" ''
     #!/bin/bash
