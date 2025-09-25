@@ -88,7 +88,6 @@ in
           set -x
           echo "spinning down services and starting sql database dumps"
           ${lib.concatStringsSep "\n" config.backups.serviceHooks.preStop}
-          systemctl stop photoprism.service
           systemctl stop authelia-dcbond.service
           systemctl stop redis-authelia-dcbond.service
           systemctl stop uptime-kuma.service
@@ -102,7 +101,6 @@ in
           systemctl stop docker-pihole-root.target
           systemctl stop docker-unifi-controller-root.target
           sleep 10 
-          systemctl start mysql-backup.service
           systemctl start postgresqlBackup-hass.service
           sleep 10 
         '';
@@ -112,7 +110,6 @@ in
           set -x
           echo "spinning up services"
           ${lib.concatStringsSep "\n" config.backups.serviceHooks.postStart}
-          systemctl start photoprism.service
           systemctl start redis-authelia-dcbond.service
           systemctl start authelia-dcbond.service
           systemctl start uptime-kuma.service
@@ -131,7 +128,6 @@ in
           #${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1
         #paths = lib.mkDefault [];
         paths = [
-          "/var/lib/private/photoprism"
           "/var/lib/private/uptime-kuma"
           "/var/lib/authelia-dcbond"
           "/var/lib/redis-authelia-dcbond"
@@ -154,7 +150,6 @@ in
           "/var/lib/docker/volumes/unifi-controller"
           "/var/lib/docker/volumes/unifi-controller-mongodb-db"
           "/var/lib/docker/volumes/unifi-controller-mongodb-configdb"
-          "/var/backup/mysql/photoprism.gz"
           "/var/backup/postgresql/hass.sql.gz"
           "${config.drives.storageDrive1}/media/family-media"
         ];

@@ -13,16 +13,16 @@ let
   recoveryPlan = {
     localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
     cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
-    restoreItems = [
-      "/var/lib/${app}"
-      "/var/lib/redis-${app}"
-      "/var/backup/postgresql/${app}.sql.gz"
-    ];
     db = {
       user = "${app}";
       name = "${app}";
       dump = "/var/backup/postgresql/${app}.sql.gz";
     };
+    restoreItems = [
+      "/var/lib/${app}"
+      "/var/lib/redis-${app}"
+      db.dump
+    ];
   };
   recoverNextcloudScript = pkgs.writeShellScriptBin "recoverNextcloud" ''
     #!/bin/bash
@@ -114,28 +114,17 @@ in
 
   backups.serviceHooks = {
     preStop = lib.mkMerge [
-      (lib.mkOrder 500 [
+      (lib.mkOrder 500 [ # runs earlier than other service backup preStop hooks
         "${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1"
       ])
       (lib.mkAfter [
         "systemctl start postgresqlBackup-${app}.service"
       ])
     ];
-    postStart = lib.mkOrder 500 [
+    postStart = lib.mkOrder 500 [ # runs earlier than other service backup postStart hooks
       "${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1"
     ];
   };
-
-  #backups.serviceHooks = {
-  #  preStop = lib.mkOrder 500 [  # runs earlier than other service backup preStop hooks
-  #    "${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1"
-  #  ] ++ lib.mkAfter [
-  #    "systemctl start postgresqlBackup-${app}.service"
-  #  ];
-  #  postStart = lib.mkOrder 500 [  # runs earlier than other service backup postStart hooks
-  #    "${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1"
-  #  ];
-  #};
 
   services = {
 
@@ -249,15 +238,11 @@ in
       ];
     };
 
-    postgresqlBackup.databases = ["${app}"];
+    postgresqlBackup.databases = [ "${app}" ];
 
     borgbackup.jobs."${config.networking.hostName}" = {
       readWritePaths = lib.mkAfter [ "/var/lib/${app}/" ]; # needed to allow borgbackup readwrite access to nextcloud directory containing occ command execution (for turning on/off maintenance mode)
-      paths = lib.mkAfter [
-        "/var/lib/${app}"
-        "/var/lib/redis-${app}"
-        "/var/backup/postgresql/${app}.sql.gz"
-      ];
+      paths = lib.mkAfter recoveryPlan.restoreItems;
     };
   
     traefik.dynamicConfigOptions.http = {
