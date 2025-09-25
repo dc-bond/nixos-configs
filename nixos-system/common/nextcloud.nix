@@ -113,15 +113,29 @@ in
   };
 
   backups.serviceHooks = {
-    preStop = lib.mkOrder 500 [  # runs earlier than other service backup preStop hooks
-      "${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1"
-    ] ++ lib.mkAfter [
-      "systemctl start postgresqlBackup-${app}.service"
+    preStop = lib.mkMerge [
+      (lib.mkOrder 500 [
+        "${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1"
+      ])
+      (lib.mkAfter [
+        "systemctl start postgresqlBackup-${app}.service"
+      ])
     ];
-    postStart = lib.mkOrder 500 [  # runs earlier than other service backup postStart hooks
+    postStart = lib.mkOrder 500 [
       "${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1"
     ];
   };
+
+  #backups.serviceHooks = {
+  #  preStop = lib.mkOrder 500 [  # runs earlier than other service backup preStop hooks
+  #    "${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1"
+  #  ] ++ lib.mkAfter [
+  #    "systemctl start postgresqlBackup-${app}.service"
+  #  ];
+  #  postStart = lib.mkOrder 500 [  # runs earlier than other service backup postStart hooks
+  #    "${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1"
+  #  ];
+  #};
 
   services = {
 
