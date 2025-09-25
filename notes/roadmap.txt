@@ -1,7 +1,5 @@
 Logging Solution
 
-Wordpress or other website
-
 Crowdsec
 
 Mailserver
@@ -38,8 +36,3 @@ turn off old
 dns for web ui
 restore new
 update override inform host in new
-
-backup check juniper matrix-synapse, traefik
-restore check juniper matrix-synapse, traefik
-backup check thinkpad email
-restore check thinkpad email
