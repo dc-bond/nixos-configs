@@ -75,7 +75,8 @@ let
 in
 
 {
-  environment.systemPackages = with pkgs; [ recoverActualScript ];
+
+  #environment.systemPackages = with pkgs; [ recoverActualScript ];
   
   backups.serviceHooks = {
     preHook = lib.mkAfter [ "systemctl stop docker-${app}-root.target" ];
