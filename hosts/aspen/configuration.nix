@@ -26,7 +26,7 @@
       options = [ "defaults" ];
     };
 
-    #backups.borgDir = "${config.drives.storageDrive1}/borgbackup"; # override default borg directory declared in backups.nix
+    services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.drives.storageDrive1}/media/family-media" ]; # backup media directory outside of any individual service backup context
 
     environment.systemPackages = with pkgs; [
       wget # download tool
@@ -55,6 +55,7 @@
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
       "nixos-system/common/cloud-backups.nix"
+      #"nixos-system/common/backups.nix"
       "nixos-system/common/sops.nix"
       "nixos-system/common/nvidia.nix"
 
@@ -88,10 +89,8 @@
       "nixos-system/common/oci-searxng.nix"
       "nixos-system/common/oci-recipesage.nix"
       "nixos-system/common/oci-librechat.nix"
-      "nixos-system/common/pinchflat.nix"
       "nixos-system/common/ollama.nix"
       #"nixos-system/common/n8n.nix" # won't build n8n package from source...
-      "nixos-system/common/paperless.nix"
 
       "scripts/media-transfer.nix"
     ])

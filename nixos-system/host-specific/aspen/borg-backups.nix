@@ -134,7 +134,6 @@ in
           "/var/lib/docker/volumes/unifi-controller"
           "/var/lib/docker/volumes/unifi-controller-mongodb-db"
           "/var/lib/docker/volumes/unifi-controller-mongodb-configdb"
-          "${config.drives.storageDrive1}/media/family-media"
         ];
         prune.keep = {
           daily = 7; # keep the last seven daily archives
