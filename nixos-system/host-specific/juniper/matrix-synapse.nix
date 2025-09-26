@@ -192,11 +192,7 @@ in
 
     postgresqlBackup.databases = [ "${app}" ];
 
-    borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [
-      "/var/lib/${app}"
-      "/var/lib/redis-${app}"
-      "/var/backup/postgresql/${app}.sql.gz"
-    ];
+    borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
 
     nginx = {
       enable = true;
