@@ -92,7 +92,7 @@ in
     };
   };
   
-  sops.secrets.boryygCryptPasswd = {};
+  sops.secrets.borgCryptPasswd = {};
 
   backups.serviceHooks = {
     preHook = lib.mkAfter [ "systemctl stop docker-${app}-root.target" ];

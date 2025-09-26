@@ -85,7 +85,7 @@ in
 
   services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
   
-  sops.secrets.boryygCryptPasswd = {};
+  sops.secrets.borgCryptPasswd = {};
   
   virtualisation.oci-containers.containers."${app}" = {
     image = "docker.io/actualbudget/${app}-server:24.11.0";
