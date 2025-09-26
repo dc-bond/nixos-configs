@@ -294,7 +294,7 @@ in
       listening-ips = [ "${configVars.juniperIp}" ];
       listening-port = 3478;
       tls-listening-port = 5349;
-      relay-ips = ["${configVars.juniperIp}" ];
+      relay-ips = [ "${configVars.juniperIp}" ];
       min-port = 50100;
       max-port = 50200; # only anticipate a handful of concurrent calls, so only opening 100 ports which should still be on the liberal side
       use-auth-secret = true;
