@@ -16,23 +16,99 @@ let
   app6 = "postgres"; # volume
   app7 = "browserless"; 
   app8 = "ingredient-instruction-classifier";
+  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
+  recoveryPlan = {
+    serviceName = "${app}";
+    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
+    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
+    restoreItems = [
+      "/var/lib/docker/volumes/${app}-api"
+      "/var/lib/docker/volumes/${app}-postgres"
+      "/var/lib/docker/volumes/${app}-typesense"
+    ];
+    stopServices = [ "docker-${app}-root.target" ];
+    startServices = [ "docker-${app}-root.target" ];
+  };
+  recoverRecipesageScript = pkgs.writeShellScriptBin "recoverRecipesage" ''
+    #!/bin/bash
+   
+    # track errors
+    set -euo pipefail
+
+    # set borg passphrase environment variable
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+    # repo selection
+    read -p "Use cloud repo? (y/N): " use_cloud
+    if [[ "$use_cloud" =~ ^[Yy]$ ]]; then
+      REPO="${recoveryPlan.cloudRestoreRepoPath}"
+      echo "Using cloud repo"
+    else
+      REPO="${recoveryPlan.localRestoreRepoPath}"
+      echo "Using local repo"
+    fi
+
+    # archive selection
+    echo "Available archives at $REPO:"
+    echo ""
+    archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
+    echo "$archives" | nl -w2 -s') '
+    echo ""
+    read -p "Enter number: " num
+    ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
+    if [ -z "$ARCHIVE" ]; then
+      echo "Invalid selection"
+      exit 1
+    fi
+    echo "Selected: $ARCHIVE"
+
+    # stop services
+    for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
+      echo "Stopping $svc ..."
+      systemctl stop "$svc" || true
+    done
+
+    # extract data from archive and overwrite existing data
+    cd /
+    echo "Extracting data from $REPO::$ARCHIVE ..."
+    ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
+    
+    # start services
+    for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
+      echo "Starting $svc ..."
+      systemctl start "$svc" || true
+    done
+
+    echo "Recovery complete!"
+  '';
 in
 
 {
 
-  environment.etc."start-recipesage-pushpin.sh" = {
-    text = ''
-      #!/bin/sh
-      sed -i "s/sig_key=changeme/sig_key=$GRIP_KEY/" /etc/pushpin/pushpin.conf
-      echo "* ''${TARGET},over_http" > /etc/pushpin/routes
-      exec pushpin --merge-output
-    '';
-    mode = "0755";
+  environment = {
+    systemPackages = with pkgs; [ recoverRecipesageScript ];
+    etc."start-recipesage-pushpin.sh" = {
+      text = ''
+        #!/bin/sh
+        sed -i "s/sig_key=changeme/sig_key=$GRIP_KEY/" /etc/pushpin/pushpin.conf
+        echo "* ''${TARGET},over_http" > /etc/pushpin/routes
+        exec pushpin --merge-output
+      '';
+      mode = "0755";
+    };
   };
+
+  backups.serviceHooks = {
+    preHook = lib.mkAfter [ "systemctl stop docker-${app}-root.target" ];
+    postHook = lib.mkAfter [ "systemctl start docker-${app}-root.target" ];
+  };
+
+  services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
   
   sops = {
     secrets = {
-      #recipesageTypesenseApiKey = {};
+      borgCryptPasswd = {};
       recipesageGripKey = {};
       recipesagePostgresDb = {};
       recipesagePostgresUser = {};

@@ -13,8 +13,8 @@ let
   #  localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
   #  cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
   #  restoreItems = [
-  #    "/var/lib/private/${app}"
-  #    "/var/backup/postgresql/${app}.sql.gz"
+  #    "/var/lib/${app}-dcbond"
+  #    "/var/lib/redis-${app}-dcbond"
   #  ];
   #  db = {
   #    user = "${app}";

@@ -141,12 +141,8 @@ in
   };
 
   backups.serviceHooks = {
-    preHook = lib.mkAfter [
-      "systemctl stop docker-${app}-root.target"
-    ];
-    postHook = lib.mkAfter [
-      "systemctl start docker-${app}-root.target"
-    ];
+    preHook = lib.mkAfter [ "systemctl stop docker-${app}-root.target" ];
+    postHook = lib.mkAfter [ "systemctl start docker-${app}-root.target" ];
   };
 
   services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;

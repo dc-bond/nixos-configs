@@ -54,12 +54,10 @@
       "nixos-system/common/zsh.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
-      "nixos-system/common/cloud-backups.nix"
-      #"nixos-system/common/backups.nix"
+      "nixos-system/common/backups.nix"
       "nixos-system/common/sops.nix"
       "nixos-system/common/nvidia.nix"
 
-      "nixos-system/host-specific/aspen/borg-backups.nix"
       "nixos-system/host-specific/aspen/networking.nix"
       "nixos-system/host-specific/aspen/sshd.nix"
       "nixos-system/host-specific/aspen/tailscale.nix"

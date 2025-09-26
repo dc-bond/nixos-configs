@@ -66,9 +66,9 @@
       "nixos-system/host-specific/thinkpad/networking.nix"
       "nixos-system/host-specific/thinkpad/tailscale.nix"
 
-      "scripts/deploy/deploy-aspen.nix"
-      "scripts/deploy/deploy-cypress.nix"
-      "scripts/deploy/deploy-juniper.nix"
+      "scripts/deploy-aspen.nix"
+      "scripts/deploy-cypress.nix"
+      "scripts/deploy-juniper.nix"
     ])
   ];
 
