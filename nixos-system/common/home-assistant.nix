@@ -20,8 +20,8 @@ let
       "/var/backup/postgresql/hass.sql.gz"
     ];
     db = {
-      user = "${app}";
-      name = "${app}";
+      user = "hass";
+      name = "hass";
       dump = "/var/backup/postgresql/hass.sql.gz";
     };
     stopServices = [ "${app}" "mosquitto" ];
@@ -117,7 +117,7 @@ in
       "systemctl start postgresqlBackup-hass.service"
     ];
     postHook = lib.mkAfter [
-      "systemctl stop mosquitto.service"
+      "systemctl start mosquitto.service"
       "systemctl start ${app}.service"
     ];
   };
