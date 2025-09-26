@@ -82,7 +82,7 @@
       "nixos-system/common/oci-frigate.nix" # requires nvidia.nix
       "nixos-system/common/oci-unifi-controller.nix"
       "nixos-system/common/oci-pihole.nix"
-      #"nixos-system/common/oci-actual.nix"
+      "nixos-system/common/oci-actual.nix"
       "nixos-system/common/oci-zwavejs.nix"
       "nixos-system/common/oci-searxng.nix"
       "nixos-system/common/oci-recipesage.nix"

@@ -90,7 +90,7 @@ in
 
   networking.wireguard.enable = true;
 
-  environment.systemPackages = with pkgs; [ recoverActualScript ];
+  environment.systemPackages = with pkgs; [ recoverMediaserverScript ];
 
   backups.serviceHooks = {
     preHook = lib.mkAfter [ "systemctl stop docker-${app}-root.target" ];
