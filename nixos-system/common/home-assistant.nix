@@ -9,6 +9,7 @@
 
 let
   app = "home-assistant";
+  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
     serviceName = "${app}";
     localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
