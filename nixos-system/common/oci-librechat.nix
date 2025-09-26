@@ -13,63 +13,147 @@ let
   app3 = "meilisearch"; # volume
   app4 = "vectordb"; # volume
   app5 = "rag_api";
+  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
+  recoveryPlan = {
+    serviceName = "${app}";
+    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
+    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
+    restoreItems = [
+      "/var/lib/docker/volumes/${app}-api-images"
+      "/var/lib/docker/volumes/${app}-api-logs"
+      "/var/lib/docker/volumes/${app}-api-uploads"
+      "/var/lib/docker/volumes/${app}-meilisearch"
+      "/var/lib/docker/volumes/${app}-mongodb"
+      "/var/lib/docker/volumes/${app}-vectordb"
+    ];
+    stopServices = [ "docker-${app}-root.target" ];
+    startServices = [ "docker-${app}-root.target" ];
+  };
+  recoverLibrechatScript = pkgs.writeShellScriptBin "recoverLibrechat" ''
+    #!/bin/bash
+   
+    # track errors
+    set -euo pipefail
+
+    # set borg passphrase environment variable
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+    # repo selection
+    read -p "Use cloud repo? (y/N): " use_cloud
+    if [[ "$use_cloud" =~ ^[Yy]$ ]]; then
+      REPO="${recoveryPlan.cloudRestoreRepoPath}"
+      echo "Using cloud repo"
+    else
+      REPO="${recoveryPlan.localRestoreRepoPath}"
+      echo "Using local repo"
+    fi
+
+    # archive selection
+    echo "Available archives at $REPO:"
+    echo ""
+    archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
+    echo "$archives" | nl -w2 -s') '
+    echo ""
+    read -p "Enter number: " num
+    ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
+    if [ -z "$ARCHIVE" ]; then
+      echo "Invalid selection"
+      exit 1
+    fi
+    echo "Selected: $ARCHIVE"
+
+    # stop services
+    for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
+      echo "Stopping $svc ..."
+      systemctl stop "$svc" || true
+    done
+
+    # extract data from archive and overwrite existing data
+    cd /
+    echo "Extracting data from $REPO::$ARCHIVE ..."
+    ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
+    
+    # start services
+    for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
+      echo "Starting $svc ..."
+      systemctl start "$svc" || true
+    done
+
+    echo "Recovery complete!"
+  '';
 in
 
 {
 
-  environment.etc = {
-    "${app}-${app1}-librechat.yaml" = {
-      text = ''
-        version: 1.2.8
-        cache: true
-        interface:
-          # MCP Servers UI configuration
-          mcpServers:
-            placeholder: 'MCP Servers'
-            
-          # Privacy policy settings
-          privacyPolicy:
-            externalUrl: 'https://librechat.ai/privacy-policy'
-            openNewTab: true
-         
-          # Terms of service
-          termsOfService:
-            externalUrl: 'https://librechat.ai/tos'
-            openNewTab: true
-         
-        registration:
-          socialLogins: ["discord", "facebook", "github", "google", "openid"]
-         
-        endpoints:
-          custom:
-            - name: "Ollama"
-              apiKey: "ollama"
-              baseURL: "http://192.168.1.2:11434/v1"
-              models:
-                default: [
-                  "mistral"
-                ]
-                fetch: true
-              titleConvo: true
-              titleModel: "current_model"
-              summarize: false
-              summaryModel: "current_model"
-              forcePrompt: false
-              modelDisplayLabel: "Ollama"
-      '';
-      mode = "0644";
-    };
-    "${app}-${app2}-init.sh" = {
-      text = ''
-        #!/bin/bash
-        exec mongod --noauth
-      '';
-      mode = "0755";
+  environment = {
+    systemPackages = with pkgs; [ recoverLibrechatScript ];
+    etc = {
+      "${app}-${app1}-librechat.yaml" = {
+        text = ''
+          version: 1.2.8
+          cache: true
+          interface:
+            # MCP Servers UI configuration
+            mcpServers:
+              placeholder: 'MCP Servers'
+              
+            # Privacy policy settings
+            privacyPolicy:
+              externalUrl: 'https://librechat.ai/privacy-policy'
+              openNewTab: true
+           
+            # Terms of service
+            termsOfService:
+              externalUrl: 'https://librechat.ai/tos'
+              openNewTab: true
+           
+          registration:
+            socialLogins: ["discord", "facebook", "github", "google", "openid"]
+           
+          endpoints:
+            custom:
+              - name: "Ollama"
+                apiKey: "ollama"
+                baseURL: "http://192.168.1.2:11434/v1"
+                models:
+                  default: [
+                    "mistral"
+                  ]
+                  fetch: true
+                titleConvo: true
+                titleModel: "current_model"
+                summarize: false
+                summaryModel: "current_model"
+                forcePrompt: false
+                modelDisplayLabel: "Ollama"
+        '';
+        mode = "0644";
+      };
+      "${app}-${app2}-init.sh" = {
+        text = ''
+          #!/bin/bash
+          exec mongod --noauth
+        '';
+        mode = "0755";
+      };
     };
   };
 
+  backups.serviceHooks = {
+    preHook = lib.mkAfter [
+      "systemctl stop docker-${app}-root.target"
+    ];
+    postHook = lib.mkAfter [
+      "systemctl start docker-${app}-root.target"
+    ];
+  };
+
+  services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
+
   sops = {
     secrets = {
+      borgCryptPasswd = {};
       librechatOpenaiApiKey = {};
       librechatAnthropicApiKey = {};
       librechatMeiliMasterKey = {};
