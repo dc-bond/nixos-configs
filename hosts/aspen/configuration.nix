@@ -69,12 +69,11 @@
       "nixos-system/common/mysql.nix"
       "nixos-system/common/photoprism.nix" # requires mysql.nix
       "nixos-system/common/lldap.nix" # requires postgresql.nix
-      "nixos-system/common/mosquitto.nix"
       "nixos-system/common/uptime-kuma.nix"
       "nixos-system/common/calibre.nix"
       "nixos-system/common/nginx-sites.nix"
       "nixos-system/common/nextcloud.nix" # requires postgresql.nix
-      "nixos-system/common/home-assistant.nix" # requires postgresql.nix, mosquitto.nix
+      "nixos-system/common/home-assistant.nix" # requires postgresql.nix
       "nixos-system/common/authelia-dcbond.nix" # requires lldap.nix
       "nixos-system/common/stirling-pdf.nix"
       "nixos-system/common/dcbond-root.nix"

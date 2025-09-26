@@ -41,12 +41,12 @@ in
       description = "path to the directory for borg backups restored from cloud storage (e.g. backblaze)";
     };
     serviceHooks = {
-      preStop = lib.mkOption {
+      preHook = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [];
         description = "Commands to run before stopping services";
       };
-      postStart = lib.mkOption {
+      postHook = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [];
         description = "Commands to run after starting services";
@@ -83,16 +83,12 @@ in
           BORG_RELOCATED_REPO_ACCESS_IS_OK = "yes"; # supress warning about repo location being moved since last backup (e.g. changing directory location or IP address)
         };
         compression = "auto,zstd,8";
-        #readWritePaths = [ "/var/lib/nextcloud/" ]; # needed to allow borgbackup readwrite access to nextcloud directory containing occ command execution (for turning on/off maintenance mode)
         preHook = lib.mkDefault ''
           set -x
           echo "spinning down services and starting sql database dumps"
-          ${lib.concatStringsSep "\n" config.backups.serviceHooks.preStop}
+          ${lib.concatStringsSep "\n" config.backups.serviceHooks.preHook}
           systemctl stop authelia-dcbond.service
           systemctl stop redis-authelia-dcbond.service
-          systemctl stop uptime-kuma.service
-          systemctl stop home-assistant.service
-          systemctl stop mosquitto.service
           systemctl stop docker-zwavejs-root.target
           systemctl stop docker-searxng-root.target
           systemctl stop docker-media-server-root.target
@@ -101,20 +97,13 @@ in
           systemctl stop docker-pihole-root.target
           systemctl stop docker-unifi-controller-root.target
           sleep 10 
-          systemctl start postgresqlBackup-hass.service
-          sleep 10 
         '';
-         	#${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1
-          #systemctl start postgresqlBackup-nextcloud.service
         postHook = lib.mkDefault ''
           set -x
           echo "spinning up services"
-          ${lib.concatStringsSep "\n" config.backups.serviceHooks.postStart}
+          ${lib.concatStringsSep "\n" config.backups.serviceHooks.postHook}
           systemctl start redis-authelia-dcbond.service
           systemctl start authelia-dcbond.service
-          systemctl start uptime-kuma.service
-          systemctl start home-assistant.service
-          systemctl start mosquitto.service
           systemctl start docker-unifi-controller-root.target
           systemctl start docker-zwavejs-root.target
           systemctl start docker-pihole-root.target
@@ -125,14 +114,9 @@ in
           echo "starting cloud backup"
           systemctl start cloudBackup.service
         '';
-          #${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1
-        #paths = lib.mkDefault [];
         paths = [
-          "/var/lib/private/uptime-kuma"
           "/var/lib/authelia-dcbond"
           "/var/lib/redis-authelia-dcbond"
-          "/var/lib/hass"
-          "/var/lib/mosquitto"
           "/var/lib/docker/volumes/pihole"
           "/var/lib/docker/volumes/unbound"
           "/var/lib/docker/volumes/jellyfin"
@@ -150,7 +134,6 @@ in
           "/var/lib/docker/volumes/unifi-controller"
           "/var/lib/docker/volumes/unifi-controller-mongodb-db"
           "/var/lib/docker/volumes/unifi-controller-mongodb-configdb"
-          "/var/backup/postgresql/hass.sql.gz"
           "${config.drives.storageDrive1}/media/family-media"
         ];
         prune.keep = {

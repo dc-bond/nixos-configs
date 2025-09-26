@@ -168,13 +168,13 @@ in
   ];
   
   backups.serviceHooks = {
-    preStop = lib.mkAfter [
+    preHook = lib.mkAfter [
       "systemctl stop ${app}.service"
       "systemctl stop redis-${app}.service"
       "sleep 2"
       "systemctl start postgresqlBackup-${app}.service"
     ];
-    postStart = lib.mkAfter [
+    postHook = lib.mkAfter [
       "systemctl start redis-${app}.service"
       "systemctl start ${app}.service"
     ];

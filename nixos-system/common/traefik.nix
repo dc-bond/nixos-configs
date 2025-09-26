@@ -103,10 +103,10 @@ in
   users.users.${app}.extraGroups = [ "docker" ]; # add traefik to docker group to enable docker socket access
 
   backups.serviceHooks = {
-    preStop = lib.mkAfter [
+    preHook = lib.mkAfter [
       "systemctl stop ${app}.service"
     ];
-    postStart = lib.mkAfter [
+    postHook = lib.mkAfter [
       "systemctl start ${app}.service"
     ];
   };

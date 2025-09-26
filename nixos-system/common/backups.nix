@@ -80,12 +80,12 @@ in
       description = "path to the directory for borg backups restored from cloud storage (e.g. backblaze)";
     };
     serviceHooks = {
-      preStop = lib.mkOption {
+      preHook = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [];
         description = "Commands to run before stopping services";
       };
-      postStart = lib.mkOption {
+      postHook = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [];
         description = "Commands to run after starting services";
@@ -145,12 +145,12 @@ in
         preHook = lib.mkDefault ''
           set -x
           echo "spinning down services and starting sql database dumps"
-          ${lib.concatStringsSep "\n" config.backups.serviceHooks.preStop}
+          ${lib.concatStringsSep "\n" config.backups.serviceHooks.preHook}
         '';
         postHook = lib.mkDefault ''
           set -x
           echo "spinning up services"
-          ${lib.concatStringsSep "\n" config.backups.serviceHooks.postStart}
+          ${lib.concatStringsSep "\n" config.backups.serviceHooks.postHook}
           echo "starting cloud backup"
           systemctl start cloudBackup.service
         '';
