@@ -1,1 +1,0 @@
-check ip on installation iso, set root password on installation iso with 'sudo passwd'
