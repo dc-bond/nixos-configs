@@ -26,6 +26,8 @@
       options = [ "defaults" ];
     };
 
+    backups.borgDir = "${config.drives.storageDrive1}/borgbackup"; # host-specific borg backup directory override on backups.nix
+
     services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.drives.storageDrive1}/media/family-media" ]; # backup media directory outside of any individual service backup context
 
     environment.systemPackages = with pkgs; [

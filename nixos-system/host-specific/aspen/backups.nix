@@ -16,10 +16,6 @@ let
     #!/bin/bash
     export BORG_PASSPHRASE=$(sudo cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-    export BORG_CACHE_DIR="${config.backups.borgDir}/.cache"
-    export BORG_SECURITY_DIR="${config.backups.borgDir}/.config/security"
-    export BORG_KEYS_DIR="${config.backups.borgDir}/.config/keys"
-    export TMPDIR="${config.backups.borgDir}/.tmp"
     sudo -E ${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName}
   '';
 
@@ -27,10 +23,6 @@ let
     #!/bin/bash
     export BORG_PASSPHRASE=$(sudo cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-    export BORG_CACHE_DIR="${config.backups.borgDir}/.cache"
-    export BORG_SECURITY_DIR="${config.backups.borgDir}/.config/security"
-    export BORG_KEYS_DIR="${config.backups.borgDir}/.config/keys"
-    export TMPDIR="${config.backups.borgDir}/.tmp"
     sudo -E ${pkgs.borgbackup}/bin/borg info ${config.backups.borgDir}/${config.networking.hostName}
   '';
   
@@ -61,10 +53,6 @@ let
     export BORG_PASSPHRASE=$(sudo cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
     export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
-    export BORG_CACHE_DIR="${config.backups.borgCloudDir}/.cache"
-    export BORG_SECURITY_DIR="${config.backups.borgCloudDir}/.config/security"
-    export BORG_KEYS_DIR="${config.backups.borgCloudDir}/.config/keys"
-    export TMPDIR="${config.backups.borgCloudDir}/.tmp"
     sudo -E ${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgCloudDir}/${config.networking.hostName}
   '';
 
@@ -73,10 +61,6 @@ let
     export BORG_PASSPHRASE=$(sudo cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
     export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
-    export BORG_CACHE_DIR="${config.backups.borgCloudDir}/.cache"
-    export BORG_SECURITY_DIR="${config.backups.borgCloudDir}/.config/security"
-    export BORG_KEYS_DIR="${config.backups.borgCloudDir}/.config/keys"
-    export TMPDIR="${config.backups.borgCloudDir}/.tmp"
     sudo -E ${pkgs.borgbackup}/bin/borg info ${config.backups.borgCloudDir}/${config.networking.hostName}
   '';
 
@@ -156,10 +140,6 @@ in
         };
         environment = { 
           BORG_RELOCATED_REPO_ACCESS_IS_OK = "yes"; # supress warning about repo location being moved since last backup (e.g. changing directory location or IP address)
-          BORG_CACHE_DIR = "${config.backups.borgDir}/.cache"; 
-          BORG_SECURITY_DIR = "${config.backups.borgDir}/.config/security";
-          BORG_KEYS_DIR = "${config.backups.borgDir}/.config/keys";
-          TMPDIR = "${config.backups.borgDir}/.tmp";
         };
         compression = "auto,zstd,8";
         preHook = lib.mkDefault ''
