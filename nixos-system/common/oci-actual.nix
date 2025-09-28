@@ -57,6 +57,7 @@ let
     for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
       echo "Stopping $svc ..."
       systemctl stop "$svc" || true
+      waitForUnit "$svc"
     done
 
     # extract data from archive and overwrite existing data
@@ -76,7 +77,7 @@ in
 
 {
 
-  #environment.systemPackages = with pkgs; [ recoverActualScript ];
+  environment.systemPackages = with pkgs; [ recoverActualScript ];
   
   backups.serviceHooks = {
     preHook = lib.mkAfter [ "systemctl stop docker-${app}-root.target" ];
