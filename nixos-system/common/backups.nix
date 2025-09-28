@@ -183,6 +183,15 @@ in
     };
 
     systemd.services = {
+      "borgbackup-job-${config.networking.hostName}" = {
+        serviceConfig = {
+          ReadWritePaths = [
+            "${config.backups.borgDir}/.cache"
+            "${config.backups.borgDir}/.config"
+            "${config.backups.borgDir}/.tmp"
+          ];
+        };
+      };
       "cloudBackup" = {
         description = "rclone backup to backblaze cloud storage";
         serviceConfig = {
