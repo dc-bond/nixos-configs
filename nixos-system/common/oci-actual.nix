@@ -57,7 +57,7 @@ let
     for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
       echo "Stopping $svc ..."
       systemctl stop "$svc" || true
-      waitForUnit "$svc"
+      sleep 10
     done
 
     # extract data from archive and overwrite existing data
