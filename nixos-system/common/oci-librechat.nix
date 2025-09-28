@@ -19,12 +19,12 @@ let
     localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
     cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
-      "/var/lib/docker/volumes/${app}-api-images"
-      "/var/lib/docker/volumes/${app}-api-logs"
-      "/var/lib/docker/volumes/${app}-api-uploads"
-      "/var/lib/docker/volumes/${app}-meilisearch"
-      "/var/lib/docker/volumes/${app}-mongodb"
-      "/var/lib/docker/volumes/${app}-vectordb"
+      "/var/lib/docker/volumes/${app}-${app1}-images"
+      "/var/lib/docker/volumes/${app}-${app1}-logs"
+      "/var/lib/docker/volumes/${app}-${app1}-uploads"
+      "/var/lib/docker/volumes/${app}-${app2}"
+      "/var/lib/docker/volumes/${app}-${app3}"
+      "/var/lib/docker/volumes/${app}-${app4}"
     ];
     stopServices = [ "docker-${app}-root.target" ];
     startServices = [ "docker-${app}-root.target" ];
