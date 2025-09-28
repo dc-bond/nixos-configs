@@ -194,7 +194,6 @@ in
         "borgbackup-job-${config.networking.hostName}" = {
           serviceConfig = {
             ReadWritePaths = [
-              "${config.backups.borgDir}/${config.networking.hostName}" 
               "${config.backups.borgDir}/.cache"
               "${config.backups.borgDir}/.config"
               "${config.backups.borgDir}/.tmp"
