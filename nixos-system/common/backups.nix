@@ -182,29 +182,39 @@ in
       };
     };
 
-    systemd.services = {
-      "borgbackup-job-${config.networking.hostName}" = {
-        serviceConfig = {
-          ReadWritePaths = [
-            "${config.backups.borgDir}/.cache"
-            "${config.backups.borgDir}/.config"
-            "${config.backups.borgDir}/.tmp"
-          ];
+    systemd = {
+      tmpfiles.rules = [
+        "d ${config.backups.borgDir}/.cache 0700 root root -"
+        "d ${config.backups.borgDir}/.config 0700 root root -"
+        "d ${config.backups.borgDir}/.config/keys 0700 root root -"
+        "d ${config.backups.borgDir}/.config/security 0700 root root -"
+        "d ${config.backups.borgDir}/.tmp 0700 root root 2d"
+      ];
+      services = {
+        "borgbackup-job-${config.networking.hostName}" = {
+          serviceConfig = {
+            ReadWritePaths = [
+              "${config.backups.borgDir}/${config.networking.hostName}" 
+              "${config.backups.borgDir}/.cache"
+              "${config.backups.borgDir}/.config"
+              "${config.backups.borgDir}/.tmp"
+            ];
+          };
         };
-      };
-      "cloudBackup" = {
-        description = "rclone backup to backblaze cloud storage";
-        serviceConfig = {
-          ExecStart = "${cloudBackupScript}/bin/cloudBackup";
-          Restart = "on-failure";
-          EnvironmentFile = "${rcloneConf}";
+        "cloudBackup" = {
+          description = "rclone backup to backblaze cloud storage";
+          serviceConfig = {
+            ExecStart = "${cloudBackupScript}/bin/cloudBackup";
+            Restart = "on-failure";
+            EnvironmentFile = "${rcloneConf}";
+          };
+          preStart = ''
+            if [ ! -f "${rcloneConf}" ]; then
+              echo "rclone configuration file not found at ${rcloneConf}"
+              exit 1
+            fi
+          '';
         };
-        preStart = ''
-          if [ ! -f "${rcloneConf}" ]; then
-            echo "rclone configuration file not found at ${rcloneConf}"
-            exit 1
-          fi
-        '';
       };
     };
     

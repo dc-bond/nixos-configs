@@ -110,6 +110,11 @@ in
       requires = [ "postgresql.service" ];
       after = [ "postgresql.service" ];
     };
+    #"borgbackup-job-${config.networking.hostName}" = { # ensure borg can write to nextcloud directory for occ maintenance mode
+    #  serviceConfig.ReadWritePaths = [
+    #    "/var/lib/${app}" 
+    #  ];
+    #};
   };
 
   backups.serviceHooks = {
