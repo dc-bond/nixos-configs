@@ -88,7 +88,7 @@
       "nixos-system/common/oci-zwavejs.nix"
       "nixos-system/common/oci-searxng.nix"
       "nixos-system/common/oci-recipesage.nix"
-      #"nixos-system/common/oci-librechat.nix"
+      "nixos-system/common/oci-librechat.nix"
       "nixos-system/common/ollama.nix"
       #"nixos-system/common/n8n.nix" # won't build n8n package from source...
 
