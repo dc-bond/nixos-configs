@@ -3,7 +3,7 @@
   lib,
   pkgs, 
   configVars,
-  makeDockerRecoveryScript,
+  dockerServiceRecoveryScript,
   ... 
 }: 
 
@@ -30,7 +30,7 @@ let
     stopServices = [ "docker-${app}-root.target" ];
     startServices = [ "docker-${app}-root.target" ];
   };
-  recoverScript = makeDockerRecoveryScript {
+  recoverScript = dockerServiceRecoveryScript {
     serviceName = app;
     recoveryPlan = recoveryPlan;
   };

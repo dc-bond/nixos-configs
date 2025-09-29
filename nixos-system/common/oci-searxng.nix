@@ -3,33 +3,16 @@
   config, 
   pkgs, 
   configVars,
-  makeDockerRecoveryScript,
   ... 
 }: 
 
 let
   app = "searxng";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
-  recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
-    restoreItems = [
-      "/var/lib/docker/volumes/${app}"
-    ];
-    stopServices = [ "docker-${app}-root.target" ];
-    startServices = [ "docker-${app}-root.target" ];
-  };
-  recoverScript = makeDockerRecoveryScript {
-    serviceName = app;
-    recoveryPlan = recoveryPlan;
-  };
 in
 
 {
 
   environment = {
-    systemPackages = with pkgs; [ recoverScript ];
     etc."searxng/settings.yml" = {
       text = ''
         use_default_settings: true
@@ -44,15 +27,6 @@ in
     };
   };
   
-  sops.secrets.borgCryptPasswd = {};
-
-  backups.serviceHooks = {
-    preHook = lib.mkAfter [ "systemctl stop docker-${app}-root.target" ];
-    postHook = lib.mkAfter [ "systemctl start docker-${app}-root.target" ];
-  };
-
-  services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
-
   virtualisation.oci-containers.containers."${app}" = {
     image = "docker.io/${app}/${app}:2025.8.1-3d96414"; # https://hub.docker.com/r/searxng/searxng/tags
     autoStart = true;
