@@ -33,12 +33,12 @@ let
     recoveryPlan = recoveryPlan;
     dbType = recoveryPlan.db.type;
     preRestoreHook = ''
-    echo "Activating nextcloud maintenance mode ..."
-    ${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1
+      echo "Activating nextcloud maintenance mode ..."
+      ${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1
     '';
     postRestoreHook = ''
-    echo "Deactivating nextcloud maintenance mode ..."
-      ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1
+      echo "Deactivating nextcloud maintenance mode ..."
+        ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1
     '';
   };
 

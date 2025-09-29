@@ -20,7 +20,7 @@ let
     stopServices = [ "docker-${app}-root.target" ];
     startServices = [ "docker-${app}-root.target" ];
   };
-  recoverScript = dockerServiceRecoveryScript {
+  recoverScript = dockerServiceRecoveryScript { # remember to clear site data from browser before running recovery script due to actual's client-server architecture
     serviceName = app;
     recoveryPlan = recoveryPlan;
   };
