@@ -26,7 +26,7 @@
 
     hostSpecificConfigs = {
       storageDrive1 = "/storage/WD-WCC7K4RU947F";
-      primaryIp = configVars.aspenLanIp; # mapped from configVars
+      primaryIp = configVars.aspenLanIp;
     };
 
     fileSystems."${config.hostSpecificConfigs.storageDrive1}" = {

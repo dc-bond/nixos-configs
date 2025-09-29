@@ -9,37 +9,57 @@
 }: 
 
 {
+  
+  options.hostSpecificConfigs = {
+    primaryIp = lib.mkOption {
+      type = lib.types.str;
+      description = "primary ipv4 address for this host";
+    };
+  };
+  
+  config = {
 
-  environment.systemPackages = with pkgs; [
-    #(import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
-    age # encryption tool
-    mkpasswd # password hashing tool
-    dig # dns lookup tool
-    sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
-    wget # download tool
-    rsync # sync tool
-    usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
-    nvd # package version diff info for nix build operations
-    nix-tree # table view of package dependencies
-    ethtool # network tools
-    inetutils # more network tools like telnet
-    unzip # utility to unzip directories
-    git # git
-    eza # modern replacement for 'ls'
-    pfetch # system info displayed on shell startup
-    btop # system monitor
-    nmap # network scanning
-    brightnessctl # screen brightness application
-    ddcutil # query and change monitor settings using DDC/CI and USB
-    i2c-tools # hardware interface tools required by ddcutil
-    libreoffice-still # office suite
-    element-desktop # matrix chat app
-    feh # simple image viewer
-    wgnord # nordvpn
-    openssl # openssl command line tool
-  ];
+    hostSpecificConfigs.primaryIp = configVars.thinkpadLanIp;
 
-  backups.startTime = "*-*-* 02:45:00"; # everyday at 2:45am
+    environment.systemPackages = with pkgs; [
+      #(import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
+      age # encryption tool
+      mkpasswd # password hashing tool
+      dig # dns lookup tool
+      sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
+      wget # download tool
+      rsync # sync tool
+      usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
+      nvd # package version diff info for nix build operations
+      nix-tree # table view of package dependencies
+      ethtool # network tools
+      inetutils # more network tools like telnet
+      unzip # utility to unzip directories
+      git # git
+      eza # modern replacement for 'ls'
+      pfetch # system info displayed on shell startup
+      btop # system monitor
+      nmap # network scanning
+      brightnessctl # screen brightness application
+      ddcutil # query and change monitor settings using DDC/CI and USB
+      i2c-tools # hardware interface tools required by ddcutil
+      libreoffice-still # office suite
+      element-desktop # matrix chat app
+      feh # simple image viewer
+      wgnord # nordvpn
+      openssl # openssl command line tool
+    ];
+
+    backups.startTime = "*-*-* 02:45:00"; # everyday at 2:45am
+
+    hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
+
+    services.logind.lidSwitch = "ignore"; # disable suspend on laptop lid close
+
+    # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
+    system.stateVersion = "23.11";
+
+  };
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
@@ -73,12 +93,5 @@
       "scripts/deploy-juniper.nix"
     ])
   ];
-
-  hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
-
-  services.logind.lidSwitch = "ignore"; # disable suspend on laptop lid close
-
-# original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
-  system.stateVersion = "23.11";
 
 }
