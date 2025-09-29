@@ -23,6 +23,8 @@ let
       name = "${app}";
       dump = "/var/backup/postgresql/${app}.sql.gz";
     };
+    stopServices = [ ]; # no services to stop
+    startServices = [ ]; # no services to start
   };
   recoverNextcloudScript = pkgs.writeShellScriptBin "recoverNextcloud" ''
     #!/bin/bash

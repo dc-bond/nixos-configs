@@ -64,7 +64,10 @@ let
     sudo -E ${pkgs.borgbackup}/bin/borg info ${config.backups.borgCloudDir}/${config.networking.hostName}
   '';
   
-  dockerServiceRecoveryScript = { serviceName, recoveryPlan }: # function that generates a standardized recovery script for any dockerized container stack service
+  dockerServiceRecoveryScript = { 
+    serviceName, 
+    recoveryPlan 
+  }: # function that generates a standardized recovery script for any dockerized container stack service
     pkgs.writeShellScriptBin "recover${lib.strings.toUpper (builtins.substring 0 1 serviceName)}${builtins.substring 1 (-1) serviceName}" ''
       #!/bin/bash
      
@@ -144,6 +147,97 @@ let
       echo "Recovery complete for ${serviceName}!"
     '';
 
+    # In your flake inputs or common functions
+  nixServiceRecoveryScript = {
+    serviceName,
+    recoveryPlan,
+    dbType ? null, # "postgresql", "mysql", or null
+    preRestoreHook ? "", # custom commands before extraction
+    postRestoreHook ? "", # custom commands after extraction
+    serviceSpecificHook ? "", # commands between extraction and service start
+  }: # function that generates a standardized recovery script for any nix module service
+    pkgs.writeShellScriptBin "recover${lib.strings.toUpper (lib.substring 0 1 serviceName)}${lib.substring 1 (-1) serviceName}" ''
+      #!/bin/bash
+
+      # track errors
+      set -euo pipefail
+
+      # set borg passphrase environment variable
+      export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
+      export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+      # repo selection
+      read -p "Use cloud repo? (y/N): " use_cloud
+      if [[ "$use_cloud" =~ ^[Yy]$ ]]; then
+        REPO="${recoveryPlan.cloudRestoreRepoPath}"
+        echo "Using cloud repo"
+      else
+        REPO="${recoveryPlan.localRestoreRepoPath}"
+        echo "Using local repo"
+      fi
+
+      # archive selection
+      echo "Available archives at $REPO:"
+      echo ""
+      archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
+      echo "$archives" | nl -w2 -s') '
+      echo ""
+      read -p "Enter number: " num
+      ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
+      if [ -z "$ARCHIVE" ]; then
+        echo "Invalid selection"
+        exit 1
+      fi
+      echo "Selected: $ARCHIVE"
+    
+      # pre-restore hook (e.g., nextcloud maintenance mode on)
+      ${preRestoreHook}
+    
+      # stop services
+      for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
+        echo "Stopping $svc ..."
+        systemctl stop "$svc" || true
+      done
+    
+      # extract data from archive and overwrite existing data
+      cd /
+      echo "Extracting data from $REPO::$ARCHIVE ..."
+      ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
+      
+      # drop and recreate database if postgres
+      ${lib.optionalString (dbType == "postgresql") ''
+        echo "Dropping and recreating PostgreSQL database ${recoveryPlan.db.name} ..."
+        su - postgres -c "dropdb --if-exists ${recoveryPlan.db.name}"
+        su - postgres -c "createdb -O ${recoveryPlan.db.user} ${recoveryPlan.db.name}"
+        echo "Restoring database from ${recoveryPlan.db.dump} ..."
+        gunzip -c ${recoveryPlan.db.dump} | su - postgres -c "psql ${recoveryPlan.db.name}"
+      ''}
+      
+      # drop and recreate database if mysql
+      ${lib.optionalString (dbType == "mysql") ''
+        echo "Dropping and recreating MySQL database ${recoveryPlan.db.name} ..."
+        sudo -u mysql mysql -e "DROP DATABASE IF EXISTS ${recoveryPlan.db.name};"
+        sudo -u mysql mysql -e "CREATE DATABASE ${recoveryPlan.db.name};"
+        sudo -u mysql mysql -e "GRANT ALL PRIVILEGES ON ${recoveryPlan.db.name}.* TO '${recoveryPlan.db.user}'@'localhost';"
+        echo "Restoring database from ${recoveryPlan.db.dump} ..."
+        gunzip -c ${recoveryPlan.db.dump} | sudo -u mysql mysql ${recoveryPlan.db.name}
+      ''}
+    
+      # service-specific actions (between restore and service start)
+      ${serviceSpecificHook}
+    
+      # start services
+      for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
+        echo "Starting $svc ..."
+        systemctl start "$svc" || true
+      done
+    
+      # post-restore hook (e.g., nextcloud maintenance mode off)
+      ${postRestoreHook}
+    
+      echo "Recovery complete!"
+    '';
+
 in
 
 {
@@ -209,6 +303,7 @@ in
 
     _module.args = {
       dockerServiceRecoveryScript = dockerServiceRecoveryScript;
+      nixServiceRecoveryScript = nixServiceRecoveryScript;
     };
 
     services.borgbackup.jobs = {

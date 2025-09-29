@@ -19,6 +19,7 @@ let
       "/var/backup/mysql/${app}.gz"
     ];
     db = {
+      type = "mysql";
       user = "${app}";
       name = "${app}";
       dump = "/var/backup/mysql/${app}.gz";
