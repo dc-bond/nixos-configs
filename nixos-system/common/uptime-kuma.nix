@@ -22,7 +22,6 @@ let
   recoverScript = nixServiceRecoveryScript {
     serviceName = app;
     recoveryPlan = recoveryPlan;
-    dbType = recoveryPlan.db.type;
   };
 
 in
