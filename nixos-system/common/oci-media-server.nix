@@ -143,7 +143,7 @@ in
       autoStart = true;
       volumes = [ 
         "${app2}:/config" 
-        "${config.drives.storageDrive1}/media/usenet:/media/usenet:rw" # bind mount for downloads
+        "${config.hostSpecificConfigs.storageDrive1}/media/usenet:/media/usenet:rw" # bind mount for downloads
       ];
       environment = {
         PUID = "0";
@@ -164,7 +164,7 @@ in
       autoStart = true;
       volumes = [ 
         "${app3}:/config" 
-        "${config.drives.storageDrive1}/media:/media:rw" # bind mount for media access
+        "${config.hostSpecificConfigs.storageDrive1}/media:/media:rw" # bind mount for media access
       ];
       environment = {
         PUID = "0";
@@ -185,7 +185,7 @@ in
       autoStart = true;
       volumes = [ 
         "${app4}:/config" 
-        "${config.drives.storageDrive1}/media:/media:rw" # bind mount for media access
+        "${config.hostSpecificConfigs.storageDrive1}/media:/media:rw" # bind mount for media access
       ];
       environment = {
         PUID = "0";
@@ -238,10 +238,10 @@ in
       environment = { NVIDIA_VISIBLE_DEVICES = "all"; }; # enable GPU utilization
       volumes = [ 
         "${app7}:/config" 
-        "${config.drives.storageDrive1}/media/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
-        "${config.drives.storageDrive1}/media/movies:/data/movies:ro" # ditto for movies
-        "${config.drives.storageDrive1}/media/music:/data/music:ro" # ditto for music
-        "${config.drives.storageDrive1}/media/yt-downloads:/data/yt-downloads:ro" # ditto for youtube downloads
+        "${config.hostSpecificConfigs.storageDrive1}/media/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
+        "${config.hostSpecificConfigs.storageDrive1}/media/movies:/data/movies:ro" # ditto for movies
+        "${config.hostSpecificConfigs.storageDrive1}/media/music:/data/music:ro" # ditto for music
+        "${config.hostSpecificConfigs.storageDrive1}/media/yt-downloads:/data/yt-downloads:ro" # ditto for youtube downloads
       ];
       log-driver = "journald";
       dependsOn = ["${app1}"];

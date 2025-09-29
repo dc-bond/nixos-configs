@@ -18,7 +18,7 @@ in
     #"${app}" = {
     #  enable = true;
     #  port = 7189;
-    #  libraries = [ "${config.drives.storageDrive1}/media/ebooks/calibre/" ];
+    #  libraries = [ "${config.hostSpecificConfigs.storageDrive1}/media/ebooks/calibre/" ];
     #};
 
     "${app2}" = {
@@ -31,7 +31,7 @@ in
       };
       options = {
         reverseProxyAuth.enable = true;
-        calibreLibrary = "${config.drives.storageDrive1}/media/ebooks/calibre/";
+        calibreLibrary = "${config.hostSpecificConfigs.storageDrive1}/media/ebooks/calibre/";
         enableBookUploading = true;
       };
     };

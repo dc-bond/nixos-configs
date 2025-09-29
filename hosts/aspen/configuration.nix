@@ -4,34 +4,43 @@
   lib, 
   configLib,
   config, 
+  configVars,
   pkgs, 
   ... 
 }: 
 
 {
 
-  options.drives = {
+  options.hostSpecificConfigs = {
     storageDrive1 = lib.mkOption {
       type = lib.types.path;
-      default = "/storage/WD-WCC7K4RU947F";
       description = "path to storage drive 1";
+    };
+    primaryIp = lib.mkOption {
+      type = lib.types.str;
+      description = "primary ipv4 address for this host";
     };
   };
 
   config = {
 
-    fileSystems."${config.drives.storageDrive1}" = {
+    hostSpecificConfigs = {
+      storageDrive1 = "/storage/WD-WCC7K4RU947F";
+      primaryIp = configVars.aspenLanIp; # mapped from configVars
+    };
+
+    fileSystems."${config.hostSpecificConfigs.storageDrive1}" = {
       device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb";
       fsType = "ext4"; 
       options = [ "defaults" ];
     };
 
     backups = {
-      borgDir = "${config.drives.storageDrive1}/borgbackup"; # host-specific borg backup directory override on backups.nix
+      borgDir = "${config.hostSpecificConfigs.storageDrive1}/borgbackup"; # host-specific borg backup directory override on backups.nix
       #startTime = ""; # default to everyday at 12:45am declared in backups.nix
     };
 
-    services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.drives.storageDrive1}/media/family-media" ]; # backup media directory outside of any individual service backup context
+    services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.hostSpecificConfigs.storageDrive1}/media/family-media" ]; # backup media directory outside of any individual service backup context
 
     environment.systemPackages = with pkgs; [
       wget # download tool

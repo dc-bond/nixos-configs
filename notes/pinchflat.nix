@@ -39,7 +39,7 @@ in
     enable = true;
     logLevel = "warning";
     secretsFile = "/run/secrets/rendered/pinchflat-env";
-    mediaDir = "${config.drives.storageDrive1}/media/yt-downloads";
+    mediaDir = "${config.hostSpecificConfigs.storageDrive1}/media/yt-downloads";
     extraConfig = {
       TZ = "America/New_York";
     };

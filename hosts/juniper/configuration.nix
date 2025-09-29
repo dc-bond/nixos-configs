@@ -10,19 +10,35 @@
 }: 
 
 {
+  
+  options.hostSpecificConfigs = {
+    primaryIp = lib.mkOption {
+      type = lib.types.str;
+      description = "primary ipv4 address for this host";
+    };
+  };
 
-  environment.systemPackages = with pkgs; [
-    nvd # package version diff info for nix build operations
-    rsync # sync tool
-    git # git
-    eza # modern replacement for 'ls'
-    pfetch # system info displayed on shell startup
-    btop # system monitor
-    ethtool # network tools
-    dig # dns lookup tool
-  ];
+  config = {
 
-  backups.startTime = "*-*-* 01:45:00"; # everyday at 1:45am
+    hostSpecificConfigs.primaryIp = configVars.JuniperIp; # mapped from configVars
+
+    environment.systemPackages = with pkgs; [
+      nvd # package version diff info for nix build operations
+      rsync # sync tool
+      git # git
+      eza # modern replacement for 'ls'
+      pfetch # system info displayed on shell startup
+      btop # system monitor
+      ethtool # network tools
+      dig # dns lookup tool
+    ];
+
+    backups.startTime = "*-*-* 01:45:00"; # everyday at 1:45am
+
+  # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
+  system.stateVersion = "24.11";
+
+  };
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
@@ -46,8 +62,5 @@
       "nixos-system/host-specific/juniper/tailscale.nix"
     ])
   ];
-
-  # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
-  system.stateVersion = "24.11";
 
 }

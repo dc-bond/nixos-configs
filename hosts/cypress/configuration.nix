@@ -10,7 +10,7 @@
 
 {
 
-  options.drives = {
+  options.config.hostSpecificConfigs = {
     storageDrive1 = lib.mkOption {
       type = lib.types.path;
       default = "/storage/WD-WX21DC86RU3P";
@@ -20,7 +20,7 @@
 
   config = {
 
-    fileSystems."${config.drives.storageDrive1}" = {
+    fileSystems."${config.hostSpecificConfigs.storageDrive1}" = {
       device = "/dev/disk/by-uuid/f3fb53cc-52fa-48e3-8cac-b69d85a8aff1";
       fsType = "ext4"; 
       options = [ "defaults" ];
