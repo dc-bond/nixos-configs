@@ -3,6 +3,7 @@
   lib,
   pkgs, 
   configVars,
+  makeDockerRecoveryScript,
   ... 
 }: 
 
@@ -19,89 +20,15 @@ let
     stopServices = [ "docker-${app}-root.target" ];
     startServices = [ "docker-${app}-root.target" ];
   };
-  recoverActualScript = pkgs.writeShellScriptBin "recoverActual" ''
-    #!/bin/bash
-   
-    # track errors
-    set -euo pipefail
-
-    # set borg passphrase environment variable
-    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
-    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-
-    # repo selection
-    read -p "Use cloud repo? (y/N): " use_cloud
-    if [[ "$use_cloud" =~ ^[Yy]$ ]]; then
-      REPO="${recoveryPlan.cloudRestoreRepoPath}"
-      echo "Using cloud repo"
-    else
-      REPO="${recoveryPlan.localRestoreRepoPath}"
-      echo "Using local repo"
-    fi
-
-    # archive selection
-    echo "Available archives at $REPO:"
-    echo ""
-    archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
-    echo "$archives" | nl -w2 -s') '
-    echo ""
-    read -p "Enter number: " num
-    ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
-    if [ -z "$ARCHIVE" ]; then
-      echo "Invalid selection"
-      exit 1
-    fi
-    echo "Selected: $ARCHIVE"
-
-    # stop services
-    for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
-      echo "Stopping $svc ..."
-      systemctl stop "$svc" || true
-    done
-    
-    # allow for graceful container shutdown
-    echo "Ensure container stack fully down..."
-    sleep 20
-
-    # extract volume names from restore items
-    VOLUMES=""
-    for item in ${lib.concatStringsSep " " recoveryPlan.restoreItems}; do
-      VOLUME_NAME=$(basename "$item")
-      VOLUMES="$VOLUMES $VOLUME_NAME"
-    done
-    
-    # remove existing volumes
-    echo "Removing existing volumes..."
-    for volume in $VOLUMES; do
-      echo "Removing volume: $volume"
-      ${pkgs.docker}/bin/docker volume rm "$volume" || true
-    done
-    
-    # recreate volumes
-    echo "Recreating volumes..."
-    for volume in $VOLUMES; do
-      echo "Creating volume: $volume"
-      ${pkgs.docker}/bin/docker volume create "$volume"
-    done
-
-    # extract data from archive and overwrite existing data
-    cd /
-    echo "Extracting data from $REPO::$ARCHIVE ..."
-    ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
-    
-    # start services
-    for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
-      echo "Starting $svc ..."
-      systemctl start "$svc" || true
-    done
-
-    echo "Recovery complete!"
-  '';
+  recoverScript = makeDockerRecoveryScript {
+    serviceName = app;
+    recoveryPlan = recoveryPlan;
+  };
 in
 
 {
 
-  environment.systemPackages = with pkgs; [ recoverActualScript ];
+  environment.systemPackages = with pkgs; [ recoverScript ];
   
   backups.serviceHooks = {
     preHook = lib.mkAfter [ "systemctl stop docker-${app}-root.target" ];
