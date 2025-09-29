@@ -3,13 +3,23 @@
   config,
   configVars, 
   lib,
+  nixServiceRecoveryScript,
   ... 
 }: 
 
 # CREATE NEW USERS WITH 'nix-shell -p matrix-synapse --run "register_new_matrix_user -k "shared-secret" http://127.0.0.1:8008"'
 
 let
+
   app = "matrix-synapse";
+  getPrimaryIp = config: 
+    let
+      defaultInterface = config.networking.defaultGateway.interface;
+      interfaceConfig = config.networking.interfaces.${defaultInterface};
+      addresses = interfaceConfig.ipv4.addresses;
+    in
+      (builtins.head addresses).address;
+  hostPrimaryIp = getPrimaryIp config;
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
     serviceName = "${app}";
@@ -21,6 +31,7 @@ let
       "/var/backup/postgresql/${app}.sql.gz"
     ];
     db = {
+      type = "postgresql";
       user = "${app}";
       name = "${app}";
       dump = "/var/backup/postgresql/${app}.sql.gz";
@@ -28,68 +39,12 @@ let
     stopServices = [ "${app}" "redis-${app}" ];
     startServices = [ "redis-${app}" "${app}" ];
   };
-  recoverMatrixScript = pkgs.writeShellScriptBin "recoverMatrix" ''
-    #!/bin/bash
-   
-    # track errors
-    set -euo pipefail
+  recoverScript = nixServiceRecoveryScript {
+    serviceName = app;
+    recoveryPlan = recoveryPlan;
+    dbType = recoveryPlan.db.type;
+  };
 
-    # set borg passphrase environment variable
-    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
-    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-
-    # repo selection
-    read -p "Use cloud repo? (y/N): " use_cloud
-    if [[ "$use_cloud" =~ ^[Yy]$ ]]; then
-      REPO="${recoveryPlan.cloudRestoreRepoPath}"
-      echo "Using cloud repo"
-    else
-      REPO="${recoveryPlan.localRestoreRepoPath}"
-      echo "Using local repo"
-    fi
-
-    # archive selection
-    echo "Available archives at $REPO:"
-    echo ""
-    archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
-    echo "$archives" | nl -w2 -s') '
-    echo ""
-    read -p "Enter number: " num
-    ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
-    if [ -z "$ARCHIVE" ]; then
-      echo "Invalid selection"
-      exit 1
-    fi
-    echo "Selected: $ARCHIVE"
-
-    # stop services
-    for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
-      echo "Stopping $svc ..."
-      systemctl stop "$svc" || true
-    done
-
-    # extract data from archive and overwrite existing data
-    cd /
-    echo "Extracting data from $REPO::$ARCHIVE ..."
-    ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
-    
-    # drop and recreate database
-    echo "Dropping and recreating clean database ${recoveryPlan.db.name} ..."
-    su - postgres -c "dropdb --if-exists ${recoveryPlan.db.name}"
-    su - postgres -c "createdb -O ${recoveryPlan.db.user} -E UTF8 -l C -T template0 ${recoveryPlan.db.name}"
-    
-    # restore database from dump backup
-    echo "Restoring database from ${recoveryPlan.db.dump} ..."
-    gunzip -c ${recoveryPlan.db.dump} | su - postgres -c "psql ${recoveryPlan.db.name}"
-
-    # start services
-    for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
-      echo "Starting $svc ..."
-      systemctl start "$svc" || true
-    done
-
-    echo "Recovery complete!"
-  '';
 in 
 
 {
@@ -163,7 +118,7 @@ in
   };
 
   environment.systemPackages = with pkgs; [ 
-    recoverMatrixScript
+    recoverScript
     openssl 
   ];
   
@@ -291,10 +246,10 @@ in
       no-udp = false;
       no-tcp-relay = true; # force UDP only
       no-udp-relay = false;
-      listening-ips = [ "${configVars.juniperIp}" ];
+      listening-ips = [ "${hostPrimaryIp}" ];
       listening-port = 3478;
       tls-listening-port = 5349;
-      relay-ips = [ "${configVars.juniperIp}" ];
+      relay-ips = [ "${hostPrimaryIp}" ];
       min-port = 50100;
       max-port = 50200; # only anticipate a handful of concurrent calls, so only opening 100 ports which should still be on the liberal side
       use-auth-secret = true;

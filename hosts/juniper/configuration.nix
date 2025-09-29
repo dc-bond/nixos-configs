@@ -37,13 +37,13 @@
       "nixos-system/common/oci-containers.nix"
       "nixos-system/common/postgresql.nix"
       "nixos-system/common/traefik.nix"
+      "nixos-system/common/matrix-synapse.nix"
 
       "nixos-system/host-specific/juniper/users.nix"
       "nixos-system/host-specific/juniper/sshd.nix"
       "nixos-system/host-specific/juniper/networking.nix"
       "nixos-system/host-specific/juniper/boot.nix"
       "nixos-system/host-specific/juniper/tailscale.nix"
-      "nixos-system/host-specific/juniper/matrix-synapse.nix"
     ])
   ];
 
