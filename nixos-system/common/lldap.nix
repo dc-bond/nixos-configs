@@ -30,7 +30,7 @@ let
   recoverScript = nixServiceRecoveryScript {
     serviceName = app;
     recoveryPlan = recoveryPlan;
-    dbType = db.type;
+    dbType = recoveryPlan.db.type;
   };
 in
 
