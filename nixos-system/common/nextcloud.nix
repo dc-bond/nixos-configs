@@ -4,6 +4,7 @@
   configVars,
   lib, 
   pkgs, 
+  nixServiceRecoveryScript,
   ... 
 }: 
 
