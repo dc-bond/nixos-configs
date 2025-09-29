@@ -8,6 +8,7 @@
 }: 
 
 let
+
   app = "lldap";
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
@@ -32,6 +33,7 @@ let
     recoveryPlan = recoveryPlan;
     dbType = recoveryPlan.db.type;
   };
+  
 in
 
 {
