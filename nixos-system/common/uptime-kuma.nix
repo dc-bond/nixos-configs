@@ -3,10 +3,12 @@
   configVars,
   pkgs, 
   lib,
+  nixServiceRecoveryScript,
   ... 
 }:
 
 let
+
   app = "uptime-kuma";
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
@@ -17,59 +19,12 @@ let
     stopServices = [ "${app}" ];
     startServices = [ "${app}" ];
   };
-  recoverUptimeKumaScript = pkgs.writeShellScriptBin "recoverUptimeKuma" ''
-    #!/bin/bash
-   
-    # track errors
-    set -euo pipefail
+  recoverScript = nixServiceRecoveryScript {
+    serviceName = app;
+    recoveryPlan = recoveryPlan;
+    dbType = recoveryPlan.db.type;
+  };
 
-    # set borg passphrase environment variable
-    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
-    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-
-    # repo selection
-    read -p "Use cloud repo? (y/N): " use_cloud
-    if [[ "$use_cloud" =~ ^[Yy]$ ]]; then
-      REPO="${recoveryPlan.cloudRestoreRepoPath}"
-      echo "Using cloud repo"
-    else
-      REPO="${recoveryPlan.localRestoreRepoPath}"
-      echo "Using local repo"
-    fi
-
-    # archive selection
-    echo "Available archives at $REPO:"
-    echo ""
-    archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
-    echo "$archives" | nl -w2 -s') '
-    echo ""
-    read -p "Enter number: " num
-    ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
-    if [ -z "$ARCHIVE" ]; then
-      echo "Invalid selection"
-      exit 1
-    fi
-    echo "Selected: $ARCHIVE"
-
-    # stop services
-    for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
-      echo "Stopping $svc ..."
-      systemctl stop "$svc" || true
-    done
-
-    # extract data from archive and overwrite existing data
-    cd /
-    echo "Extracting data from $REPO::$ARCHIVE ..."
-    ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
-    
-    # start services
-    for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
-      echo "Starting $svc ..."
-      systemctl start "$svc" || true
-    done
-
-    echo "Recovery complete!"
-  '';
 in
 
 {

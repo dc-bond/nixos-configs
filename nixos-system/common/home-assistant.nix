@@ -4,10 +4,12 @@
   configLib,
   configVars,
   pkgs, 
+  nixServiceRecoveryScript,
   ... 
 }: 
 
 let
+
   app = "home-assistant";
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
@@ -20,6 +22,7 @@ let
       "/var/backup/postgresql/hass.sql.gz"
     ];
     db = {
+      type = "postgresql";
       user = "hass";
       name = "hass";
       dump = "/var/backup/postgresql/hass.sql.gz";
@@ -27,68 +30,12 @@ let
     stopServices = [ "${app}" "mosquitto" ];
     startServices = [ "mosquitto" "${app}" ];
   };
-  recoverHassScript = pkgs.writeShellScriptBin "recoverHass" ''
-    #!/bin/bash
-   
-    # track errors
-    set -euo pipefail
+  recoverScript = nixServiceRecoveryScript {
+    serviceName = app;
+    recoveryPlan = recoveryPlan;
+    dbType = recoveryPlan.db.type;
+  };
 
-    # set borg passphrase environment variable
-    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
-    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-
-    # repo selection
-    read -p "Use cloud repo? (y/N): " use_cloud
-    if [[ "$use_cloud" =~ ^[Yy]$ ]]; then
-      REPO="${recoveryPlan.cloudRestoreRepoPath}"
-      echo "Using cloud repo"
-    else
-      REPO="${recoveryPlan.localRestoreRepoPath}"
-      echo "Using local repo"
-    fi
-
-    # archive selection
-    echo "Available archives at $REPO:"
-    echo ""
-    archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
-    echo "$archives" | nl -w2 -s') '
-    echo ""
-    read -p "Enter number: " num
-    ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
-    if [ -z "$ARCHIVE" ]; then
-      echo "Invalid selection"
-      exit 1
-    fi
-    echo "Selected: $ARCHIVE"
-
-    # stop services
-    for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
-      echo "Stopping $svc ..."
-      systemctl stop "$svc" || true
-    done
-
-    # extract data from archive and overwrite existing data
-    cd /
-    echo "Extracting data from $REPO::$ARCHIVE ..."
-    ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
-    
-    # drop and recreate database
-    echo "Dropping and recreating clean database ${recoveryPlan.db.name} ..."
-    su - postgres -c "dropdb --if-exists ${recoveryPlan.db.name}"
-    su - postgres -c "createdb -O ${recoveryPlan.db.user} ${recoveryPlan.db.name}"
-    
-    # restore database from dump backup
-    echo "Restoring database from ${recoveryPlan.db.dump} ..."
-    gunzip -c ${recoveryPlan.db.dump} | su - postgres -c "psql ${recoveryPlan.db.name}"
-
-    # start services
-    for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
-      echo "Starting $svc ..."
-      systemctl start "$svc" || true
-    done
-
-    echo "Recovery complete!"
-  '';
 in
 
 {
@@ -102,7 +49,7 @@ in
     };
   };
 
-  environment.systemPackages = with pkgs; [ recoverHassScript ];
+  environment.systemPackages = with pkgs; [ recoverScript ];
 
   systemd.services."${app}" = {
     requires = [ "postgresql.service" ];
