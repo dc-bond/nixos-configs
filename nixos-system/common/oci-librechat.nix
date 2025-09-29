@@ -72,6 +72,18 @@ let
     echo "Waiting for containers to fully shut down..."
     sleep 20
 
+    # Remove and recreate volumes for a clean slate
+    echo "Removing existing volumes..."
+    ${pkgs.docker}/bin/docker volume rm ${app}-${app1}-images ${app}-${app1}-logs ${app}-${app1}-uploads ${app}-${app2} ${app}-${app3} ${app}-${app4} || true
+    
+    echo "Recreating volumes..."
+    ${pkgs.docker}/bin/docker volume create ${app}-${app1}-images
+    ${pkgs.docker}/bin/docker volume create ${app}-${app1}-logs  
+    ${pkgs.docker}/bin/docker volume create ${app}-${app1}-uploads
+    ${pkgs.docker}/bin/docker volume create ${app}-${app2}
+    ${pkgs.docker}/bin/docker volume create ${app}-${app3}
+    ${pkgs.docker}/bin/docker volume create ${app}-${app4}
+
     # extract data from archive and overwrite existing data
     cd /
     echo "Extracting data from $REPO::$ARCHIVE ..."
