@@ -50,7 +50,7 @@ in
     };
   };
 
-  environment.systemPackages = with pkgs; [ recoverLldapScript ];
+  environment.systemPackages = with pkgs; [ recoverScript ];
   
   systemd.services."${app}" = {
     requires = [ "postgresql.service" ];
