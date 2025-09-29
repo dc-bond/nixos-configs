@@ -69,10 +69,55 @@ let
       systemctl stop "$svc" || true
     done
 
-    echo "Waiting for containers to fully shut down..."
-    sleep 20
+    echo ""
+    echo "=== Container Shutdown Monitor ==="
+    CONTAINERS=(${app}-${app1} ${app}-${app2} ${app}-${app3} ${app}-${app4} ${app}-${app5})
+    CONTAINER_NAMES=("LibreChat API" "MongoDB" "MeiliSearch" "PostgreSQL" "RAG API")
+    MAX_WAIT=30
+    ELAPSED=0
+    
+    while [ $ELAPSED -lt $MAX_WAIT ]; do
+      RUNNING_COUNT=0
+      echo -ne "\r\033[K"  # Clear line
+      
+      for i in "''${!CONTAINERS[@]}"; do
+        container="''${CONTAINERS[$i]}"
+        name="''${CONTAINER_NAMES[$i]}"
+        
+        if ${pkgs.docker}/bin/docker ps --format "{{.Names}}" | grep -q "^$container$"; then
+          STATUS=$(${pkgs.docker}/bin/docker ps --format "{{.Status}}" --filter "name=^/$container$")
+          if [[ "$STATUS" == *"Exiting"* ]]; then
+            printf "%-15s: %s\n" "$name" "shutting down..."
+          else
+            printf "%-15s: %s\n" "$name" "stopping..."
+          fi
+          RUNNING_COUNT=$((RUNNING_COUNT + 1))
+        else
+          printf "%-15s: %s\n" "$name" "stopped ✓"
+        fi
+      done
+      
+      if [ $RUNNING_COUNT -eq 0 ]; then
+        echo ""
+        echo "All containers stopped successfully!"
+        break
+      fi
+      
+      echo "($RUNNING_COUNT containers still stopping...)"
+      sleep 2
+      ELAPSED=$((ELAPSED + 2))
+      echo -ne "\033[''${#CONTAINERS[@]}A"  # Move cursor up
+    done
+    
+    if [ $ELAPSED -ge $MAX_WAIT ]; then
+      echo ""
+      echo "Warning: Timeout reached after ''${MAX_WAIT}s"
+    fi
+    
+    echo "Ensuring volume locks are released..."
+    sleep 4 
 
-    # Remove and recreate volumes for a clean slate
+    # remove and recreate volumes for a clean slate
     echo "Removing existing volumes..."
     ${pkgs.docker}/bin/docker volume rm ${app}-${app1}-images ${app}-${app1}-logs ${app}-${app1}-uploads ${app}-${app2} ${app}-${app3} ${app}-${app4} || true
     
@@ -88,7 +133,7 @@ let
     cd /
     echo "Extracting data from $REPO::$ARCHIVE ..."
     ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
-    
+
     # start services
     for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
       echo "Starting $svc ..."
@@ -97,6 +142,8 @@ let
 
     echo "Recovery complete!"
   '';
+    #echo "Waiting for containers to fully shut down..."
+    #sleep 20
 in
 
 {
