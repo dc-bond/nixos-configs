@@ -19,6 +19,7 @@ let
       "/var/backup/postgresql/${app}.sql.gz"
     ];
     db = {
+      type = "postgresql";
       user = "${app}";
       name = "${app}";
       dump = "/var/backup/postgresql/${app}.sql.gz";
