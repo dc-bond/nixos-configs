@@ -31,7 +31,7 @@ in
   
   sops.secrets.borgCryptPasswd = {};
 
-  environment.systemPackages = with pkgs; [ recoverUptimeKumaScript ];
+  environment.systemPackages = with pkgs; [ recoverScript ];
 
   backups.serviceHooks = {
     preHook = lib.mkAfter [
