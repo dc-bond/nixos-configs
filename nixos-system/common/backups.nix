@@ -147,7 +147,6 @@ let
       echo "Recovery complete for ${serviceName}!"
     '';
 
-    # In your flake inputs or common functions
   nixServiceRecoveryScript = {
     serviceName,
     recoveryPlan,
