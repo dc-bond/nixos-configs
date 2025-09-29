@@ -4,6 +4,7 @@
   lib, 
   configLib,
   config, 
+  configVars,
   pkgs, 
   ... 
 }: 
