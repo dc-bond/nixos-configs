@@ -20,7 +20,7 @@
 
   config = {
 
-    hostSpecificConfigs.primaryIp = configVars.JuniperIp; # mapped from configVars
+    hostSpecificConfigs.primaryIp = configVars.juniperIp; # mapped from configVars
 
     environment.systemPackages = with pkgs; [
       nvd # package version diff info for nix build operations
