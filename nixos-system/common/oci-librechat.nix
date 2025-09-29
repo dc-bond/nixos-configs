@@ -69,20 +69,30 @@ let
       systemctl stop "$svc" || true
     done
 
+    # allow for graceful container shutdown
     echo "Ensure container stack fully down..."
     sleep 20
 
-    # remove and recreate volumes for a clean slate
-    echo "Removing existing volumes..."
-    ${pkgs.docker}/bin/docker volume rm ${app}-${app1}-images ${app}-${app1}-logs ${app}-${app1}-uploads ${app}-${app2} ${app}-${app3} ${app}-${app4} || true
+    # extract volume names from restore items
+    VOLUMES=""
+    for item in ${lib.concatStringsSep " " recoveryPlan.restoreItems}; do
+      VOLUME_NAME=$(basename "$item")
+      VOLUMES="$VOLUMES $VOLUME_NAME"
+    done
     
+    # remove existing volumes
+    echo "Removing existing volumes..."
+    for volume in $VOLUMES; do
+      echo "Removing volume: $volume"
+      ${pkgs.docker}/bin/docker volume rm "$volume" || true
+    done
+    
+    # recreate volumes
     echo "Recreating volumes..."
-    ${pkgs.docker}/bin/docker volume create ${app}-${app1}-images
-    ${pkgs.docker}/bin/docker volume create ${app}-${app1}-logs  
-    ${pkgs.docker}/bin/docker volume create ${app}-${app1}-uploads
-    ${pkgs.docker}/bin/docker volume create ${app}-${app2}
-    ${pkgs.docker}/bin/docker volume create ${app}-${app3}
-    ${pkgs.docker}/bin/docker volume create ${app}-${app4}
+    for volume in $VOLUMES; do
+      echo "Creating volume: $volume"
+      ${pkgs.docker}/bin/docker volume create "$volume"
+    done
 
     # extract data from archive and overwrite existing data
     cd /

@@ -57,7 +57,31 @@ let
     for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
       echo "Stopping $svc ..."
       systemctl stop "$svc" || true
-      sleep 10
+    done
+    
+    # allow for graceful container shutdown
+    echo "Ensure container stack fully down..."
+    sleep 20
+
+    # extract volume names from restore items
+    VOLUMES=""
+    for item in ${lib.concatStringsSep " " recoveryPlan.restoreItems}; do
+      VOLUME_NAME=$(basename "$item")
+      VOLUMES="$VOLUMES $VOLUME_NAME"
+    done
+    
+    # remove existing volumes
+    echo "Removing existing volumes..."
+    for volume in $VOLUMES; do
+      echo "Removing volume: $volume"
+      ${pkgs.docker}/bin/docker volume rm "$volume" || true
+    done
+    
+    # recreate volumes
+    echo "Recreating volumes..."
+    for volume in $VOLUMES; do
+      echo "Creating volume: $volume"
+      ${pkgs.docker}/bin/docker volume create "$volume"
     done
 
     # extract data from archive and overwrite existing data
