@@ -39,6 +39,8 @@
     openssl # openssl command line tool
   ];
 
+  backups.startTime = "*-*-* 02:45:00"; # everyday at 2:45am
+
   imports = lib.flatten [
     (map configLib.relativeToRoot [
       "hosts/thinkpad/disk-config-btrfs-luks.nix"

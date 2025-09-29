@@ -22,6 +22,7 @@
     dig # dns lookup tool
   ];
 
+  backups.startTime = "*-*-* 01:45:00"; # everyday at 1:45am
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [

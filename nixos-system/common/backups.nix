@@ -79,16 +79,21 @@ in
       default = "${config.backups.borgDir}/cloud-restore";
       description = "path to the directory for borg backups restored from cloud storage (e.g. backblaze)";
     };
+    startTime = lib.mkOption {
+      type = lib.types.str;
+      default = "*-*-* 00:45:00"; # everyday at 12:45am
+      description = "when to start the backup (systemd timer format)";
+    };
     serviceHooks = {
       preHook = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [];
-        description = "Commands to run before stopping services";
+        description = "commands to run before stopping services";
       };
       postHook = lib.mkOption {
         type = lib.types.listOf lib.types.str;
         default = [];
-        description = "Commands to run after starting services";
+        description = "commands to run after starting services";
       };
     };
   };
@@ -134,7 +139,7 @@ in
           "--progress"
           "--stats"
         ];
-        startAt = "*-*-* 02:45:00"; # everyday at 2:45am
+        startAt = config.backups.startTime;
         encryption = {
           mode = "repokey-blake2"; # encrypt using password and save encryption key inside repository
           passCommand = "cat ${config.sops.secrets.borgCryptPasswd.path}";
