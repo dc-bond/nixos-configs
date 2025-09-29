@@ -69,6 +69,9 @@ let
       systemctl stop "$svc" || true
     done
 
+    echo "Waiting for containers to fully shut down..."
+    sleep 20
+
     # extract data from archive and overwrite existing data
     cd /
     echo "Extracting data from $REPO::$ARCHIVE ..."

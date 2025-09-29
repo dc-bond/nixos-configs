@@ -28,7 +28,7 @@
 
     backups = {
       borgDir = "${config.drives.storageDrive1}/borgbackup"; # host-specific borg backup directory override on backups.nix
-      #startTime = ""; # default to everyday at 2:45am declared in backups.nix
+      #startTime = ""; # default to everyday at 12:45am declared in backups.nix
     };
 
     services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.drives.storageDrive1}/media/family-media" ]; # backup media directory outside of any individual service backup context

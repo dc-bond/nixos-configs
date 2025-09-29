@@ -81,7 +81,7 @@ in
     };
     startTime = lib.mkOption {
       type = lib.types.str;
-      default = "*-*-* 00:45:00"; # everyday at 12:45am
+      default = "*-*-* 00:45:00"; # default everyday at 12:45am, override with alternate time in host-specific configuration.nix
       description = "when to start the backup (systemd timer format)";
     };
     serviceHooks = {
