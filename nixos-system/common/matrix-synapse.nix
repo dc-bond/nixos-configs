@@ -34,7 +34,7 @@ let
   recoverScript = nixServiceRecoveryScript {
     serviceName = app;
     recoveryPlan = recoveryPlan;
-    dbType = recoveryPlan.db.type;
+    #dbType = recoveryPlan.db.type;
     serviceSpecificHook = ''
       echo "Dropping and recreating PostgreSQL database ${recoveryPlan.db.name} ..."
       su - postgres -c "dropdb --if-exists ${recoveryPlan.db.name}"
