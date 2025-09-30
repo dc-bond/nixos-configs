@@ -8,6 +8,7 @@
 }: 
 
 let
+
   app = "recipesage";
   app1 = "proxy"; 
   app2 = "static";
@@ -34,6 +35,7 @@ let
     serviceName = app;
     recoveryPlan = recoveryPlan;
   };
+  
 in
 
 {

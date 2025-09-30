@@ -8,6 +8,7 @@
 }: 
 
 let
+
   app = "pihole";
   app2 = "unbound";
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
@@ -26,6 +27,7 @@ let
     serviceName = app;
     recoveryPlan = recoveryPlan;
   };
+
 in
 
 {

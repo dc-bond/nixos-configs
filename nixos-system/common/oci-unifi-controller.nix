@@ -3,39 +3,69 @@
   config, 
   pkgs, 
   configVars,
+  dockerServiceRecoveryScript,
   ... 
 }: 
 
 let
+
   app = "unifi-controller";
   app1 = "${app}-mongodb";
+  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
+  recoveryPlan = {
+    serviceName = "${app}";
+    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
+    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
+    restoreItems = [
+      "/var/lib/docker/volumes/${app}"
+      "/var/lib/docker/volumes/${app1}-db"
+      "/var/lib/docker/volumes/${app1}-configdb"
+    ];
+    stopServices = [ "docker-${app}-root.target" ];
+    startServices = [ "docker-${app}-root.target" ];
+  };
+  recoverScript = dockerServiceRecoveryScript {
+    serviceName = app;
+    recoveryPlan = recoveryPlan;
+  };
+
 in
 
 {
 
-  environment.etc."${app1}-init.sh" = {
-    text = ''
-      #!/bin/bash
-      if which mongosh > /dev/null 2>&1; then
-        mongo_init_bin='mongosh'
-      else
-        mongo_init_bin='mongo'
-      fi
-      "''${mongo_init_bin}" <<EOF
-      use ''${MONGO_AUTHSOURCE}
-      db.auth("''${MONGO_INITDB_ROOT_USERNAME}", "''${MONGO_INITDB_ROOT_PASSWORD}")
-      db.createUser({
-        user: "''${MONGO_USER}",
-        pwd: "''${MONGO_PASS}",
-        roles: [
-          { db: "''${MONGO_DBNAME}", role: "dbOwner" },
-          { db: "''${MONGO_DBNAME}_stat", role: "dbOwner" }
-        ]
-      })
-      EOF
-    '';
-    mode = "0755";
+  environment = {
+    systemPackages = with pkgs; [ recoverScript ];
+    etc."${app1}-init.sh" = {
+      text = ''
+        #!/bin/bash
+        if which mongosh > /dev/null 2>&1; then
+          mongo_init_bin='mongosh'
+        else
+          mongo_init_bin='mongo'
+        fi
+        "''${mongo_init_bin}" <<EOF
+        use ''${MONGO_AUTHSOURCE}
+        db.auth("''${MONGO_INITDB_ROOT_USERNAME}", "''${MONGO_INITDB_ROOT_PASSWORD}")
+        db.createUser({
+          user: "''${MONGO_USER}",
+          pwd: "''${MONGO_PASS}",
+          roles: [
+            { db: "''${MONGO_DBNAME}", role: "dbOwner" },
+            { db: "''${MONGO_DBNAME}_stat", role: "dbOwner" }
+          ]
+        })
+        EOF
+      '';
+      mode = "0755";
+    };
   };
+  
+  backups.serviceHooks = {
+    preHook = lib.mkAfter [ "systemctl stop docker-${app}-root.target" ];
+    postHook = lib.mkAfter [ "systemctl start docker-${app}-root.target" ];
+  };
+
+  services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
   
   sops = {
     secrets = {
