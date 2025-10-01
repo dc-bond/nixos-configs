@@ -58,23 +58,23 @@ in
   #  ];
   #};
 
-  services = {
+  networking.firewall = {
+    allowedUDPPorts = [ 
+      #1900 # required for 'make controller discoverable on L2 network' option
+      #3478 # STUN port
+      #5514 # remote syslog port
+      10001 # AP discovery port
+    ];
+    allowedTCPPorts = [ 
+      6789 # mobile throughput test
+      8080 # device communication port
+      #8443 # web admin port, not necessary to open if traefik sitting in front
+      8843 # guest portal https redirect port
+      8880 # guest portal http redirect port
+    ];
+  };
 
-    networking.firewall = {
-      allowedUDPPorts = [ 
-        #1900 # required for 'make controller discoverable on L2 network' option
-        #3478 # STUN port
-        #5514 # remote syslog port
-        10001 # AP discovery port
-      ];
-      allowedTCPPorts = [ 
-        6789 # mobile throughput test
-        8080 # device communication port
-        #8443 # web admin port, not necessary to open if traefik sitting in front
-        8843 # guest portal https redirect port
-        8880 # guest portal http redirect port
-      ];
-    };
+  services = {
 
     unifi.enable = true;
 
