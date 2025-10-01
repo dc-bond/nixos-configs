@@ -58,7 +58,7 @@ in
               - "technical_context"
             agent:
               provider: "anthropic"
-              model: "claude-3-5-sonnet-20241022"
+              model: "claude-sonnet-4-20250514"
               instructions: |
                 Store memory using only the specified validKeys categories:
                 
