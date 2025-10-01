@@ -45,23 +45,33 @@ in
         text = ''
           version: 1.2.8
           cache: true
-          interface:
-            # MCP Servers UI configuration
-            mcpServers:
-              placeholder: 'MCP Servers'
-              
-            # Privacy policy settings
-            privacyPolicy:
-              externalUrl: 'https://librechat.ai/privacy-policy'
-              openNewTab: true
-           
-            # Terms of service
-            termsOfService:
-              externalUrl: 'https://librechat.ai/tos'
-              openNewTab: true
-           
-          registration:
-            socialLogins: ["discord", "facebook", "github", "google", "openid"]
+
+          memory:
+            disabled: false
+            personalize: true
+            tokenLimit: 2000
+            messageWindowSize: 4 
+            validKeys:
+              - "general_facts"
+              - "communication_preferences"
+              - "personal_interests"
+              - "technical_context"
+            agent:
+              provider: "anthropic"
+              model: "claude-3-5-sonnet-20241022"
+              instructions: |
+                Store memory using only the specified validKeys categories:
+                
+                - general_facts: Important facts about the user that provide useful context
+                - communication_preferences: How the user prefers explanations, formats, detail level
+                - personal_interests: Hobbies, interests, topics the user cares about (linux, NixOS, cooking, etc.)
+                - technical_context: System details, development environment, coding preferences, NixOS setup
+                
+                Focus on information that will be helpful in future conversations across diverse topics.
+                Delete outdated or corrected information promptly.
+              model_parameters:
+                temperature: 0.2
+                max_tokens: 1500
            
           endpoints:
             custom:
