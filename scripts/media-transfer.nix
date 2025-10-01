@@ -216,7 +216,6 @@ in
        description = "Transfer media files to PhotoPrism";
        after = [ "network-online.target" ];
        wants = [ "network-online.target" ];
-       wantedBy = [ "multi-user.target" ];
        serviceConfig = {
          ExecStart = "${mediaTransferScript}/bin/mediaTransfer";
          StandardOutput = "journal";
@@ -234,8 +233,6 @@ in
      };
    };
  
-  environment.systemPackages = with pkgs; [
-    mediaTransferScript
-  ];
+  environment.systemPackages = with pkgs; [ mediaTransferScript ];
 
 }
