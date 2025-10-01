@@ -83,7 +83,7 @@ in
             options = "tls-13@file";
           };
         };
-        middlewares.${app}-headers.headers.customRequestHeaders.Authorization = "";
+        middlewares."${app}-headers".headers.customRequestHeaders.Authorization = "";
         services.${app} = {
           loadBalancer = {
             passHostHeader = true;
