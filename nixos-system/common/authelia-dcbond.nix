@@ -1,5 +1,6 @@
 { 
   config, 
+  lib,
   pkgs, 
   configVars,
   nixServiceRecoveryScript,
@@ -271,7 +272,7 @@ in
     #};
       
     borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
-    
+
     # this creates traefik router, middleware, and service called "authelia-dcbond" that other apps can point to in their traefik configs
     traefik.dynamicConfigOptions.http = {
       routers.authelia-dcbond = {
