@@ -90,6 +90,7 @@ in
           service = "${app}";
           middlewares = [
             "unifi-headers"
+            "secure-headers"
             "trusted-allow"
           ];
           tls = {

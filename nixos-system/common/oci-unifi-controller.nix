@@ -131,7 +131,6 @@ in
         "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
         "traefik.http.routers.${app}.tls" = "true";
         "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-        #"traefik.http.routers.${app}.middlewares" = "trusted-allow@file,secure-headers@file"; # add if not using traefik
         "traefik.http.routers.${app}.middlewares" = "trusted-allow@file,secure-headers@file,unifi-headers@file"; # drop if not using traefik
         "traefik.http.services.${app}.loadbalancer.server.port" = "8443";
         "traefik.http.services.${app}.loadbalancer.server.scheme" = "https"; # drop if not using traefik
