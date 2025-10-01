@@ -79,31 +79,37 @@ in
     unifi.enable = true;
 
     #borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
-  
-    traefik.dynamicConfigOptions.http = {
-      routers.${app} = {
-        entrypoints = ["websecure"];
-        rule = "Host(`${app}.${configVars.domain2}`)";
-        service = "${app}";
-        middlewares = [
-          "secure-headers"
-          "trusted-allow"
-        ];
-        tls = {
-          certResolver = "cloudflareDns";
-          options = "tls-13@file";
-        };
-      };
-      services.${app} = {
-        loadBalancer = {
-          passHostHeader = true;
-          servers = [
-          {
-            url = "http://127.0.0.1:8443";
-          }
+
+    traefik = {
+
+      staticConfigOptions.serversTransport.insecureSkipVerify = true;
+      dynamicConfigOptions.http = {
+        routers.${app} = {
+          entrypoints = ["websecure"];
+          rule = "Host(`${app}.${configVars.domain2}`)";
+          service = "${app}";
+          middlewares = [
+            "unifi-headers"
+            "trusted-allow"
           ];
+          tls = {
+            certResolver = "cloudflareDns";
+            options = "tls-13@file";
+          };
+        };
+        middlewares.unifi-headers.headers.customRequestHeaders.Authorization = "";
+        services.${app} = {
+          loadBalancer = {
+            passHostHeader = true;
+            servers = [
+            {
+              url = "http://127.0.0.1:8443";
+            }
+            ];
+          };
         };
       };
+
     };
 
   };
