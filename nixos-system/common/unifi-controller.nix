@@ -9,54 +9,39 @@
 
 let
 
-  app = "unifi-controller";
-  #borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
-  #recoveryPlan = {
-  #  serviceName = "${app}";
-  #  localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-  #  cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
-  #  restoreItems = [
-  #    "/var/lib/private/${app}"
-  #    "/var/backup/postgresql/${app}.sql.gz"
-  #  ];
-  #  db = {
-  #    type = "postgresql";
-  #    user = "${app}";
-  #    name = "${app}";
-  #    dump = "/var/backup/postgresql/${app}.sql.gz";
-  #  };
-  #  stopServices = [ "${app}" ];
-  #  startServices = [ "${app}" ];
-  #};
-  #recoverScript = nixServiceRecoveryScript {
-  #  serviceName = app;
-  #  recoveryPlan = recoveryPlan;
-  #  dbType = recoveryPlan.db.type;
-  #};
+  app = "unifi";
+  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
+  recoveryPlan = {
+    serviceName = "${app}";
+    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
+    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
+    restoreItems = [
+      "/var/lib/${app}"
+    ];
+    stopServices = [ "${app}" ];
+    startServices = [ "${app}" ];
+  };
+  recoverScript = nixServiceRecoveryScript {
+    serviceName = app;
+    recoveryPlan = recoveryPlan;
+  };
   
 in
 
 {
 
-  #sops.secrets.borgCryptPasswd = {};
+  sops.secrets.borgCryptPasswd = {};
   
-  #environment.systemPackages = with pkgs; [ recoverScript ];
+  environment.systemPackages = with pkgs; [ recoverScript ];
 
-  #systemd.services."${app}" = {
-  #  requires = [ "postgresql.service" ];
-  #  after = [ "postgresql.service" ];
-  #};
-
-  #backups.serviceHooks = {
-  #  preHook = lib.mkAfter [
-  #    "systemctl stop ${app}.service"
-  #    "sleep 2"
-  #    "systemctl start postgresqlBackup-${app}.service"
-  #  ];
-  #  postHook = lib.mkAfter [
-  #    "systemctl start ${app}.service"
-  #  ];
-  #};
+  backups.serviceHooks = {
+    preHook = lib.mkAfter [
+      "systemctl stop ${app}.service"
+    ];
+    postHook = lib.mkAfter [
+      "systemctl start ${app}.service"
+    ];
+  };
 
   networking.firewall = {
     allowedUDPPorts = [ 
@@ -69,16 +54,16 @@ in
       6789 # mobile throughput test
       8080 # device communication port
       #8443 # web admin port, not necessary to open if traefik sitting in front
-      8843 # guest portal https redirect port
-      8880 # guest portal http redirect port
+      #8843 # guest portal https redirect port
+      #8880 # guest portal http redirect port
     ];
   };
 
   services = {
 
-    unifi.enable = true;
+    "${app}".enable = true;
 
-    #borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
+    borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
 
     traefik = {
 
@@ -89,7 +74,7 @@ in
           rule = "Host(`${app}.${configVars.domain2}`)";
           service = "${app}";
           middlewares = [
-            "unifi-headers"
+            "${app}-headers"
             "secure-headers"
             "trusted-allow"
           ];
@@ -98,7 +83,7 @@ in
             options = "tls-13@file";
           };
         };
-        middlewares.unifi-headers.headers.customRequestHeaders.Authorization = "";
+        middlewares.${app}-headers.headers.customRequestHeaders.Authorization = "";
         services.${app} = {
           loadBalancer = {
             passHostHeader = true;
