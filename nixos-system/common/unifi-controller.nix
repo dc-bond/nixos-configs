@@ -37,6 +37,7 @@ in
   backups.serviceHooks = {
     preHook = lib.mkAfter [
       "systemctl stop ${app}.service"
+      "sleep 30" # ensure mongodb has enough time to gracefully shutdown before starting /var/lib/unifi directory backup
     ];
     postHook = lib.mkAfter [
       "systemctl start ${app}.service"
@@ -89,7 +90,7 @@ in
             passHostHeader = true;
             servers = [
             {
-              url = "https://127.0.0.1:8443";
+              url = "https://127.0.0.1:8443"; # unifi web ui runs with TLS termination on port 8443
             }
             ];
           };
