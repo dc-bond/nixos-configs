@@ -9,18 +9,18 @@
 
 let
 
-  app = "authelia";  
+  app = "authelia-${configVars.domain1Short}";
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
     serviceName = "${app}";
     localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
     cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
-      "/var/lib/'${app}-${configVars.domain1Short}'"
-      "/var/lib/'redis-${app}-${configVars.domain1Short}'"
+      "/var/lib/${app}"
+      "/var/lib/redis-${app}"
     ];
-    stopServices = [ "${app}-${configVars.domain1Short}" "redis-${app}-${configVars.domain1Short}" ];
-    startServices = [ "redis-${app}-${configVars.domain1Short}" "${app}-${configVars.domain1Short}" ];
+    stopServices = [ "${app}" "redis-${app}" ];
+    startServices = [ "redis-${app}" "${app}" ];
   };
   recoverScript = nixServiceRecoveryScript {
     serviceName = app;
@@ -34,33 +34,33 @@ in
   sops.secrets = {
     borgCryptPasswd = {};
     autheliaLdapUserPasswd1 = {
-      owner = config.users.users."${app}-${configVars.domain1Short}".name;
-      group = config.users.users."${app}-${configVars.domain1Short}".group;
+      owner = config.users.users."${app}".name;
+      group = config.users.users."${app}".group;
       mode = "0440";
     };
     autheliaJwtSecret1 = {
-      owner = config.users.users."${app}-${configVars.domain1Short}".name;
-      group = config.users.users."${app}-${configVars.domain1Short}".group;
+      owner = config.users.users."${app}".name;
+      group = config.users.users."${app}".group;
       mode = "0440";
     };
     autheliaStorageEncryptionKey1 = {
-      owner = config.users.users."${app}-${configVars.domain1Short}".name;
-      group = config.users.users."${app}-${configVars.domain1Short}".group;
+      owner = config.users.users."${app}".name;
+      group = config.users.users."${app}".group;
       mode = "0440";
     };
     autheliaSessionSecret1 = {
-      owner = config.users.users."${app}-${configVars.domain1Short}".name;
-      group = config.users.users."${app}-${configVars.domain1Short}".group;
+      owner = config.users.users."${app}".name;
+      group = config.users.users."${app}".group;
       mode = "0440";
     };
     autheliaOidcHmacSecret1 = {
-      owner = config.users.users."${app}-${configVars.domain1Short}".name;
-      group = config.users.users."${app}-${configVars.domain1Short}".group;
+      owner = config.users.users."${app}".name;
+      group = config.users.users."${app}".group;
       mode = "0440";
     };
     autheliaOidcJwksKey1 = {
-      owner = config.users.users."${app}-${configVars.domain1Short}".name;
-      group = config.users.users."${app}-${configVars.domain1Short}".group;
+      owner = config.users.users."${app}".name;
+      group = config.users.users."${app}".group;
       mode = "0440";
     };
   };
@@ -69,18 +69,18 @@ in
   
   backups.serviceHooks = {
     preHook = lib.mkAfter [
-      "systemctl stop ${app}-${configVars.domain1Short}.service"
-      "systemctl stop redis-${app}-${configVars.domain1Short}.service"
+      "systemctl stop ${app}.service"
+      "systemctl stop redis-${app}.service"
     ];
     postHook = lib.mkAfter [
-      "systemctl start redis-${app}-${configVars.domain1Short}.service"
-      "systemctl start ${app}-${configVars.domain1Short}.service"
+      "systemctl start redis-${app}.service"
+      "systemctl start ${app}.service"
     ];
   };
 
   services = {
 
-    "${app}".instances = {
+    authelia.instances = {
       "${configVars.domain1Short}" = {
         enable = true; 
         settings = {
@@ -99,7 +99,7 @@ in
           log = {
             level = "info";
             format = "text"; 
-            file_path = "/var/lib/${app}-${configVars.domain1Short}/authelia.log";
+            file_path = "/var/lib/${app}/authelia.log";
             keep_stdout = true;
           };
           server.address = "tcp://:9091";
@@ -110,7 +110,7 @@ in
               authelia_url = "https://identity.${configVars.domain1}";
               }
             ];
-            redis.host = "/run/redis-${app}-${configVars.domain1Short}/redis.sock";
+            redis.host = "/run/redis-${app}/redis.sock";
           };
           authentication_backend = {
             refresh_interval = "5m";
@@ -175,12 +175,12 @@ in
           storage = { # return to postgres if declarative passwords added to postgres nixos module, check 25.05 release?
             #postgres = {
             #  address = "unix:///var/run/postgres.sock";
-            #  database = "${app}-${configVars.domain1Short}";
-            #  username = "${app}-${configVars.domain1Short}";
+            #  database = "${app}";
+            #  username = "${app}";
             #  password = "";
             #};
             local = {
-              path = "/var/lib/${app}-${configVars.domain1Short}/sqlite3.db";
+              path = "/var/lib/${app}/sqlite3.db";
             };
           };
           identity_providers = {
@@ -231,7 +231,7 @@ in
           notifier = {
             disable_startup_check = false;
             filesystem = {
-              filename = "/var/lib/${app}-${configVars.domain1Short}/notifications.txt";
+              filename = "/var/lib/${app}/notifications.txt";
             };
           };
         };
@@ -248,19 +248,19 @@ in
       };
     }; 
 
-    redis.servers."${app}-${configVars.domain1Short}" = { # service name will be "redis-authelia-dcbond"
+    redis.servers."${app}" = { # service name will be "redis-authelia-dcbond"
       enable = true;
-      user = "${app}-${configVars.domain1Short}";   
+      user = "${app}";   
       port = 0;
-      unixSocket = "/run/redis-${app}-${configVars.domain1Short}/redis.sock";
+      unixSocket = "/run/redis-${app}/redis.sock";
       unixSocketPerm = 600;
     };
 
     #postgresql = {
-    #  ensureDatabases = [ "${app}-${configVars.domain1Short}" ];
+    #  ensureDatabases = [ "${app}" ];
     #  ensureUsers = [
     #    {
-    #      name = "${app}-${configVars.domain1Short}"; 
+    #      name = "${app}"; 
     #      ensureDBOwnership = true;
     #      ensureClauses.login = true;
     #    }
@@ -268,17 +268,17 @@ in
     #};
 
     #postgresqlBackup = {
-    #  databases = [ "${app}-${configVars.domain1Short}" ];
+    #  databases = [ "${app}" ];
     #};
       
     borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
 
     # this creates traefik router, middleware, and service called "authelia-dcbond" that other apps can point to in their traefik configs
     traefik.dynamicConfigOptions.http = {
-      routers.authelia-dcbond = {
+      routers.${app} = {
         entrypoints = ["websecure"];
         rule = "Host(`identity.${configVars.domain1}`)";
-        service = "authelia-dcbond";
+        service = "${app}";
         middlewares = [
           "secure-headers"
         ];
@@ -287,7 +287,7 @@ in
           options = "tls-13@file";
         };
       };
-      middlewares.authelia-dcbond = {
+      middlewares.${app} = {
         forwardAuth = {
           address = "http://127.0.0.1:9091/api/verify?rd=https://identity.${configVars.domain1}";
           trustForwardHeader = true;
@@ -299,7 +299,7 @@ in
           ];
         };
       };
-      services.authelia-dcbond = {
+      services.${app} = {
         loadBalancer = {
           passHostHeader = true;
           servers = [
