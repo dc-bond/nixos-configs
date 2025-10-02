@@ -9,7 +9,7 @@
 
 let
 
-  app = "unifi-controller";
+  app = "unifi";
   app1 = "${app}-mongodb";
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
