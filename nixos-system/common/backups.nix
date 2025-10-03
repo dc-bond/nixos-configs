@@ -151,9 +151,10 @@ let
     serviceName,
     recoveryPlan,
     dbType ? null, # "postgresql", "mysql", or null
-    preRestoreHook ? "", # custom commands before extraction
-    postRestoreHook ? "", # custom commands after extraction
-    serviceSpecificHook ? "", # commands between extraction and service start
+    preRestoreHook ? "", # custom commands before starting restoration (e.g. turn on nextcloud maintenance mode)
+    postSvcStopHook ? "", # custom commands after stopping services but before data restoration (e.g. allow graceful shutdown of database connections)
+    preSvcStartHook ? "", # custom commands before re-starting restored services
+    postRestoreHook ? "", # custom commands after full restoration
   }: # function that generates a standardized recovery script for any nix module service
     pkgs.writeShellScriptBin "recover${lib.strings.toUpper (lib.substring 0 1 serviceName)}${lib.substring 1 (-1) serviceName}" ''
       #!/bin/bash
@@ -189,7 +190,7 @@ let
       fi
       echo "Selected: $ARCHIVE"
     
-      # pre-restore hook (e.g., nextcloud maintenance mode on)
+      # pre restore hook
       ${preRestoreHook}
     
       # stop services
@@ -197,6 +198,9 @@ let
         echo "Stopping $svc ..."
         systemctl stop "$svc" || true
       done
+
+      # post service stop hook
+      ${postSvcStopHook}
     
       # extract data from archive and overwrite existing data
       cd /
@@ -222,8 +226,8 @@ let
         gunzip -c ${recoveryPlan.db.dump} | sudo -u mysql mysql ${recoveryPlan.db.name}
       ''}
     
-      # service-specific actions (between restore and service start)
-      ${serviceSpecificHook}
+      # pre service start hook
+      ${preSvcStartHook}
     
       # start services
       for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
@@ -231,7 +235,7 @@ let
         systemctl start "$svc" || true
       done
     
-      # post-restore hook (e.g., nextcloud maintenance mode off)
+      # post restore hook
       ${postRestoreHook}
     
       echo "Recovery complete!"

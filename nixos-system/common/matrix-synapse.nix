@@ -23,7 +23,7 @@ let
       "/var/backup/postgresql/${app}.sql.gz"
     ];
     db = {
-      #type = "postgresql"; # needs serviceSpecificHook for postgres
+      #type = "postgresql"; # needs preSvcStartHook for custom postgres setup
       user = "${app}";
       name = "${app}";
       dump = "/var/backup/postgresql/${app}.sql.gz";
@@ -35,7 +35,7 @@ let
     serviceName = app;
     recoveryPlan = recoveryPlan;
     #dbType = recoveryPlan.db.type;
-    serviceSpecificHook = ''
+    preSvcStartHook = ''
       echo "Dropping and recreating PostgreSQL database ${recoveryPlan.db.name} ..."
       su - postgres -c "dropdb --if-exists ${recoveryPlan.db.name}"
       su - postgres -c "createdb -O ${recoveryPlan.db.user} -E UTF8 -l C -T template0 ${recoveryPlan.db.name}"

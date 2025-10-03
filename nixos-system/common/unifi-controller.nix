@@ -24,6 +24,10 @@ let
   recoverScript = nixServiceRecoveryScript {
     serviceName = app;
     recoveryPlan = recoveryPlan;
+    postSvcStopHook = ''
+      echo "Waiting for MongoDB to shutdown completely ..."
+      sleep 20
+    '';
   };
   
 in
@@ -35,14 +39,24 @@ in
   environment.systemPackages = with pkgs; [ recoverScript ];
 
   backups.serviceHooks = {
-    preHook = lib.mkAfter [
-      "systemctl stop ${app}.service"
-      "sleep 30" # ensure mongodb has enough time to gracefully shutdown before starting /var/lib/unifi directory backup
-    ];
-    postHook = lib.mkAfter [
-      "systemctl start ${app}.service"
-    ];
+    preHook = lib.mkAfter (
+      (map (svc: "systemctl stop ${svc}.service") recoveryPlan.stopServices) ++
+      [ "sleep 20" ]
+    );
+    postHook = lib.mkAfter (
+      map (svc: "systemctl start ${svc}.service") recoveryPlan.startServices
+    );
   };
+
+  #backups.serviceHooks = {
+  #  preHook = lib.mkAfter [
+  #    "systemctl stop ${app}.service"
+  #    "sleep 30" # ensure mongodb has enough time to gracefully shutdown before starting /var/lib/unifi directory backup
+  #  ];
+  #  postHook = lib.mkAfter [
+  #    "systemctl start ${app}.service"
+  #  ];
+  #};
 
   networking.firewall = {
     allowedUDPPorts = [ 

@@ -71,6 +71,7 @@ in
     preHook = lib.mkAfter [
       "systemctl stop ${app}.service"
       "systemctl stop redis-${app}.service"
+      "sleep 2"
     ];
     postHook = lib.mkAfter [
       "systemctl start redis-${app}.service"
