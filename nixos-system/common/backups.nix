@@ -343,8 +343,9 @@ in
         '';
         paths = lib.mkDefault [];
         prune.keep = {
-          daily = 7; # keep the last seven daily archives
-          monthly = 4; # keep the last four monthly archives
+          daily = 30; # keep the last thirty daily archives
+          weekly = 4; # keep the last four weekly archives (following exhaustion of the daily archives)
+          monthly = 3; # keep the last three monthly archives (following exhaustion of the weekly archives)
         };
       };
     };
