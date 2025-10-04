@@ -11,6 +11,39 @@ let
 
   app = "unifi";
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
+  mongoShutdownWait = ''
+    echo "Waiting for MongoDB to shutdown completely ..."
+
+    TIMEOUT=60
+    while [ $TIMEOUT -gt 0 ]; do
+      # check if MongoDB port is still listening
+      if ! ss -tlnp | grep -q "127.0.0.1:27117"; then
+        # double-check: ensure the specific mongod process is gone
+        if ! pgrep -f "mongod.*27117" > /dev/null; then
+          echo "MongoDB process and port both stopped ..."
+          break
+        fi
+      fi
+      
+      echo "MongoDB still running, waiting ... ($TIMEOUT seconds left)"
+      sleep 2
+      TIMEOUT=$((TIMEOUT - 2))
+    done
+    
+    if [ $TIMEOUT -eq 0 ]; then
+      echo "WARNING: MongoDB did not shut down within 60 seconds ..."
+      # force kill the specific mongod process
+      pkill -f "mongod.*27117" || true
+      sleep 3
+    fi
+    
+    # clean up lock files that can cause corruption
+    echo "Cleaning up MongoDB lock files ..."
+    rm -f /var/lib/unifi/data/db/mongod.lock
+    rm -f /var/lib/unifi/data/db/WiredTiger.lock
+    
+    echo "MongoDB shutdown complete and lock files cleaned ..."
+  '';
   recoveryPlan = {
     serviceName = "${app}";
     localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
@@ -24,38 +57,7 @@ let
   recoverScript = nixServiceRecoveryScript {
     serviceName = app;
     recoveryPlan = recoveryPlan;
-    postSvcStopHook = ''
-      echo "Waiting for MongoDB to shutdown completely ..."
-  
-      TIMEOUT=60
-      while [ $TIMEOUT -gt 0 ]; do
-        PORT_CLOSED=true
-        PROCESS_GONE=true
-        
-        # check if port is still open
-        if ss -tlnp | grep -q ":27117"; then
-          PORT_CLOSED=false
-        fi
-        
-        # check if mongod process still exists
-        if pgrep -f "mongod.*27117" > /dev/null; then
-          PROCESS_GONE=false
-        fi
-        
-        if $PORT_CLOSED && $PROCESS_GONE; then
-          echo "MongoDB fully stopped"
-          break
-        fi
-        
-        echo "Waiting for MongoDB shutdown... ($TIMEOUT seconds left)"
-        sleep 2
-        TIMEOUT=$((TIMEOUT - 2))
-      done
-      
-      # Clean up any remaining lock files
-      rm -f /var/lib/unifi/data/db/mongod.lock
-      rm -f /var/lib/unifi/run/mongod.pid
-    '';
+    postSvcStopHook = mongoShutdownWait;
   };
   
 in
@@ -69,7 +71,7 @@ in
   backups.serviceHooks = {
     preHook = lib.mkAfter (
       (map (svc: "systemctl stop ${svc}.service") recoveryPlan.stopServices) ++
-      [ "sleep 20" ]
+      [ mongoShutdownWait ]
     );
     postHook = lib.mkAfter (
       map (svc: "systemctl start ${svc}.service") recoveryPlan.startServices
