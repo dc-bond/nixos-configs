@@ -26,7 +26,35 @@ let
     recoveryPlan = recoveryPlan;
     postSvcStopHook = ''
       echo "Waiting for MongoDB to shutdown completely ..."
-      sleep 20
+  
+      TIMEOUT=60
+      while [ $TIMEOUT -gt 0 ]; do
+        PORT_CLOSED=true
+        PROCESS_GONE=true
+        
+        # check if port is still open
+        if ss -tlnp | grep -q ":27117"; then
+          PORT_CLOSED=false
+        fi
+        
+        # check if mongod process still exists
+        if pgrep -f "mongod.*27117" > /dev/null; then
+          PROCESS_GONE=false
+        fi
+        
+        if $PORT_CLOSED && $PROCESS_GONE; then
+          echo "MongoDB fully stopped"
+          break
+        fi
+        
+        echo "Waiting for MongoDB shutdown... ($TIMEOUT seconds left)"
+        sleep 2
+        TIMEOUT=$((TIMEOUT - 2))
+      done
+      
+      # Clean up any remaining lock files
+      rm -f /var/lib/unifi/data/db/mongod.lock
+      rm -f /var/lib/unifi/run/mongod.pid
     '';
   };
   
@@ -47,16 +75,6 @@ in
       map (svc: "systemctl start ${svc}.service") recoveryPlan.startServices
     );
   };
-
-  #backups.serviceHooks = {
-  #  preHook = lib.mkAfter [
-  #    "systemctl stop ${app}.service"
-  #    "sleep 30" # ensure mongodb has enough time to gracefully shutdown before starting /var/lib/unifi directory backup
-  #  ];
-  #  postHook = lib.mkAfter [
-  #    "systemctl start ${app}.service"
-  #  ];
-  #};
 
   networking.firewall = {
     allowedUDPPorts = [ 
