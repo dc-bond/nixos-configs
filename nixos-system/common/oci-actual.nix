@@ -40,7 +40,8 @@ in
   sops.secrets.borgCryptPasswd = {};
   
   virtualisation.oci-containers.containers."${app}" = {
-    image = "docker.io/actualbudget/${app}-server:24.11.0";
+    #image = "docker.io/actualbudget/${app}-server:24.11.0";
+    image = "docker.io/actualbudget/${app}-server:25.10.0"; # https://hub.docker.com/r/actualbudget/actual-server/tags
     autoStart = true;
     log-driver = "journald";
     volumes = [ "${app}:/data" ];
@@ -53,7 +54,7 @@ in
     labels = {
       "traefik.enable" = "true";
       "traefik.http.routers.${app}.entrypoints" = "websecure";
-      "traefik.http.routers.${app}.rule" = "Host(`chris-allowance.${configVars.domain2}`)";
+      "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
       "traefik.http.routers.${app}.tls" = "true";
       "traefik.http.routers.${app}.tls.options" = "tls-13@file";
       "traefik.http.routers.${app}.middlewares" = "trusted-allow@file,secure-headers@file";
