@@ -40,7 +40,6 @@ in
   sops.secrets.borgCryptPasswd = {};
   
   virtualisation.oci-containers.containers."${app}" = {
-    #image = "docker.io/actualbudget/${app}-server:24.11.0";
     image = "docker.io/actualbudget/${app}-server:25.10.0"; # https://hub.docker.com/r/actualbudget/actual-server/tags
     autoStart = true;
     log-driver = "journald";
