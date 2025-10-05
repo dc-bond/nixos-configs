@@ -16,13 +16,25 @@ let
 
     TIMEOUT=60
     while [ $TIMEOUT -gt 0 ]; do
-      # check if MongoDB port is still listening
-      if ! ss -tlnp | grep -q "127.0.0.1:27117"; then
-        # double-check: ensure the specific mongod process is gone
-        if ! pgrep -f "mongod.*27117" > /dev/null; then
-          echo "MongoDB process and port both stopped ..."
-          break
-        fi
+      PORT_OPEN=false
+      PROCESS_RUNNING=false
+      
+      # check port with full path (use netstat as fallback)
+      if ${pkgs.iproute2}/bin/ss -tlnp 2>/dev/null | grep -q "127.0.0.1:27117" 2>/dev/null; then
+        PORT_OPEN=true
+      elif ${pkgs.nettools}/bin/netstat -tlnp 2>/dev/null | grep -q "127.0.0.1:27117" 2>/dev/null; then
+        PORT_OPEN=true
+      fi
+      
+      # check process with full path
+      if ${pkgs.procps}/bin/pgrep -f "mongod.*27117" >/dev/null 2>&1; then
+        PROCESS_RUNNING=true
+      fi
+      
+      # if both port and process are gone, we're done
+      if [ "$PORT_OPEN" = "false" ] && [ "$PROCESS_RUNNING" = "false" ]; then
+        echo "MongoDB process and port both stopped ..."
+        break
       fi
       
       echo "MongoDB still running, waiting ... ($TIMEOUT seconds left)"
@@ -32,17 +44,11 @@ let
     
     if [ $TIMEOUT -eq 0 ]; then
       echo "WARNING: MongoDB did not shut down within 60 seconds ..."
-      # force kill the specific mongod process
-      pkill -f "mongod.*27117" || true
+      ${pkgs.procps}/bin/pkill -f "mongod.*27117" 2>/dev/null || true
       sleep 3
     fi
-    
-    # clean up lock files that can cause corruption
-    echo "Cleaning up MongoDB lock files ..."
-    rm -f /var/lib/unifi/data/db/mongod.lock
-    rm -f /var/lib/unifi/data/db/WiredTiger.lock
-    
-    echo "MongoDB shutdown complete and lock files cleaned ..."
+
+    echo "MongoDB shutdown complete ..."
   '';
   recoveryPlan = {
     serviceName = "${app}";
