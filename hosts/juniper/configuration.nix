@@ -16,6 +16,10 @@
       type = lib.types.str;
       description = "primary ipv4 address for this host";
     };
+    sshdPort = lib.mkOption {
+      type = lib.types.int;
+      description = "ssh daemon port for this host";
+    };
   };
 
   config = {
