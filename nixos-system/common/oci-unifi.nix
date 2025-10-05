@@ -102,7 +102,8 @@ in
 
   virtualisation.oci-containers.containers = {
     "${app}" = {
-      image = "lscr.io/linuxserver/unifi-network-application:9.4.19-ls103"; # https://github.com/linuxserver/docker-unifi-network-application/releases 
+      image = "lscr.io/linuxserver/unifi-network-application:9.0.114-ls77"; # https://github.com/linuxserver/docker-unifi-network-application/releases 
+      #image = "lscr.io/linuxserver/unifi-network-application:9.4.19-ls103"; # https://github.com/linuxserver/docker-unifi-network-application/releases 
       autoStart = true;
       log-driver = "journald";
       volumes = [ "${app}:/config" ];
@@ -137,7 +138,7 @@ in
       };
     };
     "${app1}" = {
-      image = "docker.io/mongo:7"; # https://hub.docker.com/_/mongo/tags
+      image = "docker.io/mongo:7.0"; # https://hub.docker.com/_/mongo/tags
       autoStart = true;
       log-driver = "journald";
       environmentFiles = [ config.sops.templates."${app1}-env".path ];
