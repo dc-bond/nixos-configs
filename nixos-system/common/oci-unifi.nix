@@ -137,7 +137,7 @@ in
       };
     };
     "${app1}" = {
-      image = "docker.io/mongo:8"; # https://hub.docker.com/_/mongo/tags
+      image = "docker.io/mongo:7"; # https://hub.docker.com/_/mongo/tags
       autoStart = true;
       log-driver = "journald";
       environmentFiles = [ config.sops.templates."${app1}-env".path ];
