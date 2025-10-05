@@ -27,6 +27,7 @@
     hostSpecificConfigs = {
       storageDrive1 = "/storage/WD-WCC7K4RU947F";
       primaryIp = configVars.aspenLanIp;
+      sshdPort = 28766;
     };
 
     fileSystems."${config.hostSpecificConfigs.storageDrive1}" = {
@@ -64,6 +65,7 @@
       "hosts/aspen/disk-config-btrfs.nix"
       "hosts/aspen/hardware-configuration.nix"
       
+      "nixos-system/common/sshd.nix"
       "nixos-system/common/boot.nix"
       "nixos-system/common/zsh.nix"
       "nixos-system/common/misc.nix"
@@ -73,7 +75,6 @@
       "nixos-system/common/nvidia.nix"
 
       "nixos-system/host-specific/aspen/networking.nix"
-      "nixos-system/host-specific/aspen/sshd.nix"
       "nixos-system/host-specific/aspen/tailscale.nix"
       "nixos-system/host-specific/aspen/users.nix"
       

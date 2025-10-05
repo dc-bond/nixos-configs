@@ -20,7 +20,10 @@
 
   config = {
 
-    hostSpecificConfigs.primaryIp = configVars.juniperIp;
+    hostSpecificConfigs = {
+      primaryIp = configVars.juniperIp;
+      sshdPort = 28764;
+    };
 
     environment.systemPackages = with pkgs; [
       nvd # package version diff info for nix build operations
@@ -45,6 +48,7 @@
       "hosts/juniper/disk-config-btrfs.nix"
       "hosts/juniper/hardware-configuration.nix"
 
+      "nixos-system/common/sshd.nix"
       "nixos-system/common/backups.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/zsh.nix"
@@ -56,7 +60,6 @@
       "nixos-system/common/matrix-synapse.nix"
 
       "nixos-system/host-specific/juniper/users.nix"
-      "nixos-system/host-specific/juniper/sshd.nix"
       "nixos-system/host-specific/juniper/networking.nix"
       "nixos-system/host-specific/juniper/boot.nix"
       "nixos-system/host-specific/juniper/tailscale.nix"

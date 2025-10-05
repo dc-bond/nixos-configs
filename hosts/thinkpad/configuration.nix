@@ -20,7 +20,10 @@
   
   config = {
 
-    hostSpecificConfigs.primaryIp = configVars.thinkpadLanIp;
+    hostSpecificConfigs = {
+      primaryIp = configVars.juniperIp;
+      sshdPort = 28765;
+    };
 
     environment.systemPackages = with pkgs; [
       #(import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
@@ -67,6 +70,7 @@
       "hosts/thinkpad/disk-config-btrfs-luks.nix"
       "hosts/thinkpad/hardware-configuration.nix"
       
+      "nixos-system/common/sshd.nix"
       "nixos-system/common/audio.nix"
       "nixos-system/common/boot.nix"
       "nixos-system/common/zsh.nix"
@@ -85,7 +89,6 @@
       "nixos-system/common/firejail.nix"
 
       "nixos-system/host-specific/thinkpad/users.nix"
-      "nixos-system/host-specific/thinkpad/sshd.nix"
       "nixos-system/host-specific/thinkpad/networking.nix"
       "nixos-system/host-specific/thinkpad/tailscale.nix"
 

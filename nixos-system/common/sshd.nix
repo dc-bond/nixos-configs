@@ -7,9 +7,7 @@
 
   services.openssh = {
     enable = true;
-    ports = [
-      28764
-    ];
+    ports = [ config.hostSpecificConfigs.sshdPort ];
     settings = {
       PasswordAuthentication = false;
       PermitRootLogin = "no";

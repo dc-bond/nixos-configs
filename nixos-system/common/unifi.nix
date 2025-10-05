@@ -12,7 +12,7 @@ let
   app = "unifi";
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   mongoShutdownWait = ''
-    echo "Waiting for MongoDB to shutdown completely ..."
+    echo "Waiting for Unifi's MongoDB subprocess to shutdown completely ..."
 
     TIMEOUT=60
     while [ $TIMEOUT -gt 0 ]; do
@@ -33,22 +33,22 @@ let
       
       # if both port and process are gone, we're done
       if [ "$PORT_OPEN" = "false" ] && [ "$PROCESS_RUNNING" = "false" ]; then
-        echo "MongoDB process and port both stopped ..."
+        echo "Unifi MongoDB subprocess and port both stopped ..."
         break
       fi
       
-      echo "MongoDB still running, waiting ... ($TIMEOUT seconds left)"
+      echo "Unifi's MongoDB subprocess still running, waiting ... ($TIMEOUT seconds left)"
       sleep 2
       TIMEOUT=$((TIMEOUT - 2))
     done
     
     if [ $TIMEOUT -eq 0 ]; then
-      echo "WARNING: MongoDB did not shut down within 60 seconds ..."
+      echo "WARNING: Unifi's MongoDB subprocess did not shut down within 60 seconds ..."
       ${pkgs.procps}/bin/pkill -f "mongod.*27117" 2>/dev/null || true
       sleep 3
     fi
 
-    echo "MongoDB shutdown complete ..."
+    echo "Unifi MongoDB subprocess shutdown complete ..."
   '';
   recoveryPlan = {
     serviceName = "${app}";
