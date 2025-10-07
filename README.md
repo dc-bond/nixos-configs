@@ -9,6 +9,6 @@ This repository contains the entire declarative configuration for my NixOS linux
 - ❄️ Nix flakes handle upstream dependencies and track latest stable release of Nixpkgs (currently 25.05)
 - 🏠 [home-manager](https://github.com/nix-community/home-manager) manages dotfiles
 - 🤫 [sops-nix](https://github.com/Mic92/sops-nix) manages secrets
-- 🔒 Automatic Let's Encrypt certificate registration and renewal
-- ☁️ Nextcloud, Jellyfin, Authelia, Matrix-Synapse, Tailscale, etc., among other self-hosted applications
+- 🔒 Automatic Let's Encrypt certificate registration and renewal with [Traefik](https://traefik.io/traefik) sitting in front of all services
+- ☁️ Nextcloud, Jellyfin, Authelia, Matrix, Tailscale, etc., among many other self-hosted applications
 - 🧩 Modular architecture facilitates quick deployment of services to different hosts
