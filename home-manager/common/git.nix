@@ -13,7 +13,7 @@
     signing = {
       signByDefault = true;
       format = "openpgp";
-      key = null;  # This tells git to use the key associated with user email
+      key = null;  # This tells git to use the key associated with programs.git.userEmail setting
     };
     extraConfig = {
       pull.rebase = false;
