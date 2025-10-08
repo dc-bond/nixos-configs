@@ -8,8 +8,6 @@ Crowdsec
 
 Mailserver
 
-git signing using gpg/yubikey
-
 LUKS full disk encryption with yubikey
 
 impermanance
