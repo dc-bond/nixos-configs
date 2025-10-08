@@ -9,11 +9,11 @@
   programs.git = {
     enable = true;
     userName  = "dc-bond";
-    userEmail = ${configVars.userEmail};
+    userEmail = configVars.userEmail;
     signing = {
       signByDefault = true;
       format = "openpgp";
-      key = ${configVars.userEmail};
+      key = configVars.userEmail;
     };
     extraConfig = {
       pull.rebase = false;
