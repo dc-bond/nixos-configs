@@ -7,6 +7,7 @@
 {
 
   programs.zsh = {
+
     shellAliases = {
       rb = "sudo nixos-rebuild switch --flake github:dc-bond/nixos-configs#thinkpad --refresh";
       flakeupdate = "sudo nix flake update --flake ~/nixos-configs";
@@ -15,6 +16,25 @@
       ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop";
       speed = "nix run nixpkgs#speedtest-rs";
     };
+
+    initContent = ''
+      reconnect-mouse() {
+        echo "Restarting Bluetooth service ..."
+        sudo systemctl restart bluetooth
+        sleep 3
+        
+        echo "Power cycling Bluetooth ..."
+        bluetoothctl power off
+        sleep 2
+        bluetoothctl power on
+        sleep 3
+        
+        echo "Reconnecting mouse..."
+        bluetoothctl connect D3:CF:05:5D:88:75
+        echo "Bluetooth reconnection complete!"
+      }
+    '';
+
   };
 
 }
