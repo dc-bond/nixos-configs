@@ -47,7 +47,7 @@ in
           cache: true
 
           memory:
-            disabled: false
+            disabled: true
             personalize: true
             tokenLimit: 2000
             messageWindowSize: 4 
@@ -61,13 +61,11 @@ in
               model: "claude-sonnet-4-20250514"
               instructions: |
                 Store memory using only the specified validKeys categories:
-                
                 - general_facts: Important facts about the user that provide useful context
                 - communication_preferences: How the user prefers explanations, formats, detail level
                 - personal_interests: Hobbies, interests, topics the user cares about (linux, NixOS, cooking, etc.)
                 - technical_context: System details, development environment, coding preferences, NixOS setup
-                
-                Focus on information that will be helpful in future conversations across diverse topics.
+                Focus on information that will be helpful in future conversations across diverse topics. 
                 Delete outdated or corrected information promptly.
               model_parameters:
                 temperature: 0.2
@@ -126,14 +124,6 @@ in
         group = "users";
         mode = "0440";
         content = ''
-          #=====================================================================#
-          #                       LibreChat Configuration                       #
-          #=====================================================================#
-          # Please refer to the reference documentation for assistance          #
-          # with configuring your LibreChat environment.                        #
-          #                                                                     #
-          # https://www.librechat.ai/docs/configuration/dotenv                  #
-          #=====================================================================#
           
           #==================================================#
           #               Server Configuration               #
@@ -283,11 +273,11 @@ in
           #========================#
           
           ALLOW_EMAIL_LOGIN=true
-          ALLOW_REGISTRATION=true
+          ALLOW_REGISTRATION=false
           ALLOW_SOCIAL_LOGIN=false
           ALLOW_SOCIAL_REGISTRATION=false
           ALLOW_PASSWORD_RESET=false
-          # ALLOW_ACCOUNT_DELETION=true # note: enabled by default if omitted/commented out
+          ALLOW_ACCOUNT_DELETION=false
           ALLOW_UNVERIFIED_EMAIL_LOGIN=true
           SESSION_EXPIRY=1000 * 60 * 15
           REFRESH_TOKEN_EXPIRY=(1000 * 60 * 60 * 24) * 7
@@ -298,8 +288,8 @@ in
           #                        UI                         #
           #===================================================#
           
-          APP_TITLE=LibreChat
-          CUSTOM_FOOTER="LibreChat"
+          APP_TITLE=Bond Private AI Interface 
+          CUSTOM_FOOTER="Bond Private AI Interface"
           
           #=====================================================#
           #                  OpenWeather                        #
