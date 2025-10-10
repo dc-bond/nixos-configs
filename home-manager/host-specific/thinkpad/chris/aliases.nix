@@ -18,6 +18,7 @@
     };
 
     initContent = ''
+
       reconnect-mouse() {
         echo "Restarting Bluetooth service ..."
         sudo systemctl restart bluetooth
@@ -33,6 +34,22 @@
         bluetoothctl connect D3:CF:05:5D:88:75
         echo "Bluetooth reconnection complete!"
       }
+
+      librewolf-private() {
+        cleanup() {
+          echo "LibreWolf closed. Deactivating remote Tailscale exit node ..."
+          sudo ${pkgs.tailscale}/bin/tailscale up --ssh --accept-routes --exit-node=${configVars.aspenTailscaleIp} 2>/dev/null || true
+          echo "Done."
+        }
+        trap cleanup RETURN
+        
+        echo "Activating remote Tailscale exit node..."
+        sudo ${pkgs.tailscale}/bin/tailscale up --ssh --accept-routes --exit-node=${configVars.juniperTailscaleIp}
+        
+        echo "Launching LibreWolf ..."
+        librewolf --private-window "https://ipleak.net" "$@"
+      }
+
     '';
 
   };
