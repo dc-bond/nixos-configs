@@ -12,6 +12,7 @@
   
   imports = lib.flatten [
     (map configLib.relativeToRoot [
+      "home-manager/common/aliases.nix"
       "home-manager/common/neovim.nix"
       "home-manager/common/gnupg.nix"
       "home-manager/common/zsh.nix"
