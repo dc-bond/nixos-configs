@@ -88,7 +88,7 @@
       "nixos-system/common/backups.nix"
       "nixos-system/common/sops.nix"
       "nixos-system/common/keyring.nix"
-      "nixos-system/common/login.nix"
+      #"nixos-system/common/login.nix"
       "nixos-system/common/bluetooth.nix"
       "nixos-system/common/firejail.nix"
 
