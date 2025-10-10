@@ -21,17 +21,6 @@
 
   wayland.windowManager.hyprland = {
     enable = true;
-    #extraConfig = 
-    #''
-    #  device {
-    #    name=razer-proclickm
-    #    sensitivity=-0.6
-    #  }
-    #  device {
-    #    name=razer-proclickm-1
-    #    sensitivity=-0.6
-    #  }
-    #'';
     settings = {
       "$mod" = "Alt";
       exec-once = [
@@ -112,7 +101,6 @@
       #  "~/.cache/wal/colors-hyprland.conf" # not working
       #];
       windowrulev2 = [
-        #"bordercolor rgb(FF0000) rgb(880808), fullscreen:1" # set bordercolor to red if window is fullscreen
         "size 1154 706, class:(com.saivert.pwvucontrol)"
         "size 451 607, class:(org.gnome.Calculator)"
       ];
@@ -133,23 +121,12 @@
           disable_while_typing = true;
         };
       };
-      #device = {
-      #  name = "mx-anywhere-3s-mouse";
-      #  sensitivity = "-0.1";
-      #};
       general = {
         gaps_in = 0;
         gaps_out = 0;
         border_size = 1;
-        #col.active_border = "0xffffffff"; # broken?
-        #col.inactive_border = "0xff444444"; # broken?
         layout = "dwindle"; # see settings below
       };
-      #master = {
-      #  orientation = "left";
-      #  allow_small_split = true;
-      #  new_on_top = false;
-      #};
       dwindle = {
         force_split = 2;
         pseudotile = true;
@@ -160,8 +137,6 @@
         active_opacity = "0.9";
         inactive_opacity = "0.7";
         fullscreen_opacity = "0.9";
-        #shadow_range = "30";
-        #col.shadow = "0x66000000";
         blur = {
           enabled = true;
           size = "6";
