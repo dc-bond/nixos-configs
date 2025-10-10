@@ -8,6 +8,8 @@ Crowdsec
 
 Mailserver
 
+test
+
 LUKS full disk encryption with yubikey
 
 impermanance
