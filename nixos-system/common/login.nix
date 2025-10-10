@@ -3,22 +3,25 @@
   ... 
 }: 
 
-let
-  greeter = "${pkgs.greetd.tuigreet}/bin/tuigreet";
-  session = "${pkgs.hyprland}/bin/Hyprland";
-  username = "chris";
-in
-
 {
 
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command = "${greeter} --theme 'border=magenta;text=cyan;prompt=green;time=red;action=blue;button=yellow;container=black;input=red' --greeting 'access is restricted to authorized personnel' --asterisks --remember --remember-user-session --time -cmd ${session}";
-        user = "greeter";
-      };
+  services = {
+    displayManager.sddm = {
+      enable = true;
+      package = pkgs.kdePackages.sddm;
+      wayland.enable = true;
+      autoNumlock.enable = true;
+      #settings = {
+      #  Autologin = {
+      #    Session = "hyprland.desktop";
+      #    User = "chris";
+      #  };
+      #};
     };
   };
+
+  environment.systemPackages = with pkgs; [
+    kdePackages.sddm-kcm # configuration module for sddm
+  ];
 
 }
