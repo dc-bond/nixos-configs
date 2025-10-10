@@ -23,7 +23,7 @@
 
 
   services = {
-    xserver.enable = false;
+    xserver.enable = true;
     displayManager.sddm = {
       enable = true;
       wayland.enable = true;
