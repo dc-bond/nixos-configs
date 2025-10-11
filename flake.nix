@@ -8,6 +8,11 @@
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    plasma-manager = {
+      url = "github:nix-community/plasma-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.home-manager.follows = "home-manager";
+    };
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -26,6 +31,7 @@
     self,
     nixpkgs,
     home-manager,
+    plasma-manager,
     sops-nix,
     disko,
     firefox-addons,
@@ -64,6 +70,7 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
+              sharedModules = [ plasma-manager.homeModules.plasma-manager ];
               users.chris = import ./hosts/thinkpad/chris/home.nix;
               users.root = import ./hosts/thinkpad/root/home.nix;
               extraSpecialArgs = specialArgs; # passes flake inputs and outputs to home-manager module
