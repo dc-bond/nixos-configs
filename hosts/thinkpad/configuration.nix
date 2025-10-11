@@ -51,9 +51,9 @@
       brightnessctl # screen brightness application
       ddcutil # query and change monitor settings using DDC/CI and USB
       i2c-tools # hardware interface tools required by ddcutil
-      libreoffice-still # office suite
-      element-desktop # matrix chat app
-      feh # simple image viewer
+      #libreoffice-still # office suite
+      #element-desktop # matrix chat app
+      #feh # simple image viewer
       wgnord # nordvpn
       openssl # openssl command line tool
     ];
@@ -81,14 +81,15 @@
       "nixos-system/common/fonts.nix"
       "nixos-system/common/yubikey.nix"
       "nixos-system/common/thunar.nix"
-      "nixos-system/common/hyprland.nix"
+      #"nixos-system/common/hyprland.nix"
+      "nixos-system/common/plasma.nix"
       "nixos-system/common/printing.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
       "nixos-system/common/backups.nix"
       "nixos-system/common/sops.nix"
       "nixos-system/common/keyring.nix"
-      "nixos-system/common/login.nix"
+      #"nixos-system/common/display-manager.nix"
       "nixos-system/common/bluetooth.nix"
       "nixos-system/common/firejail.nix"
 

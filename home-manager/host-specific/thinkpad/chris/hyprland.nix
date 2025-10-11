@@ -14,9 +14,14 @@
     dunst # notification daemon
     gnome-calculator # calculator
     loupe # image viewer
+    feh # image viewer
     zathura # barebones pdf viewer
+    libreoffice-still # office suite
+    element-desktop # matrix chat app
     nextcloud-client # nextcloud local syncronization client
+    wayland-utils # wayland utilities
     wl-clipboard # wayland system clipboard
+    hyprshot # screenshot tool
   ];
 
   wayland.windowManager.hyprland = {
