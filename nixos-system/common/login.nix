@@ -10,7 +10,7 @@
       enable = true;
       package = pkgs.kdePackages.sddm;
       wayland.enable = true;
-      autoNumlock.enable = true;
+      autoNumlock = true;
       #settings = {
       #  Autologin = {
       #    Session = "hyprland.desktop";
