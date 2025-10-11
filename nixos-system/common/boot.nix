@@ -19,14 +19,20 @@
     };
     kernel.sysctl = { "vm.swappiness" = 30;};
     initrd = {
+      includeDefaultModules = false;
       supportedFilesystems = {
         btrfs = true;
         ext4 = true;
       };
-      preLVMCommands = # turn on keyboard num-lock automatically during boot process
-        ''
-          ${pkgs.kbd}/bin/setleds +num
-        '';
+      compressor = "xz";
+      compressorArgs = [ 
+        "-9" 
+        "-T" 
+        "0" 
+      ];
+      preLVMCommands = ''
+        ${pkgs.kbd}/bin/setleds +num
+      '';
     };
   };
 
