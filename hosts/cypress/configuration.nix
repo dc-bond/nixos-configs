@@ -3,6 +3,7 @@
   outputs, 
   lib, 
   configLib,
+  configVars,
   config, 
   pkgs, 
   ... 
