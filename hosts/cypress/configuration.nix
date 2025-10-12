@@ -47,7 +47,6 @@
       wget # download tool
       rsync # sync tool
       usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
-      nvd # package version diff info for nix build operations
       nix-tree # table view of package dependencies
       ethtool # network tools
       inetutils # more network tools like telnet

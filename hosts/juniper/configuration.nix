@@ -30,7 +30,6 @@
     };
 
     environment.systemPackages = with pkgs; [
-      nvd # package version diff info for nix build operations
       rsync # sync tool
       git # git
       btop # system monitor

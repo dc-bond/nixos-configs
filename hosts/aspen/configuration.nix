@@ -50,7 +50,6 @@
     environment.systemPackages = with pkgs; [
       wget # download tool
       usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
-      nvd # package version diff info for nix build operations
       rsync # sync tool
       git # git
       dig # dns lookup tool
