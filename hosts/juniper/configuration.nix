@@ -33,8 +33,6 @@
       nvd # package version diff info for nix build operations
       rsync # sync tool
       git # git
-      eza # modern replacement for 'ls'
-      pfetch # system info displayed on shell startup
       btop # system monitor
       ethtool # network tools
       dig # dns lookup tool

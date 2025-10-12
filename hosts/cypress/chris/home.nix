@@ -12,7 +12,6 @@
   
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/common/aliases.nix"
       "home-manager/common/neovim.nix"
       "home-manager/common/gnupg.nix"
       "home-manager/common/zsh.nix"
@@ -21,7 +20,7 @@
       "home-manager/common/git.nix"
       
       "home-manager/host-specific/cypress/chris/ssh.nix"
-      "home-manager/host-specific/cypress/chris/aliases.nix"
+      #"home-manager/host-specific/cypress/chris/aliases.nix"
     ])
   ];
   

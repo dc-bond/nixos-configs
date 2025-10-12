@@ -53,8 +53,6 @@
       inetutils # more network tools like telnet
       unzip # utility to unzip directories
       git # git
-      eza # modern replacement for 'ls'
-      pfetch # system info displayed on shell startup
       btop # system monitor
       nmap # network scanning
       openssl # openssl command line tool

@@ -53,18 +53,14 @@
       inetutils # more network tools like telnet
       unzip # utility to unzip directories
       git # git
-      eza # modern replacement for 'ls'
-      pfetch # system info displayed on shell startup
       btop # system monitor
       nmap # network scanning
+      wgnord # nordvpn
+      openssl # openssl command line tool
+
       brightnessctl # screen brightness application
       ddcutil # query and change monitor settings using DDC/CI and USB
       i2c-tools # hardware interface tools required by ddcutil
-      #libreoffice-still # office suite
-      #element-desktop # matrix chat app
-      #feh # simple image viewer
-      wgnord # nordvpn
-      openssl # openssl command line tool
     ];
 
     backups.startTime = "*-*-* 02:45:00"; # everyday at 2:45am

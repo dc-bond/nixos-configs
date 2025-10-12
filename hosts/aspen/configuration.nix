@@ -54,8 +54,6 @@
       rsync # sync tool
       git # git
       dig # dns lookup tool
-      eza # modern replacement for 'ls'
-      pfetch # system info displayed on shell startup
       btop # system monitor
     ];
 
