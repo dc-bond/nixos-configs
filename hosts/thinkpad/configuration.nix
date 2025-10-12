@@ -6,6 +6,7 @@
 #firefox setup (activate extensions, etc.)
 #vscode github authentication
 #vscode extension setup
+#email cloud recovery (sudo mkdir /var/lib/borgbackup/cloud-restore && sudo cloudRestore)
 
 { 
   inputs, 
