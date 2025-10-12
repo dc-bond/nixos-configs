@@ -17,6 +17,7 @@ impermanance
 clone nixos-configs and pass repos using ssh
 nextcloud-client setup
 firefox setup
+vscode github authentication
 vscode extension setup
 
 nextcloud-occ config:app:set --value=0 user_oidc allow_multiple_user_backends
