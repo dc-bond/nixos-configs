@@ -34,6 +34,8 @@
   
   config = {
 
+    #boot.kernelPackages = pkgs.linuxPackages_6_11; # pin to 6.11 until 6.12.51 fixed
+
     hostSpecificConfigs = {
       primaryIp = configVars.thinkpadLanIp;
       sshdPort = 28765;

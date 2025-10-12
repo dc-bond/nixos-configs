@@ -24,12 +24,12 @@
         btrfs = true;
         ext4 = true;
       };
-      compressor = "xz";
-      compressorArgs = [ 
-        "-9" 
-        "-T" 
-        "0" 
-      ];
+      #compressor = "xz";
+      #compressorArgs = [ 
+      #  "-9" 
+      #  "-T" 
+      #  "0" 
+      #];
       preLVMCommands = ''
         ${pkgs.kbd}/bin/setleds +num
       '';
