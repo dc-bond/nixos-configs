@@ -86,7 +86,6 @@
       
       "nixos-system/common/sshd.nix"
       "nixos-system/common/audio.nix"
-      "nixos-system/common/boot.nix"
       "nixos-system/common/zsh.nix"
       "nixos-system/common/fonts.nix"
       "nixos-system/common/yubikey.nix"
@@ -103,6 +102,7 @@
       "nixos-system/common/bluetooth.nix"
       "nixos-system/common/firejail.nix"
 
+      "nixos-system/host-specific/thinkpad/boot.nix"
       "nixos-system/host-specific/thinkpad/users.nix"
       "nixos-system/host-specific/thinkpad/networking.nix"
       "nixos-system/host-specific/thinkpad/tailscale.nix"

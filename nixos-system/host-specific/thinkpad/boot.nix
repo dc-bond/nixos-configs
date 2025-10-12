@@ -9,20 +9,17 @@
     loader = {
       systemd-boot = {
         enable = true;
-        configurationLimit = 3; # only display last 3 generations
+        configurationLimit = 5; # only display last 5 generations
       };
       efi.canTouchEfiVariables = true;
     };
     supportedFilesystems = {
       btrfs = true;
-      ext4 = true;
     };
     kernel.sysctl = { "vm.swappiness" = 30;};
     initrd = {
-      includeDefaultModules = false;
       supportedFilesystems = {
         btrfs = true;
-        ext4 = true;
       };
       preLVMCommands = ''
         ${pkgs.kbd}/bin/setleds +num
