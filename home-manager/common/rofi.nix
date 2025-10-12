@@ -11,11 +11,6 @@
     package = pkgs.rofi-wayland;
     terminal = "${pkgs.alacritty}/bin/alacritty";
     font = "SauceCodePro Nerd Font 10";
-    #pass = { # kinda garbage
-    #  enable = true;
-    #  package = pkgs.rofi-pass-wayland;
-    #  stores = [ "${config.home.homeDirectory}/.password-store" ];
-    #};
     theme = 
     let
       inherit (config.lib.formats.rasi) mkLiteral;

@@ -1,3 +1,6 @@
+#nextcloud-occ config:app:set --value=0 user_oidc allow_multiple_user_backends
+#nextcloud-occ maintenance:repair --include-expensive
+
 { 
   self, 
   config,

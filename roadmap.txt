@@ -1,3 +1,9 @@
+impermanance
+
+LUKS full disk encryption with yubikey
+
+plasma 6
+
 authelia
 
 vaultwarden
@@ -7,25 +13,3 @@ Logging Solution
 Crowdsec
 
 Mailserver
-
-LUKS full disk encryption with yubikey
-
-impermanance
-
-** Additional manual setups for new hosts:
-
-clone nixos-configs and pass repos using ssh
-nextcloud-client setup
-firefox setup
-vscode github authentication
-vscode extension setup
-
-nextcloud-occ config:app:set --value=0 user_oidc allow_multiple_user_backends
-nextcloud-occ maintenance:repair --include-expensive
-
-** To migrate Unifi Controller to new host
-
-turn off old
-dns for web ui
-restore new
-update override inform host in new

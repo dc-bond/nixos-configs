@@ -1,3 +1,10 @@
+#To migrate Unifi Controller to new host
+#
+#turn off old
+#dns for web ui
+#restore new
+#update override inform host in new
+
 { 
   lib,
   config, 

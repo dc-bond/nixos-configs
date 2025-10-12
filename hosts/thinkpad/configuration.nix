@@ -1,3 +1,12 @@
+# MANUAL SETUP ON FRESH INSTALL
+#clone nixos-configs and pass repos using ssh
+#bluetooth connect mouse (bluetoothctl, press pairing button, scan on, pair xx:xx, trust xx:xx, update script?)
+#run "gpg --card-status" to register yubikey for git signing
+#nextcloud-client setup (keyring passwd?)
+#firefox setup (activate extensions, etc.)
+#vscode github authentication
+#vscode extension setup
+
 { 
   inputs, 
   outputs, 
@@ -25,16 +34,14 @@
   config = {
 
     hostSpecificConfigs = {
-      primaryIp = configVars.juniperIp;
+      primaryIp = configVars.thinkpadLanIp;
       sshdPort = 28765;
     };
 
     environment.systemPackages = with pkgs; [
-      #(import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
       age # encryption tool
       mkpasswd # password hashing tool
       dig # dns lookup tool
-      sops # secrets management tool that can use different types of encryption (e.g. age, pgp, etc.)
       wget # download tool
       rsync # sync tool
       usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in

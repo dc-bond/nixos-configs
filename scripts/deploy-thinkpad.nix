@@ -38,6 +38,7 @@ let
     # install
     nix run github:nix-community/nixos-anywhere -- \
     --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
+    --disk-encryption-keys /tmp/crypt-passwd.txt <(pass hosts/${HOST}/crypt-passwd) \
     --extra-files "$temp" \
     --flake '.#${HOST}' \
     root@${IPV4}

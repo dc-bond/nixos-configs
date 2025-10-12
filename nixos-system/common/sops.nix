@@ -8,6 +8,8 @@
 
 {
 
+  environment.systemPackages = with pkgs; [ sops ];
+
   imports = [
     inputs.sops-nix.nixosModules.sops
   ];
