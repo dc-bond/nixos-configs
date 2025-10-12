@@ -24,7 +24,6 @@
       "home-manager/common/firefox.nix"
       "home-manager/common/theme.nix"
       "home-manager/common/rofi.nix"
-      #"home-manager/common/wlogout.nix"
 
       "home-manager/common/email.nix"
       
@@ -33,7 +32,6 @@
       "home-manager/host-specific/thinkpad/chris/git.nix"
 
       "home-manager/host-specific/thinkpad/chris/hyprland.nix"
-      "home-manager/host-specific/thinkpad/chris/waybar.nix"
       #"home-manager/host-specific/thinkpad/chris/plasma.nix"
     ])
   ];
