@@ -51,10 +51,7 @@
       ethtool # network tools
       inetutils # more network tools like telnet
       unzip # utility to unzip directories
-      git # git
       btop # system monitor
-      nmap # network scanning
-      openssl # openssl command line tool
     ];
 
     #backups.startTime = "*-*-* 02:45:00"; # everyday at 2:45am

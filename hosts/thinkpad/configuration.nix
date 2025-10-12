@@ -51,11 +51,9 @@
       ethtool # network tools
       inetutils # more network tools like telnet
       unzip # utility to unzip directories
-      git # git
       btop # system monitor
       nmap # network scanning
       wgnord # nordvpn
-      openssl # openssl command line tool
 
       brightnessctl # screen brightness application
       ddcutil # query and change monitor settings using DDC/CI and USB

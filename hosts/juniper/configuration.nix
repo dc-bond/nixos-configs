@@ -31,10 +31,7 @@
 
     environment.systemPackages = with pkgs; [
       rsync # sync tool
-      git # git
       btop # system monitor
-      ethtool # network tools
-      dig # dns lookup tool
     ];
 
     backups.startTime = "*-*-* 01:45:00"; # everyday at 1:45am

@@ -51,8 +51,6 @@
       wget # download tool
       usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
       rsync # sync tool
-      git # git
-      dig # dns lookup tool
       btop # system monitor
     ];
 

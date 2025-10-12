@@ -17,6 +17,7 @@
       "home-manager/common/starship.nix"
       
       "home-manager/host-specific/aspen/chris/ssh.nix"
+      "home-manager/host-specific/aspen/chris/git.nix"
       "home-manager/host-specific/aspen/chris/aliases.nix"
     ])
   ];

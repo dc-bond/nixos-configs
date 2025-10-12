@@ -17,7 +17,6 @@
       "home-manager/common/zsh.nix"
       "home-manager/common/pass.nix"
       "home-manager/common/starship.nix"
-      "home-manager/common/git.nix"
       
       "home-manager/common/alacritty.nix"
       "home-manager/common/gammastep.nix"
@@ -31,6 +30,7 @@
       
       "home-manager/host-specific/thinkpad/chris/aliases.nix"
       "home-manager/host-specific/thinkpad/chris/ssh.nix"
+      "home-manager/host-specific/thinkpad/chris/git.nix"
 
       "home-manager/host-specific/thinkpad/chris/hyprland.nix"
       "home-manager/host-specific/thinkpad/chris/waybar.nix"

@@ -17,9 +17,9 @@
       "home-manager/common/zsh.nix"
       "home-manager/common/pass.nix"
       "home-manager/common/starship.nix"
-      "home-manager/common/git.nix"
       
       "home-manager/host-specific/cypress/chris/ssh.nix"
+      "home-manager/host-specific/cypress/chris/git.nix"
       #"home-manager/host-specific/cypress/chris/aliases.nix"
     ])
   ];
