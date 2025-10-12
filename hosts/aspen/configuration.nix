@@ -70,7 +70,6 @@
       "hosts/aspen/hardware-configuration.nix"
       
       "nixos-system/common/sshd.nix"
-      "nixos-system/common/boot.nix"
       "nixos-system/common/zsh.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
@@ -78,6 +77,7 @@
       "nixos-system/common/sops.nix"
       "nixos-system/common/nvidia.nix"
 
+      "nixos-system/host-specific/aspen/boot.nix"
       "nixos-system/host-specific/aspen/networking.nix"
       "nixos-system/host-specific/aspen/tailscale.nix"
       "nixos-system/host-specific/aspen/users.nix"

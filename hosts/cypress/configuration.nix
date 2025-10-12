@@ -11,10 +11,9 @@
 
 {
 
-  options.config.hostSpecificConfigs = {
+  options.hostSpecificConfigs = {
     storageDrive1 = lib.mkOption {
       type = lib.types.path;
-      default = "/storage/WD-WX21DC86RU3P";
       description = "path to storage drive 1";
     };
     primaryIp = lib.mkOption {
@@ -75,7 +74,6 @@
 
       "nixos-system/common/sshd.nix"
       "nixos-system/common/audio.nix"
-      "nixos-system/common/boot.nix"
       "nixos-system/common/zsh.nix"
       "nixos-system/common/fonts.nix"
       "nixos-system/common/yubikey.nix"
@@ -85,6 +83,7 @@
       #"nixos-system/common/backups.nix"
       "nixos-system/common/sops.nix"
 
+      "nixos-system/host-specific/cypress/boot.nix"
       "nixos-system/host-specific/cypress/users.nix"
       "nixos-system/host-specific/cypress/networking.nix"
       "nixos-system/host-specific/cypress/tailscale.nix"
