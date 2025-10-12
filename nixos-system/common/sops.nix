@@ -3,6 +3,7 @@
   config, 
   configLib,
   configVars,
+  pkgs,
   ... 
 }: 
 
