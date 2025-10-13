@@ -343,7 +343,7 @@
           showSignature = "append";
         };
         gpg = {
-          key = "${configVars.userGpgPubKey}";
+          key = "${configVars.chrisGpgKeyFingerprint}";
           signByDefault = true;
         };
       };

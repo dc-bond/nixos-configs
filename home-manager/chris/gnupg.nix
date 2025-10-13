@@ -11,9 +11,7 @@
   programs.gpg = {
     enable = true;
     homedir = "${config.home.homeDirectory}/.gnupg";
-    publicKeys = [ 
-      { source = (configLib.relativeToRoot "chrisGpgKey.pub"); trust = 5; }
-    ];
+    publicKeys = [ { text = configVars.chrisGpgPubKeyBlock; trust = 5; } ];
     settings = { 
       no-greeting = true;
       armor = true;
@@ -23,7 +21,7 @@
       require-cross-certification = true;
       throw-keyids = true;
       with-fingerprint = true;
-      default-key = "${configVars.userGpgPubKey}";
+      default-key = "${configVars.chrisGpgKeyFingerprint}";
       keyid-format = "0xlong";
       list-options = "show-uid-validity";
       verify-options = "show-uid-validity";
@@ -39,3 +37,5 @@
   };
 
 }
+
+      #{ source = (configLib.relativeToRoot "home-manager/chris/chrisGpgKey.pub"); trust = 5; }
