@@ -6,7 +6,7 @@
 #firefox setup (activate extensions, etc.)
 #vscode github authentication
 #vscode extension setup
-#tailscale key?
+#tailscale auth key - remove old machine, generate new key in console, replace in secrets.yaml - key non-reusable, 90-day expiration, pre-authorized, non-ephemeral, update new tailscale IP in conficVars
 #email cloud recovery (sudo mkdir /var/lib/borgbackup/cloud-restore && sudo cloudRestore)
 
 { 
