@@ -16,12 +16,11 @@
     tailscale = {
       enable = true;
       authKeyFile = "${config.sops.secrets.cypressTailscaleAuthKey.path}";
-      useRoutingFeatures = "server";
+      useRoutingFeatures = "client";
       extraDaemonFlags = ["--no-logs-no-support"];
       extraUpFlags = [
         "-ssh" # enable tailscale-ssh
-        "--advertise-exit-node" # advertise as exit node
-        "--advertise-routes=192.168.1.0/24,192.168.4.0/27" # advertise home and iot vlan subnets
+        "--accept-routes" # autmatically discover and accept subnet routes advertised by other nodes
       ];
     };
   };

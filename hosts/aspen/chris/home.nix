@@ -32,6 +32,8 @@
     zsh = {
       shellAliases = {
         storage = "cd /storage/WD-WCC7K4RU947F ; ls";
+        tsupaspen = "sudo tailscale down && sleep 5 && sudo tailscale up -ssh --accept-routes --exit-node=${configVars.aspenTailscaleIp}";
+        tsupjuniper = "sudo tailscale down && sleep 5 && sudo tailscale up -ssh --accept-routes --exit-node=${configVars.juniperTailscaleIp}";
       };
     };
   };
