@@ -246,12 +246,12 @@ let
       set -euo pipefail
       export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
       export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-      echo "Starting borg consistency check on repository ${config.backups.borgDir}/${config.networking.hostName} ..."
+      echo "Starting full consistency check on repository ${config.backups.borgDir}/${config.networking.hostName} ..."
       if ${pkgs.borgbackup}/bin/borg check --verify-data --progress ${config.backups.borgDir}/${config.networking.hostName}; then
-        echo "SUCCESS: Borg check completed successfully"
+        echo "SUCCESS: Borg check completed successfully."
         exit 0
       else
-        echo "ERROR: Borg check failed" >&2
+        echo "ERROR: Borg check failed ..." >&2
         exit 1
       fi
     '';
@@ -381,6 +381,15 @@ in
               exit 1
             fi
           '';
+        };
+        "borgbackup-job-${config.networking.hostName}".serviceConfig.OnSuccess = "borgCheckLocal.service";
+        "borgCheckLocal" = {
+          description = "verify local borg repository integrity";
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${borgCheckLocalScript}/bin/borgCheckLocal";
+          };
+          wantedBy = lib.mkForce []; # triggered by borgbackup-job-host
         };
       };
     };
