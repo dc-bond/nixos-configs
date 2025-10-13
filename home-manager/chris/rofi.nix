@@ -6,6 +6,8 @@
     pinentry-rofi # use rofi for pinentry
   ];
 
+  services.gpg-agent.pinentry.package = pkgs.pinentry-rofi;
+  
   programs.rofi = {
     enable = true;
     package = pkgs.rofi-wayland;
