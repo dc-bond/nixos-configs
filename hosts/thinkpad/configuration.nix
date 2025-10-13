@@ -60,7 +60,7 @@
       i2c-tools # hardware interface tools required by ddcutil
     ];
 
-    #backups.startTime = "*-*-* 02:45:00"; # everyday at 2:45am
+    backups.startTime = "*-*-* 02:45:00"; # everyday at 2:45am
 
     hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
@@ -87,7 +87,7 @@
       "nixos-system/common/printing.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
-      #"nixos-system/common/backups.nix"
+      "nixos-system/common/backups.nix"
       "nixos-system/common/sops.nix"
       "nixos-system/common/keyring.nix"
       #"nixos-system/common/display-manager.nix"
