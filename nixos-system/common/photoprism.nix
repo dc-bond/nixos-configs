@@ -91,9 +91,9 @@ in
         PHOTOPRISM_DATABASE_SERVER = "/run/mysqld/mysqld.sock";                                 # MariaDB or MySQL database server (hostname:port)
         PHOTOPRISM_DATABASE_NAME = "${app}";                                                    # MariaDB or MySQL database schema name
         PHOTOPRISM_DATABASE_USER = "${app}";                                                    # MariaDB or MySQL database user name
-        PHOTOPRISM_SITE_CAPTION = "${configVars.userLastName} Private Family Photo and Video Server";
-        PHOTOPRISM_SITE_DESCRIPTION = "${configVars.userLastName} Family Photos and Videos";
-        PHOTOPRISM_SITE_AUTHOR = "${configVars.userFullName}";
+        PHOTOPRISM_SITE_CAPTION = "Bond Private Family Photo and Video Server";
+        PHOTOPRISM_SITE_DESCRIPTION = "Bond Family Photos and Videos";
+        PHOTOPRISM_SITE_AUTHOR = "${configVars.chrisFullName}";
         NVIDIA_VISIBLE_DEVICES = "all";
         PHOTOPRISM_INDEX_SCHEDULE = "";
       };

@@ -6,8 +6,7 @@
 {
 
   userName = "chris";
-  userLastName = "Bond";
-  userFullName = "Chris Bond";
+  chrisFullName = "Chris Bond";
   chrisEmail = "chris@dcbond.com";
   chrisGpgKeyFingerprint = "DB9ADBBE6FBD1F0E694AF25D012321D46E090E61";
   chrisGpgPubKeyBlock = ''

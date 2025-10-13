@@ -241,7 +241,7 @@
       "${configVars.userEmail}" = {
         address = "${configVars.userEmail}";
         userName = "${configVars.userEmail}";
-        realName = "${configVars.userFullName}";
+        realName = "${configVars.chrisFullName}";
         passwordCommand = "pass email/${configVars.userEmail}";
         primary = true;
         imap = {
