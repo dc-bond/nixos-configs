@@ -4,7 +4,7 @@
 }:
 
 let
-  REPO = "${config.backups.borgDir}/${config.networking.hostName}";
+  REPO = "/var/lib/borgbackup/thinkpad";
   ARCHIVE = "thinkpad-2025.10.10-T02:45:00";
 in
 
