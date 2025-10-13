@@ -64,7 +64,7 @@
           sleep 3
           
           echo "Reconnecting mouse..."
-          bluetoothctl connect D3:CF:05:5D:88:75
+          bluetoothctl connect D3:CF:05:5D:88:79
           echo "Bluetooth reconnection complete!"
         }
 
