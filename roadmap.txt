@@ -1,7 +1,5 @@
 impermanance
 
-LUKS full disk encryption with yubikey
-
 plasma 6
 
 authelia
@@ -13,14 +11,3 @@ Logging Solution
 Crowdsec
 
 Mailserver
-
-
-
-
-
-
-machine specific system level application settings defined in modules in /nixos-configs/nixos-system/${host}/${module}, modules imported into configuration.nix
-machine agnostic system level application settings defined in modules in /nixos-configs/nixos-system/common/${module}, modules imported into configuration.nix
-
-machine specific, user specific home-manager application settings defined directly in /nixos-configs/hosts/${host}/${user}/home.nix
-machine agnostic, user specific home-manager application settings defined in modules in /nixos-configs/home-manager/${user}/${module}, modules imported into home.nix

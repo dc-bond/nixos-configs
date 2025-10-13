@@ -238,11 +238,11 @@
   accounts.email = {
     maildirBasePath = "${config.home.homeDirectory}/email";
     accounts = {
-      "${configVars.userEmail}" = {
-        address = "${configVars.userEmail}";
-        userName = "${configVars.userEmail}";
+      "${configVars.chrisEmail}" = {
+        address = "${configVars.chrisEmail}";
+        userName = "${configVars.chrisEmail}";
         realName = "${configVars.chrisFullName}";
-        passwordCommand = "pass email/${configVars.userEmail}";
+        passwordCommand = "pass email/${configVars.chrisEmail}";
         primary = true;
         imap = {
           host = "mail.privateemail.com";
@@ -282,7 +282,7 @@
           enable = true;
           create = "maildir";
           groups = {
-            "${configVars.userEmail}" = {
+            "${configVars.chrisEmail}" = {
               channels = {
                 "inbox" = {
                   farPattern = "INBOX";
