@@ -46,6 +46,8 @@
         getnets = "iwctl station wlan0 get-networks";
         ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop";
         speed = "nix run nixpkgs#speedtest-rs";
+        tsaspen = "sudo tailscale down && sleep 5 && sudo tailscale up -ssh --accept-routes --exit-node=${configVars.aspenTailscaleIp}";
+        tsjuniper = "sudo tailscale down && sleep 5 && sudo tailscale up -ssh --accept-routes --exit-node=${configVars.juniperTailscaleIp}";
       };
       initContent = ''
 
