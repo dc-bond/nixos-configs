@@ -81,6 +81,8 @@
       "nixos-system/host-specific/cypress/users.nix"
       "nixos-system/host-specific/cypress/networking.nix"
       "nixos-system/host-specific/cypress/tailscale.nix"
+
+      "scripts/deploy-thinkpad.nix"
     ])
   ];
 
