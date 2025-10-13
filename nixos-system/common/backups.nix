@@ -244,12 +244,19 @@ let
     borgCheckLocalScript = pkgs.writeShellScriptBin "borgCheckLocal" ''
         #!/bin/bash
         set -euo pipefail
-        
         export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
         export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
         echo "Starting borg consistency check ..."
-        ${pkgs.borgbackup}/bin/borg check --progress ${config.backups.borgDir}/${config.networking.hostName}
-        echo "Borg check completed successfully at $(date) ..."
+        if ${pkgs.borgbackup}/bin/borg check --verify-data --progress ${config.backups.borgDir}/${config.networking.hostName}; then
+          END_TIME=$(date)
+          echo "SUCCESS: Borg check completed successfully"
+          echo "Started:  $START_TIME"
+          echo "Finished: $END_TIME"
+          exit 0
+        else
+          echo "ERROR: Borg check command failed" >&2
+          exit 1
+        fi
       '';
         #echo "Running daily consistency check ..."
         #${pkgs.borgbackup}/bin/borg check --progress "$REPO"
