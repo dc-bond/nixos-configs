@@ -241,6 +241,30 @@ let
       echo "Recovery complete!"
     '';
 
+    borgCheckLocalScript = pkgs.writeShellScriptBin "borgCheckLocal" ''
+        #!/bin/bash
+        set -euo pipefail
+        
+        export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
+        export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+        
+        REPO="${config.backups.borgDir}/${config.networking.hostName}"
+        
+        echo "Starting borg check triggered by successful backup at $(date)"
+        
+        echo "Running full consistency check ..."
+        ${pkgs.borgbackup}/bin/borg check --progress "$REPO"
+        
+        echo "Borg check completed successfully at $(date)"
+      '';
+        #echo "Running daily consistency check ..."
+        #${pkgs.borgbackup}/bin/borg check --progress "$REPO"
+        #
+        #if [[ "$(date +%u)" == "7" ]]; then
+        #  echo "Running weekly full data verification check ..."
+        #  ${pkgs.borgbackup}/bin/borg check --verify-data --progress "$REPO"
+        #fi
+
 in
 
 {
@@ -301,6 +325,7 @@ in
       cloudRestoreScript
       listCloudArchivesScript
       infoCloudArchivesScript
+      borgCheckLocalScript
       rclone
     ];
 
