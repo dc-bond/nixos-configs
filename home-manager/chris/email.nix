@@ -7,32 +7,6 @@
 
 {
 
-  #systemd.user = {
-  #  services."${configVars.chrisUsername}-emailsync" = {
-  #    Unit = {
-  #      Description = "synchronize email with server";
-  #      After = [ "network-online.target" ];
-  #    };
-  #    Service = {
-  #      ExecStart = "${pkgs.bash}/bin/bash -c 'export $(/run/wrappers/bin/loginctl show-user $USER --property=Environment --value); ${pkgs.isync}/bin/mbsync --all && ${pkgs.notmuch}/bin/notmuch new'";
-  #      StandardOutput = "journal";
-  #      StandardError = "journal";
-  #    };
-  #    Install = { WantedBy = [ "default.target" ]; };
-  #  };
-  #  timers."${configVars.chrisUsername}-emailsync" = {
-  #    Unit = {
-  #      Description = "synchronize email with server every 15 minutes";
-  #    };
-  #    Timer = {
-  #      OnBootSec = "15min";
-  #      OnUnitActiveSec = "15min";
-  #      Unit = "${configVars.chrisUsername}-emailsync.service";
-  #    };
-  #    Install = { WantedBy = [ "timers.target" ]; };
-  #  };
-  #};
-
   home.file.".config/neomutt/mailcap".text = ''
     text/html; ${pkgs.firefox-esr}/bin/firefox-esr %s
   '';
