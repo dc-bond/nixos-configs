@@ -37,8 +37,8 @@
 
 # define username and home directory
   home = {
-    username = configVars.userName;
-    homeDirectory = "/home/${configVars.userName}";
+    username = configVars.chrisUsername;
+    homeDirectory = "/home/${configVars.chrisUsername}";
   };
 
 # define default folders in home directory

@@ -65,7 +65,7 @@
       "/etc/machine-id"
       #{ file = "/var/keys/secret_file"; parentDirectory = { mode = "u=rwx,g=,o="; }; }
     ];
-    #users.${configVars.userName} = {
+    #users.${configVars.chrisUsername} = {
     #  directories = [
     #    #"Downloads"
     #    #"Documents"

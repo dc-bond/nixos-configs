@@ -17,6 +17,6 @@
     };
   };
 
-  users.users.${configVars.userName}.extraGroups = [ "docker" ];
+  users.users.${configVars.chrisUsername}.extraGroups = [ "docker" ];
 
 }

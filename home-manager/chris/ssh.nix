@@ -12,37 +12,37 @@
     matchBlocks = {
       "aspen" = {
         hostname = "${configVars.aspenLanIp}";
-        user = "${configVars.userName}";
+        user = "${configVars.chrisUsername}";
         port = 28766;
       };
       "aspen-wan" = {
         hostname = "ssh.${configVars.domain1}";
-        user = "${configVars.userName}";
+        user = "${configVars.chrisUsername}";
         port = 28766;
       };
       "aspen-tailscale" = {
         hostname = "${configVars.aspenTailscaleIp}";
-        user = "${configVars.userName}";
+        user = "${configVars.chrisUsername}";
         port = 22;
       };
       "cypress" = {
         hostname = "${configVars.cypressLanIp}";
-        user = "${configVars.userName}";
+        user = "${configVars.chrisUsername}";
         port = 28761;
       };
       #"cypress-tailscale" = {
       #  hostname = "${configVars.cypressTailscaleIp}";
-      #  user = "${configVars.userName}";
+      #  user = "${configVars.chrisUsername}";
       #  port = 22;
       #};
       "juniper" = {
         hostname = "${configVars.juniperIp}";
-        user = "${configVars.userName}";
+        user = "${configVars.chrisUsername}";
         port = 28764;
       };
       "juniper-tailscale" = {
         hostname = "${configVars.juniperTailscaleIp}";
-        user = "${configVars.userName}";
+        user = "${configVars.chrisUsername}";
         port = 22;
       };
       "unifi-usg" = {
