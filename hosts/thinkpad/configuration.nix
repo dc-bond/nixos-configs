@@ -87,7 +87,7 @@
       "nixos-system/common/printing.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
-      "nixos-system/common/backups.nix"
+      #"nixos-system/common/backups.nix"
       "nixos-system/common/sops.nix"
       "nixos-system/common/keyring.nix"
       #"nixos-system/common/display-manager.nix"
