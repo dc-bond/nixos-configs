@@ -12,15 +12,14 @@
   
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/common/neovim.nix"
-      "home-manager/common/gnupg.nix"
-      "home-manager/common/zsh.nix"
-      "home-manager/common/pass.nix"
-      "home-manager/common/starship.nix"
+      "home-manager/chris/zsh.nix"
+      "home-manager/chris/starship.nix"
+      "home-manager/chris/neovim.nix"
       
-      "home-manager/host-specific/cypress/chris/ssh.nix"
-      "home-manager/host-specific/cypress/chris/git.nix"
-      #"home-manager/host-specific/cypress/chris/aliases.nix"
+      "home-manager/chris/ssh.nix"
+      "home-manager/chris/git.nix"
+      "home-manager/chris/gnupg.nix"
+      "home-manager/chris/pass.nix"
     ])
   ];
   
@@ -28,8 +27,14 @@
     (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
   ];
 
-# home-manager module settings
-  programs.home-manager.enable = true;
+  programs = {
+    home-manager.enable = true; # enable home manager
+    zsh = {
+      shellAliases = {
+        storage = "cd /storage/WD-WX21DC86RU3P ; ls";
+      };
+    };
+  };
 
 # define username and home directory
   home = {

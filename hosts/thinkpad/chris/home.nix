@@ -12,13 +12,14 @@
   
   imports = lib.flatten [
     (map configLib.relativeToRoot [
+      "home-manager/chris/zsh.nix"
+      "home-manager/chris/starship.nix"
+      "home-manager/chris/neovim.nix"
+      
       "home-manager/chris/ssh.nix"
       "home-manager/chris/git.nix"
-      "home-manager/chris/neovim.nix"
       "home-manager/chris/gnupg.nix"
-      "home-manager/chris/zsh.nix"
       "home-manager/chris/pass.nix"
-      "home-manager/chris/starship.nix"
       
       "home-manager/chris/hyprland.nix"
       #"home-manager/chris/plasma.nix"
