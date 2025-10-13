@@ -46,12 +46,12 @@ in
       enable = true;
       passwordSecret = "$GRAYLOG_PASSWORD_SECRET";
       rootPasswordSha2 = "$GRAYLOG_ROOT_PASSWORD_SHA2";
-      #rootUsername = "${configVars.userEmail}";
+      #rootUsername = "${configVars.chrisEmail}";
       extraConfig = ''
         http_external_uri = https://${app}.${configVars.domain2}/
         java.net.preferIPv4Stack = true
         root_timezone = America/New_York
-        root_email = ${configVars.userEmail}
+        root_email = ${configVars.chrisEmail}
         allow_highlighting = true
         transport_email_enabled = true
         transport_email_hostname = ssl://mail.privateemail.com
@@ -59,9 +59,9 @@ in
         transport_email_use_tls = false
         transport_email_use_ssl = true
         transport_email_use_auth = true
-        transport_email_auth_username = ${configVars.userEmail}
+        transport_email_auth_username = ${configVars.chrisEmail}
         transport_email_auth_password = $GRAYLOG_USER_EMAIL_PASSWORD
-        transport_email_from_email = ${configVars.userEmail}
+        transport_email_from_email = ${configVars.chrisEmail}
         transport_email_web_interface_url = https://${app}.${configVars.domain2}
         transport_email_socket_connection_timeout = 30s
         transport_email_socket_timeout = 30s

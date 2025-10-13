@@ -49,7 +49,7 @@ in
       WorkingDirectory = "/var/lib/${app}/";
     };
     environment = {
-      CF_API_EMAIL = configVars.userEmail; 
+      CF_API_EMAIL = configVars.chrisEmail; 
       CF_API_KEY_FILE = "${config.sops.secrets.cloudflareApiKey.path}"; 
     };
   }; 
@@ -129,7 +129,7 @@ in
               ];
               propagation.delayBeforeChecks = 5;
             };
-            email = configVars.userEmail;
+            email = configVars.chrisEmail;
             keyType = "RSA4096";
             certificatesDuration = 180;
             storage = "/var/lib/${app}/acme.json"; # where acme certificates live

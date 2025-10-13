@@ -75,7 +75,7 @@ in
     ${app} = {
       enable = true;
       settings = {
-        ldap_user_email = "${configVars.userEmail}";
+        ldap_user_email = "${configVars.chrisEmail}";
         ldap_user_dn = "admin";
         ldap_port = 3890;
         ldap_base_dn = "dc=${configVars.domain1Short},dc=com";

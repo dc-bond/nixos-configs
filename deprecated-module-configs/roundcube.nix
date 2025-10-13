@@ -12,10 +12,10 @@ in
 
 {
 
-  sops.secrets.userEmailPasswd = {};
+  sops.secrets.chrisEmailPasswd = {};
 
   systemd.services.${app}.environment = { 
-    SMTP_PASS = "${config.sops.secrets.userEmailPasswd.path}";
+    SMTP_PASS = "${config.sops.secrets.chrisEmailPasswd.path}";
   };
 
   services = {
@@ -33,7 +33,7 @@ in
         $config['default_port'] = 993;
         $config['smtp_server'] = 'ssl://mail.privateemail.com';
         $config['smtp_port'] = 465;
-        $config['smtp_user'] = '${configVars.userEmail}';
+        $config['smtp_user'] = '${configVars.chrisEmail}';
         $config['smtp_pass'] = '$SMTP_PASS';
         $config['smtp_auth_type'] = 'LOGIN';
       '';
