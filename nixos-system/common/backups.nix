@@ -253,7 +253,7 @@ let
         echo "Starting borg check triggered by successful backup at $(date)"
         
         echo "Running full consistency check ..."
-        ${pkgs.borgbackup}/bin/borg check --progress "$REPO"
+        ${pkgs.borgbackup}/bin/borg check --verify-data --progress "$REPO"
         
         echo "Borg check completed successfully at $(date)"
       '';
