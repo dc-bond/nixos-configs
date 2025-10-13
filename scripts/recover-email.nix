@@ -11,7 +11,7 @@ in
 pkgs.writeShellScriptBin "recoverEmail" 
 ''
   cd /
-  ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" /home/chris/email
+  ${pkgs.borgbackup}/bin/borg extract --verbose --list "${REPO}"::"${ARCHIVE}" /home/chris/email
 ''
   #sudo mkdir /var/lib/borgbackup/cloud-restore
   #sudo cloudRestore
