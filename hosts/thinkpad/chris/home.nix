@@ -36,6 +36,7 @@
 
   home.packages = with pkgs; [
     (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
+    (import (configLib.relativeToRoot "scripts/recover-email.nix") { inherit pkgs config; })
   ];
 
   programs = {

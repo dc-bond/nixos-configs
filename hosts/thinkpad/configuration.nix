@@ -1,7 +1,7 @@
 # MANUAL SETUP ON FRESH INSTALL
+#run "gpg --card-status" to register yubikey
 #clone nixos-configs and pass repos using ssh
 #bluetooth connect mouse (bluetoothctl, press pairing button, scan on, pair xx:xx, trust xx:xx, update script?)
-#run "gpg --card-status" to register yubikey for git signing
 #nextcloud-client setup (keyring passwd?)
 #firefox setup (activate extensions, etc.)
 #vscode github authentication
