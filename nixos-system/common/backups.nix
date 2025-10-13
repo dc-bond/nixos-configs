@@ -14,9 +14,9 @@ let
 
   listLocalArchivesScript = pkgs.writeShellScriptBin "listLocalArchives" ''
     #!/bin/bash
-    export BORG_PASSPHRASE=$(sudo cat ${borgCryptPasswdFile})
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-    sudo -E ${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName}
+    ${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName}
   '';
 
   infoLocalArchivesScript = pkgs.writeShellScriptBin "infoLocalArchives" ''
@@ -245,11 +245,10 @@ let
         #!/bin/bash
         set -euo pipefail
         
-        export BORG_PASSPHRASE=$(sudo cat ${borgCryptPasswdFile})
+        export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
         export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-        echo "Starting borg check triggered by successful backup at $(date) ..."
-        echo "Running full consistency check ..."
-        sudo -E ${pkgs.borgbackup}/bin/borg check --verify-data --progress ${config.backups.borgDir}/${config.networking.hostName}
+        echo "Starting borg consistency check ..."
+        ${pkgs.borgbackup}/bin/borg check --progress ${config.backups.borgDir}/${config.networking.hostName}
         echo "Borg check completed successfully at $(date) ..."
       '';
         #echo "Running daily consistency check ..."
