@@ -250,7 +250,6 @@ let
       export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
       START_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-      HOST="${config.networking.hostName}"
       
       echo "Starting borg consistency check on repository ${config.backups.borgDir}/${config.networking.hostName} ..."
       
@@ -270,13 +269,13 @@ let
       END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
       
       {
-        echo "Subject: Backup Verification Report - $HOST - $STATUS"
+        echo "Subject: Backup Verification Report - ${config.networking.hostName} - $STATUS"
         echo "To: ${configVars.chrisEmail}"
         echo "From: ${configVars.chrisEmail}"
         echo ""
         echo "$DETAILS"
         echo ""
-        echo "Host: $HOST"
+        echo "Host: ${config.networking.hostName}"
         echo "Started: $START_TIME"
         echo "Completed: $END_TIME"
       } | ${pkgs.msmtp}/bin/msmtp \
