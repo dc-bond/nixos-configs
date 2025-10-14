@@ -22,16 +22,16 @@ let
 
   infoLocalArchivesScript = pkgs.writeShellScriptBin "infoLocalArchives" ''
     #!/bin/bash
-    export BORG_PASSPHRASE=$(sudo cat ${borgCryptPasswdFile})
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-    sudo -E ${pkgs.borgbackup}/bin/borg info ${config.backups.borgDir}/${config.networking.hostName}
+    ${pkgs.borgbackup}/bin/borg info ${config.backups.borgDir}/${config.networking.hostName}
   '';
   
   cloudBackupScript = pkgs.writeShellScriptBin "cloudBackup" ''
     #!/bin/bash
-    echo "rclone cloud backup to backblaze started at $(date)"
+    echo "rclone cloud backup to backblaze started at $(date) ..."
     ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync ${config.backups.borgDir}/${config.networking.hostName} backblaze-b2:${config.networking.hostName}-backup-dcbond
-    echo "rclone cloud backup to backblaze finished at $(date)"
+    echo "rclone cloud backup to backblaze finished at $(date) ..."
   '';
 
   cloudRestoreScript = pkgs.writeShellScriptBin "cloudRestore" ''
@@ -51,18 +51,68 @@ let
 
   listCloudArchivesScript = pkgs.writeShellScriptBin "listCloudArchives" ''
     #!/bin/bash
-    export BORG_PASSPHRASE=$(sudo cat ${borgCryptPasswdFile})
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
     export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
-    sudo -E ${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgCloudDir}/${config.networking.hostName}
+    ${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgCloudDir}/${config.networking.hostName}
   '';
 
   infoCloudArchivesScript = pkgs.writeShellScriptBin "infoCloudArchives" ''
     #!/bin/bash
-    export BORG_PASSPHRASE=$(sudo cat ${borgCryptPasswdFile})
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
     export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
-    sudo -E ${pkgs.borgbackup}/bin/borg info ${config.backups.borgCloudDir}/${config.networking.hostName}
+    ${pkgs.borgbackup}/bin/borg info ${config.backups.borgCloudDir}/${config.networking.hostName}
+  '';
+
+  borgCheckLocalScript = pkgs.writeShellScriptBin "borgCheckLocal" ''
+    #!/bin/bash
+    set -euo pipefail
+
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+    START_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+    
+    echo "Starting borg consistency check on repository ${config.backups.borgDir}/${config.networking.hostName} ..."
+    
+    if ${pkgs.borgbackup}/bin/borg check --verify-data --progress ${config.backups.borgDir}/${config.networking.hostName}; then
+      echo "SUCCESS: Borg check completed successfully."
+      STATUS="✅ SUCCESS"
+      DETAILS="Backup repository verification completed successfully."
+      EXIT_CODE=0
+    else
+      # Failure  
+      echo "ERROR: Borg check failed!" >&2
+      STATUS="🚨 FAILED"
+      DETAILS="CRITICAL: Backup repository verification FAILED! Immediate investigation required."
+      EXIT_CODE=1
+    fi
+    
+    END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+    
+    {
+      echo "Subject: Backup Verification Report - ${config.networking.hostName} - $STATUS"
+      echo "To: ${configVars.chrisEmail}"
+      echo "From: ${configVars.chrisEmail}"
+      echo ""
+      echo "$DETAILS"
+      echo ""
+      echo "Host: ${config.networking.hostName}"
+      echo "Started: $START_TIME"
+      echo "Completed: $END_TIME"
+    } | ${pkgs.msmtp}/bin/msmtp \
+      --host=mail.privateemail.com \
+      --port=587 \
+      --auth=on \
+      --user="${configVars.chrisEmail}" \
+      --passwordeval "cat ${chrisEmailPasswd}" \
+      --tls=on \
+      --tls-starttls=on \
+      --from="${configVars.chrisEmail}" \
+      -t
+    
+    exit $EXIT_CODE
   '';
   
   dockerServiceRecoveryScript = { 
@@ -242,56 +292,6 @@ let
       echo "Recovery complete!"
     '';
 
-    borgCheckLocalScript = pkgs.writeShellScriptBin "borgCheckLocal" ''
-      #!/bin/bash
-      set -euo pipefail
-
-      export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
-      export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-
-      START_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-      
-      echo "Starting borg consistency check on repository ${config.backups.borgDir}/${config.networking.hostName} ..."
-      
-      if ${pkgs.borgbackup}/bin/borg check --verify-data --progress ${config.backups.borgDir}/${config.networking.hostName}; then
-        echo "SUCCESS: Borg check completed successfully."
-        STATUS="✅ SUCCESS"
-        DETAILS="Backup repository verification completed successfully."
-        EXIT_CODE=0
-      else
-        # Failure  
-        echo "ERROR: Borg check failed!" >&2
-        STATUS="🚨 FAILED"
-        DETAILS="CRITICAL: Backup repository verification FAILED! Immediate investigation required."
-        EXIT_CODE=1
-      fi
-      
-      END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-      
-      {
-        echo "Subject: Backup Verification Report - ${config.networking.hostName} - $STATUS"
-        echo "To: ${configVars.chrisEmail}"
-        echo "From: ${configVars.chrisEmail}"
-        echo ""
-        echo "$DETAILS"
-        echo ""
-        echo "Host: ${config.networking.hostName}"
-        echo "Started: $START_TIME"
-        echo "Completed: $END_TIME"
-      } | ${pkgs.msmtp}/bin/msmtp \
-        --host=mail.privateemail.com \
-        --port=587 \
-        --auth=on \
-        --user="${configVars.chrisEmail}" \
-        --passwordeval "cat ${chrisEmailPasswd}" \
-        --tls=on \
-        --tls-starttls=on \
-        --from="${configVars.chrisEmail}" \
-        -t
-      
-      exit $EXIT_CODE
-    '';
-
 in
 
 {
@@ -391,8 +391,15 @@ in
           set -x
           echo "spinning up services"
           ${lib.concatStringsSep "\n" config.backups.serviceHooks.postHook}
-          echo "starting cloud backup"
-          systemctl start cloudBackup.service
+
+          echo "Starting repo integrity check ..."
+          if ${borgCheckLocalScript}/bin/borgCheckLocal; then
+            echo "Integrity check PASSED - starting cloud backup ..."
+            systemctl start cloudBackup.service
+          else
+            echo "Integrity check FAILED - cloud backup SKIPPED ..."
+            echo "Local backup completed but cloud sync prevented due to integrity check failure ..."
+          fi
         '';
         paths = lib.mkDefault [];
         prune.keep = {
@@ -419,14 +426,13 @@ in
             fi
           '';
         };
-        "borgbackup-job-${config.networking.hostName}".serviceConfig.OnSuccess = "borgCheckLocal.service";
         "borgCheckLocal" = {
           description = "verify local borg repository integrity";
           serviceConfig = {
             Type = "oneshot";
             ExecStart = "${borgCheckLocalScript}/bin/borgCheckLocal";
           };
-          wantedBy = lib.mkForce []; # triggered by borgbackup-job-host
+          wantedBy = lib.mkForce []; # ensure only triggered manually or by calling from borg post-hook
         };
       };
     };
