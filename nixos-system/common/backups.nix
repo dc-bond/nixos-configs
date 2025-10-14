@@ -332,6 +332,7 @@ in
     sops = {
       secrets = {
         borgCryptPasswd = {};
+        chrisEmailPasswd = {};
         backblazeMasterAppKeyId = {}; # aka "account" for rclone
         backblazeMasterAppKey = {}; # aka "key" for rclone
       };
