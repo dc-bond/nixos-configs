@@ -11,6 +11,7 @@ let
 
   rcloneConf = "/run/secrets/rendered/rclone.conf";
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
+  chrisEmailPasswd = "/run/secrets/chrisEmailPasswd";
 
   listLocalArchivesScript = pkgs.writeShellScriptBin "listLocalArchives" ''
     #!/bin/bash
@@ -244,16 +245,52 @@ let
     borgCheckLocalScript = pkgs.writeShellScriptBin "borgCheckLocal" ''
       #!/bin/bash
       set -euo pipefail
+
       export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
       export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-      echo "Starting full consistency check on repository ${config.backups.borgDir}/${config.networking.hostName} ..."
+
+      START_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+      HOST="${config.networking.hostName}"
+      
+      echo "Starting borg consistency check on repository ${config.backups.borgDir}/${config.networking.hostName} ..."
+      
       if ${pkgs.borgbackup}/bin/borg check --verify-data --progress ${config.backups.borgDir}/${config.networking.hostName}; then
         echo "SUCCESS: Borg check completed successfully."
-        exit 0
+        STATUS="✅ SUCCESS"
+        DETAILS="Backup repository verification completed successfully."
+        EXIT_CODE=0
       else
-        echo "ERROR: Borg check failed ..." >&2
-        exit 1
+        # Failure  
+        echo "ERROR: Borg check failed!" >&2
+        STATUS="🚨 FAILED"
+        DETAILS="CRITICAL: Backup repository verification FAILED! Immediate investigation required."
+        EXIT_CODE=1
       fi
+      
+      END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+      
+      {
+        echo "Subject: Backup Verification Report - $HOST - $STATUS"
+        echo "To: ${configVars.chrisEmail}"
+        echo "From: ${configVars.chrisEmail}"
+        echo ""
+        echo "$DETAILS"
+        echo ""
+        echo "Host: $HOST"
+        echo "Started: $START_TIME"
+        echo "Completed: $END_TIME"
+      } | ${pkgs.msmtp}/bin/msmtp \
+        --host=mail.privateemail.com \
+        --port=465 \
+        --auth=on \
+        --user="${configVars.chrisEmail}" \
+        --passwordeval "cat ${chrisEmailPasswd}" \
+        --tls=on \
+        --tls-starttls=off \
+        --from="${configVars.chrisEmail}" \
+        -t
+      
+      exit $EXIT_CODE
     '';
 
 in
