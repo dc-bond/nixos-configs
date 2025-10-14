@@ -76,7 +76,7 @@ let
     
     echo "Starting borg consistency check on repository ${config.backups.borgDir}/${config.networking.hostName} ..."
     
-    if ${pkgs.borgbackup}/bin/borg check --verify-data --progress ${config.backups.borgDir}/${config.networking.hostName}; then
+    if ${pkgs.borgbackup}/bin/borg check --verify-data ${config.backups.borgDir}/${config.networking.hostName}; then
       echo "SUCCESS: Borg check completed successfully."
       STATUS="✅ SUCCESS"
       DETAILS="Backup repository verification completed successfully."
