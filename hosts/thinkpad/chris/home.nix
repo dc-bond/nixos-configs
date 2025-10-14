@@ -22,7 +22,7 @@
       "home-manager/chris/pass.nix"
       
       #"home-manager/chris/hyprland.nix"
-      "home-manager/chris/plasma.nix"
+      #"home-manager/chris/plasma.nix"
       "home-manager/chris/alacritty.nix"
       "home-manager/chris/gammastep.nix"
       "home-manager/chris/vscodium.nix"
