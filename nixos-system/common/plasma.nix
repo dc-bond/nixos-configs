@@ -9,9 +9,9 @@
     desktopManager.plasma6.enable = true;
     displayManager.sddm = {
       enable = true;
-      package = pkgs.kdePackages.sddm;
+      #package = pkgs.kdePackages.sddm;
       wayland.enable = true;
-      autoNumlock = true;
+      #autoNumlock = true;
       #settings = {
       #  Autologin = {
       #    Session = "hyprland.desktop";
