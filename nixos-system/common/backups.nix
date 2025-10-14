@@ -281,12 +281,12 @@ let
         echo "Completed: $END_TIME"
       } | ${pkgs.msmtp}/bin/msmtp \
         --host=mail.privateemail.com \
-        --port=465 \
+        --port=587 \
         --auth=on \
         --user="${configVars.chrisEmail}" \
         --passwordeval "cat ${chrisEmailPasswd}" \
         --tls=on \
-        --tls-starttls=off \
+        --tls-starttls=on \
         --from="${configVars.chrisEmail}" \
         -t
       
