@@ -501,14 +501,6 @@ in
             fi
           '';
         };
-        "borgCheckLocal" = {
-          description = "verify local borg repository integrity";
-          serviceConfig = {
-            Type = "oneshot";
-            ExecStart = "${borgCheckLocalScript}/bin/borgCheckLocal";
-          };
-          wantedBy = lib.mkForce []; # ensure only triggered manually or by calling from borg post-hook
-        };
       };
     };
     
