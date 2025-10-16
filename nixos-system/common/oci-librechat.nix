@@ -182,7 +182,7 @@ in
           #============#
           
           ANTHROPIC_API_KEY=${config.sops.placeholder.librechatAnthropicApiKey}
-          ANTHROPIC_MODELS=claude-sonnet-4-20250514
+          ANTHROPIC_MODELS=claude-haiku-4-5-20251001,claude-sonnet-4-5-20250929
           
           #============#
           # OpenAI     #
