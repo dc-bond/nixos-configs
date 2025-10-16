@@ -13,6 +13,15 @@ let
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   chrisEmailPasswd = "/run/secrets/chrisEmailPasswd";
 
+  initLocalRepoScript = pkgs.writeShellScriptBin "initLocalRepo" ''
+    #!/bin/bash
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+    mkdir -p /var/lib/borgbackup/juniper
+    borg init --encryption=repokey-blake2 ${config.backups.borgDir}/${config.networking.hostName}
+    echo "repository initialized successfully"
+  '';
+
   listLocalArchivesScript = pkgs.writeShellScriptBin "listLocalArchives" ''
     #!/bin/bash
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
@@ -367,6 +376,7 @@ in
     };
     
     environment.systemPackages = with pkgs; [ 
+      initLocalRepoScript
       listLocalArchivesScript
       infoLocalArchivesScript
       cloudBackupScript
