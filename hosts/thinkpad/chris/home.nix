@@ -21,13 +21,13 @@
       "home-manager/chris/gnupg.nix"
       "home-manager/chris/pass.nix"
       
-      #"home-manager/chris/hyprland.nix"
+      "home-manager/chris/hyprland.nix"
       #"home-manager/chris/plasma.nix"
       "home-manager/chris/alacritty.nix"
       "home-manager/chris/gammastep.nix"
       "home-manager/chris/vscodium.nix"
       "home-manager/chris/firefox.nix"
-      #"home-manager/chris/theme.nix"
+      "home-manager/chris/theme.nix"
       "home-manager/chris/rofi.nix"
 
       "home-manager/chris/email.nix"
