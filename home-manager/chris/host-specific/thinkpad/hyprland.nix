@@ -10,12 +10,12 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/chris/alacritty.nix"
-      "home-manager/chris/gammastep.nix"
-      "home-manager/chris/vscodium.nix"
-      "home-manager/chris/firefox.nix"
-      "home-manager/chris/theme.nix"
-      "home-manager/chris/rofi.nix"
+      "home-manager/chris/common/alacritty.nix"
+      "home-manager/chris/common/gammastep.nix"
+      "home-manager/chris/common/vscodium.nix"
+      "home-manager/chris/common/firefox.nix"
+      "home-manager/chris/common/theme.nix"
+      "home-manager/chris/common/rofi.nix"
     ])
   ];
 
@@ -114,9 +114,6 @@
       env = [
         "SSH_AUTH_SOCK,/run/user/1000/gnupg/S.gpg-agent.ssh" # workaround to ensure ssh_auth_sock variable inherited by all applications instead of just interactive shell when using gpg-agent to serve ssh
       ];
-      #source = [
-      #  "~/.cache/wal/colors-hyprland.conf" # not working
-      #];
       windowrulev2 = [
         "size 1154 706, class:(com.saivert.pwvucontrol)"
         "size 451 607, class:(org.gnome.Calculator)"
@@ -333,25 +330,6 @@
           "format-plugged" = "{capacity}% ";
           "format-icons" = [" " " " " " " " " "];
         };
-        #"pulseaudio": {
-        #  "scroll-step": 1,
-        #  "format": "{icon}{volume}%",
-        #  "format-bluetooth": "{volume}% {icon}  {format_source}",
-        #  "format-bluetooth-muted": "{icon}  {format_source}",
-        #  "format-muted": "{format_source} ",
-        #  "format-source": "{volume}% ",
-        #  "format-source-muted": "",
-        #  "format-icons": {
-        #    "headphone": "",
-        #    "hands-free": "",
-        #    "headset": "",
-        #    "phone": "",
-        #    "portable": "",
-        #    "car": "",
-        #    "default": [" ", " ", " "]
-        #  },
-        #  "on-click": "pavucontrol"
-        #},
         "bluetooth" = {
 	        "format" = "";
 	        "format-connected" = " {num_connections}";
@@ -552,7 +530,6 @@
             dots_center = true;
             outer_color = "rgba(0, 0, 0, 0)";
             inner_color = "rgba(0, 0, 0, 0.2)";
-            #font_color = "##cdd6f4";
             fade_on_empty = false;
             rounding = -1;
             check_color = "rgb(204, 136, 34)";
