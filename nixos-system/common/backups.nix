@@ -443,6 +443,8 @@ in
           # - if service wind-down or spin-up fails, backup fails and failure email sent
         # if local backup succeeds, trigger cloudBackup.service
         "borgbackup-job-${config.networking.hostName}" = {
+          description = "borg local repository backup";
+          wantedBy = lib.mkForce [];
           unitConfig = {
             OnSuccess = "cloudBackup.service";
             OnFailure = "backupFailureEmail.service";
