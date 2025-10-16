@@ -33,7 +33,7 @@ let
   # if local backup succeeds but corrupts repo, cloudBackup.service borg check --verify-data will fail and sync averted
   # if local borg repo directory is empty, borg local backup will re-init a new repo, cloudBackup.service borg check --verify-data will succeed, but archive count check will be too low and sync averted
   cloudBackupScript = pkgs.writeShellScriptBin "cloudBackup" ''
-    set -euo pipefail
+    #!/bin/bash
 
     START_TIME=$(date "+%Y-%m-%d %H:%M:%S")
     
@@ -44,10 +44,8 @@ let
     
     echo "running repository validation..."
 
-    set +e
     ${pkgs.borgbackup}/bin/borg check --verify-data ${config.backups.borgDir}/${config.networking.hostName}
     BORG_EXIT_CODE=$?
-    set -e
     
     if [ $BORG_EXIT_CODE -eq 0 ]; then
       ARCHIVE_COUNT=$(${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName} | wc -l)
@@ -131,7 +129,7 @@ let
           echo "Repository validation passed but rclone cloud sync FAILED!"
           echo ""
           echo "Started: $START_TIME"
-          echo "Completed: $END_TIME"
+          echo "Failed: $END_TIME"
           echo ""
           echo "Check network/backblaze connectivity."
         } | ${pkgs.msmtp}/bin/msmtp \
