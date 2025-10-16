@@ -17,6 +17,7 @@ let
     #!/bin/bash
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+    export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
     ${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName}
   '';
 
@@ -24,6 +25,7 @@ let
     #!/bin/bash
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+    export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
     ${pkgs.borgbackup}/bin/borg info ${config.backups.borgDir}/${config.networking.hostName}
   '';
   
@@ -37,7 +39,7 @@ let
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
     
-    echo "running light repository validation..."
+    echo "running repository validation..."
     
     if ${pkgs.borgbackup}/bin/borg check --verify-data ${config.backups.borgDir}/${config.networking.hostName}; then
       
@@ -77,7 +79,7 @@ let
         exit 1
       fi
       
-      echo "light validation passed ($ARCHIVE_COUNT archives) - starting cloud sync"
+      echo "full validation passed ($ARCHIVE_COUNT archives) - starting cloud sync"
       
       if ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync ${config.backups.borgDir}/${config.networking.hostName} backblaze-b2:${config.networking.hostName}-backup-dcbond; then
         
@@ -91,14 +93,13 @@ let
           echo ""
           echo "Daily backup and cloud sync completed successfully."
           echo ""
-          echo "Repository validation: PASSED (light check)"
+          echo "Repository validation: PASSED"
           echo "Archive count: $ARCHIVE_COUNT archives"
           echo "Cloud sync: COMPLETED"
           echo ""
           echo "Started: $START_TIME"
           echo "Completed: $END_TIME"
           echo ""
-          echo "Note: Full integrity check runs weekly."
         } | ${pkgs.msmtp}/bin/msmtp \
           --host=mail.privateemail.com \
           --port=587 \
