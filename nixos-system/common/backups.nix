@@ -437,10 +437,10 @@ in
         
         # if local backup fails for any reason, send failure email, cloudBackup.service is NOT triggered
           # e.g. - 
-          # - if local borg repo directory doesn't exist
-          # - if local borg repo directory is empty, will not automatically init
-          # - if borg cache issues while attempting local backup
-          # - if service wind-down or spin-up fails
+          # - if local borg repo directory doesn't exist, backup fails and failure email sent
+          # - if local borg repo directory is empty, will not automatically init, backup fails and failure email sent
+          # - if borg cache issues while attempting local backup, backup fails and failure email sent
+          # - if service wind-down or spin-up fails, backup fails and failure email sent
         # if local backup succeeds, trigger cloudBackup.service
         "borgbackup-job-${config.networking.hostName}" = {
           unitConfig = {
@@ -449,7 +449,7 @@ in
           };
         };
 
-        # if local backup succeeds but corrupts repo, cloudBackup.service borg check --verify-data will fail and sync averted, failure email sent
+        # if local backup had succeeded but corrupted repo, cloudBackup.service borg check --verify-data will fail and sync averted, failure email sent
         # if rclone sync fails, failure email sent
         "cloudBackup" = {
           description = "borg local repository validation and rclone backup to backblaze cloud storage";
