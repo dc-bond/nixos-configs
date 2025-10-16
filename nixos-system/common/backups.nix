@@ -45,15 +45,6 @@ let
     
     echo "cloud backup completed successfully"
   '';
-    #echo "checking archive count..."
-    #ARCHIVE_COUNT=$(${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName} | wc -l)
-    #
-    #if [ "$ARCHIVE_COUNT" -lt 3 ]; then
-    #  echo "archive count too low ($ARCHIVE_COUNT) - possible repo re-initialization"
-    #  exit 1
-    #fi
-    #
-    #echo "validation passed ($ARCHIVE_COUNT archives) - starting cloud sync"
 
   backupSuccessEmailScript = pkgs.writeShellScriptBin "backupSuccessEmail" ''
     #!/bin/bash
@@ -397,7 +388,7 @@ in
         archiveBaseName = "${config.networking.hostName}";
         repo = "${config.backups.borgDir}/${config.networking.hostName}";
         dateFormat = "+%Y.%m.%d-T%H:%M:%S";
-        doInit = true; # run borg init if backup directory does not already contain the repository
+        doInit = false; # do not run borg init if backup directory does not already contain the repository, must init manually on new machine
         failOnWarnings = false;
         extraCreateArgs = [
           "--stats"
@@ -429,54 +420,15 @@ in
         };
       };
     };
-        #postHook = lib.mkDefault ''
-        #  set -x
-        #  BACKUP_EXIT_CODE=$?
-        #  END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-        #  
-        #  echo "spinning up services"
-        #  ${lib.concatStringsSep "\n" config.backups.serviceHooks.postHook}
-        #  
-        #  if [ $BACKUP_EXIT_CODE -eq 0 ]; then
-        #    echo "local backup succeeded - starting cloud backup"
-        #    systemctl start cloudBackup.service
-        #  else
-        #    echo "local backup FAILED - skipping cloud backup"
-        #    
-        #    {
-        #      echo "Subject: Local Backeup FAILED - ${config.networking.hostName}"
-        #      echo "To: ${configVars.chrisEmail}"
-        #      echo "From: ${configVars.chrisEmail}"
-        #      echo ""
-        #      echo "Host: ${config.networking.hostName}"
-        #      echo "Failed at: $END_TIME"
-        #      echo "Exit code: $BACKUP_EXIT_CODE"
-        #      echo "Repository: ${config.backups.borgDir}/${config.networking.hostName}"
-        #      echo ""
-        #      echo "Cloud backup SKIPPED"
-        #      echo ""
-        #      echo "Services have been restarted normally, but backups are not functioning. Investigate immediately."
-        #    } | ${pkgs.msmtp}/bin/msmtp \
-        #      --host=mail.privateemail.com \
-        #      --port=587 \
-        #      --auth=on \
-        #      --user="${configVars.chrisEmail}" \
-        #      --passwordeval "cat ${chrisEmailPasswd}" \
-        #      --tls=on \
-        #      --tls-starttls=on \
-        #      --from="${configVars.chrisEmail}" \
-        #      -t
-        #    
-        #    echo "local backup failure email sent"
-        #  fi
-        #'';
 
     systemd = {
       services = {
         
         # if local backup fails for any reason, send failure email, cloudBackup.service is NOT triggered
+          # e.g. - 
           # - if local borg repo directory doesn't exist
-          # - if local backup fails
+          # - if local borg repo directory is empty, will not automatically init
+          # - if borg cache issues while attempting local backup
           # - if service wind-down or spin-up fails
         # if local backup succeeds, trigger cloudBackup.service
         "borgbackup-job-${config.networking.hostName}" = {
@@ -486,7 +438,6 @@ in
           };
         };
 
-        # if local borg repo directory is empty, borg local backup will re-init a new repo, archive count check will be too low and sync averted, failure email sent
         # if local backup succeeds but corrupts repo, cloudBackup.service borg check --verify-data will fail and sync averted, failure email sent
         # if rclone sync fails, failure email sent
         "cloudBackup" = {
