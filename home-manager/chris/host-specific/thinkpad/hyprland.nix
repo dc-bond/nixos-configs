@@ -58,9 +58,9 @@
         "$mod, l, movefocus, r"
         "$mod, k, movefocus, u"
         "$mod, j, movefocus, d"
-        "$mod, F1, exec, ddcutil -d 1 setvcp 60 0x11" # switch monitor input to HDMI1 (work computer)
+        "$mod, F1, exec, ddcutil -d 1 setvcp 60 0x11" # switch monitor input to HDMI1 (cypress)
         "$mod, F2, exec, ddcutil -d 1 setvcp 60 0x12" # switch monitor input to HDMI2 (thinkpad)
-        "$mod, F3, exec, ddcutil -d 1 setvcp 60 0x0f" # switch monitor input to DP1 (aspen)
+        #"$mod, F3, exec, ddcutil -d 1 setvcp 60 0x0f" # switch monitor input to DP1 (aspen)
         "$mod, F8, exec, rfkill toggle wlan"
         "$mod, F10, exec, rfkill toggle bluetooth"
         "$mod, F5, exec, brightnessctl set 10%-"
