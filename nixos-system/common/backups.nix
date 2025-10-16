@@ -479,8 +479,8 @@ in
       services = {
 
         "borgbackup-job-${config.networking.hostName}" = {
-          serviceConfig = {
-            OnSuccess = "cloudBackup.service";
+          unitConfig = {
+            OnSuccess = "backupSuccessEmail.service";
             OnFailure = "backupFailureEmail.service";
           };
         };
@@ -492,6 +492,8 @@ in
             Type = "oneshot";
             ExecStart = "${cloudBackupScript}/bin/cloudBackup";
             EnvironmentFile = "${rcloneConf}";
+          };
+          unitConfig = {
             OnSuccess = "backupSuccessEmail.service";
             OnFailure = "backupFailureEmail.service";
           };
