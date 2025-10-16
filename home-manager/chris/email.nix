@@ -7,6 +7,10 @@
 
 {
 
+  home.packages = with pkgs; [
+    (import (configLib.relativeToRoot "scripts/recover-email.nix") { inherit pkgs config; })
+  ];
+
   home.file.".config/neomutt/mailcap".text = ''
     text/html; ${pkgs.firefox-esr}/bin/firefox-esr %s
   '';
