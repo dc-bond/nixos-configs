@@ -34,145 +34,87 @@ let
   # if local borg repo directory is empty, borg local backup will re-init a new repo, cloudBackup.service borg check --verify-data will succeed, but archive count check will be too low and sync averted
   cloudBackupScript = pkgs.writeShellScriptBin "cloudBackup" ''
     #!/bin/bash
-
-    START_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+    set -euo pipefail
     
-    echo "starting cloud backup validation at $START_TIME"
+    echo "starting cloud backup validation and sync..."
     
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
     
-    echo "running repository validation..."
-
+    echo "running repository integrity check..."
     ${pkgs.borgbackup}/bin/borg check --verify-data ${config.backups.borgDir}/${config.networking.hostName}
-    BORG_EXIT_CODE=$?
     
-    if [ $BORG_EXIT_CODE -eq 0 ]; then
-      ARCHIVE_COUNT=$(${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName} | wc -l)
-
-      if [ "$ARCHIVE_COUNT" -lt 3 ]; then
-        END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-        echo "archive count too low ($ARCHIVE_COUNT) - possible repo re-initialization"
-        
-        {
-          echo "Subject: Nightly Backup Report - ${config.networking.hostName} - LOW ARCHIVE COUNT"
-          echo "To: ${configVars.chrisEmail}"
-          echo "From: ${configVars.chrisEmail}"
-          echo ""
-          echo "WARNING: Repository validation passed but archive count is suspiciously low!"
-          echo ""
-          echo "Archive count: $ARCHIVE_COUNT (expected > 3)"
-          echo "This may indicate repository re-initialization."
-          echo ""
-          echo "Cloud sync: ABORTED FOR SAFETY"
-          echo ""
-          echo "Started: $START_TIME"
-          echo "Completed: $END_TIME"
-          echo ""
-          echo "ACTION REQUIRED: Investigate repository history immediately!"
-        } | ${pkgs.msmtp}/bin/msmtp \
-          --host=mail.privateemail.com \
-          --port=587 \
-          --auth=on \
-          --user="${configVars.chrisEmail}" \
-          --passwordeval "cat ${chrisEmailPasswd}" \
-          --tls=on \
-          --tls-starttls=on \
-          --from="${configVars.chrisEmail}" \
-          -t
-        
-        exit 1
-      fi
-      
-      echo "full validation passed ($ARCHIVE_COUNT archives) - starting cloud sync"
-      
-      if ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync ${config.backups.borgDir}/${config.networking.hostName} backblaze-b2:${config.networking.hostName}-backup-dcbond; then
-        
-        END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-        echo "cloud backup completed successfully"
-        
-        {
-          echo "Subject: Nightly Backup Report - ${config.networking.hostName} - SUCCESS"
-          echo "To: ${configVars.chrisEmail}"
-          echo "From: ${configVars.chrisEmail}"
-          echo ""
-          echo "Daily backup and cloud sync completed successfully."
-          echo ""
-          echo "Repository validation: PASSED"
-          echo "Archive count: $ARCHIVE_COUNT archives"
-          echo "Cloud sync: COMPLETED"
-          echo ""
-          echo "Started: $START_TIME"
-          echo "Completed: $END_TIME"
-          echo ""
-        } | ${pkgs.msmtp}/bin/msmtp \
-          --host=mail.privateemail.com \
-          --port=587 \
-          --auth=on \
-          --user="${configVars.chrisEmail}" \
-          --passwordeval "cat ${chrisEmailPasswd}" \
-          --tls=on \
-          --tls-starttls=on \
-          --from="${configVars.chrisEmail}" \
-          -t
-          
-      else
-      
-        END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-        echo "rclone sync failure"
-        
-        {
-          echo "Subject: Nightly Backup Report - ${config.networking.hostName} - RCLONE SYNC FAILED"
-          echo "To: ${configVars.chrisEmail}"
-          echo "From: ${configVars.chrisEmail}"
-          echo ""
-          echo "Repository validation passed but rclone cloud sync FAILED!"
-          echo ""
-          echo "Started: $START_TIME"
-          echo "Failed: $END_TIME"
-          echo ""
-          echo "Check network/backblaze connectivity."
-        } | ${pkgs.msmtp}/bin/msmtp \
-          --host=mail.privateemail.com \
-          --port=587 \
-          --auth=on \
-          --user="${configVars.chrisEmail}" \
-          --passwordeval "cat ${chrisEmailPasswd}" \
-          --tls=on \
-          --tls-starttls=on \
-          --from="${configVars.chrisEmail}" \
-          -t
-        
-        exit 1
-      fi
-      
-    else
-      echo "repository validation FAILED (exit code: $BORG_EXIT_CODE)"
-      
-      {
-        echo "Subject: Nightly Backup Report - ${config.networking.hostName} - VALIDATION FAILED"
-        echo "To: ${configVars.chrisEmail}"
-        echo "From: ${configVars.chrisEmail}"
-        echo ""
-        echo "Repository validation FAILED - rclone cloud sync aborted!"
-        echo ""
-        echo "Borg check exit code: $BORG_EXIT_CODE"
-        echo "This may indicate repository corruption or cache issues."
-        echo ""
-        echo "Check repository structure and recent backups."
-      } | ${pkgs.msmtp}/bin/msmtp \
-        --host=mail.privateemail.com \
-        --port=587 \
-        --auth=on \
-        --user="${configVars.chrisEmail}" \
-        --passwordeval "cat ${chrisEmailPasswd}" \
-        --tls=on \
-        --tls-starttls=on \
-        --from="${configVars.chrisEmail}" \
-        -t
-      
+    echo "checking archive count..."
+    ARCHIVE_COUNT=$(${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName} | wc -l)
+    
+    if [ "$ARCHIVE_COUNT" -lt 3 ]; then
+      echo "archive count too low ($ARCHIVE_COUNT) - possible repo re-initialization"
       exit 1
     fi
+    
+    echo "validation passed ($ARCHIVE_COUNT archives) - starting cloud sync"
+    
+    ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync ${config.backups.borgDir}/${config.networking.hostName} backblaze-b2:${config.networking.hostName}-backup-dcbond
+    
+    echo "cloud backup completed successfully"
+  '';
+
+  backupSuccessEmailScript = pkgs.writeShellScriptBin "backupSuccessEmail" ''
+    #!/bin/bash
+    
+    {
+      echo "Subject: Nightly Backup SUCCESS - ${config.networking.hostName}"
+      echo "To: ${configVars.chrisEmail}"
+      echo "From: ${configVars.chrisEmail}"
+      echo ""
+      echo "Time: $(date "+%Y-%m-%d %H:%M:%S")"
+    } | ${pkgs.msmtp}/bin/msmtp \
+      --host=mail.privateemail.com \
+      --port=587 \
+      --auth=on \
+      --user="${configVars.chrisEmail}" \
+      --passwordeval "cat ${chrisEmailPasswd}" \
+      --tls=on \
+      --tls-starttls=on \
+      --from="${configVars.chrisEmail}" \
+      -t
+  '';
+
+  backupFailureEmailScript = pkgs.writeShellScriptBin "backupFailureEmail" ''
+    #!/bin/bash
+    
+    EXIT_CODE=$(systemctl show cloudBackup.service --property=ExecMainStatus --value)
+    
+    {
+      echo "Subject: Nightly Backup FAILED - ${config.networking.hostName}"
+      echo "To: ${configVars.chrisEmail}"
+      echo "From: ${configVars.chrisEmail}"
+      echo ""
+      echo "CRITICAL: Backup process FAILED!"
+      echo ""
+      echo "This could indicate:"
+      echo "- Local backup failure prior to cloud backup"
+      echo "- Repository corruption or integrity issues"
+      echo "- Low archive count (possible repo re-initialization)"
+      echo "- Network/Backblaze connectivity problems"
+      echo "- Service configuration issues"
+      echo ""
+      echo "Exit code: $EXIT_CODE"
+      echo "Time: $(date "+%Y-%m-%d %H:%M:%S")"
+      echo ""
+      echo "Check logs: jlogs cloudBackup"
+      echo ""
+      echo "IMMEDIATE ACTION REQUIRED!"
+    } | ${pkgs.msmtp}/bin/msmtp \
+      --host=mail.privateemail.com \
+      --port=587 \
+      --auth=on \
+      --user="${configVars.chrisEmail}" \
+      --passwordeval "cat ${chrisEmailPasswd}" \
+      --tls=on \
+      --tls-starttls=on \
+      --from="${configVars.chrisEmail}" \
+      -t
   '';
 
   cloudRestoreScript = pkgs.writeShellScriptBin "cloudRestore" ''
@@ -441,6 +383,8 @@ in
       listLocalArchivesScript
       infoLocalArchivesScript
       cloudBackupScript
+      backupFailureEmailScript
+      backupSuccessEmailScript
       cloudRestoreScript
       listCloudArchivesScript
       infoCloudArchivesScript
@@ -478,44 +422,8 @@ in
         '';
         postHook = lib.mkDefault ''
           set -x
-          BACKUP_EXIT_CODE=$?
-          END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-          
           echo "spinning up services"
           ${lib.concatStringsSep "\n" config.backups.serviceHooks.postHook}
-          
-          if [ $BACKUP_EXIT_CODE -eq 0 ]; then
-            echo "local backup succeeded - starting cloud backup"
-            systemctl start cloudBackup.service
-          else
-            echo "local backup FAILED - skipping cloud backup"
-            
-            {
-              echo "Subject: Local Backeup FAILED - ${config.networking.hostName}"
-              echo "To: ${configVars.chrisEmail}"
-              echo "From: ${configVars.chrisEmail}"
-              echo ""
-              echo "Host: ${config.networking.hostName}"
-              echo "Failed at: $END_TIME"
-              echo "Exit code: $BACKUP_EXIT_CODE"
-              echo "Repository: ${config.backups.borgDir}/${config.networking.hostName}"
-              echo ""
-              echo "Cloud backup SKIPPED"
-              echo ""
-              echo "Services have been restarted normally, but backups are not functioning. Investigate immediately."
-            } | ${pkgs.msmtp}/bin/msmtp \
-              --host=mail.privateemail.com \
-              --port=587 \
-              --auth=on \
-              --user="${configVars.chrisEmail}" \
-              --passwordeval "cat ${chrisEmailPasswd}" \
-              --tls=on \
-              --tls-starttls=on \
-              --from="${configVars.chrisEmail}" \
-              -t
-            
-            echo "local backup failure email sent"
-          fi
         '';
         paths = lib.mkDefault [];
         prune.keep = {
@@ -525,22 +433,88 @@ in
         };
       };
     };
+        #postHook = lib.mkDefault ''
+        #  set -x
+        #  BACKUP_EXIT_CODE=$?
+        #  END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+        #  
+        #  echo "spinning up services"
+        #  ${lib.concatStringsSep "\n" config.backups.serviceHooks.postHook}
+        #  
+        #  if [ $BACKUP_EXIT_CODE -eq 0 ]; then
+        #    echo "local backup succeeded - starting cloud backup"
+        #    systemctl start cloudBackup.service
+        #  else
+        #    echo "local backup FAILED - skipping cloud backup"
+        #    
+        #    {
+        #      echo "Subject: Local Backeup FAILED - ${config.networking.hostName}"
+        #      echo "To: ${configVars.chrisEmail}"
+        #      echo "From: ${configVars.chrisEmail}"
+        #      echo ""
+        #      echo "Host: ${config.networking.hostName}"
+        #      echo "Failed at: $END_TIME"
+        #      echo "Exit code: $BACKUP_EXIT_CODE"
+        #      echo "Repository: ${config.backups.borgDir}/${config.networking.hostName}"
+        #      echo ""
+        #      echo "Cloud backup SKIPPED"
+        #      echo ""
+        #      echo "Services have been restarted normally, but backups are not functioning. Investigate immediately."
+        #    } | ${pkgs.msmtp}/bin/msmtp \
+        #      --host=mail.privateemail.com \
+        #      --port=587 \
+        #      --auth=on \
+        #      --user="${configVars.chrisEmail}" \
+        #      --passwordeval "cat ${chrisEmailPasswd}" \
+        #      --tls=on \
+        #      --tls-starttls=on \
+        #      --from="${configVars.chrisEmail}" \
+        #      -t
+        #    
+        #    echo "local backup failure email sent"
+        #  fi
+        #'';
 
     systemd = {
       services = {
-        "cloudBackup" = {
-          description = "rclone backup to backblaze cloud storage";
+
+        "borgbackup-job-${config.networking.hostName}" = {
           serviceConfig = {
+            OnSuccess = "cloudBackup.service";
+            OnFailure = "backupFailureEmail.service";
+          };
+        };
+
+        "cloudBackup" = {
+          description = "borg local repository validation and rclone backup to backblaze cloud storage";
+          wantedBy = lib.mkForce [];
+          serviceConfig = {
+            Type = "oneshot";
             ExecStart = "${cloudBackupScript}/bin/cloudBackup";
             EnvironmentFile = "${rcloneConf}";
+            OnSuccess = "backupSuccessEmail.service";
+            OnFailure = "backupFailureEmail.service";
           };
-          preStart = ''
-            if [ ! -f "${rcloneConf}" ]; then
-              echo "rclone configuration file not found at ${rcloneConf}"
-              exit 1
-            fi
-          '';
         };
+
+        "backupSuccessEmail" = {
+          description = "send backup success notification";
+          wantedBy = lib.mkForce [];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${backupSuccessEmailScript}/bin/backupSuccessEmail";
+          };
+        };
+        
+        "backupFailureEmail" = {
+          description = "send backup failure notification";
+          wantedBy = lib.mkForce [];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${backupFailureEmailScript}/bin/backupFailureEmail";
+          };
+        };
+        
       };
     };
     
