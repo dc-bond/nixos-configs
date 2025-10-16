@@ -27,11 +27,6 @@ let
     ${pkgs.borgbackup}/bin/borg info ${config.backups.borgDir}/${config.networking.hostName}
   '';
 
-  # validation checks before rclone sync - 
-  # if local borg repo directory doesn't exist, borg backup systemd service will fail 
-  # if borg local backup fails, cloudBackup.service won't run at all
-  # if local backup succeeds but corrupts repo, cloudBackup.service borg check --verify-data will fail and sync averted
-  # if local borg repo directory is empty, borg local backup will re-init a new repo, cloudBackup.service borg check --verify-data will succeed, but archive count check will be too low and sync averted
   cloudBackupScript = pkgs.writeShellScriptBin "cloudBackup" ''
     #!/bin/bash
     set -euo pipefail
@@ -44,20 +39,21 @@ let
     echo "running repository integrity check..."
     ${pkgs.borgbackup}/bin/borg check --verify-data ${config.backups.borgDir}/${config.networking.hostName}
     
-    echo "checking archive count..."
-    ARCHIVE_COUNT=$(${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName} | wc -l)
-    
-    if [ "$ARCHIVE_COUNT" -lt 3 ]; then
-      echo "archive count too low ($ARCHIVE_COUNT) - possible repo re-initialization"
-      exit 1
-    fi
-    
-    echo "validation passed ($ARCHIVE_COUNT archives) - starting cloud sync"
+    echo "integrity check passed - starting cloud sync"
     
     ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync ${config.backups.borgDir}/${config.networking.hostName} backblaze-b2:${config.networking.hostName}-backup-dcbond
     
     echo "cloud backup completed successfully"
   '';
+    #echo "checking archive count..."
+    #ARCHIVE_COUNT=$(${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName} | wc -l)
+    #
+    #if [ "$ARCHIVE_COUNT" -lt 3 ]; then
+    #  echo "archive count too low ($ARCHIVE_COUNT) - possible repo re-initialization"
+    #  exit 1
+    #fi
+    #
+    #echo "validation passed ($ARCHIVE_COUNT archives) - starting cloud sync"
 
   backupSuccessEmailScript = pkgs.writeShellScriptBin "backupSuccessEmail" ''
     #!/bin/bash
