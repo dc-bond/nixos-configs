@@ -477,14 +477,22 @@ in
 
     systemd = {
       services = {
-
+        
+        # if local backup fails for any reason, send failure email, cloudBackup.service is NOT triggered
+          # - if local borg repo directory doesn't exist
+          # - if local backup fails
+          # - if service wind-down or spin-up fails
+        # if local backup succeeds, trigger cloudBackup.service
         "borgbackup-job-${config.networking.hostName}" = {
           unitConfig = {
-            OnSuccess = "backupSuccessEmail.service";
+            OnSuccess = "cloudBackup.service";
             OnFailure = "backupFailureEmail.service";
           };
         };
 
+        # if local borg repo directory is empty, borg local backup will re-init a new repo, archive count check will be too low and sync averted, failure email sent
+        # if local backup succeeds but corrupts repo, cloudBackup.service borg check --verify-data will fail and sync averted, failure email sent
+        # if rclone sync fails, failure email sent
         "cloudBackup" = {
           description = "borg local repository validation and rclone backup to backblaze cloud storage";
           wantedBy = lib.mkForce [];
