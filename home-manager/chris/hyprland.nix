@@ -7,6 +7,17 @@
 
 {
 
+  imports = lib.flatten [
+    (map configLib.relativeToRoot [
+      "home-manager/chris/alacritty.nix"
+      "home-manager/chris/gammastep.nix"
+      "home-manager/chris/vscodium.nix"
+      "home-manager/chris/firefox.nix"
+      "home-manager/chris/theme.nix"
+      "home-manager/chris/rofi.nix"
+    ])
+  ];
+
   home.packages = with pkgs; [
     (import (configLib.relativeToRoot "scripts/desktop-reload.nix") { inherit pkgs config; })
     swww # animated wallpaper for wayland window managers

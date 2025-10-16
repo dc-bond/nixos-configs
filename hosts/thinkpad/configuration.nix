@@ -53,7 +53,7 @@
       unzip # utility to unzip directories
       btop # system monitor
       nmap # network scanning
-      wgnord # nordvpn
+      #wgnord # nordvpn
 
       brightnessctl # screen brightness application
       ddcutil # query and change monitor settings using DDC/CI and USB
@@ -81,18 +81,17 @@
       "nixos-system/common/zsh.nix"
       "nixos-system/common/fonts.nix"
       "nixos-system/common/yubikey.nix"
-      "nixos-system/common/thunar.nix"
-      "nixos-system/common/hyprland.nix"
-      #"nixos-system/common/plasma.nix"
       "nixos-system/common/printing.nix"
       "nixos-system/common/misc.nix"
       "nixos-system/common/nixpkgs.nix"
       "nixos-system/common/backups.nix"
       "nixos-system/common/sops.nix"
       "nixos-system/common/keyring.nix"
-      #"nixos-system/common/display-manager.nix"
       "nixos-system/common/bluetooth.nix"
-      "nixos-system/common/firejail.nix"
+      
+      #"nixos-system/common/display-manager.nix"
+      "nixos-system/common/hyprland.nix"
+      #"nixos-system/common/plasma.nix"
 
       "nixos-system/host-specific/thinkpad/boot.nix"
       "nixos-system/host-specific/thinkpad/users.nix"

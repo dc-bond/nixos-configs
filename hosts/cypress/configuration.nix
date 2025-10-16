@@ -52,9 +52,11 @@
       inetutils # more network tools like telnet
       unzip # utility to unzip directories
       btop # system monitor
+      nmap # network scanning
+      #wgnord # nordvpn
     ];
 
-    #backups.startTime = "*-*-* 02:45:00"; # everyday at 2:45am
+    #backups.startTime = "*-*-* 01:30:00"; # everyday at 1:30am
 
     # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
     system.stateVersion = "23.11";
@@ -76,13 +78,20 @@
       "nixos-system/common/nixpkgs.nix"
       #"nixos-system/common/backups.nix"
       "nixos-system/common/sops.nix"
+      "nixos-system/common/keyring.nix"
+      "nixos-system/common/bluetooth.nix"
+      
+      #"nixos-system/common/display-manager.nix"
+      "nixos-system/common/hyprland.nix"
 
       "nixos-system/host-specific/cypress/boot.nix"
       "nixos-system/host-specific/cypress/users.nix"
       "nixos-system/host-specific/cypress/networking.nix"
       "nixos-system/host-specific/cypress/tailscale.nix"
 
+      "scripts/deploy-aspen.nix"
       "scripts/deploy-thinkpad.nix"
+      "scripts/deploy-juniper.nix"
     ])
   ];
 
