@@ -17,7 +17,6 @@ let
     #!/bin/bash
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-    export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
     ${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName}
   '';
 
@@ -25,10 +24,14 @@ let
     #!/bin/bash
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-    export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
     ${pkgs.borgbackup}/bin/borg info ${config.backups.borgDir}/${config.networking.hostName}
   '';
-  
+
+  # validation checks before rclone sync - 
+  # if local borg repo directory doesn't exist, borg backup systemd service will fail 
+  # if borg local backup fails, cloudBackup.service won't run at all
+  # if local backup succeeds but corrupts repo, cloudBackup.service borg check --verify-data will fail and sync averted
+  # if local borg repo directory is empty, borg local backup will re-init a new repo, cloudBackup.service borg check --verify-data will succeed, but archive count check will be too low and sync averted
   cloudBackupScript = pkgs.writeShellScriptBin "cloudBackup" ''
     set -euo pipefail
 
@@ -40,11 +43,15 @@ let
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
     
     echo "running repository validation..."
+
+    set +e
+    ${pkgs.borgbackup}/bin/borg check --verify-data ${config.backups.borgDir}/${config.networking.hostName}
+    BORG_EXIT_CODE=$?
+    set -e
     
-    if ${pkgs.borgbackup}/bin/borg check --verify-data ${config.backups.borgDir}/${config.networking.hostName}; then
-      
+    if [ $BORG_EXIT_CODE -eq 0 ]; then
       ARCHIVE_COUNT=$(${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName} | wc -l)
-      
+
       if [ "$ARCHIVE_COUNT" -lt 3 ]; then
         END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
         echo "archive count too low ($ARCHIVE_COUNT) - possible repo re-initialization"
@@ -142,13 +149,17 @@ let
       fi
       
     else
-
+      echo "repository validation FAILED (exit code: $BORG_EXIT_CODE)"
+      
       {
         echo "Subject: Nightly Backup Report - ${config.networking.hostName} - VALIDATION FAILED"
         echo "To: ${configVars.chrisEmail}"
         echo "From: ${configVars.chrisEmail}"
         echo ""
         echo "Repository validation FAILED - rclone cloud sync aborted!"
+        echo ""
+        echo "Borg check exit code: $BORG_EXIT_CODE"
+        echo "This may indicate repository corruption or cache issues."
         echo ""
         echo "Check repository structure and recent backups."
       } | ${pkgs.msmtp}/bin/msmtp \
