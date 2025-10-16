@@ -491,7 +491,6 @@ in
           description = "rclone backup to backblaze cloud storage";
           serviceConfig = {
             ExecStart = "${cloudBackupScript}/bin/cloudBackup";
-            Restart = "on-failure";
             EnvironmentFile = "${rcloneConf}";
           };
           preStart = ''
