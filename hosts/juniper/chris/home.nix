@@ -12,27 +12,14 @@
   
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/chris/zsh.nix"
-      "home-manager/chris/starship.nix"
-      "home-manager/chris/neovim.nix"
-      
-      #"home-manager/chris/ssh.nix"
-      #"home-manager/chris/git.nix"
-      #"home-manager/chris/gnupg.nix"
-      #"home-manager/chris/pass.nix"
+      "home-manager/chris/common/zsh.nix"
+      "home-manager/chris/common/starship.nix"
+      "home-manager/chris/common/neovim.nix"
     ])
   ];
 
-  #home.packages = with pkgs; [
-  #  (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
-  #];
-  
   programs = {
     home-manager.enable = true; # enable home manager
-    #zsh = {
-    #  shellAliases = {
-    #  };
-    #};
   };
 
 # define username and home directory

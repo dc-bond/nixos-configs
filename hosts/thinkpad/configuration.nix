@@ -54,7 +54,6 @@
       btop # system monitor
       nmap # network scanning
       #wgnord # nordvpn
-
       brightnessctl # screen brightness application
       ddcutil # query and change monitor settings using DDC/CI and USB
       i2c-tools # hardware interface tools required by ddcutil
