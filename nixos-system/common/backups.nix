@@ -29,94 +29,127 @@ let
   
   cloudBackupScript = pkgs.writeShellScriptBin "cloudBackup" ''
     set -euo pipefail
-  
+
     START_TIME=$(date "+%Y-%m-%d %H:%M:%S")
     
-    echo "starting cloud backup validation process at $START_TIME"
+    echo "starting cloud backup validation at $START_TIME"
     
-    VALIDATION_PASSED=true
-    FAILURE_REASONS=()
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
     
-    echo "Step 1: Validating repository structure..."
+    echo "running light repository validation..."
     
-    if [ ! -d ${config.backups.borgDir}/${config.networking.hostName} ]; then
-      echo "Repository directory does not exist: ${config.backups.borgDir}/${config.networking.hostName}"
-      VALIDATION_PASSED=false
-      FAILURE_REASONS+=("Repository directory missing")
-    elif [ -z "$(ls -A ${config.backups.borgDir}/${config.networking.hostName} 2>/dev/null)" ]; then
-      echo "Repository directory is empty: ${config.backups.borgDir}/${config.networking.hostName}"
-      VALIDATION_PASSED=false
-      FAILURE_REASONS+=("Repository directory empty")
-    elif [ ! -f ${config.backups.borgDir}/${config.networking.hostName}/config ]; then
-      echo "Repository missing borg config file: ${config.backups.borgDir}/${config.networking.hostName}/config"
-      VALIDATION_PASSED=false
-      FAILURE_REASONS+=("Missing borg config file")
-    else
-      echo "Repository structure validation passed"
-    fi
-    
-    echo "Step 2: Running repository integrity check..."
-    
-    if [ "$VALIDATION_PASSED" = true ]; then
-      export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
-      export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+    if ${pkgs.borgbackup}/bin/borg check --verify-data ${config.backups.borgDir}/${config.networking.hostName}; then
       
-      if ${pkgs.borgbackup}/bin/borg check --verify-data ${config.backups.borgDir}/${config.networking.hostName}; then
-        echo "Repository integrity check PASSED"
-      else
-        echo "Repository integrity check FAILED"
-        VALIDATION_PASSED=false
-        FAILURE_REASONS+=("Repository integrity check failed")
+      ARCHIVE_COUNT=$(${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName} | wc -l)
+      
+      if [ "$ARCHIVE_COUNT" -lt 3 ]; then
+        END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+        echo "archive count too low ($ARCHIVE_COUNT) - possible repo re-initialization"
+        
+        {
+          echo "Subject: Nightly Backup Report - ${config.networking.hostName} - LOW ARCHIVE COUNT"
+          echo "To: ${configVars.chrisEmail}"
+          echo "From: ${configVars.chrisEmail}"
+          echo ""
+          echo "WARNING: Repository validation passed but archive count is suspiciously low!"
+          echo ""
+          echo "Archive count: $ARCHIVE_COUNT (expected > 3)"
+          echo "This may indicate repository re-initialization."
+          echo ""
+          echo "Cloud sync: ABORTED FOR SAFETY"
+          echo ""
+          echo "Started: $START_TIME"
+          echo "Completed: $END_TIME"
+          echo ""
+          echo "ACTION REQUIRED: Investigate repository history immediately!"
+        } | ${pkgs.msmtp}/bin/msmtp \
+          --host=mail.privateemail.com \
+          --port=587 \
+          --auth=on \
+          --user="${configVars.chrisEmail}" \
+          --passwordeval "cat ${chrisEmailPasswd}" \
+          --tls=on \
+          --tls-starttls=on \
+          --from="${configVars.chrisEmail}" \
+          -t
+        
+        exit 1
       fi
+      
+      echo "light validation passed ($ARCHIVE_COUNT archives) - starting cloud sync"
+      
+      if ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync ${config.backups.borgDir}/${config.networking.hostName} backblaze-b2:${config.networking.hostName}-backup-dcbond; then
+        
+        END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+        echo "cloud backup completed successfully"
+        
+        {
+          echo "Subject: Nightly Backup Report - ${config.networking.hostName} - SUCCESS"
+          echo "To: ${configVars.chrisEmail}"
+          echo "From: ${configVars.chrisEmail}"
+          echo ""
+          echo "Daily backup and cloud sync completed successfully."
+          echo ""
+          echo "Repository validation: PASSED (light check)"
+          echo "Archive count: $ARCHIVE_COUNT archives"
+          echo "Cloud sync: COMPLETED"
+          echo ""
+          echo "Started: $START_TIME"
+          echo "Completed: $END_TIME"
+          echo ""
+          echo "Note: Full integrity check runs weekly."
+        } | ${pkgs.msmtp}/bin/msmtp \
+          --host=mail.privateemail.com \
+          --port=587 \
+          --auth=on \
+          --user="${configVars.chrisEmail}" \
+          --passwordeval "cat ${chrisEmailPasswd}" \
+          --tls=on \
+          --tls-starttls=on \
+          --from="${configVars.chrisEmail}" \
+          -t
+          
+      else
+      
+        END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+        echo "rclone sync failure"
+        
+        {
+          echo "Subject: Nightly Backup Report - ${config.networking.hostName} - RCLONE SYNC FAILED"
+          echo "To: ${configVars.chrisEmail}"
+          echo "From: ${configVars.chrisEmail}"
+          echo ""
+          echo "Repository validation passed but rclone cloud sync FAILED!"
+          echo ""
+          echo "Started: $START_TIME"
+          echo "Completed: $END_TIME"
+          echo ""
+          echo "Check network/backblaze connectivity."
+        } | ${pkgs.msmtp}/bin/msmtp \
+          --host=mail.privateemail.com \
+          --port=587 \
+          --auth=on \
+          --user="${configVars.chrisEmail}" \
+          --passwordeval "cat ${chrisEmailPasswd}" \
+          --tls=on \
+          --tls-starttls=on \
+          --from="${configVars.chrisEmail}" \
+          -t
+        
+        exit 1
+      fi
+      
     else
-      echo "Skipping integrity check due to structure failures"
-      FAILURE_REASONS+=("Integrity check skipped due to structure issues")
-    fi
-    
-    END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-    
-    if [ "$VALIDATION_PASSED" = true ]; then
-      echo "All validation checks passed - starting rclone sync..."
-      
-      ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync ${config.backups.borgDir}/${config.networking.hostName} backblaze-b2:${config.networking.hostName}-backup-dcbond
-      
-      SYNC_END_TIME=$(date "+%Y-%m-%d %H:%M:%S")
-      echo "Cloud backup completed successfully at $SYNC_END_TIME"
-      
+
       {
-        echo "Subject: Nightly Backup Report - ${config.networking.hostName} - SUCCESS"
+        echo "Subject: Nightly Backup Report - ${config.networking.hostName} - VALIDATION FAILED"
         echo "To: ${configVars.chrisEmail}"
         echo "From: ${configVars.chrisEmail}"
         echo ""
-        echo "Local and cloud backups completed successfully at $SYNC_END_TIME"
+        echo "Repository validation FAILED - rclone cloud sync aborted!"
         echo ""
-      } | ${pkgs.msmtp}/bin/msmtp \
-        --host=mail.privateemail.com \
-        --port=587 \
-        --auth=on \
-        --user="${configVars.chrisEmail}" \
-        --passwordeval "cat ${chrisEmailPasswd}" \
-        --tls=on \
-        --tls-starttls=on \
-        --from="${configVars.chrisEmail}" \
-        -t
-      
-    else
-      echo "Backup Repository Validations Failed - Cloud Sync ABORTED"
-      
-      FAILURE_DETAILS=$(printf "%s\n" "''${FAILURE_REASONS[@]}")
-      
-      {
-        echo "Subject: Nightly Cloud Backup Report - ${config.networking.hostName} - VALIDATION FAILED"
-        echo "To: ${configVars.chrisEmail}"
-        echo "From: ${configVars.chrisEmail}"
-        echo ""
-        echo "CRITICAL: Cloud backup validation FAILED! Sync aborted to prevent data loss."
-        echo ""
-        echo "Failed validation checks:"
-        echo "$FAILURE_DETAILS"
-        echo ""
-        echo "ACTION REQUIRED: Investigate repository issues immediately!"
+        echo "Check repository structure and recent backups."
       } | ${pkgs.msmtp}/bin/msmtp \
         --host=mail.privateemail.com \
         --port=587 \
@@ -357,7 +390,7 @@ in
     };
     startTime = lib.mkOption {
       type = lib.types.str;
-      default = "*-*-* 00:45:00"; # default everyday at 12:45am, override with alternate time in host-specific configuration.nix
+      default = "*-*-* 03:35:00"; # default everyday at 3:35am, override with alternate time in host-specific configuration.nix
       description = "when to start the backup (systemd timer format)";
     };
     serviceHooks = {
@@ -445,14 +478,12 @@ in
             echo "local backup succeeded - starting cloud backup"
             systemctl start cloudBackup.service
           else
-            echo "local backup FAILED (exit code: $BACKUP_EXIT_CODE) - skipping cloud backup"
+            echo "local backup FAILED - skipping cloud backup"
             
             {
-              echo "Subject: LOCAL BACKUP FAILED - ${config.networking.hostName}"
+              echo "Subject: Local Backeup FAILED - ${config.networking.hostName}"
               echo "To: ${configVars.chrisEmail}"
               echo "From: ${configVars.chrisEmail}"
-              echo ""
-              echo "CRITICAL: Local backup job has FAILED!"
               echo ""
               echo "Host: ${config.networking.hostName}"
               echo "Failed at: $END_TIME"
