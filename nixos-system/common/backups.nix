@@ -443,7 +443,7 @@ in
           # - if service wind-down or spin-up fails, backup fails and failure email sent
         # if local backup succeeds, trigger cloudBackup.service
         "borgbackup-job-${config.networking.hostName}" = {
-          wantedBy = lib.mkForce [];
+          wantedBy = lib.mkForce []; # do not automatically start service on system rebuild/reboot
           unitConfig = {
             OnSuccess = "cloudBackup.service";
             OnFailure = "backupFailureEmail.service";
