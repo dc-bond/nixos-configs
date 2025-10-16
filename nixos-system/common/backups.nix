@@ -15,9 +15,10 @@ let
 
   initLocalRepoScript = pkgs.writeShellScriptBin "initLocalRepo" ''
     #!/bin/bash
+    set -euo pipefail
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-    mkdir -p /var/lib/borgbackup/juniper
+    mkdir -p ${config.backups.borgDir}/${config.networking.hostName}
     borg init --encryption=repokey-blake2 ${config.backups.borgDir}/${config.networking.hostName}
     echo "repository initialized successfully"
   '';
