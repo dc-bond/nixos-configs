@@ -33,6 +33,4 @@
 
   };
 
-  services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.users.users.chris.home}/email" ];
-
 }

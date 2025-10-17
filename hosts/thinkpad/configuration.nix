@@ -59,6 +59,7 @@
     ];
 
     #backups.startTime = "*-*-* 01:05:00"; # everyday at 1:05am
+    #services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.users.users.chris.home}/email" ];
 
     hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
