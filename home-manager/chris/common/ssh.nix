@@ -31,11 +31,21 @@
         user = "${configVars.chrisUsername}";
         port = 28761;
       };
-      #"cypress-tailscale" = {
-      #  hostname = "${configVars.cypressTailscaleIp}";
-      #  user = "${configVars.chrisUsername}";
-      #  port = 22;
-      #};
+      "cypress-tailscale" = {
+        hostname = "${configVars.cypressTailscaleIp}";
+        user = "${configVars.chrisUsername}";
+        port = 22;
+      };
+      "thinkpad" = {
+        hostname = "${configVars.thinkpadLanIp}";
+        user = "${configVars.chrisUsername}";
+        port = 28765;
+      };
+      "thinkpad-tailscale" = {
+        hostname = "${configVars.thinkpadTailscaleIp}";
+        user = "${configVars.chrisUsername}";
+        port = 22;
+      };
       "juniper" = {
         hostname = "${configVars.juniperIp}";
         user = "${configVars.chrisUsername}";
