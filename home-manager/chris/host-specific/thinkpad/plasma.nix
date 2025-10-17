@@ -5,6 +5,17 @@
 
 {
 
+  imports = lib.flatten [
+    (map configLib.relativeToRoot [
+      "home-manager/chris/common/alacritty.nix"
+      #"home-manager/chris/common/gammastep.nix"
+      "home-manager/chris/common/vscodium.nix"
+      "home-manager/chris/common/firefox.nix"
+      #"home-manager/chris/common/theme.nix"
+      #"home-manager/chris/common/rofi.nix"
+    ])
+  ];
+
   home.packages = with pkgs; [
     libreoffice-still # office suite
     element-desktop # matrix chat app
@@ -14,6 +25,34 @@
   programs.plasma = {
     enable = true;
     overrideConfig = true;
+    
+    fonts = {
+      fixedWidth = {
+        family = "JetBrainsMono Nerd Font Mono";
+        pointSize = 11;
+      };
+      general = {
+        family = "Roboto";
+        pointSize = 11;
+      };
+      menu = {
+        family = "Roboto";
+        pointSize = 11;
+      };
+      small = {
+        family = "Roboto";
+        pointSize = 8;
+      };
+      toolbar = {
+        family = "Roboto";
+        pointSize = 11;
+      };
+      windowTitle = {
+        family = "Roboto";
+        pointSize = 11;
+      };
+    };
+
     input = {
       keyboard = {
         repeatDelay = 200;
@@ -35,7 +74,49 @@
       #  }
       #];
     };
+
+    hotkeys.commands = {
+      clear-notifications = {
+        name = "Clear all KDE Plasma notifications";
+        key = "Meta+Shift+Backspace";
+        command = "clear-kde-notifications";
+      };
+      launch-alacritty = {
+        name = "Launch Alacritty";
+        key = "Meta+Shift+Return";
+        command = "alacritty";
+      };
+      #screenshot-region = {
+      #  name = "Capture a rectangular region of the screen";
+      #  key = "Meta+Shift+S";
+      #  command = "spectacle --region --nonotify";
+      #};
+      #screenshot-screen = {
+      #  name = "Capture the entire desktop";
+      #  key = "Meta+Ctrl+S";
+      #  command = "spectacle --fullscreen --nonotify";
+      #};
+    };
+
     kwin = {
+
+      effects = {
+        blur.enable = false;
+        cube.enable = false;
+        desktopSwitching.animation = "off";
+        dimAdminMode.enable = false;
+        dimInactive.enable = false;
+        fallApart.enable = false;
+        fps.enable = false;
+        minimization.animation = "off";
+        shakeCursor.enable = false;
+        slideBack.enable = false;
+        snapHelper.enable = false;
+        translucency.enable = false;
+        windowOpenClose.animation = "off";
+        wobblyWindows.enable = false;
+      };
+
       nightLight = {
         enable = true;
         mode = "times";
@@ -49,14 +130,49 @@
         };
         transitionTime = 15;
       };
+
+      virtualDesktops = {
+        number = 5;
+        rows = 1;
+      };
+
     };
-    #kscreenlocker = {
-    #  appearance = {
-    #    wallpaperSlideShow = {
-    #      path = "/home/chris/nixos-configs/home/chris/wallpaper/";
-    #    };
-    #  };
-    #};
+
+    session = {
+      general.askForConfirmationOnLogout = false;
+      sessionRestore.restoreOpenApplicationsOnLogin = "startWithEmptySession";
+    };
+
+    shortcuts = {
+
+      #ksmserver = {
+      #  "Lock Session" = [
+      #    "Screensaver"
+      #    "Ctrl+Alt+L"
+      #  ];
+      #  "LogOut" = [
+      #    "Ctrl+Alt+Q"
+      #  ];
+      #};
+
+      kwin = {
+        "Switch to Desktop 1" = "Meta+1";
+        "Switch to Desktop 2" = "Meta+2";
+        "Switch to Desktop 3" = "Meta+3";
+        "Switch to Desktop 4" = "Meta+4";
+        "Switch to Desktop 5" = "Meta+5";
+        "Switch to Desktop 6" = "Meta+6";
+        "Switch to Desktop 7" = "Meta+7";
+        "Window Close" = "Meta+Q";
+        "Window Fullscreen" = "Meta+F";
+      };
+
+      #plasmashell = {
+      #  "show-on-mouse-pos" = "";
+      #};
+
+    };
+
     workspace = {
       wallpaperSlideShow = {
         path = "/home/chris/nixos-configs/home/chris/wallpaper/";
@@ -68,8 +184,9 @@
       clickItemTo = "open";
       lookAndFeel = "org.kde.breezedark.desktop";
     };
+
     configFile = {
-      "kcminputrc"."Libinput/5426/154/Razer ProClickM"."PointerAcceleration" = "-0.400"; # set mouse speed
+      #"kcminputrc"."Libinput/5426/154/Razer ProClickM"."PointerAcceleration" = "-0.400"; # set mouse speed
       "kwinrc"."Windows"."Placement" = "Maximizing"; # automatically open all windows maximized by default
     };
     #iconTheme = "Papirus-Dark";
