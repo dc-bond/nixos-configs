@@ -88,8 +88,8 @@
       "nixos-system/common/bluetooth.nix"
       
       #"nixos-system/common/display-manager.nix"
-      "nixos-system/common/hyprland.nix"
-      #"nixos-system/common/plasma.nix"
+      #"nixos-system/common/hyprland.nix"
+      "nixos-system/common/plasma.nix"
 
       "nixos-system/host-specific/thinkpad/boot.nix"
       "nixos-system/host-specific/thinkpad/users.nix"

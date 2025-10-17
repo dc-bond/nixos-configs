@@ -22,7 +22,7 @@
       
       "home-manager/chris/common/email.nix"
 
-      "home-manager/chris/host-specific/thinkpad/hyprland.nix"
+      #"home-manager/chris/host-specific/thinkpad/hyprland.nix"
       #"home-manager/chris/host-specific/thinkpad/plasma.nix"
     ])
   ];

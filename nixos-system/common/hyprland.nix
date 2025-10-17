@@ -6,6 +6,13 @@ lib,
 
 {
 
+  environment = {
+    systemPackages = with pkgs; [
+      wayland-utils # wayland utilities
+      wl-clipboard # command-line copy/paste utilities for wayland
+    ];
+  };
+
   programs = {
     hyprland = {
       enable = true;
