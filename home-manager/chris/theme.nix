@@ -7,20 +7,25 @@
 
 {
 
-  home.packages = with pkgs; [
-    libsForQt5.qtstyleplugin-kvantum
-    qt6Packages.qtstyleplugin-kvantum
-  ];
+  #home.packages = with pkgs; [
+  #  libsForQt5.qtstyleplugin-kvantum
+  #  qt6Packages.qtstyleplugin-kvantum
+  #];
     
   home.pointerCursor = {
+    enable = true;
     name = "WhiteSur-cursors";
     package = pkgs.whitesur-cursors;
     size = 20;
-    gtk.enable = true;
-    x11 = {
+    gtk.enable = true; # integrate with gtk apps
+    hyprcursor = { # integrate with hyprland
       enable = true;
-      defaultCursor = "WhiteSur-cursors";
+      size = 20;
     };
+    #x11 = {
+    #  enable = true;
+    #  defaultCursor = "WhiteSur-cursors";
+    #};
   };
 
   gtk = {
@@ -35,13 +40,17 @@
     };
     font = {
       name = "Source Sans Pro";
+      package = null; # already installed in fonts.nix system-level module
       size = 10;
+    };
+    gtk3.extraConfig = {
+      gtk-application-prefer-dark-theme = false;  # since using materia light
     };
   };
 
-  qt = {
-    enable = true;
-    platformTheme.name = "qtct";
-  };
+  #qt = {
+  #  enable = true;
+  #  platformTheme.name = "qtct";
+  #};
 
 }
