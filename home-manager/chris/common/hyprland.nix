@@ -207,7 +207,7 @@
           "network#tailscale"
           #"network#ethernet"
           "clock"
-        ]; ++ lib.optional (osConfig.networking.hostName == "cypress") "network#ethernet";
+        ] ++ lib.optional (osConfig.networking.hostName == "cypress") "network#ethernet";
         "hyprland/workspaces" = {
           "format" = "{icon}";
           "tooltip" = false;
