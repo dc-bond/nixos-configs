@@ -12,20 +12,18 @@
   
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/chris/common/zsh.nix"
-      "home-manager/chris/common/starship.nix"
-      "home-manager/chris/common/neovim.nix"
-      "home-manager/chris/common/ssh.nix"
-      "home-manager/chris/common/git.nix"
-      "home-manager/chris/common/gnupg.nix"
-      "home-manager/chris/common/pass.nix"
+      "home-manager/chris/zsh.nix"
+      "home-manager/chris/starship.nix"
+      "home-manager/chris/neovim.nix"
+      "home-manager/chris/ssh.nix"
+      "home-manager/chris/git.nix"
+      "home-manager/chris/gnupg.nix"
+      "home-manager/chris/pass.nix"
       
-      "home-manager/chris/common/email.nix"
+      "home-manager/chris/email.nix"
 
-      #"home-manager/chris/common/hyprland.nix"
-
-      #"home-manager/chris/host-specific/thinkpad/hyprland.nix"
-      "home-manager/chris/host-specific/thinkpad/plasma.nix"
+      "home-manager/chris/plasma.nix"
+      #"home-manager/chris/hyprland.nix"
     ])
   ];
 

@@ -12,11 +12,9 @@
   
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/chris/common/zsh.nix"
-      "home-manager/chris/common/starship.nix"
-      "home-manager/chris/common/neovim.nix"
-
-      "home-manager/chris/host-specific/aspen/zsh.nix"
+      "home-manager/chris/zsh.nix"
+      "home-manager/chris/starship.nix"
+      "home-manager/chris/neovim.nix"
     ])
   ];
 

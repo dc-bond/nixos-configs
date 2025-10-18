@@ -284,6 +284,37 @@
           "format-disabled" = "󰂲";
           "interval" = 5;
         };
+        "network#wifi" = lib.mkIf (osConfig.networking.hostName == "thinkpad") {
+          "interface" = "wlan0";
+          "format-wifi" = "{signalStrength}% ";
+          "format-disconnected" = "󰖪";
+          "tooltip-format-wifi" = "Wifi: {essid} {ipaddr}";
+          "tooltip-format-disconnected" = "Wifi: Disconnected";
+        };
+        "network#ethernet-dock" = lib.mkIf (osConfig.networking.hostName == "thinkpad") {
+          "interface" = "enp0s20f0u2u1u2";
+          "format-ethernet" = "󰌗";
+          "format-disconnected" = "󰌗";
+          "tooltip-format-ethernet" = "Ethernet-Dock: {ipaddr}";
+          "tooltip-format-disconnected" = "Ethernet-Dock: Disconnected";
+        };
+        "battery" = lib.mkIf (osConfig.networking.hostName == "thinkpad") {
+          "interval" = 30;
+          "states" = {
+            "good" = 90;
+            "warning" = 30;
+            "critical" = 5;
+          };
+          "format" = "{capacity}% {icon}";
+          "format-charging" = "{capacity}% 󱠵";
+          "format-plugged" = "{capacity}% ";
+          "format-icons" = [" " " " " " " " " "];
+        };
+        "backlight" = lib.mkIf (osConfig.networking.hostName == "thinkpad") {
+          "device" = "intel_backlight";
+          "format" = "{percent}% {icon}";
+          "format-icons" = ["󰛨"];
+        };
       }];
       style = 
       ''
@@ -403,6 +434,37 @@
             padding: 1px 10px 1px 10px;
         }
         #tray {
+            color: #ffffff;
+            font-size: 14px;
+            padding: 1px 10px 1px 10px;
+        }
+        #battery {
+            color: #ffffff;
+            font-size: 14px;
+            padding: 1px 10px 1px 10px;
+        }
+        #battery.charging, #battery.plugged {
+            color: #ffffff;
+        }
+        @keyframes blink {
+            to {
+                background-color: #ffffff;
+                color: #000000;
+            }
+        }
+        #battery.critical:not(.charging) {
+            background-color: #f53c3c;
+            color: #ffffff;
+            animation-name: blink;
+            animation-duration: 0.5s;
+            animation-timing-function: linear;
+            animation-iteration-count: infinite;
+            animation-direction: alternate;
+        }
+        label:focus {
+            background-color: #000000;
+        }
+        #backlight {
             color: #ffffff;
             font-size: 14px;
             padding: 1px 10px 1px 10px;
