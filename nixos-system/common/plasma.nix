@@ -15,13 +15,19 @@
       baloo-widgets
       elisa
       ffmpegthumbs
-      kate
-      khelpcenter
-      konsole
+      kate # default kde text editor
+      khelpcenter # kde help center
+      kinfocenter # system info center
+      kmenuedit # menu editor tool
+      konsole # default kde terminal
       krdp
       plasma-browser-integration
-      plasma-systemmonitor
+      plasma-systemmonitor # kde system monitor app
       xwaylandvideobridge
+      systemsettings # system settings app
+      ark # file archiver
+      drkonqi # crashed process viewer
+      print-manager # printer
     ];
   };
 

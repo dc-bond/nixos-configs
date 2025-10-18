@@ -25,6 +25,11 @@
     nextcloud-client # nextcloud local syncronization client
   ];
 
+  services.gpg-agent = {
+    pinentry.package = lib.mkForce pkgs.kwalletcli;
+    extraConfig = "pinentry-program ${pkgs.kwalletcli}/bin/pinentry-kwallet"; # set kde wallet as pinentry utility
+  };
+
   programs.plasma = {
     enable = true;
     overrideConfig = true;

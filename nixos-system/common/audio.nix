@@ -7,10 +7,6 @@
 
 {
 
-  environment.systemPackages = with pkgs; [
-    pwvucontrol # pipewire audio volume control app
-  ];
-
   security.rtkit.enable = true; # RealtimeKit system service, which hands out realtime scheduling priority to user processes on demand
   
   services.pipewire = {

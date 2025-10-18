@@ -32,6 +32,7 @@
     element-desktop # matrix chat app
     nextcloud-client # nextcloud local syncronization client
     hyprshot # screenshot tool
+    pwvucontrol # pipewire audio volume control app
   ];
 
   wayland.windowManager.hyprland = {
