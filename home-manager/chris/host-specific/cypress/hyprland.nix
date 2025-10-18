@@ -10,6 +10,9 @@
 
   programs.waybar = {
     settings = [{
+      "modules-right" = [
+        "network#ethernet"
+      ];
       "network#ethernet" = {
         "interface" = "enp1s0";
         "format-ethernet" = "󰌗";

@@ -202,10 +202,8 @@
 	        "cpu"
 	        "memory"
 	        "disk"
-          "battery"
           "bluetooth"
           "network#tailscale"
-          "network#ethernet"
           "clock"
         ];
         "hyprland/workspaces" = {
