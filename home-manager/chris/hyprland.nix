@@ -58,8 +58,10 @@
         "$mod, l, movefocus, r"
         "$mod, k, movefocus, u"
         "$mod, j, movefocus, d"
-        "$mod, F1, exec, ddcutil -d 1 setvcp 60 0x11" # switch monitor input to HDMI1 (cypress)
-        "$mod, F2, exec, ddcutil -d 1 setvcp 60 0x12" # switch monitor input to HDMI2 (thinkpad)
+        "$mod, F1, exec, ddcutil -d 1 setvcp 60 0x11" # switch monitor input to HDMI1
+        "$mod, F2, exec, ddcutil -d 1 setvcp 60 0x12" # switch monitor input to HDMI2
+        #"$mod, F3, exec, ddcutil -d 1 setvcp 60 0x0f" # switch monitor input to DP1
+        ] ++ lib.optional (osConfig.networking.hostName == "thinkpad") "$mod, F8, exec, rfkill toggle wlan" ++ [
         "$mod, F10, exec, rfkill toggle bluetooth"
         "$mod, F5, exec, brightnessctl set 10%-"
         "$mod, F6, exec, brightnessctl set +10%"
@@ -101,9 +103,13 @@
         "$mod, mouse:272, movewindow"
         "$mod, mouse:273, resizewindow"
       ];
-      monitor = [
-        "desc:ASUSTek COMPUTER INC ASUS VG32V 0x0001618C, 2560x1440@100, 0x0, 1" # main 32" monitor
+      bindl = lib.optionals (osConfig.networking.hostName == "thinkpad") [
+        ", switch:on:Lid Switch,exec,hyprctl keyword monitor desc:Chimei Innolux Corporation 0x14D4, disable"
+        ", switch:off:Lid Switch,exec,hyprctl keyword monitor desc:Chimei Innolux Corporation 0x14D4, 1920x1080@60, auto-right, 1"
       ];
+      monitor = [
+        "desc:ASUSTek COMPUTER INC ASUS VG32V 0x0001618C, 2560x1440@100, 0x0, 1"
+      ] ++ lib.optional (osConfig.networking.hostName == "thinkpad") "desc:Chimei Innolux Corporation 0x14D4, 1920x1080@60, auto-right, 1";
       env = [
         "SSH_AUTH_SOCK,/run/user/1000/gnupg/S.gpg-agent.ssh" # workaround to ensure ssh_auth_sock variable inherited by all applications instead of just interactive shell when using gpg-agent to serve ssh
       ];
