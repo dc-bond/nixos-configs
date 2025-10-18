@@ -15,17 +15,12 @@
       "home-manager/chris/common/zsh.nix"
       "home-manager/chris/common/starship.nix"
       "home-manager/chris/common/neovim.nix"
+
+      "home-manager/chris/host-specific/aspen/zsh.nix"
     ])
   ];
 
-  programs = {
-    home-manager.enable = true; # enable home manager
-    zsh = {
-      shellAliases = {
-        storage = "cd /storage/WD-WCC7K4RU947F ; ls";
-      };
-    };
-  };
+  programs.home-manager.enable = true; # enable home manager
 
 # define username and home directory
   home = {

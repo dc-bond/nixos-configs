@@ -31,6 +31,7 @@
       rbmain = "sudo nixos-rebuild switch --flake github:dc-bond/nixos-configs#$(hostname) --refresh";
       rbdev = "sudo nixos-rebuild switch --flake github:dc-bond/nixos-configs/dev#$(hostname) --refresh";
       garbage = "nix-collect-garbage -d && sudo nix-collect-garbage -d";
+      speed = "nix run nixpkgs#speedtest-rs";
     };
     history.size = 5000;
     history.path = "${config.xdg.dataHome}/zsh/history";

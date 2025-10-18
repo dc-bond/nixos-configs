@@ -20,7 +20,10 @@
       "home-manager/chris/common/gnupg.nix"
       "home-manager/chris/common/pass.nix"
 
+      "home-manager/chris/common/hyprland.nix"
+
       "home-manager/chris/host-specific/cypress/hyprland.nix"
+      "home-manager/chris/host-specific/cypress/zsh.nix"
     ])
   ];
   
@@ -28,18 +31,7 @@
     (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
   ];
 
-  programs = {
-    home-manager.enable = true; # enable home manager
-    zsh = {
-      shellAliases = {
-        storage = "cd /storage/WD-WX21DC86RU3P ; ls";
-        ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop";
-        speed = "nix run nixpkgs#speedtest-rs";
-        tsaspen = "sudo tailscale down && sleep 5 && sudo tailscale up -ssh --accept-routes --exit-node=${configVars.aspenTailscaleIp}";
-        tsjuniper = "sudo tailscale down && sleep 5 && sudo tailscale up -ssh --accept-routes --exit-node=${configVars.juniperTailscaleIp}";
-      };
-    };
-  };
+  programs.home-manager.enable = true; # enable home manager
 
 # define username and home directory
   home = {
