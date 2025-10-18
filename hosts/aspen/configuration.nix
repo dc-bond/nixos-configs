@@ -40,6 +40,8 @@
       options = [ "defaults" ];
     };
 
+    networking.hostName = "aspen";
+
     backups = {
       borgDir = "${config.hostSpecificConfigs.storageDrive1}/borgbackup"; # host-specific borg backup directory override on backups.nix
       startTime = "*-*-* 02:05:00"; # everyday at 2:05am
@@ -64,6 +66,8 @@
       "hosts/aspen/disk-config-btrfs.nix"
       "hosts/aspen/hardware-configuration.nix"
       
+      "nixos-system/common/boot.nix"
+      "nixos-system/common/networking.nix"
       "nixos-system/common/sshd.nix"
       "nixos-system/common/zsh.nix"
       "nixos-system/common/misc.nix"
@@ -72,8 +76,6 @@
       "nixos-system/common/sops.nix"
       "nixos-system/common/nvidia.nix"
 
-      "nixos-system/host-specific/aspen/boot.nix"
-      "nixos-system/host-specific/aspen/networking.nix"
       "nixos-system/host-specific/aspen/tailscale.nix"
       "nixos-system/host-specific/aspen/users.nix"
       

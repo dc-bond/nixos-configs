@@ -40,6 +40,8 @@
       options = [ "defaults" ];
     };
 
+    networking.hostName = "cypress";
+
     environment.systemPackages = with pkgs; [
       age # encryption tool
       mkpasswd # password hashing tool
@@ -71,6 +73,8 @@
       "hosts/cypress/disk-config-btrfs.nix"
       "hosts/cypress/hardware-configuration.nix"
 
+      "nixos-system/common/boot.nix"
+      "nixos-system/common/networking.nix"
       "nixos-system/common/sshd.nix"
       "nixos-system/common/audio.nix"
       "nixos-system/common/zsh.nix"
@@ -87,9 +91,7 @@
       #"nixos-system/common/display-manager.nix"
       "nixos-system/common/hyprland.nix"
 
-      "nixos-system/host-specific/cypress/boot.nix"
       "nixos-system/host-specific/cypress/users.nix"
-      "nixos-system/host-specific/cypress/networking.nix"
       "nixos-system/host-specific/cypress/tailscale.nix"
 
       "scripts/deploy-aspen.nix"

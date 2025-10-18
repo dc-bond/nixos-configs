@@ -39,6 +39,8 @@
       sshdPort = 28765;
     };
 
+    networking.hostName = "thinkpad";
+
     environment.systemPackages = with pkgs; [
       age # encryption tool
       mkpasswd # password hashing tool
@@ -76,6 +78,7 @@
       "hosts/thinkpad/hardware-configuration.nix"
       
       "nixos-system/common/boot.nix"
+      "nixos-system/common/networking.nix"
       "nixos-system/common/sshd.nix"
       "nixos-system/common/audio.nix"
       "nixos-system/common/zsh.nix"
@@ -94,7 +97,6 @@
       #"nixos-system/common/plasma.nix"
 
       "nixos-system/host-specific/thinkpad/users.nix"
-      "nixos-system/host-specific/thinkpad/networking.nix"
       "nixos-system/host-specific/thinkpad/tailscale.nix"
 
       "scripts/deploy-aspen.nix"

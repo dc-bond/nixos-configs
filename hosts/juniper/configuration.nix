@@ -29,6 +29,8 @@
       sshdPort = 28764;
     };
 
+    networking.hostName = "juniper";
+
     environment.systemPackages = with pkgs; [
       rsync # sync tool
       btop # system monitor
@@ -47,6 +49,7 @@
       "hosts/juniper/hardware-configuration.nix"
 
       "nixos-system/common/boot.nix"
+      "nixos-system/common/networking.nix"
       "nixos-system/common/sshd.nix"
       "nixos-system/common/backups.nix"
       "nixos-system/common/misc.nix"
@@ -59,7 +62,6 @@
       "nixos-system/common/matrix-synapse.nix"
 
       "nixos-system/host-specific/juniper/users.nix"
-      "nixos-system/host-specific/juniper/networking.nix"
       "nixos-system/host-specific/juniper/tailscale.nix"
     ])
   ];
