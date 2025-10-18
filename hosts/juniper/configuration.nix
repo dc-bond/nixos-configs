@@ -47,22 +47,20 @@
     (map configLib.relativeToRoot [
       "hosts/juniper/disk-config-btrfs.nix"
       "hosts/juniper/hardware-configuration.nix"
-
-      "nixos-system/common/boot.nix"
-      "nixos-system/common/networking.nix"
-      "nixos-system/common/sshd.nix"
-      "nixos-system/common/backups.nix"
-      "nixos-system/common/misc.nix"
-      "nixos-system/common/zsh.nix"
-      "nixos-system/common/sops.nix"
-      "nixos-system/common/nixpkgs.nix"
-      "nixos-system/common/oci-containers.nix"
-      "nixos-system/common/postgresql.nix"
-      "nixos-system/common/traefik.nix"
-      "nixos-system/common/matrix-synapse.nix"
-
-      "nixos-system/host-specific/juniper/users.nix"
-      "nixos-system/host-specific/juniper/tailscale.nix"
+      "nixos-system/boot.nix"
+      "nixos-system/networking.nix"
+      "nixos-system/tailscale.nix"
+      "nixos-system/users.nix"
+      "nixos-system/sshd.nix"
+      "nixos-system/backups.nix"
+      "nixos-system/misc.nix"
+      "nixos-system/zsh.nix"
+      "nixos-system/sops.nix"
+      "nixos-system/nixpkgs.nix"
+      "nixos-system/oci-containers.nix"
+      "nixos-system/postgresql.nix"
+      "nixos-system/traefik.nix"
+      "nixos-system/matrix-synapse.nix"
     ])
   ];
 

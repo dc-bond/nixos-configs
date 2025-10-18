@@ -65,46 +65,44 @@
     (map configLib.relativeToRoot [
       "hosts/aspen/disk-config-btrfs.nix"
       "hosts/aspen/hardware-configuration.nix"
-      
-      "nixos-system/common/boot.nix"
-      "nixos-system/common/networking.nix"
-      "nixos-system/common/sshd.nix"
-      "nixos-system/common/zsh.nix"
-      "nixos-system/common/misc.nix"
-      "nixos-system/common/nixpkgs.nix"
-      "nixos-system/common/backups.nix"
-      "nixos-system/common/sops.nix"
-      "nixos-system/common/nvidia.nix"
+      "nixos-system/boot.nix"
+      "nixos-system/networking.nix"
+      "nixos-system/tailscale.nix"
+      "nixos-system/users.nix"
+      "nixos-system/sshd.nix"
+      "nixos-system/zsh.nix"
+      "nixos-system/misc.nix"
+      "nixos-system/nixpkgs.nix"
+      "nixos-system/backups.nix"
+      "nixos-system/sops.nix"
+      "nixos-system/nvidia.nix"
 
-      "nixos-system/host-specific/aspen/tailscale.nix"
-      "nixos-system/host-specific/aspen/users.nix"
-      
-      "nixos-system/common/postgresql.nix"
-      "nixos-system/common/traefik.nix"
-      "nixos-system/common/mysql.nix"
-      "nixos-system/common/photoprism.nix" # requires mysql.nix
-      "nixos-system/common/lldap.nix" # requires postgresql.nix
-      "nixos-system/common/uptime-kuma.nix"
-      "nixos-system/common/calibre.nix"
-      "nixos-system/common/nginx-sites.nix"
-      "nixos-system/common/nextcloud.nix" # requires postgresql.nix
-      "nixos-system/common/home-assistant.nix" # requires postgresql.nix
-      "nixos-system/common/authelia-dcbond.nix" # requires lldap.nix
-      "nixos-system/common/stirling-pdf.nix"
-      "nixos-system/common/dcbond-root.nix"
-      "nixos-system/common/oci-containers.nix"
-      "nixos-system/common/oci-fava.nix"
-      "nixos-system/common/oci-media-server.nix" # requires nvidia.nix
-      "nixos-system/common/oci-frigate.nix" # requires nvidia.nix
-      "nixos-system/common/oci-pihole.nix"
-      "nixos-system/common/oci-actual.nix"
-      "nixos-system/common/oci-zwavejs.nix"
-      "nixos-system/common/oci-searxng.nix"
-      "nixos-system/common/oci-recipesage.nix"
-      "nixos-system/common/oci-librechat.nix"
-      "nixos-system/common/oci-unifi.nix"
-      "nixos-system/common/ollama.nix"
-      #"nixos-system/common/n8n.nix" # won't build n8n package from source...
+      "nixos-system/postgresql.nix"
+      "nixos-system/traefik.nix"
+      "nixos-system/mysql.nix"
+      "nixos-system/photoprism.nix" # requires mysql.nix
+      "nixos-system/lldap.nix" # requires postgresql.nix
+      "nixos-system/uptime-kuma.nix"
+      "nixos-system/calibre.nix"
+      "nixos-system/nginx-sites.nix"
+      "nixos-system/nextcloud.nix" # requires postgresql.nix
+      "nixos-system/home-assistant.nix" # requires postgresql.nix
+      "nixos-system/authelia-dcbond.nix" # requires lldap.nix
+      "nixos-system/stirling-pdf.nix"
+      "nixos-system/dcbond-root.nix"
+      "nixos-system/oci-containers.nix"
+      "nixos-system/oci-fava.nix"
+      "nixos-system/oci-media-server.nix" # requires nvidia.nix
+      "nixos-system/oci-frigate.nix" # requires nvidia.nix
+      "nixos-system/oci-pihole.nix"
+      "nixos-system/oci-actual.nix"
+      "nixos-system/oci-zwavejs.nix"
+      "nixos-system/oci-searxng.nix"
+      "nixos-system/oci-recipesage.nix"
+      "nixos-system/oci-librechat.nix"
+      "nixos-system/oci-unifi.nix"
+      "nixos-system/ollama.nix"
+      #"nixos-system/n8n.nix" # won't build n8n package from source...
 
       "scripts/media-transfer.nix"
     ])
