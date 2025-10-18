@@ -46,6 +46,7 @@
       "hosts/juniper/disk-config-btrfs.nix"
       "hosts/juniper/hardware-configuration.nix"
 
+      "nixos-system/common/boot.nix"
       "nixos-system/common/sshd.nix"
       "nixos-system/common/backups.nix"
       "nixos-system/common/misc.nix"
@@ -59,7 +60,6 @@
 
       "nixos-system/host-specific/juniper/users.nix"
       "nixos-system/host-specific/juniper/networking.nix"
-      "nixos-system/host-specific/juniper/boot.nix"
       "nixos-system/host-specific/juniper/tailscale.nix"
     ])
   ];
