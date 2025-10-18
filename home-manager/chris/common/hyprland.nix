@@ -199,12 +199,20 @@
         ];
         "modules-right" = [
           "tray"
+        ] ++ lib.optionals (osConfig.networking.hostName == "thinkpad") [
+          "battery"
+          "backlight"
+        ] ++ [
 	        "temperature"
 	        "cpu"
 	        "memory"
 	        "disk"
           "bluetooth"
-          ] ++ lib.optional (osConfig.networking.hostName == "cypress") "network#ethernet" ++ [
+        ] ++ lib.optionals (osConfig.networking.hostName == "thinkpad") [
+          "network#wifi"
+          "network#ethernet-dock"
+        ] ++ [
+          "network#ethernet"
           "network#tailscale"
           "clock"
         ];
