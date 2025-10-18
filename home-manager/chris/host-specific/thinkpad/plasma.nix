@@ -23,6 +23,7 @@
     libreoffice-still # office suite
     element-desktop # matrix chat app
     nextcloud-client # nextcloud local syncronization client
+    blueman # system tray bluetooth applet
   ];
 
   services.gpg-agent = {
