@@ -259,13 +259,16 @@
           "tooltip-format" = "Tailscale: {ipaddr}";
           "tooltip-format-disconnected" = "Tailscale: Disconnected"; # not working bug
         };
-        #"network#ethernet" = {
-        #  "interface" = "enp1s0";
-        #  "format-ethernet" = "󰌗";
-        #  "format-disconnected" = "󰌗";
-        #  "tooltip-format-ethernet" = "Ethernet: {ipaddr}";
-        #  "tooltip-format-disconnected" = "Ethernet: Disconnected";
-        #};
+        "network#ethernet" = {
+          "interface" = 
+           if osConfig.networking.hostName == "cypress" then "enp1s0"
+           else if osConfig.networking.hostName == "thinkpad" then "enp0s31f6"
+           else "eth0"; # fallback
+          "format-ethernet" = "󰌗";
+          "format-disconnected" = "󰌗";
+          "tooltip-format-ethernet" = "Ethernet: {ipaddr}";
+          "tooltip-format-disconnected" = "Ethernet: Disconnected";
+        };
         "bluetooth" = {
 	        "format" = "";
 	        "format-connected" = " {num_connections}";
