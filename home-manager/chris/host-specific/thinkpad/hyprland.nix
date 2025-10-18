@@ -33,7 +33,6 @@
     nextcloud-client # nextcloud local syncronization client
     hyprshot # screenshot tool
     pwvucontrol # pipewire audio volume control app
-    blueman # system tray bluetooth applet
   ];
 
   wayland.windowManager.hyprland = {
