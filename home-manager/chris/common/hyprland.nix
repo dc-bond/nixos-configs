@@ -3,6 +3,7 @@
   lib,
   configLib,
   pkgs, 
+  osConfig,
   ... 
 }: 
 
