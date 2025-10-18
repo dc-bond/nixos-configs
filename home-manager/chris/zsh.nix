@@ -1,5 +1,6 @@
 { 
   config, 
+  configVars,
   osConfig,
   lib, 
   pkgs, 
