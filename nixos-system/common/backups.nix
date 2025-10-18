@@ -47,10 +47,13 @@ let
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
     
     echo "running repository integrity check..."
-    ${pkgs.borgbackup}/bin/borg check --verify-data ${config.backups.borgDir}/${config.networking.hostName}
+    if [[ "$(date +%u)" == "7" ]]; then
+      ${pkgs.borgbackup}/bin/borg check --verify-data ${config.backups.borgDir}/${config.networking.hostName}
+    else
+      ${pkgs.borgbackup}/bin/borg check ${config.backups.borgDir}/${config.networking.hostName}
+    fi
     
     echo "integrity check passed - starting cloud sync"
-    
     ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync ${config.backups.borgDir}/${config.networking.hostName} backblaze-b2:${config.networking.hostName}-backup-dcbond
     
     echo "cloud backup completed successfully"
