@@ -22,7 +22,7 @@
 
       "home-manager/chris/common/hyprland.nix"
 
-      #"home-manager/chris/host-specific/cypress/hyprland.nix"
+      "home-manager/chris/host-specific/cypress/hyprland.nix"
       "home-manager/chris/host-specific/cypress/zsh.nix"
     ])
   ];

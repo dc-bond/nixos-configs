@@ -204,7 +204,7 @@
 	        "disk"
           "bluetooth"
           "network#tailscale"
-          "network#ethernet"
+          #"network#ethernet"
           "clock"
         ];
         "hyprland/workspaces" = {
@@ -258,13 +258,13 @@
           "tooltip-format" = "Tailscale: {ipaddr}";
           "tooltip-format-disconnected" = "Tailscale: Disconnected"; # not working bug
         };
-        "network#ethernet" = {
-          "interface" = "enp1s0";
-          "format-ethernet" = "󰌗";
-          "format-disconnected" = "󰌗";
-          "tooltip-format-ethernet" = "Ethernet: {ipaddr}";
-          "tooltip-format-disconnected" = "Ethernet: Disconnected";
-        };
+        #"network#ethernet" = {
+        #  "interface" = "enp1s0";
+        #  "format-ethernet" = "󰌗";
+        #  "format-disconnected" = "󰌗";
+        #  "tooltip-format-ethernet" = "Ethernet: {ipaddr}";
+        #  "tooltip-format-disconnected" = "Ethernet: Disconnected";
+        #};
         "bluetooth" = {
 	        "format" = "";
 	        "format-connected" = " {num_connections}";

@@ -10,7 +10,7 @@
 
   programs.waybar = {
     settings = [{
-      "modules-right" = lib.mkAfter [
+      "modules-right" = [
         "network#ethernet"
       ];
       "network#ethernet" = {
