@@ -28,6 +28,9 @@
       ark # file archiver
       drkonqi # crashed process viewer
       print-manager # printer
+      kwrite # text editor
+      plasma-welcome # welcome screen
+      discover # software center
     ];
   };
 
@@ -37,13 +40,18 @@
       enable = true;
       enableHidpi = true;
       wayland.enable = true;
-      #autoNumlock = true;
-      #settings = {
-      #  Autologin = {
-      #    Session = "hyprland.desktop";
-      #    User = "chris";
-      #  };
-      #};
+    };
+    xrdp = {
+      enable = true;
+      defaultWindowManager = "startplasma-x11";
+      openFirewall = true; # opens port 3389
+    };
+    xserver = {
+      enable = true;
+      xkb = {
+        layout = "us";
+        variant = "";
+      };
     };
   };
 

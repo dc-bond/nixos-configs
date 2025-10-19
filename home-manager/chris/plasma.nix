@@ -22,10 +22,12 @@
     nextcloud-client # nextcloud local syncronization client
   ];
 
-  services.gpg-agent = {
-    pinentry.package = lib.mkForce pkgs.kwalletcli;
-    extraConfig = "pinentry-program ${pkgs.kwalletcli}/bin/pinentry-kwallet"; # set kde wallet as pinentry utility
-  };
+  #services.gpg-agent = {
+  #  pinentry.package = lib.mkForce pkgs.kwalletcli;
+  #  extraConfig = "pinentry-program ${pkgs.kwalletcli}/bin/pinentry-kwallet"; # set kde wallet as pinentry utility
+  #};
+
+  services.gpg-agent.pinentryPackage = lib.mkForce pkgs.pinentry-qt;
 
   programs.plasma = {
     enable = true;
@@ -64,20 +66,6 @@
         repeatRate = 25.0;
         numlockOnStartup = "on";
       };
-      #mice = [
-      #  {
-      #    acceleration = -0.5;
-      #    accelerationProfile = "default";
-      #    enable = true;
-      #    leftHanded = false;
-      #    middleButtonEmulation = false;
-      #    name = "Razer ProClickM";
-      #    naturalScroll = false;
-      #    productId = "009a";
-      #    scrollSpeed = 1;
-      #    vendorId = "1532";
-      #  }
-      #];
     };
 
     hotkeys.commands = {
@@ -91,16 +79,6 @@
         key = "Meta+Shift+Return";
         command = "alacritty";
       };
-      #screenshot-region = {
-      #  name = "Capture a rectangular region of the screen";
-      #  key = "Meta+Shift+S";
-      #  command = "spectacle --region --nonotify";
-      #};
-      #screenshot-screen = {
-      #  name = "Capture the entire desktop";
-      #  key = "Meta+Ctrl+S";
-      #  command = "spectacle --fullscreen --nonotify";
-      #};
     };
 
     kwin = {
@@ -150,16 +128,6 @@
 
     shortcuts = {
 
-      #ksmserver = {
-      #  "Lock Session" = [
-      #    "Screensaver"
-      #    "Ctrl+Alt+L"
-      #  ];
-      #  "LogOut" = [
-      #    "Ctrl+Alt+Q"
-      #  ];
-      #};
-
       kwin = {
         "Switch to Desktop 1" = "Meta+1";
         "Switch to Desktop 2" = "Meta+2";
@@ -171,10 +139,6 @@
         "Window Close" = "Meta+Q";
         "Window Fullscreen" = "Meta+F";
       };
-
-      #plasmashell = {
-      #  "show-on-mouse-pos" = "";
-      #};
 
     };
 
@@ -191,10 +155,152 @@
     };
 
     configFile = {
-      #"kcminputrc"."Libinput/5426/154/Razer ProClickM"."PointerAcceleration" = "-0.400"; # set mouse speed
       "kwinrc"."Windows"."Placement" = "Maximizing"; # automatically open all windows maximized by default
     };
-    #iconTheme = "Papirus-Dark";
-    };
+
+  };
 
 }
+
+#{ 
+#  config,
+#  lib,
+#  pkgs, 
+#  ... 
+#}: 
+#
+#{
+#
+#  home.packages = with pkgs; [
+#    libreoffice-still
+#    firefox # or whatever browser you prefer
+#    # That's it! Keep it minimal
+#  ];
+#
+#  programs.plasma = {
+#    enable = true;
+#    overrideConfig = true;
+#    
+#    # Simple, readable fonts
+#    fonts = {
+#      general = {
+#        family = "Noto Sans";
+#        pointSize = 11;
+#      };
+#    };
+#
+#    # Basic input settings
+#    input.keyboard = {
+#      numlockOnStartup = "on";
+#    };
+#
+#    # Minimal panel configuration
+#    panels = [
+#      {
+#        location = "bottom";
+#        height = 48;
+#        widgets = [
+#          {
+#            name = "org.kde.plasma.kickoff";
+#            config.General.icon = "start-here-kde";
+#          }
+#          "org.kde.plasma.panelspacer"
+#          {
+#            name = "org.kde.plasma.icontasks";
+#            config.General = {
+#              launchers = [
+#                "applications:firefox.desktop"
+#                "applications:libreoffice-startcenter.desktop"
+#              ];
+#            };
+#          }
+#          "org.kde.plasma.panelspacer"
+#          {
+#            name = "org.kde.plasma.systemtray";
+#            config.General.scaleIconsToFit = true;
+#          }
+#          {
+#            name = "org.kde.plasma.digitalclock";
+#            config.Appearance = {
+#              showDate = true;
+#              use24hFormat = true;
+#            };
+#          }
+#        ];
+#      }
+#    ];
+#
+#    # Disable all eye candy
+#    kwin.effects = {
+#      blur.enable = false;
+#      cube.enable = false;
+#      desktopSwitching.animation = "off";
+#      dimAdminMode.enable = false;
+#      dimInactive.enable = false;
+#      fallApart.enable = false;
+#      minimization.animation = "off";
+#      shakeCursor.enable = false;
+#      slideBack.enable = false;
+#      snapHelper.enable = false;
+#      translucency.enable = false;
+#      windowOpenClose.animation = "off";
+#      wobblyWindows.enable = false;
+#    };
+#
+#    # Single desktop, no virtual desktops
+#    kwin.virtualDesktops = {
+#      number = 1;
+#      rows = 1;
+#    };
+#
+#    # Simple session behavior
+#    session = {
+#      general.askForConfirmationOnLogout = false;
+#      sessionRestore.restoreOpenApplicationsOnLogin = "startWithEmptySession";
+#    };
+#
+#    # Essential shortcuts only
+#    shortcuts.kwin = {
+#      "Window Close" = "Alt+F4"; # Standard, familiar
+#    };
+#
+#    # Clean, simple appearance
+#    workspace = {
+#      cursor = {
+#        theme = "breeze_cursors";
+#        size = 24;
+#      };
+#      clickItemTo = "open";
+#      lookAndFeel = "org.kde.breeze.desktop"; # Light theme, less intimidating
+#      # Or use "org.kde.breezedark.desktop" if preferred
+#    };
+#
+#    # Maximize windows by default - simpler for basic users
+#    configFile = {
+#      "kwinrc"."Windows"."Placement" = "Maximizing";
+#    };
+#
+#    # Hide menu configuration options in applications
+#    configFile."kdeglobals"."KDE"."ShowDeleteCommand" = false;
+#    
+#  };
+#
+#  # Hide applications from launcher
+#  xdg.dataFile = {
+#    # Hide all the system/settings apps that might still appear
+#    "applications/org.kde.kinfocenter.desktop".text = ''
+#      [Desktop Entry]
+#      NoDisplay=true
+#    '';
+#    "applications/org.kde.plasma-systemmonitor.desktop".text = ''
+#      [Desktop Entry]
+#      NoDisplay=true
+#    '';
+#    "applications/org.kde.ksystemlog.desktop".text = ''
+#      [Desktop Entry]
+#      NoDisplay=true
+#    '';
+#    # Add more as needed - check ~/.local/share/applications/ and /run/current-system/sw/share/applications/
+#  };
+#
+#}
