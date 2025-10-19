@@ -94,8 +94,8 @@
       "nixos-system/bluetooth.nix"
       
       #"nixos-system/display-manager.nix"
-      "nixos-system/hyprland.nix"
-      #"nixos-system/plasma.nix"
+      #"nixos-system/hyprland.nix"
+      "nixos-system/plasma.nix"
 
       "scripts/deploy-aspen.nix"
       "scripts/deploy-cypress.nix"

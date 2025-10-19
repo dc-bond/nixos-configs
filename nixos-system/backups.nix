@@ -46,7 +46,6 @@ let
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
-    check_start_time=$(date +%s)
     if [[ "$(date +%u)" == "7" ]]; then
       echo "$(date '+%Y-%m-%d %H:%M:%S') - running full data verification check (Sunday)..."
       ${pkgs.borgbackup}/bin/borg check --verify-data ${config.backups.borgDir}/${config.networking.hostName}
@@ -54,10 +53,8 @@ let
       echo "$(date '+%Y-%m-%d %H:%M:%S') - running standard integrity check..."
       ${pkgs.borgbackup}/bin/borg check ${config.backups.borgDir}/${config.networking.hostName}
     fi
-    check_end_time=$(date +%s)
-    check_elapsed=$((check_end_time - check_start_time))
 
-    echo "$(date '+%Y-%m-%d %H:%M:%S') - repository integrity check completed in ${check_elapsed}s ($(( check_elapsed / 60 ))m $(( check_elapsed % 60 ))s) - starting cloud sync"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - repository integrity check completed - starting cloud sync"
     ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync ${config.backups.borgDir}/${config.networking.hostName} backblaze-b2:${config.networking.hostName}-backup-dcbond
     
     echo "cloud backup completed successfully"
