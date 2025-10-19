@@ -10,12 +10,9 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/chris/common/alacritty.nix"
-      #"home-manager/chris/common/gammastep.nix"
-      "home-manager/chris/common/vscodium.nix"
-      "home-manager/chris/common/firefox.nix"
-      #"home-manager/chris/common/theme.nix"
-      #"home-manager/chris/common/rofi.nix"
+      "home-manager/chris/alacritty.nix"
+      "home-manager/chris/vscodium.nix"
+      "home-manager/chris/firefox.nix"
     ])
   ];
 
@@ -23,7 +20,6 @@
     libreoffice-still # office suite
     element-desktop # matrix chat app
     nextcloud-client # nextcloud local syncronization client
-    #blueman # system tray bluetooth applet
   ];
 
   services.gpg-agent = {
