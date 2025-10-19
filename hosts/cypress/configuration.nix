@@ -42,6 +42,8 @@
 
     networking.hostName = "cypress";
 
+    programs.nix-ld.enable = true;
+
     environment.systemPackages = with pkgs; [
       age # encryption tool
       mkpasswd # password hashing tool
