@@ -72,7 +72,7 @@
           "autoForwardPorts" = false;
           "autoForwardPortsSource" = "hybrid";
           "serverInstallPath" = {
-            "cypress" = "~/.vscodium-server"
+            "cypress" = "~/.vscodium-server";
           };
         };
       };
