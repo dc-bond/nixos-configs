@@ -27,7 +27,7 @@
   #  extraConfig = "pinentry-program ${pkgs.kwalletcli}/bin/pinentry-kwallet"; # set kde wallet as pinentry utility
   #};
 
-  services.gpg-agent.pinentryPackage = lib.mkForce pkgs.pinentry-qt;
+  services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
 
   programs.plasma = {
     enable = true;

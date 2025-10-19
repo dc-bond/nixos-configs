@@ -28,7 +28,6 @@
       ark # file archiver
       drkonqi # crashed process viewer
       print-manager # printer
-      kwrite # text editor
       plasma-welcome # welcome screen
       discover # software center
     ];
