@@ -60,7 +60,7 @@
       ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop";
       tsaspen = "sudo tailscale down && sleep 5 && sudo tailscale up -ssh --accept-routes --exit-node=${configVars.aspenTailscaleIp}";
       tsjuniper = "sudo tailscale down && sleep 5 && sudo tailscale up -ssh --accept-routes --exit-node=${configVars.juniperTailscaleIp}";
-      cloneconfigs = "cd ~ && git clone https://github.com/dc-bond/nixos-configs"
+      cloneconfigs = "cd ~ && git clone https://github.com/dc-bond/nixos-configs";
     } // lib.optionalAttrs (osConfig.networking.hostName == "cypress") {
       storage = "cd /storage/WD-WX21DC86RU3P ; ls";
     } // lib.optionalAttrs (osConfig.networking.hostName == "thinkpad") {
