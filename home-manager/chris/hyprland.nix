@@ -39,11 +39,11 @@
       enable = true;
       name = "WhiteSur-cursors";
       package = pkgs.whitesur-cursors;
-      size = 25;
+      size = 50;
       gtk.enable = true; # integrate with gtk apps
       hyprcursor = { # integrate with hyprland
         enable = true;
-        size = 25;
+        size = 50;
       };
     };
   };

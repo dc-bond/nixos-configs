@@ -54,6 +54,7 @@
       rbdev = "sudo nixos-rebuild switch --flake github:dc-bond/nixos-configs/dev#$(hostname) --refresh";
       garbage = "nix-collect-garbage -d && sudo nix-collect-garbage -d";
       speed = "nix run nixpkgs#speedtest-rs";
+      gens = "nixos-rebuild list-generations | head -n 5";
     } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {
       flakeupdate = "sudo nix flake update --flake ~/nixos-configs";
       ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop";
