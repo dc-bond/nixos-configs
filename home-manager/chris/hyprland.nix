@@ -15,26 +15,58 @@
       "home-manager/chris/gammastep.nix"
       "home-manager/chris/vscodium.nix"
       "home-manager/chris/firefox.nix"
-      "home-manager/chris/theme.nix"
       "home-manager/chris/rofi.nix"
     ])
   ];
 
-  home.packages = with pkgs; [
-    (import (configLib.relativeToRoot "scripts/desktop-reload.nix") { inherit pkgs config; })
-    swww # animated wallpaper for wayland window managers
-    pywal # color theme changer
-    dunst # notification daemon
-    gnome-calculator # calculator
-    loupe # image viewer
-    feh # image viewer
-    zathura # barebones pdf viewer
-    libreoffice-still # office suite
-    element-desktop # matrix chat app
-    nextcloud-client # nextcloud local syncronization client
-    hyprshot # screenshot tool
-    pwvucontrol # pipewire audio volume control app
-  ];
+  home = {
+    packages = with pkgs; [
+      (import (configLib.relativeToRoot "scripts/desktop-reload.nix") { inherit pkgs config; })
+      swww # animated wallpaper for wayland window managers
+      pywal # color theme changer
+      dunst # notification daemon
+      gnome-calculator # calculator
+      loupe # image viewer
+      feh # image viewer
+      zathura # barebones pdf viewer
+      libreoffice-still # office suite
+      element-desktop # matrix chat app
+      nextcloud-client # nextcloud local syncronization client
+      hyprshot # screenshot tool
+      pwvucontrol # pipewire audio volume control app
+    ];
+    pointerCursor = {
+      enable = true;
+      name = "WhiteSur-cursors";
+      package = pkgs.whitesur-cursors;
+      size = 25;
+      gtk.enable = true; # integrate with gtk apps
+      hyprcursor = { # integrate with hyprland
+        enable = true;
+        size = 25;
+      };
+    };
+  };
+
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Materia-light";
+      package = pkgs.materia-theme;
+    };
+    iconTheme = {
+      name = "Papirus";
+      package = pkgs.papirus-nord;
+    };
+    font = {
+      name = "Source Sans Pro";
+      package = null; # already installed in fonts.nix system-level module
+      size = 10;
+    };
+    gtk3.extraConfig = {
+      gtk-application-prefer-dark-theme = false;  # since using materia light
+    };
+  };
 
   wayland.windowManager.hyprland = {
     enable = true;

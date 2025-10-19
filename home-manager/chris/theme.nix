@@ -7,27 +7,6 @@
 
 {
 
-  #home.packages = with pkgs; [
-  #  libsForQt5.qtstyleplugin-kvantum
-  #  qt6Packages.qtstyleplugin-kvantum
-  #];
-    
-  home.pointerCursor = {
-    enable = true;
-    name = "WhiteSur-cursors";
-    package = pkgs.whitesur-cursors;
-    size = 20;
-    gtk.enable = true; # integrate with gtk apps
-    hyprcursor = { # integrate with hyprland
-      enable = true;
-      size = 20;
-    };
-    #x11 = {
-    #  enable = true;
-    #  defaultCursor = "WhiteSur-cursors";
-    #};
-  };
-
   gtk = {
     enable = true;
     theme = {
