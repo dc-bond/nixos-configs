@@ -171,14 +171,14 @@ in
             systemTray = {
               #icons.scaleToFit = true;
               items = {
-                #showAll = false;
-                shown = [
-                  "org.kde.plasma.volume"
-                  "org.kde.plasma.battery"
-                  "org.kde.plasma.brightness"
-                  "org.kde.plasma.bluetooth"
-                  "org.kde.plasma.networkmanagement"
-                ];
+                showAll = true;
+                #shown = [
+                #  "org.kde.plasma.volume"
+                #  "org.kde.plasma.battery"
+                #  "org.kde.plasma.brightness"
+                #  "org.kde.plasma.bluetooth"
+                #  "org.kde.plasma.networkmanagement"
+                #];
                 #hidden = [
                 #  "org.kde.plasma.keyboardlayout"
                 #  "org.kde.plasma.clipboard"
