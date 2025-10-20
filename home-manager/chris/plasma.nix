@@ -165,7 +165,7 @@ in
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
           {
             name = "org.kde.plasma.systemtray";
-            icons.scaleToFit = true;
+            #icons.scaleToFit = true;
             items = {
               showAll = true;
               #shown = [
