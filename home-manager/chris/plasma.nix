@@ -6,6 +6,16 @@
   ... 
 }: 
 
+let
+  repo-wallpaper = pkgs.fetchFromGitHub {
+    owner = "dc-bond";
+    repo = "nixos-configs";
+    rev = "main";
+    sparseCheckout = [ "wallpaper" ];
+    hash = "";
+  };
+in
+
 {
 
   imports = lib.flatten [
@@ -146,27 +156,28 @@
       {
         location = "bottom";
         height = 30;
-        #widgets = [
-        #  "org.kde.plasma.kickoff"
-        #  "org.kde.plasma.systemtray"
-        #  "org.kde.plasma.digitalclock"
-        #];
         widgets = [
-          {
-            name = "org.kde.plasma.kickoff";
-            config.General.icon = "application-menu";
-          }
-          {
-            name = "org.kde.plasma.systemtray";
-          }
-          {
-            name = "org.kde.plasma.digitalclock";
-            config.Appearance = {
-              showDate = true;
-              use24hFormat = false;
-            };
-          }
+          "org.kde.plasma.kickoff"
+          "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
+          "org.kde.plasma.systemtray"
+          "org.kde.plasma.digitalclock"
         ];
+        #widgets = [
+        #  {
+        #    name = "org.kde.plasma.kickoff";
+        #    config.General.icon = "application-menu";
+        #  }
+        #  {
+        #    name = "org.kde.plasma.systemtray";
+        #  }
+        #  {
+        #    name = "org.kde.plasma.digitalclock";
+        #    config.Appearance = {
+        #      showDate = true;
+        #      use24hFormat = false;
+        #    };
+        #  }
+        #];
       }
     ];
 
@@ -180,22 +191,22 @@
     };
 
     kwin = {
-      effects = {
-        blur.enable = false;
-        cube.enable = false;
-        desktopSwitching.animation = "off";
-        dimAdminMode.enable = false;
-        dimInactive.enable = false;
-        fallApart.enable = false;
-        fps.enable = false;
-        minimization.animation = "off";
-        shakeCursor.enable = false;
-        slideBack.enable = false;
-        snapHelper.enable = false;
-        translucency.enable = false;
-        windowOpenClose.animation = "off";
-        wobblyWindows.enable = false;
-      };
+      #effects = {
+      #  blur.enable = false;
+      #  cube.enable = false;
+      #  desktopSwitching.animation = "off";
+      #  dimAdminMode.enable = false;
+      #  dimInactive.enable = false;
+      #  fallApart.enable = false;
+      #  fps.enable = false;
+      #  minimization.animation = "off";
+      #  shakeCursor.enable = false;
+      #  slideBack.enable = false;
+      #  snapHelper.enable = false;
+      #  translucency.enable = false;
+      #  windowOpenClose.animation = "off";
+      #  wobblyWindows.enable = false;
+      #};
       nightLight = {
         enable = true;
         mode = "times";
@@ -229,7 +240,7 @@
 
     workspace = {
       wallpaperSlideShow = {
-        path = "/home/chris/nixos-configs/home/chris/wallpaper/";
+        path = "${repo-wallpaper}/wallpaper";
       };
       cursor = {
         theme = "WhiteSur-cursors";
