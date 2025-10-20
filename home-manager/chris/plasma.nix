@@ -162,81 +162,53 @@ in
         height = 30;
         widgets = [
           {
-            kickoff = {
-              sortAlphabetically = true;
-              icon = "arrow-up-double";
-            };
+            name = "org.kde.plasma.kickoff";
+            config.General.icon = "arrow-up-double";
           }
-          {
-            systemTray.items = {
-              shown = [
-                "org.kde.plasma.battery"
-              ];
-              hidden = [
-                "org.kde.plasma.addons.katesessions"
-              ];
-              configs = {
-                battery.showPercentage = true;
-              };
-            };
-          }
-          {
-            digitalClock = {
-              time = {
-                showSeconds = "always";
-                format = "24h";
-              };
-              calendar = {
-                firstDayOfWeek = "monday";
-                showWeekNumbers = true;
-                plugins = [ "holidaysevents" "astronomicalevents" ];
-              };
-            };
-          }
+          "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
+          "org.kde.plasma.systemtray"
+          #{
+          #  systemTray = {
+          #    #icons.scaleToFit = true;
+          #    items = {
+          #      showAll = true;
+          #      #shown = [
+          #      #  "org.kde.plasma.volume"
+          #      #  "org.kde.plasma.battery"
+          #      #  "org.kde.plasma.brightness"
+          #      #  "org.kde.plasma.bluetooth"
+          #      #  "org.kde.plasma.networkmanagement"
+          #      #];
+          #      #hidden = [
+          #      #  "org.kde.plasma.keyboardlayout"
+          #      #  "org.kde.plasma.clipboard"
+          #      #  "org.kde.plasma.devicenotifier"
+          #      #  "org.kde.plasma.mediacontroller"
+          #      #  #"plasmashell_microphone"
+          #      #  #"xdg-desktop-portal-kde"
+                 # "Nextcloud"
+                 #     "org.kde.kscreen"
+                 #     "org.kde.plasma.battery"
+                 #     "org.kde.plasma.bluetooth"
+                 #     "org.kde.plasma.brightness"
+                 #     "org.kde.plasma.cameraindicator"
+                 #     "org.kde.plasma.clipboard"
+                 #     "org.kde.plasma.devicenotifier"
+                 #     "org.kde.plasma.keyboardindicator"
+                 #     "org.kde.plasma.keyboardlayout"
+                 #     "org.kde.plasma.manage-inputmethod"
+                 #     "org.kde.plasma.mediacontroller"
+                 #     "org.kde.plasma.notifications"
+                 #     "org.kde.plasma.volume"
+          #      #];
+          #    };
+          #  };
+          #}
+          "org.kde.plasma.digitalclock"
+          "org.kde.plasma.showdesktop"
         ];
-        hiding = "none";
-        floating = false;
       }
     ];
-
-    #panels = [
-    #  {
-    #    location = "bottom";
-    #    height = 30;
-    #    widgets = [
-    #      {
-    #        name = "org.kde.plasma.kickoff";
-    #        config.General.icon = "arrow-up-double";
-    #      }
-    #      "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
-    #      #"org.kde.plasma.systemtray"
-    #      {
-    #        systemTray = {
-    #          #icons.scaleToFit = true;
-    #          items = {
-    #            showAll = true;
-    #            #shown = [
-    #            #  "org.kde.plasma.volume"
-    #            #  "org.kde.plasma.battery"
-    #            #  "org.kde.plasma.brightness"
-    #            #  "org.kde.plasma.bluetooth"
-    #            #  "org.kde.plasma.networkmanagement"
-    #            #];
-    #            #hidden = [
-    #            #  "org.kde.plasma.keyboardlayout"
-    #            #  "org.kde.plasma.clipboard"
-    #            #  "org.kde.plasma.devicenotifier"
-    #            #  "org.kde.plasma.mediacontroller"
-    #            #  #"plasmashell_microphone"
-    #            #  #"xdg-desktop-portal-kde"
-    #            #];
-    #          };
-    #        };
-    #      }
-    #      "org.kde.plasma.digitalclock"
-    #    ];
-    #  }
-    #];
 
     hotkeys.commands = {
       launch-alacritty = {
@@ -247,8 +219,47 @@ in
     };
 
     krunner = {
-      position = "center";
+      position = "top";
       shortcuts.launch = "Alt+d";
+    };
+
+    powerdevil = {
+      AC = {
+        powerProfile = "performance";
+        powerButtonAction = "shutDown";
+        autoSuspend.action = "nothing";
+        turnOffDisplay.idleTimeout = "never";
+        dimDisplay.enable = false;
+        whenLaptopLidClosed = "doNothing";
+        inhibitLidActionWhenExternalMonitorConnected = true;  # don't sleep when lid closes with external monitor
+        # displayBrightness = 100;  # Uncomment if you want to force 100% brightness on AC
+      };
+      battery = {
+        powerProfile = "powerSaving";
+        powerButtonAction = "shutDown";
+        whenSleepingEnter = "sleep";
+        dimDisplay.enable = false;
+        autoSuspend = {
+          action = "sleep";
+          idleTimeout = 600;
+        };
+      };
+      lowBattery = {
+        powerProfile = "powerSaving";
+        whenLaptopLidClosed = "sleep";
+      };
+      batteryLevels = {
+        lowLevel = 10;
+        criticalLevel = 2;
+        criticalAction = "shutDown";
+      };
+    };
+
+    kscreenlocker = {
+      autoLock = false;
+      lockOnResume = false;
+      lockOnStartup = false;
+      timeout = null;
     };
 
     kwin = {
