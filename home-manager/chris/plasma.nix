@@ -13,7 +13,7 @@ let
 #    rev = "main";
     rev = "316627c53cc938b3dac9edc2d1d5549857c433d6";
     sparseCheckout = [ "wallpaper" ];
-    hash = "";
+    hash = "sha256-xEshn+vkoSa1gHOPz5+PLeQqv0yZIqNVUbrQdojoAuo=";
   };
 in
 
