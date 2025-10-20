@@ -34,87 +34,101 @@ in
 
   services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
 
-  xdg.dataFile = {
-    "applications/org.kde.kinfocenter.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/org.kde.kmenuedit.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/org.kde.plasma-systemmonitor.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/org.kde.ksystemlog.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/systemsettings.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/kdesystemsettings.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-      "applications/nixos-manual.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    #"applications/kcm_printer_manager.desktop".text = ''
-    #  [Desktop Entry]
-    #  NoDisplay=true
-    #'';
-    #"applications/org.kde.kde-add-printer.desktop".text = ''
-    #  [Desktop Entry]
-    #  NoDisplay=true
-    #'';
-    #"applications/org.kde.PrintQueue.desktop".text = ''
-    #  [Desktop Entry]
-    #  NoDisplay=true
-    #'';
-    #"applications/org.kde.ConfigurePrinter.desktop".text = ''
-    #  [Desktop Entry]
-    #  NoDisplay=true
-    #'';
-    "applications/org.freedesktop.IBus.Setup.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/org.freedesktop.IBus.Panel.Emojier.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/org.freedesktop.IBus.Panel.Extension.Gtk3.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/org.freedesktop.IBus.Panel.Wayland.Gtk3.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/org.kde.drkonqi.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/org.kde.drkonqi.coredump.gui.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/org.kde.plasma.emojier.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/cups.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/nvim.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
+  xdg = {
+    userDirs = {
+      enable = true;
+      createDirectories = true;
+      download = "${config.home.homeDirectory}/downloads";
+      documents = "${config.home.homeDirectory}";
+      music = "${config.home.homeDirectory}";
+      pictures = "${config.home.homeDirectory}";
+      videos = "${config.home.homeDirectory}";
+      desktop = "${config.home.homeDirectory}";
+      publicShare = "${config.home.homeDirectory}";
+      templates = "${config.home.homeDirectory}";
+    };
+    dataFile = {
+      "applications/org.kde.kinfocenter.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+      "applications/org.kde.kmenuedit.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+      "applications/org.kde.plasma-systemmonitor.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+      "applications/org.kde.ksystemlog.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+      "applications/systemsettings.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+      "applications/kdesystemsettings.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+        "applications/nixos-manual.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+      #"applications/kcm_printer_manager.desktop".text = ''
+      #  [Desktop Entry]
+      #  NoDisplay=true
+      #'';
+      #"applications/org.kde.kde-add-printer.desktop".text = ''
+      #  [Desktop Entry]
+      #  NoDisplay=true
+      #'';
+      #"applications/org.kde.PrintQueue.desktop".text = ''
+      #  [Desktop Entry]
+      #  NoDisplay=true
+      #'';
+      #"applications/org.kde.ConfigurePrinter.desktop".text = ''
+      #  [Desktop Entry]
+      #  NoDisplay=true
+      #'';
+      "applications/org.freedesktop.IBus.Setup.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+      "applications/org.freedesktop.IBus.Panel.Emojier.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+      "applications/org.freedesktop.IBus.Panel.Extension.Gtk3.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+      "applications/org.freedesktop.IBus.Panel.Wayland.Gtk3.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+      "applications/org.kde.drkonqi.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+      "applications/org.kde.drkonqi.coredump.gui.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+      "applications/org.kde.plasma.emojier.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+      "applications/cups.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+      "applications/nvim.desktop".text = ''
+        [Desktop Entry]
+        NoDisplay=true
+      '';
+    };
   };
 
   programs.plasma = {
@@ -322,7 +336,7 @@ in
 
     configFile = {
       "kwinrc"."Windows"."Placement" = "Maximizing"; # automatically open all windows maximized by default
-      "kdeglobals"."KDE"."ShowDeleteCommand" = false; # hide menu configuration options in applications
+      "kdeglobals"."KDE"."ShowDeleteCommand" = false; # hide full on delete option in applications
       "kdeglobals"."General".TerminalApplication = "alacritty"; # set alacritty as default terminal
     };
 
