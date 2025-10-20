@@ -158,9 +158,32 @@ in
         location = "bottom";
         height = 30;
         widgets = [
-          "org.kde.plasma.kickoff"
+          {
+            name = "org.kde.plasma.kicker";
+            config.General.icon = "application-menu";
+          }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
-          "org.kde.plasma.systemtray"
+          {
+            name = "org.kde.plasma.systemtray";
+            icons.scaleToFit = true;
+            items = {
+              showAll = true;
+              #shown = [
+              #  "org.kde.plasma.keyboardlayout"
+              #  "org.kde.plasma.networkmanagement"
+              #  "org.kde.plasma.volume"
+              #];
+              #hidden = [
+              #  "org.kde.plasma.battery"
+              #  "org.kde.plasma.brightness"
+              #  "org.kde.plasma.clipboard"
+              #  "org.kde.plasma.devicenotifier"
+              #  "org.kde.plasma.mediacontroller"
+              #  "plasmashell_microphone"
+              #];
+            };
+          }
+          #"org.kde.plasma.systemtray"
           "org.kde.plasma.digitalclock"
         ];
         #widgets = [
@@ -240,9 +263,7 @@ in
     };
 
     workspace = {
-      wallpaperSlideShow = {
-        path = "${repo-wallpaper}/wallpaper";
-      };
+      wallpaperSlideShow.path = "${repo-wallpaper}/wallpaper";
       cursor = {
         theme = "WhiteSur-cursors";
         size = 20;
