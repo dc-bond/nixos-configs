@@ -148,6 +148,7 @@
         height = 30;
         widgets = [
           "org.kde.plasma.kickoff"
+          "org.kde.plasma.marginsseparator" # moves subesquent items to right side of panel
           "org.kde.plasma.systemtray"
           "org.kde.plasma.digitalclock"
         ];
