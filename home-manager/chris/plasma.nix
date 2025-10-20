@@ -24,6 +24,23 @@
 
   services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
 
+  # Hide applications from launcher
+  xdg.dataFile = {
+    "applications/org.kde.kinfocenter.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
+    "applications/org.kde.plasma-systemmonitor.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
+    "applications/org.kde.ksystemlog.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
+    # Add more as needed - check ~/.local/share/applications/ and /run/current-system/sw/share/applications/
+  };
+
   programs.plasma = {
     enable = true;
     overrideConfig = true;
@@ -175,23 +192,6 @@
     configFile = {
       "kwinrc"."Windows"."Placement" = "Maximizing"; # automatically open all windows maximized by default
       "kdeglobals"."KDE"."ShowDeleteCommand" = false; # hode menu configuration options in applications
-    };
-
-    # Hide applications from launcher
-    xdg.dataFile = {
-      "applications/org.kde.kinfocenter.desktop".text = ''
-        [Desktop Entry]
-        NoDisplay=true
-      '';
-      "applications/org.kde.plasma-systemmonitor.desktop".text = ''
-        [Desktop Entry]
-        NoDisplay=true
-      '';
-      "applications/org.kde.ksystemlog.desktop".text = ''
-        [Desktop Entry]
-        NoDisplay=true
-      '';
-      # Add more as needed - check ~/.local/share/applications/ and /run/current-system/sw/share/applications/
     };
 
   };
