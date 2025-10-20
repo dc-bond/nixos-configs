@@ -147,7 +147,8 @@ in
         height = 30;
         widgets = [
           {
-            name = "org.kde.plasma.kickoff";
+            #name = "org.kde.plasma.kickoff";
+            name = "org.kde.plasma.kicker";
             config.General.icon = "arrow-up-double";
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
