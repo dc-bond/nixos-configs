@@ -97,6 +97,10 @@
       [Desktop Entry]
       NoDisplay=true
     '';
+    "applications/nvim.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
   };
 
   programs.plasma = {
@@ -151,6 +155,17 @@
           {
             name = "org.kde.plasma.icontasks";
             config.General.launchers = [];
+          }
+          {
+            name = "org.kde.plasma.systemtray";
+            config.General.scaleIconsToFit = true;
+          }
+          {
+            name = "org.kde.plasma.digitalclock";
+            config.Appearance = {
+              showDate = true;
+              use24hFormat = false;
+            };
           }
         ];
       }

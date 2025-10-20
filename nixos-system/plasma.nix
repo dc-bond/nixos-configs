@@ -26,6 +26,7 @@
       xwaylandvideobridge
       ark # file archiver
       drkonqi # crashed process viewer
+      spectacle # screenshot tool
       print-manager # printer
       plasma-welcome # welcome screen
       discover # software center
