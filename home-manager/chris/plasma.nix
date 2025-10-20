@@ -159,7 +159,8 @@ in
         widgets = [
           {
             name = "org.kde.plasma.kickoff";
-            config.General.icon = "application-menu";
+            #config.General.icon = "application-menu";
+            config.General.icon = "nix-snowflake-white";
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
           #"org.kde.plasma.systemtray"
