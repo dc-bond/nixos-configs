@@ -63,22 +63,6 @@ in
       [Desktop Entry]
       NoDisplay=true
     '';
-    #"applications/kcm_printer_manager.desktop".text = ''
-    #  [Desktop Entry]
-    #  NoDisplay=true
-    #'';
-    #"applications/org.kde.kde-add-printer.desktop".text = ''
-    #  [Desktop Entry]
-    #  NoDisplay=true
-    #'';
-    #"applications/org.kde.PrintQueue.desktop".text = ''
-    #  [Desktop Entry]
-    #  NoDisplay=true
-    #'';
-    #"applications/org.kde.ConfigurePrinter.desktop".text = ''
-    #  [Desktop Entry]
-    #  NoDisplay=true
-    #'';
     "applications/org.freedesktop.IBus.Setup.desktop".text = ''
       [Desktop Entry]
       NoDisplay=true
@@ -232,7 +216,6 @@ in
         dimDisplay.enable = false;
         whenLaptopLidClosed = "doNothing";
         inhibitLidActionWhenExternalMonitorConnected = true;  # don't sleep when lid closes with external monitor
-        # displayBrightness = 100;  # Uncomment if you want to force 100% brightness on AC
       };
       battery = {
         powerProfile = "powerSaving";
@@ -263,22 +246,22 @@ in
     };
 
     kwin = {
-      #effects = {
-      #  blur.enable = false;
-      #  cube.enable = false;
-      #  desktopSwitching.animation = "off";
-      #  dimAdminMode.enable = false;
-      #  dimInactive.enable = false;
-      #  fallApart.enable = false;
-      #  fps.enable = false;
-      #  minimization.animation = "off";
-      #  shakeCursor.enable = false;
-      #  slideBack.enable = false;
-      #  snapHelper.enable = false;
-      #  translucency.enable = false;
-      #  windowOpenClose.animation = "off";
-      #  wobblyWindows.enable = false;
-      #};
+      effects = {
+        blur.enable = false;
+        cube.enable = false;
+        desktopSwitching.animation = "off";
+        dimAdminMode.enable = false;
+        dimInactive.enable = false;
+        fallApart.enable = false;
+        fps.enable = false;
+        minimization.animation = "off";
+        shakeCursor.enable = false;
+        slideBack.enable = false;
+        snapHelper.enable = false;
+        translucency.enable = false;
+        windowOpenClose.animation = "off";
+        wobblyWindows.enable = false;
+      };
       nightLight = {
         enable = true;
         mode = "times";
