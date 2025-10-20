@@ -237,7 +237,7 @@ in
       battery = {
         powerProfile = "powerSaving";
         powerButtonAction = "shutDown";
-        whenSleepingEnter = "sleep";
+        whenSleepingEnter = "standby";
         dimDisplay.enable = false;
         autoSuspend = {
           action = "sleep";
