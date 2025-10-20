@@ -20,14 +20,13 @@
       kinfocenter # system info center
       kmenuedit # menu editor tool
       konsole # default kde terminal
-      krdp
       plasma-browser-integration
       plasma-systemmonitor # kde system monitor app
       xwaylandvideobridge
       ark # file archiver
       drkonqi # crashed process viewer
       spectacle # screenshot tool
-      print-manager # printer
+      #print-manager # printer
       plasma-welcome # welcome screen
       discover # software center
     ];

@@ -148,10 +148,9 @@
         height = 30;
         widgets = [
           {
-            name = "org.kde.plasma.kicker";
+            name = "org.kde.plasma.simplemenu";
             config.General.icon = "application-menu";
           }
-          #"org.kde.plasma.panelspacer"
           {
             name = "org.kde.plasma.icontasks";
             config.General.launchers = [];
@@ -159,7 +158,17 @@
           {
             name = "org.kde.plasma.systemtray";
             config.General = {
-              hiddenItems = "";
+              #hiddenItems = "";
+              shownItems = [
+                "org.kde.plasma.bluetooth"
+                "org.kde.plasma.battery"
+                "org.kde.plasma.networkmanagement"
+                "org.kde.plasma.volume"
+                "org.kde.plasma.brightness"
+                "org.kde.plasma.notifications"
+                "org.kde.plasma.devicenotifier"
+                "org.kde.plasma.keyboardindicator"
+              ];              
               scaleIconsToFit = true;
             };
           }
@@ -246,6 +255,7 @@
     configFile = {
       "kwinrc"."Windows"."Placement" = "Maximizing"; # automatically open all windows maximized by default
       "kdeglobals"."KDE"."ShowDeleteCommand" = false; # hode menu configuration options in applications
+      "kdeglobals"."General".TerminalApplication = "alacritty"; # set alacritty as default terminal
     };
 
   };
