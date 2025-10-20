@@ -25,21 +25,21 @@
   services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
 
   # Hide applications from launcher
-  xdg.dataFile = {
-    "applications/org.kde.kinfocenter.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/org.kde.plasma-systemmonitor.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/org.kde.ksystemlog.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    # Add more as needed - check ~/.local/share/applications/ and /run/current-system/sw/share/applications/
-  };
+  #xdg.dataFile = {
+  #  "applications/org.kde.kinfocenter.desktop".text = ''
+  #    [Desktop Entry]
+  #    NoDisplay=true
+  #  '';
+  #  "applications/org.kde.plasma-systemmonitor.desktop".text = ''
+  #    [Desktop Entry]
+  #    NoDisplay=true
+  #  '';
+  #  "applications/org.kde.ksystemlog.desktop".text = ''
+  #    [Desktop Entry]
+  #    NoDisplay=true
+  #  '';
+  #  # Add more as needed - check ~/.local/share/applications/ and /run/current-system/sw/share/applications/
+  #};
 
   programs.plasma = {
     enable = true;
@@ -83,35 +83,35 @@
     panels = [
       {
         location = "bottom";
-        height = 48;
-        widgets = [
-          {
-            name = "org.kde.plasma.kickoff";
-            config.General.icon = "start-here-kde";
-          }
-          "org.kde.plasma.panelspacer"
-          {
-            name = "org.kde.plasma.icontasks";
-            config.General = {
-              launchers = [
-                "applications:firefox.desktop"
-                "applications:libreoffice-startcenter.desktop"
-              ];
-            };
-          }
-          "org.kde.plasma.panelspacer"
-          {
-            name = "org.kde.plasma.systemtray";
-            config.General.scaleIconsToFit = true;
-          }
-          {
-            name = "org.kde.plasma.digitalclock";
-            config.Appearance = {
-              showDate = true;
-              use24hFormat = true;
-            };
-          }
-        ];
+        height = 30;
+        #widgets = [
+        #  {
+        #    name = "org.kde.plasma.kickoff";
+        #    config.General.icon = "start-here-kde";
+        #  }
+        #  "org.kde.plasma.panelspacer"
+        #  {
+        #    name = "org.kde.plasma.icontasks";
+        #    config.General = {
+        #      launchers = [
+        #        "applications:firefox.desktop"
+        #        "applications:libreoffice-startcenter.desktop"
+        #      ];
+        #    };
+        #  }
+        #  "org.kde.plasma.panelspacer"
+        #  {
+        #    name = "org.kde.plasma.systemtray";
+        #    config.General.scaleIconsToFit = true;
+        #  }
+        #  {
+        #    name = "org.kde.plasma.digitalclock";
+        #    config.Appearance = {
+        #      showDate = true;
+        #      use24hFormat = true;
+        #    };
+        #  }
+        #];
       }
     ];
 
