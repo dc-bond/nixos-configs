@@ -162,39 +162,81 @@ in
         height = 30;
         widgets = [
           {
-            name = "org.kde.plasma.kickoff";
-            config.General.icon = "arrow-up-double";
+            kickoff = {
+              sortAlphabetically = true;
+              icon = "arrow-up-double";
+            };
           }
-          "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
-          #"org.kde.plasma.systemtray"
           {
-            systemTray = {
-              #icons.scaleToFit = true;
-              items = {
-                showAll = true;
-                #shown = [
-                #  "org.kde.plasma.volume"
-                #  "org.kde.plasma.battery"
-                #  "org.kde.plasma.brightness"
-                #  "org.kde.plasma.bluetooth"
-                #  "org.kde.plasma.networkmanagement"
-                #];
-                #hidden = [
-                #  "org.kde.plasma.keyboardlayout"
-                #  "org.kde.plasma.clipboard"
-                #  "org.kde.plasma.devicenotifier"
-                #  "org.kde.plasma.mediacontroller"
-                #  #"plasmashell_microphone"
-                #  #"xdg-desktop-portal-kde"
-                #];
+            systemTray.items = {
+              shown = [
+                "org.kde.plasma.battery"
+              ];
+              hidden = [
+                "org.kde.plasma.addons.katesessions"
+              ];
+              configs = {
+                battery.showPercentage = true;
               };
             };
           }
-          "org.kde.plasma.digitalclock"
+          {
+            digitalClock = {
+              time = {
+                showSeconds = "always";
+                format = "24h";
+              };
+              calendar = {
+                firstDayOfWeek = "monday";
+                showWeekNumbers = true;
+                plugins = [ "holidaysevents" "astronomicalevents" ];
+              };
+            };
+          }
         ];
+        hiding = "none";
+        floating = false;
       }
     ];
 
+    #panels = [
+    #  {
+    #    location = "bottom";
+    #    height = 30;
+    #    widgets = [
+    #      {
+    #        name = "org.kde.plasma.kickoff";
+    #        config.General.icon = "arrow-up-double";
+    #      }
+    #      "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
+    #      #"org.kde.plasma.systemtray"
+    #      {
+    #        systemTray = {
+    #          #icons.scaleToFit = true;
+    #          items = {
+    #            showAll = true;
+    #            #shown = [
+    #            #  "org.kde.plasma.volume"
+    #            #  "org.kde.plasma.battery"
+    #            #  "org.kde.plasma.brightness"
+    #            #  "org.kde.plasma.bluetooth"
+    #            #  "org.kde.plasma.networkmanagement"
+    #            #];
+    #            #hidden = [
+    #            #  "org.kde.plasma.keyboardlayout"
+    #            #  "org.kde.plasma.clipboard"
+    #            #  "org.kde.plasma.devicenotifier"
+    #            #  "org.kde.plasma.mediacontroller"
+    #            #  #"plasmashell_microphone"
+    #            #  #"xdg-desktop-portal-kde"
+    #            #];
+    #          };
+    #        };
+    #      }
+    #      "org.kde.plasma.digitalclock"
+    #    ];
+    #  }
+    #];
 
     hotkeys.commands = {
       launch-alacritty = {
