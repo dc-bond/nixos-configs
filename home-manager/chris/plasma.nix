@@ -23,6 +23,7 @@ in
       "home-manager/chris/alacritty.nix"
       "home-manager/chris/vscodium.nix"
       "home-manager/chris/firefox.nix"
+      "home-manager/chris/chromium.nix"
     ])
   ];
 
@@ -39,10 +40,10 @@ in
       [Desktop Entry]
       NoDisplay=true
     '';
-    "applications/org.kde.kmenuedit.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
+    #"applications/org.kde.kmenuedit.desktop".text = ''
+    #  [Desktop Entry]
+    #  NoDisplay=true
+    #'';
     "applications/org.kde.plasma-systemmonitor.desktop".text = ''
       [Desktop Entry]
       NoDisplay=true

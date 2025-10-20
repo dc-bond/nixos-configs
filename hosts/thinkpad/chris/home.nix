@@ -42,15 +42,8 @@
 # define default folders in home directory
   xdg.userDirs = {
     enable = true;
-    createDirectories = true;
     download = "${config.home.homeDirectory}/downloads";
-    documents = "${config.home.homeDirectory}";
-    music = "${config.home.homeDirectory}";
-    pictures = "${config.home.homeDirectory}";
-    videos = "${config.home.homeDirectory}";
-    desktop = "${config.home.homeDirectory}";
-    publicShare = "${config.home.homeDirectory}";
-    templates = "${config.home.homeDirectory}";
+    desktop = null;
   };
 
 # start/re-start services after system rebuild
