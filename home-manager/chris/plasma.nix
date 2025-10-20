@@ -39,6 +39,10 @@ in
       [Desktop Entry]
       NoDisplay=true
     '';
+    "applications/org.kde.kmenuedit.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
     "applications/org.kde.plasma-systemmonitor.desktop".text = ''
       [Desktop Entry]
       NoDisplay=true
@@ -59,22 +63,22 @@ in
       [Desktop Entry]
       NoDisplay=true
     '';
-    "applications/kcm_printer_manager.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/org.kde.kde-add-printer.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/org.kde.PrintQueue.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/org.kde.ConfigurePrinter.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
+    #"applications/kcm_printer_manager.desktop".text = ''
+    #  [Desktop Entry]
+    #  NoDisplay=true
+    #'';
+    #"applications/org.kde.kde-add-printer.desktop".text = ''
+    #  [Desktop Entry]
+    #  NoDisplay=true
+    #'';
+    #"applications/org.kde.PrintQueue.desktop".text = ''
+    #  [Desktop Entry]
+    #  NoDisplay=true
+    #'';
+    #"applications/org.kde.ConfigurePrinter.desktop".text = ''
+    #  [Desktop Entry]
+    #  NoDisplay=true
+    #'';
     "applications/org.freedesktop.IBus.Setup.desktop".text = ''
       [Desktop Entry]
       NoDisplay=true
@@ -159,8 +163,7 @@ in
         widgets = [
           {
             name = "org.kde.plasma.kickoff";
-            #config.General.icon = "application-menu";
-            config.General.icon = "nix-snowflake-white";
+            config.General.icon = "arrow-up-double";
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
           #"org.kde.plasma.systemtray"
