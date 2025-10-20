@@ -177,6 +177,7 @@ in
                   "${configVars.rokuGymVlanIp}" # roku IP
                   "${configVars.rokuLivingroomVlanIp}" # roku IP
                   "${configVars.thinkpadTailscaleIp}" # thinkpad tailscale IP
+                  "${configVars.cypressTailscaleIp}" # cypress tailscale IP
                   "${configVars.chrisIphone15TailscaleIp}" # chris iPhone tailscale IP
                   "${configVars.daniellePixel7aTailscaleIp}" # danielle pixel 7a tailscale IP
                   "${configVars.sydneyIphone6TailscaleIp}" # sydney iPhone tailscale IP
