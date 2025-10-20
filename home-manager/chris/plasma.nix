@@ -49,6 +49,38 @@
       [Desktop Entry]
       NoDisplay=true
     '';
+    "applications/kcm_printer_manager.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
+    "applications/org.kde.kde-add-printer.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
+    "applications/org.kde.PrintQueue.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
+    "applications/org.kde.ConfigurePrinter.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
+    "applications/org.freedesktop.IBus.Setup.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
+    "applications/org.freedesktop.IBus.Panel.Emojier.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
+    "applications/org.freedesktop.IBus.Panel.Extension.Gtk3.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
+    "applications/org.freedesktop.IBus.Panel.Wayland.Gtk3.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
   };
 
   programs.plasma = {
