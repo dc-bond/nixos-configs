@@ -20,7 +20,7 @@
       "home-manager/chris/gnupg.nix"
       "home-manager/chris/pass.nix"
       
-      "home-manager/chris/email.nix"
+      #"home-manager/chris/email.nix"
 
       "home-manager/chris/plasma.nix"
       #"home-manager/chris/hyprland.nix"
@@ -43,6 +43,8 @@
   xdg.userDirs = {
     enable = true;
     download = "${config.home.homeDirectory}/downloads";
+    #documents = "${config.home.homeDirectory}/documents";
+    documents = null;
     desktop = null;
   };
 

@@ -152,7 +152,7 @@ in
             config.General.icon = "arrow-up-double";
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
-          "org.kde.plasma.systemtray"
+          #"org.kde.plasma.systemtray"
           #{
           #  systemTray = {
           #    #icons.scaleToFit = true;
