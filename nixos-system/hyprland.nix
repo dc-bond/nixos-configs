@@ -1,7 +1,7 @@
 { 
-pkgs,
-lib,
-... 
+  pkgs,
+  lib,
+  ... 
 }: 
 
 {
@@ -10,6 +10,7 @@ lib,
     systemPackages = with pkgs; [
       wayland-utils # wayland utilities
       wl-clipboard # command-line copy/paste utilities for wayland
+      libsecret # secrets library for gnome keyring
     ];
   };
 
@@ -25,6 +26,7 @@ lib,
         thunar-volman
       ];
     };
+    seahorse.enable = true; # gnome secrets managegement tool
     xfconf.enable = true; # enable xfconf to save preferences in thunar
     firejail = {
       enable = true;
@@ -42,6 +44,7 @@ lib,
   };
 
   services = {
+    gnome.gnome-keyring.enable = true;
     gvfs.enable = true; # mount, trash, and other functionalities
     tumbler.enable = true; # thumbnail support for images
   };

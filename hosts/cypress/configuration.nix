@@ -91,7 +91,6 @@
       "nixos-system/nixpkgs.nix"
       #"nixos-system/backups.nix"
       "nixos-system/sops.nix"
-      "nixos-system/keyring.nix"
       "nixos-system/bluetooth.nix"
       
       #"nixos-system/display-manager.nix"
