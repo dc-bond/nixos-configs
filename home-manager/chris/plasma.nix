@@ -81,6 +81,22 @@
       [Desktop Entry]
       NoDisplay=true
     '';
+    "applications/org.kde.drkonqi.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
+    "applications/org.kde.drkonqi.coredump.gui.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
+    "applications/org.kde.plasma.emojier.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
+    "applications/cups.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
   };
 
   programs.plasma = {
@@ -126,44 +142,22 @@
       {
         location = "bottom";
         height = 30;
-        #widgets = [
-        #  {
-        #    name = "org.kde.plasma.kickoff";
-        #    config.General.icon = "start-here-kde";
-        #  }
-        #  "org.kde.plasma.panelspacer"
-        #  {
-        #    name = "org.kde.plasma.icontasks";
-        #    config.General = {
-        #      launchers = [
-        #        "applications:firefox.desktop"
-        #        "applications:libreoffice-startcenter.desktop"
-        #      ];
-        #    };
-        #  }
-        #  "org.kde.plasma.panelspacer"
-        #  {
-        #    name = "org.kde.plasma.systemtray";
-        #    config.General.scaleIconsToFit = true;
-        #  }
-        #  {
-        #    name = "org.kde.plasma.digitalclock";
-        #    config.Appearance = {
-        #      showDate = true;
-        #      use24hFormat = true;
-        #    };
-        #  }
-        #];
+        widgets = [
+          {
+            name = "org.kde.plasma.kickoff";
+            config.General.icon = "application-menu";
+          }
+          "org.kde.plasma.panelspacer"
+          {
+            name = "org.kde.plasma.icontasks";
+            config.General.launchers = [];
+          }
+        ];
       }
     ];
 
 
     hotkeys.commands = {
-      #clear-notifications = {
-      #  name = "Clear all KDE Plasma notifications";
-      #  key = "Meta+Shift+Backspace";
-      #  command = "clear-kde-notifications";
-      #};
       launch-alacritty = {
         name = "Launch Alacritty";
         key = "Alt+Return";
