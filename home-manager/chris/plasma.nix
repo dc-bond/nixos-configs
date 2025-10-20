@@ -147,39 +147,26 @@
         location = "bottom";
         height = 30;
         widgets = [
-          {
-            name = "org.kde.plasma.simplemenu";
-            config.General.icon = "application-menu";
-          }
-          {
-            name = "org.kde.plasma.icontasks";
-            config.General.launchers = [];
-          }
-          {
-            name = "org.kde.plasma.systemtray";
-            config.General = {
-              #hiddenItems = "";
-              shownItems = [
-                "org.kde.plasma.bluetooth"
-                "org.kde.plasma.battery"
-                "org.kde.plasma.networkmanagement"
-                "org.kde.plasma.volume"
-                "org.kde.plasma.brightness"
-                "org.kde.plasma.notifications"
-                "org.kde.plasma.devicenotifier"
-                "org.kde.plasma.keyboardindicator"
-              ];              
-              scaleIconsToFit = true;
-            };
-          }
-          {
-            name = "org.kde.plasma.digitalclock";
-            config.Appearance = {
-              showDate = true;
-              use24hFormat = false;
-            };
-          }
+          "org.kde.plasma.kickoff"
+          "org.kde.plasma.systemtray"
+          "org.kde.plasma.digitalclock"
         ];
+        #widgets = [
+        #  {
+        #    name = "org.kde.plasma.kickoff";
+        #    config.General.icon = "application-menu";
+        #  }
+        #  {
+        #    name = "org.kde.plasma.systemtray";
+        #  }
+        #  {
+        #    name = "org.kde.plasma.digitalclock";
+        #    config.Appearance = {
+        #      showDate = true;
+        #      use24hFormat = false;
+        #    };
+        #  }
+        #];
       }
     ];
 
