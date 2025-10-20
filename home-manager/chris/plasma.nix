@@ -148,17 +148,20 @@
         height = 30;
         widgets = [
           {
-            name = "org.kde.plasma.kickoff";
+            name = "org.kde.plasma.kicker";
             config.General.icon = "application-menu";
           }
-          "org.kde.plasma.panelspacer"
+          #"org.kde.plasma.panelspacer"
           {
             name = "org.kde.plasma.icontasks";
             config.General.launchers = [];
           }
           {
             name = "org.kde.plasma.systemtray";
-            config.General.scaleIconsToFit = true;
+            config.General = {
+              hiddenItems = "";
+              scaleIconsToFit = true;
+            };
           }
           {
             name = "org.kde.plasma.digitalclock";
