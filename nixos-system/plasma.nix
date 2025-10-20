@@ -24,7 +24,6 @@
       plasma-browser-integration
       plasma-systemmonitor # kde system monitor app
       xwaylandvideobridge
-      systemsettings # system settings app
       ark # file archiver
       drkonqi # crashed process viewer
       print-manager # printer
