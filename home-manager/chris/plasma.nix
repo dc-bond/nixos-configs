@@ -147,54 +147,94 @@ in
         height = 30;
         widgets = [
           {
-            #name = "org.kde.plasma.kickoff";
             name = "org.kde.plasma.kicker";
             config.General.icon = "arrow-up-double";
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
           #"org.kde.plasma.systemtray"
-          #{
-          #  systemTray = {
-          #    #icons.scaleToFit = true;
-          #    items = {
-          #      showAll = true;
-          #      #shown = [
-          #      #  "org.kde.plasma.volume"
-          #      #  "org.kde.plasma.battery"
-          #      #  "org.kde.plasma.brightness"
-          #      #  "org.kde.plasma.bluetooth"
-          #      #  "org.kde.plasma.networkmanagement"
-          #      #];
-          #      #hidden = [
-          #      #  "org.kde.plasma.keyboardlayout"
-          #      #  "org.kde.plasma.clipboard"
-          #      #  "org.kde.plasma.devicenotifier"
-          #      #  "org.kde.plasma.mediacontroller"
-          #      #  #"plasmashell_microphone"
-          #      #  #"xdg-desktop-portal-kde"
-                 # "Nextcloud"
-                 #     "org.kde.kscreen"
-                 #     "org.kde.plasma.battery"
-                 #     "org.kde.plasma.bluetooth"
-                 #     "org.kde.plasma.brightness"
-                 #     "org.kde.plasma.cameraindicator"
-                 #     "org.kde.plasma.clipboard"
-                 #     "org.kde.plasma.devicenotifier"
-                 #     "org.kde.plasma.keyboardindicator"
-                 #     "org.kde.plasma.keyboardlayout"
-                 #     "org.kde.plasma.manage-inputmethod"
-                 #     "org.kde.plasma.mediacontroller"
-                 #     "org.kde.plasma.notifications"
-                 #     "org.kde.plasma.volume"
-          #      #];
-          #    };
-          #  };
-          #}
+          {
+            systemTray = {
+              items = {
+                showAll = true;
+                #shown = [
+                #  "org.kde.plasma.volume"
+                #  "org.kde.plasma.battery"
+                #  "org.kde.plasma.brightness"
+                #  "org.kde.plasma.bluetooth"
+                #  "org.kde.plasma.networkmanagement"
+                #];
+                #hidden = [
+                #  "org.kde.plasma.keyboardlayout"
+                #  "org.kde.plasma.clipboard"
+                #  "org.kde.plasma.devicenotifier"
+                #  "org.kde.plasma.mediacontroller"
+                #  "Nextcloud"
+                #  "org.kde.kscreen"
+                #  "org.kde.plasma.battery"
+                #  "org.kde.plasma.bluetooth"
+                #  "org.kde.plasma.brightness"
+                #  "org.kde.plasma.cameraindicator"
+                #  "org.kde.plasma.clipboard"
+                #  "org.kde.plasma.devicenotifier"
+                #  "org.kde.plasma.keyboardindicator"
+                #  "org.kde.plasma.keyboardlayout"
+                #  "org.kde.plasma.manage-inputmethod"
+                #  "org.kde.plasma.mediacontroller"
+                #  "org.kde.plasma.notifications"
+                #  "org.kde.plasma.volume"
+                #];
+                #extra = [
+                #  "org.kde.plasma.volume"
+                #  "org.kde.plasma.battery"
+                #  "org.kde.plasma.brightness"
+                #  "org.kde.plasma.bluetooth"
+                #  "org.kde.plasma.networkmanagement"
+                #];
+              };
+            };
+          }
           "org.kde.plasma.digitalclock"
           "org.kde.plasma.showdesktop"
         ];
       }
     ];
+          {
+            systemTray = {
+              #icons.scaleToFit = true;
+              items = {
+                showAll = true;
+                #shown = [
+                #  "org.kde.plasma.volume"
+                #  "org.kde.plasma.battery"
+                #  "org.kde.plasma.brightness"
+                #  "org.kde.plasma.bluetooth"
+                #  "org.kde.plasma.networkmanagement"
+                #];
+                #hidden = [
+                #  "org.kde.plasma.keyboardlayout"
+                #  "org.kde.plasma.clipboard"
+                #  "org.kde.plasma.devicenotifier"
+                #  "org.kde.plasma.mediacontroller"
+                #  #"plasmashell_microphone"
+                #  #"xdg-desktop-portal-kde"
+                # "Nextcloud"
+                #     "org.kde.kscreen"
+                #     "org.kde.plasma.battery"
+                #     "org.kde.plasma.bluetooth"
+                #     "org.kde.plasma.brightness"
+                #     "org.kde.plasma.cameraindicator"
+                #     "org.kde.plasma.clipboard"
+                #     "org.kde.plasma.devicenotifier"
+                #     "org.kde.plasma.keyboardindicator"
+                #     "org.kde.plasma.keyboardlayout"
+                #     "org.kde.plasma.manage-inputmethod"
+                #     "org.kde.plasma.mediacontroller"
+                #     "org.kde.plasma.notifications"
+                #     "org.kde.plasma.volume"
+                #];
+              };
+            };
+          }
 
     hotkeys.commands = {
       launch-alacritty = {
