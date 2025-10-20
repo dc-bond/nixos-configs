@@ -146,28 +146,27 @@
       {
         location = "bottom";
         height = 30;
-        widgets = [
-          "org.kde.plasma.kickoff"
-          "org.kde.plasma.marginsseparator" # moves subesquent items to right side of panel
-          "org.kde.plasma.systemtray"
-          "org.kde.plasma.digitalclock"
-        ];
         #widgets = [
-        #  {
-        #    name = "org.kde.plasma.kickoff";
-        #    config.General.icon = "application-menu";
-        #  }
-        #  {
-        #    name = "org.kde.plasma.systemtray";
-        #  }
-        #  {
-        #    name = "org.kde.plasma.digitalclock";
-        #    config.Appearance = {
-        #      showDate = true;
-        #      use24hFormat = false;
-        #    };
-        #  }
+        #  "org.kde.plasma.kickoff"
+        #  "org.kde.plasma.systemtray"
+        #  "org.kde.plasma.digitalclock"
         #];
+        widgets = [
+          {
+            name = "org.kde.plasma.kickoff";
+            config.General.icon = "application-menu";
+          }
+          {
+            name = "org.kde.plasma.systemtray";
+          }
+          {
+            name = "org.kde.plasma.digitalclock";
+            config.Appearance = {
+              showDate = true;
+              use24hFormat = false;
+            };
+          }
+        ];
       }
     ];
 
@@ -242,7 +241,7 @@
 
     configFile = {
       "kwinrc"."Windows"."Placement" = "Maximizing"; # automatically open all windows maximized by default
-      "kdeglobals"."KDE"."ShowDeleteCommand" = false; # hode menu configuration options in applications
+      "kdeglobals"."KDE"."ShowDeleteCommand" = false; # hide menu configuration options in applications
       "kdeglobals"."General".TerminalApplication = "alacritty"; # set alacritty as default terminal
     };
 
