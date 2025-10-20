@@ -12,7 +12,7 @@ let
     repo = "nixos-configs";
     rev = "main";
     sparseCheckout = [ "wallpaper" ];
-    hash = "";
+    hash = "316627c53cc938b3dac9edc2d1d5549857c433d6";
   };
 in
 
