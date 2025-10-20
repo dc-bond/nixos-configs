@@ -164,26 +164,13 @@ in
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
           {
-            name = "org.kde.plasma.systemtray";
-            #icons.scaleToFit = true;
-            items = {
-              showAll = true;
-              #shown = [
-              #  "org.kde.plasma.keyboardlayout"
-              #  "org.kde.plasma.networkmanagement"
-              #  "org.kde.plasma.volume"
-              #];
-              #hidden = [
-              #  "org.kde.plasma.battery"
-              #  "org.kde.plasma.brightness"
-              #  "org.kde.plasma.clipboard"
-              #  "org.kde.plasma.devicenotifier"
-              #  "org.kde.plasma.mediacontroller"
-              #  "plasmashell_microphone"
-              #];
+            systemTray = {
+              icons.scaleToFit = true;
+              items = {
+                showAll = true;
+              };
             };
           }
-          #"org.kde.plasma.systemtray"
           "org.kde.plasma.digitalclock"
         ];
         #widgets = [
