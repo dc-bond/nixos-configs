@@ -40,18 +40,18 @@
       enableHidpi = true;
       wayland.enable = true;
     };
-    xrdp = {
-      enable = true;
-      defaultWindowManager = "startplasma-x11";
-      openFirewall = true; # opens port 3389
-    };
-    xserver = {
-      enable = true;
-      xkb = {
-        layout = "us";
-        variant = "";
-      };
-    };
+    #xrdp = {
+    #  enable = true;
+    #  defaultWindowManager = "startplasma-x11";
+    #  openFirewall = true; # opens port 3389
+    #};
+    #xserver = {
+    #  enable = true;
+    #  xkb = {
+    #    layout = "us";
+    #    variant = "";
+    #  };
+    #};
   };
 
   systemd.user.services = {
