@@ -10,7 +10,6 @@ let
   repo-wallpaper = pkgs.fetchFromGitHub {
     owner = "dc-bond";
     repo = "nixos-configs";
-#    rev = "main";
     rev = "316627c53cc938b3dac9edc2d1d5549857c433d6";
     sparseCheckout = [ "wallpaper" ];
     hash = "sha256-xEshn+vkoSa1gHOPz5+PLeQqv0yZIqNVUbrQdojoAuo=";
@@ -166,9 +165,9 @@ in
           #"org.kde.plasma.systemtray"
           {
             systemTray = {
-              icons.scaleToFit = true;
+              #icons.scaleToFit = true;
               items = {
-                showAll = false;
+                #showAll = false;
                 shown = [
                   "org.kde.plasma.volume"
                   "org.kde.plasma.battery"
@@ -176,14 +175,14 @@ in
                   "org.kde.plasma.bluetooth"
                   "org.kde.plasma.networkmanagement"
                 ];
-                hidden = [
-                  "org.kde.plasma.keyboardlayout"
-                  "org.kde.plasma.clipboard"
-                  "org.kde.plasma.devicenotifier"
-                  "org.kde.plasma.mediacontroller"
-                  #"plasmashell_microphone"
-                  #"xdg-desktop-portal-kde"
-                ];
+                #hidden = [
+                #  "org.kde.plasma.keyboardlayout"
+                #  "org.kde.plasma.clipboard"
+                #  "org.kde.plasma.devicenotifier"
+                #  "org.kde.plasma.mediacontroller"
+                #  #"plasmashell_microphone"
+                #  #"xdg-desktop-portal-kde"
+                #];
               };
             };
           }
@@ -199,6 +198,11 @@ in
         key = "Alt+Return";
         command = "alacritty";
       };
+    };
+
+    krunner = {
+      position = "center";
+      shortcuts.launch = "Alt+d";
     };
 
     kwin = {
