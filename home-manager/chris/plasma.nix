@@ -156,15 +156,6 @@ in
               compactDisplayStyle = true;
               favoritesDisplayMode = "list";
               applicationsDisplayMode = "list";
-              #showButtonsFor = {
-              #  custom = [
-              #    "logout"
-              #    "switch-user"
-              #    "suspend"
-              #    "reboot"
-              #    "shutdown"
-              #  ];
-              #};
               settings = {
                 General = {
                   favorites = "chromium-browser.desktop,org.kde.dolphin.desktop,alacritty.desktop";
@@ -175,10 +166,6 @@ in
               };
             };
           }
-          #{
-          #  name = "org.kde.plasma.kickoff";
-          #  config.General.icon = "arrow-up-double";
-          #}
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
           "org.kde.plasma.systemtray"
           #{ 
