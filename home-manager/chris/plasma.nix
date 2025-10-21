@@ -31,6 +31,8 @@ in
     libreoffice-still # office suite
     element-desktop # matrix chat app
     nextcloud-client # nextcloud local syncronization client
+    whitesur-cursors
+    papirus-nord
   ];
 
   services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
@@ -40,10 +42,10 @@ in
       [Desktop Entry]
       NoDisplay=true
     '';
-    #"applications/org.kde.kmenuedit.desktop".text = ''
-    #  [Desktop Entry]
-    #  NoDisplay=true
-    #'';
+    "applications/org.kde.kmenuedit.desktop".text = ''
+      [Desktop Entry]
+      NoDisplay=true
+    '';
     "applications/org.kde.plasma-systemmonitor.desktop".text = ''
       [Desktop Entry]
       NoDisplay=true
@@ -147,34 +149,34 @@ in
         height = 30;
         hiding = "autohide";
         widgets = [
-          #{
-          #  kickoff = {
-          #    icon = "arrow-up-double"; 
-          #    sortAlphabetically = true;
-          #    compactDisplayStyle = true;
-          #    showButtonsFor = {
-          #      custom = [
-          #        "logout"
-          #        "switch-user"
-          #        "suspend"
-          #        "reboot"
-          #        "shutdown"
-          #      ];
-          #    };
-          #    settings = {
-          #      General = {
-          #        favorites = "chromium-browser.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
-          #        showRecentApps = false;
-          #        showRecentDocs = false;
-          #        showRecentContacts = false;
-          #      };
-          #    };
-          #  };
-          #}
           {
-            name = "org.kde.plasma.kickoff";
-            config.General.icon = "arrow-up-double";
+            kickoff = {
+              icon = "arrow-up-double"; 
+              sortAlphabetically = true;
+              compactDisplayStyle = true;
+              #showButtonsFor = {
+              #  custom = [
+              #    "logout"
+              #    "switch-user"
+              #    "suspend"
+              #    "reboot"
+              #    "shutdown"
+              #  ];
+              #};
+              settings = {
+                General = {
+                  #favorites = "chromium-browser.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
+                  showRecentApps = false;
+                  showRecentDocs = false;
+                  showRecentContacts = false;
+                };
+              };
+            };
           }
+          #{
+          #  name = "org.kde.plasma.kickoff";
+          #  config.General.icon = "arrow-up-double";
+          #}
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
           "org.kde.plasma.systemtray"
           #{ 
@@ -304,8 +306,8 @@ in
         size = 20;
       };
       clickItemTo = "open";
-      lookAndFeel = "org.kde.breeze.desktop";
-      iconTheme = "Papirus-Dark";
+      lookAndFeel = "org.kde.breezedark.desktop";
+      iconTheme = "Papirus";
     };
 
     configFile = {
