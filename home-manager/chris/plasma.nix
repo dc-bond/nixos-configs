@@ -147,92 +147,49 @@ in
         height = 30;
         hiding = "autohide";
         widgets = [
-          {
-            kickoff = {
-              icon = "arrow-up-double"; 
-              sortAlphabetically = true;
-              compactDisplayStyle = true;
-              showButtonsFor = {
-                custom = [
-                  "logout"
-                  "switch-user"
-                  "suspend"
-                  "reboot"
-                  "shutdown"
-                ];
-              };
-              settings = {
-                General = {
-                  favorites = "chromium-browser.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
-                  showRecentApps = false;
-                  showRecentDocs = false;
-                  showRecentContacts = false;
-                };
-              };
-            };
-          }
           #{
-          #  name = "org.kde.plasma.kicker";
-          #  config.General.icon = "arrow-up-double";
-          #}
-          "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
-          #"org.kde.plasma.systemtray"
-          {
-            systemTray.items = {
-              shown = [
-                "Nextcloud"
-                "org.kde.plasma.volume"
-                "org.kde.plasma.battery"
-                "org.kde.plasma.bluetooth"
-                "org.kde.plasma.brightness"
-              ];
-              hidden = [
-                "org.kde.plasma.networkmanagement"
-                "org.kde.plasma.clipboard"
-              ];
-            };
-          }
-          #{
-          #  systemTray = {
-          #    items = {
-          #      showAll = true;
-          #      #shown = [
-          #      #  "Nextcloud"
-          #      #  "org.kde.plasma.volume"
-          #      #  "org.kde.plasma.battery"
-          #      #  "org.kde.plasma.brightness"
-          #      #  "org.kde.plasma.bluetooth"
-          #      #  "org.kde.plasma.networkmanagement"
-          #      #];
-          #      #hidden = [];
-          #      #hidden = [
-          #      #  "org.kde.plasma.keyboardlayout"
-          #      #  "org.kde.plasma.clipboard"
-          #      #  "org.kde.plasma.devicenotifier"
-          #      #  "org.kde.plasma.mediacontroller"
-          #      #  "Nextcloud"
-          #      #  "org.kde.kscreen"
-          #      #  "org.kde.plasma.battery"
-          #      #  "org.kde.plasma.bluetooth"
-          #      #  "org.kde.plasma.brightness"
-          #      #  "org.kde.plasma.cameraindicator"
-          #      #  "org.kde.plasma.clipboard"
-          #      #  "org.kde.plasma.devicenotifier"
-          #      #  "org.kde.plasma.keyboardindicator"
-          #      #  "org.kde.plasma.keyboardlayout"
-          #      #  "org.kde.plasma.manage-inputmethod"
-          #      #  "org.kde.plasma.mediacontroller"
-          #      #  "org.kde.plasma.notifications"
-          #      #  "org.kde.plasma.volume"
-          #      #];
-          #      #extra = [
-          #      #  "org.kde.plasma.volume"
-          #      #  "org.kde.plasma.battery"
-          #      #  "org.kde.plasma.brightness"
-          #      #  "org.kde.plasma.bluetooth"
-          #      #  "org.kde.plasma.networkmanagement"
-          #      #];
+          #  kickoff = {
+          #    icon = "arrow-up-double"; 
+          #    sortAlphabetically = true;
+          #    compactDisplayStyle = true;
+          #    showButtonsFor = {
+          #      custom = [
+          #        "logout"
+          #        "switch-user"
+          #        "suspend"
+          #        "reboot"
+          #        "shutdown"
+          #      ];
           #    };
+          #    settings = {
+          #      General = {
+          #        favorites = "chromium-browser.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
+          #        showRecentApps = false;
+          #        showRecentDocs = false;
+          #        showRecentContacts = false;
+          #      };
+          #    };
+          #  };
+          #}
+          {
+            name = "org.kde.plasma.kickoff";
+            config.General.icon = "arrow-up-double";
+          }
+          "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
+          "org.kde.plasma.systemtray"
+          #{ 
+          #  systemTray.items = {
+          #    shown = [
+          #      "Nextcloud"
+          #      "org.kde.plasma.volume"
+          #      "org.kde.plasma.battery"
+          #      "org.kde.plasma.bluetooth"
+          #      "org.kde.plasma.brightness"
+          #    ];
+          #    hidden = [
+          #      "org.kde.plasma.networkmanagement"
+          #      "org.kde.plasma.clipboard"
+          #    ];
           #  };
           #}
           "org.kde.plasma.digitalclock"
