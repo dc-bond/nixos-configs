@@ -158,7 +158,7 @@ in
               applicationsDisplayMode = "list";
               settings = {
                 General = {
-                  favorites = "chromium-browser.desktop,org.kde.dolphin.desktop,alacritty.desktop";
+                  favorites = "chromium-browser.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
                   showRecentApps = false;
                   showRecentDocs = false;
                   showRecentContacts = false;
@@ -294,7 +294,7 @@ in
         theme = "WhiteSur-cursors";
         size = 20;
       };
-      clickItemTo = "open";
+      clickItemTo = "select";
       lookAndFeel = "org.kde.breeze.desktop";
       #iconTheme = "Papirus-Dark";
     };
@@ -303,7 +303,6 @@ in
       baloofilerc."Basic Settings"."Indexing-Enabled" = false; # turn off kde file indexer (for search, save resources)
       "kwinrc"."Windows"."Placement" = "Maximizing"; # automatically open all windows maximized by default
       "kdeglobals"."KDE"."ShowDeleteCommand" = false; # hide full on delete option in applications
-      "kdeglobals"."KDE"."LockPanels" = true;
       "kdeglobals"."General".TerminalApplication = "alacritty"; # set alacritty as default terminal
     };
 
