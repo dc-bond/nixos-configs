@@ -154,6 +154,8 @@ in
               icon = "arrow-up-double"; 
               sortAlphabetically = true;
               compactDisplayStyle = true;
+              favoritesDisplayMode = "list";
+              applicationsDisplayMode = "list";
               #showButtonsFor = {
               #  custom = [
               #    "logout"
@@ -165,7 +167,7 @@ in
               #};
               settings = {
                 General = {
-                  #favorites = "chromium-browser.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
+                  favorites = "chromium-browser.desktop,org.kde.dolphin.desktop,alacritty.desktop";
                   showRecentApps = false;
                   showRecentDocs = false;
                   showRecentContacts = false;
@@ -306,7 +308,7 @@ in
         size = 20;
       };
       clickItemTo = "open";
-      lookAndFeel = "org.kde.breezedark.desktop";
+      lookAndFeel = "org.kde.breeze.desktop";
       iconTheme = "Papirus";
     };
 
