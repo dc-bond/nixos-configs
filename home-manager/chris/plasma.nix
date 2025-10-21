@@ -147,54 +147,69 @@ in
         height = 30;
         widgets = [
           {
-            name = "org.kde.plasma.kicker";
-            config.General.icon = "arrow-up-double";
-          }
-          "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
-          #"org.kde.plasma.systemtray"
-          {
-            systemTray = {
-              items = {
-                showAll = true;
-                shown = [
-                  "Nextcloud"
-                  "org.kde.plasma.volume"
-                  "org.kde.plasma.battery"
-                  "org.kde.plasma.brightness"
-                  "org.kde.plasma.bluetooth"
-                  "org.kde.plasma.networkmanagement"
-                ];
-                hidden = [];
-                #hidden = [
-                #  "org.kde.plasma.keyboardlayout"
-                #  "org.kde.plasma.clipboard"
-                #  "org.kde.plasma.devicenotifier"
-                #  "org.kde.plasma.mediacontroller"
-                #  "Nextcloud"
-                #  "org.kde.kscreen"
-                #  "org.kde.plasma.battery"
-                #  "org.kde.plasma.bluetooth"
-                #  "org.kde.plasma.brightness"
-                #  "org.kde.plasma.cameraindicator"
-                #  "org.kde.plasma.clipboard"
-                #  "org.kde.plasma.devicenotifier"
-                #  "org.kde.plasma.keyboardindicator"
-                #  "org.kde.plasma.keyboardlayout"
-                #  "org.kde.plasma.manage-inputmethod"
-                #  "org.kde.plasma.mediacontroller"
-                #  "org.kde.plasma.notifications"
-                #  "org.kde.plasma.volume"
-                #];
-                #extra = [
-                #  "org.kde.plasma.volume"
-                #  "org.kde.plasma.battery"
-                #  "org.kde.plasma.brightness"
-                #  "org.kde.plasma.bluetooth"
-                #  "org.kde.plasma.networkmanagement"
-                #];
+            kicker = {
+              categories = {
+                show = {
+                  recentApplications = false;
+                  recentFiles = false;
+                };
+              };
+              settings = {
+                General = {
+                  favorites = "chromium-browser.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
+                };
               };
             };
           }
+          #{
+          #  name = "org.kde.plasma.kicker";
+          #  config.General.icon = "arrow-up-double";
+          #}
+          "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
+          "org.kde.plasma.systemtray"
+          #{
+          #  systemTray = {
+          #    items = {
+          #      showAll = true;
+          #      shown = [
+          #        "Nextcloud"
+          #        "org.kde.plasma.volume"
+          #        "org.kde.plasma.battery"
+          #        "org.kde.plasma.brightness"
+          #        "org.kde.plasma.bluetooth"
+          #        "org.kde.plasma.networkmanagement"
+          #      ];
+          #      hidden = [];
+          #      #hidden = [
+          #      #  "org.kde.plasma.keyboardlayout"
+          #      #  "org.kde.plasma.clipboard"
+          #      #  "org.kde.plasma.devicenotifier"
+          #      #  "org.kde.plasma.mediacontroller"
+          #      #  "Nextcloud"
+          #      #  "org.kde.kscreen"
+          #      #  "org.kde.plasma.battery"
+          #      #  "org.kde.plasma.bluetooth"
+          #      #  "org.kde.plasma.brightness"
+          #      #  "org.kde.plasma.cameraindicator"
+          #      #  "org.kde.plasma.clipboard"
+          #      #  "org.kde.plasma.devicenotifier"
+          #      #  "org.kde.plasma.keyboardindicator"
+          #      #  "org.kde.plasma.keyboardlayout"
+          #      #  "org.kde.plasma.manage-inputmethod"
+          #      #  "org.kde.plasma.mediacontroller"
+          #      #  "org.kde.plasma.notifications"
+          #      #  "org.kde.plasma.volume"
+          #      #];
+          #      #extra = [
+          #      #  "org.kde.plasma.volume"
+          #      #  "org.kde.plasma.battery"
+          #      #  "org.kde.plasma.brightness"
+          #      #  "org.kde.plasma.bluetooth"
+          #      #  "org.kde.plasma.networkmanagement"
+          #      #];
+          #    };
+          #  };
+          #}
           "org.kde.plasma.digitalclock"
           "org.kde.plasma.showdesktop"
         ];
