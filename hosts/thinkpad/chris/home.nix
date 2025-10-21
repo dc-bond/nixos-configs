@@ -42,7 +42,7 @@
 # define default folders in home directory
   xdg.userDirs = {
     enable = true;
-    createDirectories = true;
+    createDirectories = false;
     download = "${config.home.homeDirectory}/Downloads";
     documents = "${config.home.homeDirectory}/Documents";
     desktop = null;
