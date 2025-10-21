@@ -42,10 +42,10 @@ in
       [Desktop Entry]
       NoDisplay=true
     '';
-    "applications/org.kde.kmenuedit.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
+    #"applications/org.kde.kmenuedit.desktop".text = ''
+    #  [Desktop Entry]
+    #  NoDisplay=true
+    #'';
     "applications/org.kde.plasma-systemmonitor.desktop".text = ''
       [Desktop Entry]
       NoDisplay=true
@@ -54,14 +54,14 @@ in
       [Desktop Entry]
       NoDisplay=true
     '';
-    "applications/systemsettings.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
-    "applications/kdesystemsettings.desktop".text = ''
-      [Desktop Entry]
-      NoDisplay=true
-    '';
+    #"applications/systemsettings.desktop".text = ''
+    #  [Desktop Entry]
+    #  NoDisplay=true
+    #'';
+    #"applications/kdesystemsettings.desktop".text = ''
+    #  [Desktop Entry]
+    #  NoDisplay=true
+    #'';
       "applications/nixos-manual.desktop".text = ''
       [Desktop Entry]
       NoDisplay=true
@@ -106,7 +106,7 @@ in
 
   programs.plasma = {
     enable = true;
-    overrideConfig = true;
+    overrideConfig = false;
     
     fonts = {
       fixedWidth = {
