@@ -22,7 +22,7 @@ in
     (map configLib.relativeToRoot [
       "home-manager/chris/alacritty.nix"
       "home-manager/chris/vscodium.nix"
-      "home-manager/chris/firefox.nix"
+      #"home-manager/chris/firefox.nix"
       "home-manager/chris/chromium.nix"
     ])
   ];
@@ -32,7 +32,6 @@ in
     element-desktop # matrix chat app
     nextcloud-client # nextcloud local syncronization client
     whitesur-cursors # cursor theme
-    #papirus-nord # icon theme
   ];
 
   services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
@@ -156,34 +155,18 @@ in
               compactDisplayStyle = true;
               favoritesDisplayMode = "list";
               applicationsDisplayMode = "list";
-              settings = {
-                General = {
-                  favorites = "chromium-browser.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
-                  showRecentApps = false;
-                  showRecentDocs = false;
-                  showRecentContacts = false;
-                };
-              };
+              #settings = {
+              #  General = {
+              #    favorites = "chromium-browser.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
+              #    showRecentApps = false;
+              #    showRecentDocs = false;
+              #    showRecentContacts = false;
+              #  };
+              #};
             };
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
-          #"org.kde.plasma.systemtray"
-          { 
-            systemTray.items = {
-              showAll = true;
-              #shown = [
-              #  "Nextcloud"
-              #  "org.kde.plasma.volume"
-              #  "org.kde.plasma.battery"
-              #  "org.kde.plasma.bluetooth"
-              #  "org.kde.plasma.brightness"
-              #];
-              #hidden = [
-              #  "org.kde.plasma.networkmanagement"
-              #  "org.kde.plasma.clipboard"
-              #];
-            };
-          }
+          "org.kde.plasma.systemtray"
           "org.kde.plasma.digitalclock"
           "org.kde.plasma.showdesktop"
         ];
@@ -297,7 +280,6 @@ in
       };
       clickItemTo = "select";
       lookAndFeel = "org.kde.breeze.desktop";
-      #iconTheme = "Papirus-Dark";
     };
 
     configFile = {
