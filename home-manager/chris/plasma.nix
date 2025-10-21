@@ -106,7 +106,7 @@ in
 
   programs.plasma = {
     enable = true;
-    overrideConfig = false;
+    overrideConfig = true;
     
     fonts = {
       fixedWidth = {
@@ -167,22 +167,23 @@ in
             };
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
-          "org.kde.plasma.systemtray"
-          #{ 
-          #  systemTray.items = {
-          #    shown = [
-          #      "Nextcloud"
-          #      "org.kde.plasma.volume"
-          #      "org.kde.plasma.battery"
-          #      "org.kde.plasma.bluetooth"
-          #      "org.kde.plasma.brightness"
-          #    ];
-          #    hidden = [
-          #      "org.kde.plasma.networkmanagement"
-          #      "org.kde.plasma.clipboard"
-          #    ];
-          #  };
-          #}
+          #"org.kde.plasma.systemtray"
+          { 
+            systemTray.items = {
+              showAll = true;
+              #shown = [
+              #  "Nextcloud"
+              #  "org.kde.plasma.volume"
+              #  "org.kde.plasma.battery"
+              #  "org.kde.plasma.bluetooth"
+              #  "org.kde.plasma.brightness"
+              #];
+              #hidden = [
+              #  "org.kde.plasma.networkmanagement"
+              #  "org.kde.plasma.clipboard"
+              #];
+            };
+          }
           "org.kde.plasma.digitalclock"
           "org.kde.plasma.showdesktop"
         ];
