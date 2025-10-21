@@ -31,8 +31,8 @@ in
     libreoffice-still # office suite
     element-desktop # matrix chat app
     nextcloud-client # nextcloud local syncronization client
-    whitesur-cursors
-    papirus-nord
+    whitesur-cursors # cursor theme
+    #papirus-nord # icon theme
   ];
 
   services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
@@ -309,7 +309,7 @@ in
       };
       clickItemTo = "open";
       lookAndFeel = "org.kde.breeze.desktop";
-      iconTheme = "Papirus";
+      #iconTheme = "Papirus-Dark";
     };
 
     configFile = {
