@@ -147,16 +147,24 @@ in
         height = 30;
         widgets = [
           {
-            kicker = {
-              categories = {
-                show = {
-                  recentApplications = false;
-                  recentFiles = false;
-                };
+            kickoff = {
+              icon = "arrow-up-double"; 
+              sortAlphabetically = true;
+              showButtonsFor = {
+                custom = [
+                  "logout"
+                  "switch-user"
+                  "suspend"
+                  "reboot"
+                  "shutdown"
+                ];
               };
               settings = {
                 General = {
                   favorites = "chromium-browser.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
+                  showRecentApps = false;
+                  showRecentDocs = false;
+                  showRecentContacts = false;
                 };
               };
             };
