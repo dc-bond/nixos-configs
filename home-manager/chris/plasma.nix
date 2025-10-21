@@ -156,13 +156,15 @@ in
             systemTray = {
               items = {
                 showAll = true;
-                #shown = [
-                #  "org.kde.plasma.volume"
-                #  "org.kde.plasma.battery"
-                #  "org.kde.plasma.brightness"
-                #  "org.kde.plasma.bluetooth"
-                #  "org.kde.plasma.networkmanagement"
-                #];
+                shown = [
+                  "Nextcloud"
+                  "org.kde.plasma.volume"
+                  "org.kde.plasma.battery"
+                  "org.kde.plasma.brightness"
+                  "org.kde.plasma.bluetooth"
+                  "org.kde.plasma.networkmanagement"
+                ];
+                hidden = [];
                 #hidden = [
                 #  "org.kde.plasma.keyboardlayout"
                 #  "org.kde.plasma.clipboard"
