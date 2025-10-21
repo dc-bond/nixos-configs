@@ -26,7 +26,6 @@
       ark # file archiver
       drkonqi # crashed process viewer
       spectacle # screenshot tool
-      #print-manager # printer
       plasma-welcome # welcome screen
       discover # software center
     ];
@@ -38,6 +37,7 @@
       enable = true;
       enableHidpi = true;
       wayland.enable = true;
+      theme = pkgs.sddm-chili-theme;
     };
     #xrdp = {
     #  enable = true;

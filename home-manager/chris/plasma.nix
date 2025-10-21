@@ -23,7 +23,6 @@ in
       "home-manager/chris/alacritty.nix"
       "home-manager/chris/vscodium.nix"
       #"home-manager/chris/firefox.nix"
-      #"home-manager/chris/chromium.nix"
     ])
   ];
 
@@ -32,7 +31,7 @@ in
     element-desktop # matrix chat app
     nextcloud-client # nextcloud local syncronization client
     whitesur-cursors # cursor theme
-    ungoogled-chromium
+    ungoogled-chromium # web browser
   ];
 
   services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
