@@ -25,20 +25,18 @@ in
           skip-redirect
           bitwarden
         ];
-        #settings = { # moved to global preferences?
-        #};
         search = {
           force = true;
-          default = "Opticon-SearXNG";
-          order = [ "Opticon-SearXNG" ];
+          default = "Bond-SearXNG";
+          order = [ "Bond-SearXNG" ];
           engines = {
-            "Opticon-SearXNG" = {
+            "Bond-SearXNG" = {
               urls = [{ template = "https://search.opticon.dev/?q={searchTerms}"; }];
               icon = "https://nixos.wiki/favicon.png";
               updateInterval = 24 * 60 * 60 * 1000; # every day
               definedAliases = [ "@searx" ];
             };
-            "Nix Packages" = {
+            "NixOS Packages" = {
               urls = [{
                 template = "https://search.nixos.org/packages";
                 params = [
@@ -49,12 +47,34 @@ in
               icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
               definedAliases = [ "@np" ];
             };
-            "NixOS Wiki" = {
-              urls = [{ template = "https://nixos.wiki/index.php?search={searchTerms}"; }];
-              icon = "https://nixos.wiki/favicon.png";
-              updateInterval = 24 * 60 * 60 * 1000; # every day
-              definedAliases = [ "@nw" ];
+            "NixOS System Options" = {
+              urls = [{
+                template = "https://search.nixos.org/options";
+                params = [
+                  { name = "type"; value = "options"; }
+                  { name = "query"; value = "{searchTerms}"; }
+                ];
+              }];
+              icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+              definedAliases = [ "@no" ];
             };
+            "NixOS Home-Manager Options" = {
+              urls = [{
+                template = "https://home-manager-options.extranix.com/";
+                params = [
+                  { name = "type"; value = "query"; }
+                  { name = "query"; value = "{searchTerms}"; }
+                ];
+              }];
+              icon = "''${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+              definedAliases = [ "@ho" ];
+            };
+            #"NixOS Wiki" = {
+            #  urls = [{ template = "https://nixos.wiki/index.php?search={searchTerms}"; }];
+            #  icon = "https://nixos.wiki/favicon.png";
+            #  updateInterval = 24 * 60 * 60 * 1000; # every day
+            #  definedAliases = [ "@nw" ];
+            #};
           };
         };
       };
@@ -290,10 +310,10 @@ in
         PreventInstalls = true;
         Add = [
           {
-            Name = "Opticon-SearXNG";
+            Name = "Bond-SearXNG";
             URLTemplate = "https://search.opticon.dev/?q={searchTerms}"; # accessible through vpn only
             Method = "GET"; # GET | POST
-            Description = "Opticon Self-Hosted SearXNG Instance";
+            Description = "Bond Private Self-Hosted SearXNG Instance";
           }
         ];
         Remove = [
@@ -304,7 +324,7 @@ in
           "DuckDuckGo"
           "Wikipedia (en)"
         ];
-        Default = "Opticon-SearXNG";
+        Default = "Bond-SearXNG";
       };
       SearchSuggestEnabled = false;
       ShowHomeButton = false; # home button on the toolbar
