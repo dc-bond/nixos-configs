@@ -110,15 +110,15 @@ in
     fonts = {
       fixedWidth = {
         family = "Source Code Pro";
-        pointSize = 11;
+        pointSize = 10;
       };
       general = {
         family = "Source Sans Pro";
-        pointSize = 11;
+        pointSize = 10;
       };
       menu = {
         family = "Source Sans Pro";
-        pointSize = 11;
+        pointSize = 10;
       };
       small = {
         family = "Source Sans Pro";
@@ -126,11 +126,11 @@ in
       };
       toolbar = {
         family = "Source Sans Pro";
-        pointSize = 11;
+        pointSize = 10;
       };
       windowTitle = {
         family = "Source Sans Pro";
-        pointSize = 11;
+        pointSize = 10;
       };
     };
 

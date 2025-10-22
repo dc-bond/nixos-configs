@@ -10,7 +10,6 @@
       kdePackages.sddm-kcm # configuration module for sddm
       wayland-utils # wayland utilities
       wl-clipboard # command-line copy/paste utilities for wayland
-      sddm-chili-theme
     ];
     plasma6.excludePackages = with pkgs.kdePackages; [
       baloo-widgets
@@ -38,8 +37,17 @@
       enable = true;
       enableHidpi = true;
       wayland.enable = true;
-      theme = "sddm-chili-theme";
     };
+    settings = {
+      General = {
+        Session = "plasmawayland";
+        Theme = "breeze";
+        #Background = "${repo-wallpaper}/wallpaper/your-background.png";
+        Font = "Source Sans Pro";
+        FontSize = "10";
+        CursorTheme = "WhiteSur-cursors";
+        CursorSize = "20";
+      };
     #xrdp = {
     #  enable = true;
     #  defaultWindowManager = "startplasma-x11";
