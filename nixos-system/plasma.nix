@@ -37,17 +37,18 @@
       enable = true;
       enableHidpi = true;
       wayland.enable = true;
-    };
-    settings = {
-      General = {
-        Session = "plasmawayland";
-        Theme = "breeze";
-        #Background = "${repo-wallpaper}/wallpaper/your-background.png";
-        Font = "Source Sans Pro";
-        FontSize = "10";
-        CursorTheme = "WhiteSur-cursors";
-        CursorSize = "20";
+      settings = {
+        General = {
+          Session = "plasmawayland";
+          Theme = "breeze";
+          #Background = "${repo-wallpaper}/wallpaper/your-background.png";
+          Font = "Source Sans Pro";
+          FontSize = "10";
+          CursorTheme = "WhiteSur-cursors";
+          CursorSize = "20";
+        };
       };
+    };
     #xrdp = {
     #  enable = true;
     #  defaultWindowManager = "startplasma-x11";
