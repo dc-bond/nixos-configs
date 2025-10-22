@@ -37,7 +37,7 @@
       enable = true;
       enableHidpi = true;
       wayland.enable = true;
-      theme = pkgs.sddm-chili-theme;
+      theme = ${pkgs.sddm-chili-theme};
     };
     #xrdp = {
     #  enable = true;
