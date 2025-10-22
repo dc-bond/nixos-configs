@@ -10,7 +10,7 @@ let
   wallpaperRepo = pkgs.fetchFromGitHub {
     owner = "dc-bond";
     repo = "nixos-configs";
-    rev = "316627c53cc938b3dac9edc2d1d5549857c433d6";
+    rev = "996e358d14e083078f213bde67a141095b5ba674";
     sparseCheckout = [ "wallpaper" ];
     hash = "sha256-xEshn+vkoSa1gHOPz5+PLeQqv0yZIqNVUbrQdojoAuo=";
   };
