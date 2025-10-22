@@ -7,7 +7,7 @@
 }: 
 
 let
-  repo-wallpaper = pkgs.fetchFromGitHub {
+  wallpaperRepo = pkgs.fetchFromGitHub {
     owner = "dc-bond";
     repo = "nixos-configs";
     rev = "316627c53cc938b3dac9edc2d1d5549857c433d6";
@@ -273,7 +273,7 @@ in
     };
 
     workspace = {
-      wallpaperSlideShow.path = "${repo-wallpaper}/wallpaper";
+      wallpaperSlideShow.path = "${wallpaperRepo}/wallpaper";
       cursor = {
         theme = "WhiteSur-cursors";
         size = 20;
