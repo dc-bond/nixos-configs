@@ -10,6 +10,7 @@
       kdePackages.sddm-kcm # configuration module for sddm
       wayland-utils # wayland utilities
       wl-clipboard # command-line copy/paste utilities for wayland
+      sddm-chili-theme
     ];
     plasma6.excludePackages = with pkgs.kdePackages; [
       baloo-widgets
@@ -37,7 +38,7 @@
       enable = true;
       enableHidpi = true;
       wayland.enable = true;
-      theme = ${pkgs.sddm-chili-theme};
+      theme = "sddm-chili-theme";
     };
     #xrdp = {
     #  enable = true;
