@@ -6,6 +6,7 @@
   ... 
 }: 
 
+# run "nix shell nixpkgs#nix-prefetch-github -c nix-prefetch-github dc-bond nixos-configs --rev main" to get rev and hash for most recent main branch
 let
   wallpaperRepo = pkgs.fetchFromGitHub {
     owner = "dc-bond";
