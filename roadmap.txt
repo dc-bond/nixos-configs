@@ -1,7 +1,3 @@
-backups
-
-plasma 6
-
 authelia
 
 vaultwarden

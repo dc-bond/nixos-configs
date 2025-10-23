@@ -54,7 +54,6 @@
         python_binary = "python3";
       };
       directory = {
-        #read_only = "";
         truncation_length = 10;
         truncate_to_repo = false;
         format = "[$path]($style)[$lock_symbol]($lock_style) ";
