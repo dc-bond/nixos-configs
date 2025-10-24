@@ -311,22 +311,17 @@ in
           fi
           
           PASSWORD=$(cat "${krfbPasswdPath}")
-          ENCODED_PASSWORD=$(echo -n "$PASSWORD" | ${pkgs.coreutils}/bin/base64 -w0)
           
           mkdir -p ${config.home.homeDirectory}/.config
           cat > ${config.home.homeDirectory}/.config/krfbrc << EOF
-          [General]
-          allowDesktopControl=true
-          askOnConnect=false
-          noWalletMode=true
-          preferredFrameRate=30
-          
+          [FrameBuffer]
+          preferredFrameBufferPlugin=pw
+
           [Security]
+          askOnConnect=false
           allowUninvitedConnections=true
-          uninvitedConnectionPassword=$ENCODED_PASSWORD
+          uninvitedConnectionPassword=$PASSWORD
           
-          [Network]
-          networkInterface=0.0.0.0
           EOF
           
           chmod 600 ${config.home.homeDirectory}/.config/krfbrc
