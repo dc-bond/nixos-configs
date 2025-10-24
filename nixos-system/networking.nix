@@ -20,8 +20,12 @@
   };
 
   networking = {
-    useDHCP = false; # disable default dhcpcd networking backend in favor of systemd-networkd enabled below
-    firewall.enable = true; # enable default iptables
+    useDHCP = lib.mkIf (config.networking.hostName != "thinkpad") false; # disable default dhcpcd networking backend in favor of systemd-networkd enabled below for all hosts except thinkpad
+    firewall.enable = true;
+    networkmanager = lib.mkIf (config.networking.hostName == "thinkpad") {
+      enable = true;
+      wifi.backend = "iwd";
+    };
     wireless.iwd = lib.mkIf (config.networking.hostName == "thinkpad") {
       enable = true;
       settings = {
@@ -36,7 +40,7 @@
 
   systemd.services.systemd-networkd-wait-online.enable = lib.mkForce false;
   
-  systemd.network = {
+  systemd.network = lib.mkIf (config.networking.hostName != "thinkpad") {
     enable = true;
     networks = {
       "05-loopback" = {
@@ -53,24 +57,24 @@
         dhcpV6Config.RouteMetric = 400;
         linkConfig.RequiredForOnline = "no";
       };
-    } // lib.optionalAttrs (config.networking.hostName == "thinkpad") {
-      "20-ethernet-dock" = {
-        matchConfig.Name = "enp0s20f0u2u1u2";
-        networkConfig.DHCP = "ipv4";
-        dhcpV4Config.RouteMetric = 300;
-        dhcpV6Config.RouteMetric = 400;
-        linkConfig.RequiredForOnline = "no";
-      };
-      "30-wifi" = {
-        matchConfig.Name = "wlan0";
-        networkConfig = {
-          DHCP = "ipv4";
-          IgnoreCarrierLoss = "3s"; # avoid re-configuring interface when wireless roaming between APs
-        };
-        dhcpV4Config.RouteMetric = 500;
-        dhcpV6Config.RouteMetric = 600;
-        linkConfig.RequiredForOnline = "no";
-      };
+    #} // lib.optionalAttrs (config.networking.hostName == "thinkpad") {
+    #  "20-ethernet-dock" = {
+    #    matchConfig.Name = "enp0s20f0u2u1u2";
+    #    networkConfig.DHCP = "ipv4";
+    #    dhcpV4Config.RouteMetric = 300;
+    #    dhcpV6Config.RouteMetric = 400;
+    #    linkConfig.RequiredForOnline = "no";
+    #  };
+    #  "30-wifi" = {
+    #    matchConfig.Name = "wlan0";
+    #    networkConfig = {
+    #      DHCP = "ipv4";
+    #      IgnoreCarrierLoss = "3s"; # avoid re-configuring interface when wireless roaming between APs
+    #    };
+    #    dhcpV4Config.RouteMetric = 500;
+    #    dhcpV6Config.RouteMetric = 600;
+    #    linkConfig.RequiredForOnline = "no";
+    #  };
     };
   };
 
