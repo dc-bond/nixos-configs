@@ -1,5 +1,6 @@
 { 
   config,
+  osConfig,
   lib,
   configLib,
   pkgs, 
@@ -15,6 +16,7 @@ let
     sparseCheckout = [ "wallpaper" ];
     hash = "sha256-qb6KxcuxMJxcG4KbGH2yMbqJDbGMlSF6KxuWtaPKofs=";
   };
+  krfbPasswdPath = osConfig.sops.templates."krfbPasswd".path;
 in
 
 {
@@ -290,5 +292,82 @@ in
     };
 
   };
+
+  systemd.user.services = {
+    krfb-config-setup = {
+      Unit = {
+        Description = "Setup krfb configuration with password from sops";
+        Before = [ "krfb.service" ];
+      };
+      Service = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = pkgs.writeShellScript "krfb-config-setup" ''
+          set -e
+          
+          if [ ! -f "${krfbPasswdPath}" ]; then
+            echo "error: password secret not found at ${krfbPasswdPath}"
+            exit 1
+          fi
+          
+          PASSWORD=$(cat "${krfbPasswdPath}")
+          ENCODED_PASSWORD=$(echo -n "$PASSWORD" | ${pkgs.coreutils}/bin/base64 -w0)
+          
+          mkdir -p ${config.home.homeDirectory}/.config
+          cat > ${config.home.homeDirectory}/.config/krfbrc << EOF
+          [General]
+          allowDesktopControl=true
+          askOnConnect=false
+          noWalletMode=true
+          preferredFrameRate=30
+          
+          [Security]
+          allowUninvitedConnections=true
+          uninvitedConnectionPassword=$ENCODED_PASSWORD
+          
+          [Network]
+          networkInterface=0.0.0.0
+          EOF
+          
+          chmod 600 ${config.home.homeDirectory}/.config/krfbrc
+          echo "krfb configuration created successfully"
+        '';
+      };
+      Install.WantedBy = [ "graphical-session.target" ];
+    };
+    krfb = {
+      Unit = {
+        Description = "KDE Remote Frame Buffer Server";
+        After = [ "graphical-session.target" "krfb-config-setup.service" ];
+        Requires = [ "krfb-config-setup.service" ];
+        PartOf = [ "graphical-session.target" ];
+      };
+      Service = {
+        Type = "simple";
+        ExecStart = "${pkgs.kdePackages.krfb}/bin/krfb --nodialog";
+        Restart = "on-failure";
+        RestartSec = "5s";
+        PrivateTmp = true;
+        NoNewPrivileges = true;
+      };
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
+      };
+    };
+  };
+
+  #home.file.".config/krfbrc".text = ''
+  #  [General]
+  #  allowDesktopControl=true
+  #  askOnConnect=false
+  #  noWalletMode=true
+  #  preferredFrameRate=30
+  #  
+  #  [Security]
+  #  allowUninvitedConnections=true
+  #  
+  #  [Network]
+  #  networkInterface=0.0.0.0
+  #'';
 
 }

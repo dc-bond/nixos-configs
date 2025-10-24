@@ -5,9 +5,21 @@
 
 {
 
+  sops = {
+    secrets.krfbPasswd = {};
+    templates = {
+      "krfbPasswd" = {
+        content = config.sops.placeholder.krfbPasswd;
+        owner = "chris";
+        mode = "0400";
+      };
+    };
+  };
+
   environment = {
     systemPackages = with pkgs; [
       kdePackages.sddm-kcm # configuration module for sddm
+      kdePackages.krfb # kde remote desktop tooling
       wayland-utils # wayland utilities
       wl-clipboard # command-line copy/paste utilities for wayland
     ];
@@ -29,23 +41,6 @@
       plasma-welcome # welcome screen
       discover # software center
     ];
-    etc."xrdp/startwm.sh" = {
-      text = ''
-        #!/bin/sh
-        
-        unset SESSION_MANAGER
-        unset DBUS_SESSION_BUS_ADDRESS
-        
-        if [ -r /etc/profile ]; then
-          . /etc/profile
-        fi
-        
-        export PLASMA_USE_QT_SCALING=1
-        
-        exec ${pkgs.dbus}/bin/dbus-run-session ${pkgs.kdePackages.plasma-workspace}/bin/startplasma-x11 --no-splash
-      '';
-      mode = "0755";
-    };
   };
 
   services = {
@@ -66,19 +61,17 @@
         };
       };
     };
-    xrdp = {
-      enable = true;
-      defaultWindowManager = "startplasma-x11";
-      openFirewall = true; # opens port 3389
-    };
-    xserver = {
-      enable = true;
-      xkb = {
-        layout = "us";
-        variant = "";
-      };
-    };
   };
+
+  #xdg.portal = {
+  #  enable = true;
+  #  extraPortals = with pkgs; [
+  #    kdePackages.xdg-desktop-portal-kde
+  #  ];
+  #  config.common.default = "*";
+  #};
+
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 5900 ]; # open vnc port on tailscale interface for remote desktop
 
   systemd.user.services = {
     "app-org.kde.discover.notifier@autostart".enable = false; # disable auto-update checker

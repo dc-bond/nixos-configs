@@ -95,10 +95,6 @@ in
         INGREDIENT_INSTRUCTION_CLASSIFIER_URL=http://${app8}:3000/
         OPENAI_API_KEY=${config.sops.placeholder.recipesageOpenaiApiKey}
       '';
-        #GCM_KEYPAIR
-        #SENTRY_DSN
-        #STRIPE_SK 
-        #STRIPE_WEBHOOK_SECRET
 
       "${app6}-env".content = ''
         POSTGRES_DB=${config.sops.placeholder.recipesagePostgresDb}
