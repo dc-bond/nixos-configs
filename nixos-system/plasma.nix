@@ -29,6 +29,23 @@
       plasma-welcome # welcome screen
       discover # software center
     ];
+    etc."xrdp/startwm.sh" = {
+      text = ''
+        #!/bin/sh
+        
+        unset SESSION_MANAGER
+        unset DBUS_SESSION_BUS_ADDRESS
+        
+        if [ -r /etc/profile ]; then
+          . /etc/profile
+        fi
+        
+        export PLASMA_USE_QT_SCALING=1
+        
+        exec ${pkgs.dbus}/bin/dbus-run-session ${pkgs.kdePackages.plasma-workspace}/bin/startplasma-x11 --no-splash
+      '';
+      mode = "0755";
+    };
   };
 
   services = {
