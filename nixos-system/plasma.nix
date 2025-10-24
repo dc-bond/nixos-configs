@@ -6,16 +6,16 @@
 
 {
 
-  sops = {
-    secrets.krfbPasswd = {};
-    templates = {
-      "krfbPasswd" = {
-        content = config.sops.placeholder.krfbPasswd;
-        owner = "chris";
-        mode = "0400";
-      };
-    };
-  };
+  #sops = {
+  #  secrets.krfbPasswd = {};
+  #  templates = {
+  #    "krfbPasswd" = {
+  #      content = config.sops.placeholder.krfbPasswd;
+  #      owner = "chris";
+  #      mode = "0400";
+  #    };
+  #  };
+  #};
 
   environment = {
     systemPackages = with pkgs; [
@@ -64,15 +64,8 @@
     };
   };
 
-  #xdg.portal = {
-  #  enable = true;
-  #  extraPortals = with pkgs; [
-  #    kdePackages.xdg-desktop-portal-kde
-  #  ];
-  #  config.common.default = "*";
-  #};
-
-  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 5900 ]; # open vnc port on tailscale interface for remote desktop
+  #networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 5900 ]; # open vnc port on tailscale interface for remote desktop
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 3389 ]; # open rdp port on tailscale interface for remote desktop
 
   systemd.user.services = {
     "app-org.kde.discover.notifier@autostart".enable = false; # disable auto-update checker

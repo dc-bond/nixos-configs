@@ -1,6 +1,7 @@
 { 
   config,
-  osConfig,
+  configVars,
+  #osConfig,
   lib,
   configLib,
   pkgs, 
@@ -16,7 +17,7 @@ let
     sparseCheckout = [ "wallpaper" ];
     hash = "sha256-qb6KxcuxMJxcG4KbGH2yMbqJDbGMlSF6KxuWtaPKofs=";
   };
-  krfbPasswdPath = osConfig.sops.templates."krfbPasswd".path;
+  #krfbPasswdPath = osConfig.sops.templates."krfbPasswd".path;
 in
 
 {
@@ -297,62 +298,94 @@ in
   };
 
   systemd.user.services = {
-    krfb-config-setup = {
+    #krfb-config-setup = {
+    #  Unit = {
+    #    Description = "Setup krfb configuration with password from sops";
+    #    Before = [ "krfb.service" ];
+    #  };
+    #  Service = {
+    #    Type = "oneshot";
+    #    RemainAfterExit = true;
+    #    ExecStart = pkgs.writeShellScript "krfb-config-setup" ''
+    #      set -e
+    #      
+    #      if [ ! -f "${krfbPasswdPath}" ]; then
+    #        echo "error: password secret not found at ${krfbPasswdPath}"
+    #        exit 1
+    #      fi
+    #      
+    #      PASSWORD=$(cat "${krfbPasswdPath}")
+    #      
+    #      mkdir -p ${config.home.homeDirectory}/.config
+    #      cat > ${config.home.homeDirectory}/.config/krfbrc << EOF
+    #      [FrameBuffer]
+    #      preferredFrameBufferPlugin=pw
+
+    #      [Security]
+    #      allowUnattendedAccess=true
+    #      allowUninvitedConnections=true
+    #      askOnConnect=false
+    #      desktopPassword=$PASSWORD
+    #      noWallet=true
+    #      unattendedPassword=$PASSWORD
+    #      
+    #      EOF
+    #      
+    #      chmod 600 ${config.home.homeDirectory}/.config/krfbrc
+    #      echo "krfb configuration created successfully"
+    #    '';
+    #  };
+    #  Install.WantedBy = [ "graphical-session.target" ];
+    #};
+    #krfb = {
+    #  Unit = {
+    #    Description = "KDE Remote Frame Buffer Server";
+    #    After = [ "graphical-session.target" "krfb-config-setup.service" ];
+    #    Requires = [ "krfb-config-setup.service" ];
+    #    PartOf = [ "graphical-session.target" ];
+    #  };
+    #  Service = {
+    #    Type = "simple";
+    #    ExecStart = "${pkgs.kdePackages.krfb}/bin/krfb --nodialog";
+    #    Restart = "on-failure";
+    #    RestartSec = "5s";
+    #    PrivateTmp = true;
+    #    NoNewPrivileges = true;
+    #  };
+    #  Install = {
+    #    WantedBy = [ "graphical-session.target" ];
+    #  };
+    #};
+    krdp = {
       Unit = {
-        Description = "Setup krfb configuration with password from sops";
-        Before = [ "krfb.service" ];
+        Description = "Plasma Remote Desktop (RDP)";
+        After = [ "plasma-workspace.target" "pipewire.service" ];
+        PartOf = [ "plasma-workspace.target" ];
+      };
+      Service = {
+        ExecStart = "${pkgs.kdePackages.krdp}/bin/krdp";
+        Restart = "on-failure";
+        Slice = "session.slice";
+      };
+      Install = {
+        WantedBy = [ "plasma-workspace.target" ];
+      }; 
+    };
+    tailscale-operator = {
+      Unit = {
+        Description = "Configure tailscale for tray applet";
+        After = [ "tailscaled.service" "network-online.target" ];
+        Wants = [ "tailscaled.service" ];
       };
       Service = {
         Type = "oneshot";
+        ExecStart = "${pkgs.tailscale}/bin/tailscale set --operator=${configVars.chrisUsername}";
         RemainAfterExit = true;
-        ExecStart = pkgs.writeShellScript "krfb-config-setup" ''
-          set -e
-          
-          if [ ! -f "${krfbPasswdPath}" ]; then
-            echo "error: password secret not found at ${krfbPasswdPath}"
-            exit 1
-          fi
-          
-          PASSWORD=$(cat "${krfbPasswdPath}")
-          
-          mkdir -p ${config.home.homeDirectory}/.config
-          cat > ${config.home.homeDirectory}/.config/krfbrc << EOF
-          [FrameBuffer]
-          preferredFrameBufferPlugin=pw
-
-          [Security]
-          allowUnattendedAccess=true
-          allowUninvitedConnections=true
-          askOnConnect=false
-          desktopPassword=$PASSWORD
-          noWallet=true
-          unattendedPassword=$PASSWORD
-          
-          EOF
-          
-          chmod 600 ${config.home.homeDirectory}/.config/krfbrc
-          echo "krfb configuration created successfully"
-        '';
-      };
-      Install.WantedBy = [ "graphical-session.target" ];
-    };
-    krfb = {
-      Unit = {
-        Description = "KDE Remote Frame Buffer Server";
-        After = [ "graphical-session.target" "krfb-config-setup.service" ];
-        Requires = [ "krfb-config-setup.service" ];
-        PartOf = [ "graphical-session.target" ];
-      };
-      Service = {
-        Type = "simple";
-        ExecStart = "${pkgs.kdePackages.krfb}/bin/krfb --nodialog";
         Restart = "on-failure";
-        RestartSec = "5s";
-        PrivateTmp = true;
-        NoNewPrivileges = true;
+        RestartSec = 5;
       };
       Install = {
-        WantedBy = [ "graphical-session.target" ];
+        WantedBy = [ "default.target" ];
       };
     };
   };
