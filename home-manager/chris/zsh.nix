@@ -58,10 +58,10 @@
     } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {
       flakeupdate = "sudo nix flake update --flake ~/nixos-configs";
       ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop";
-      tsaspen = "sudo tailscale down && sleep 5 && sudo tailscale up -ssh --accept-routes --exit-node=${configVars.aspenTailscaleIp} --reset";
-      tsjuniper = "sudo tailscale down && sleep 5 && sudo tailscale up -ssh --accept-routes --exit-node=${configVars.juniperTailscaleIp} --reset";
+      tsaspen = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${configVars.aspenTailscaleIp} --reset";
+      tsjuniper = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${configVars.juniperTailscaleIp} --reset";
       tsdown = "sudo tailscale down";
-      tsup = "sudo tailscale down && sleep 5 && sudo tailscale up -ssh --accept-routes --reset";
+      tsup = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --reset";
       cloneconfigs = "cd ~ && git clone https://github.com/dc-bond/nixos-configs";
     } // lib.optionalAttrs (osConfig.networking.hostName == "cypress") {
       storage = "cd /storage/WD-WX21DC86RU3P ; ls";

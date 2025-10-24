@@ -35,6 +35,8 @@ in
     nextcloud-client # nextcloud local syncronization client
     whitesur-cursors # cursor theme
     trayscale # tailscale tray applet
+    ktailctl # tailscale tray applet
+    iwgtk # tray applet for wifi
   ];
 
   services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
