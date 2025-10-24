@@ -34,6 +34,7 @@ in
     element-desktop # matrix chat app
     nextcloud-client # nextcloud local syncronization client
     whitesur-cursors # cursor theme
+    trayscale # tailscale tray applet
   ];
 
   services.gpg-agent.pinentry.package = pkgs.pinentry-qt;

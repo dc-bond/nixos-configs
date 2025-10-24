@@ -25,6 +25,10 @@
     networkmanager = lib.mkIf (config.networking.hostName == "thinkpad") {
       enable = true;
       wifi.backend = "iwd";
+      unmanaged = [
+      "tailscale0"
+      "interface-name:tailscale*"
+    ];
     };
     wireless.iwd = lib.mkIf (config.networking.hostName == "thinkpad") {
       enable = true;
