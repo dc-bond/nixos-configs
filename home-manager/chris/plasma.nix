@@ -321,8 +321,9 @@ in
           allowUnattendedAccess=true
           allowUninvitedConnections=true
           askOnConnect=false
+          desktopPassword=$PASSWORD
           noWallet=true
-          uninvitedConnectionPassword=$PASSWORD
+          unattendedPassword=$PASSWORD
           
           EOF
           
