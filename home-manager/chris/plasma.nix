@@ -321,6 +321,7 @@ in
           askOnConnect=false
           allowUninvitedConnections=true
           uninvitedConnectionPassword=$PASSWORD
+          invitationPasswd=$PASSWORD
           
           EOF
           
@@ -350,19 +351,5 @@ in
       };
     };
   };
-
-  #home.file.".config/krfbrc".text = ''
-  #  [General]
-  #  allowDesktopControl=true
-  #  askOnConnect=false
-  #  noWalletMode=true
-  #  preferredFrameRate=30
-  #  
-  #  [Security]
-  #  allowUninvitedConnections=true
-  #  
-  #  [Network]
-  #  networkInterface=0.0.0.0
-  #'';
 
 }
