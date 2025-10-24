@@ -318,10 +318,11 @@ in
           preferredFrameBufferPlugin=pw
 
           [Security]
-          askOnConnect=false
+          allowUnattendedAccess=true
           allowUninvitedConnections=true
+          askOnConnect=false
+          noWallet=true
           uninvitedConnectionPassword=$PASSWORD
-          invitationPasswd=$PASSWORD
           
           EOF
           
