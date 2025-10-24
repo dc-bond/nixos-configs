@@ -20,7 +20,7 @@
   };
 
   networking = {
-    useDHCP = false; # disable default dhcpcd networking backend in favor of systemd-networkd enabled below for all hosts except thinkpad
+    useDHCP = false; # disable default dhcpcd networking backend in favor of systemd-networkd enabled below
     firewall.enable = true;
     wireless.iwd = lib.mkIf (config.networking.hostName == "thinkpad") {
       enable = true;
