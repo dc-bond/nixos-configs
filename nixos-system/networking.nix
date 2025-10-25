@@ -121,17 +121,17 @@
         ${pkgs.iwd}/bin/iwctl station "$INTERFACE" show
         
         echo ""
-        SIGNAL=$(${pkgs.iwd}/bin/iwctl station "$INTERFACE" show | grep -i "rssi" | awk '{print $2}')
+        SIGNAL=$(${pkgs.iwd}/bin/iwctl station "$INTERFACE" show 2>/dev/null | grep "AverageRSSI" | awk '{print $2}')
         if [[ -n "$SIGNAL" ]]; then
           RSSI_NUM=''${SIGNAL}
           if (( RSSI_NUM >= -50 )); then
-            QUALITY="Excellent"
+            QUALITY="Excellent (very fast & reliable)"
           elif (( RSSI_NUM >= -60 )); then
-            QUALITY="Good"
+            QUALITY="Good (reasonably fast and reliable)"
           elif (( RSSI_NUM >= -70 )); then
-            QUALITY="Fair"
+            QUALITY="Fair (browsing ok, streaming/video calls may buffer)"
           else
-            QUALITY="Weak"
+            QUALITY="Weak (browsing slow, may disconnect)"
           fi
           echo "📡 Signal Strength: $SIGNAL dBm ($QUALITY)"
         fi
