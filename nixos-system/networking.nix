@@ -133,7 +133,7 @@
         SIGNAL=$(${pkgs.iwd}/bin/iwctl station "$INTERFACE" show | grep -i "rssi" | awk '{print $2}')
         if [[ -n "$SIGNAL" ]]; then
           # Convert RSSI to percentage and quality description
-          RSSI_NUM=${SIGNAL}
+          RSSI_NUM=''${SIGNAL}
           if (( RSSI_NUM >= -50 )); then
             QUALITY="Excellent 📶"
           elif (( RSSI_NUM >= -60 )); then
