@@ -33,7 +33,7 @@ in
     element-desktop # matrix chat app
     nextcloud-client # nextcloud local syncronization client
     whitesur-cursors # cursor theme
-    iwgtk # tray applet for wifi
+    #iwgtk # tray applet for wifi
     #trayscale # tailscale tray applet
   ];
 
