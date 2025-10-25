@@ -169,7 +169,21 @@ in
             };
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
-          "org.kde.plasma.systemtray"
+          #"org.kde.plasma.systemtray"
+          {
+            systemTray.items = {
+              shown = [
+                "org.kde.plasma.volume"
+                "org.kde.plasma.battery"
+                "org.kde.plasma.bluetooth"
+                "org.kde.plasma.brightness"
+                "org.kde.plasma.networkmanagement"
+              ];
+              hidden = [
+                "org.kde.plasma.clipboard"
+              ];
+            };
+          }
           "org.kde.plasma.digitalclock"
           "org.kde.plasma.showdesktop"
         ];
