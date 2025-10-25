@@ -160,7 +160,7 @@ in
               applicationsDisplayMode = "list";
               settings = {
                 General = {
-                  favorites = "firefox-browser.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
+                  favorites = "firefox.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
                   showRecentApps = false;
                   showRecentDocs = false;
                   showRecentContacts = false;
@@ -171,7 +171,8 @@ in
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
           {
             systemTray.items = {
-              shown = [
+              showAll = true;
+              extraItems = [
                 "org.kde.plasma.volume"
                 "org.kde.plasma.cameraindicator"
                 "org.kde.plasma.bluetooth"
@@ -180,16 +181,25 @@ in
                 "org.kde.kscreen"
                 "org.kde.plasma.printmanager"
               ];
-              hidden = [
-                "org.kde.plasma.clipboard"
-                "org.kde.plasma.networkmanagement"
-                "org.kde.plasma.devicenotifier"
-                "org.kde.plasma.manage-inputmethod"
-                "org.kde.plasma.mediacontroller"
-                "org.kde.plasma.notifications"
-                "org.kde.plasma.keyboardindicator"
-                "org.kde.plasma.keyboardlayout"
-              ];
+              #shown = [
+              #  "org.kde.plasma.volume"
+              #  "org.kde.plasma.cameraindicator"
+              #  "org.kde.plasma.bluetooth"
+              #  "org.kde.plasma.battery"
+              #  "org.kde.plasma.brightness"
+              #  "org.kde.kscreen"
+              #  "org.kde.plasma.printmanager"
+              #];
+              #hidden = [
+              #  "org.kde.plasma.clipboard"
+              #  "org.kde.plasma.networkmanagement"
+              #  "org.kde.plasma.devicenotifier"
+              #  "org.kde.plasma.manage-inputmethod"
+              #  "org.kde.plasma.mediacontroller"
+              #  "org.kde.plasma.notifications"
+              #  "org.kde.plasma.keyboardindicator"
+              #  "org.kde.plasma.keyboardlayout"
+              #];
             };
           }
           "org.kde.plasma.digitalclock"
