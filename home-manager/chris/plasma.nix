@@ -172,7 +172,7 @@ in
           {
             systemTray.items = {
               showAll = true;
-              extraItems = [
+              extra = [
                 "org.kde.plasma.volume"
                 "org.kde.plasma.cameraindicator"
                 "org.kde.plasma.bluetooth"
