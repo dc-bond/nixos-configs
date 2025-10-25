@@ -76,7 +76,6 @@
 
   environment.systemPackages = lib.mkIf (config.networking.hostName == "thinkpad") [
     (pkgs.writeShellScriptBin "connect-wifi" ''
-      #!${pkgs.zsh}/bin/zsh
       set -euo pipefail
 
       INTERFACE="wlan0"
@@ -106,8 +105,8 @@
       echo "Signal guide: ▂▄▆█ = Excellent | ▂▄▆_ = Good | ▂▄__ = Fair | ▂___ = Weak"
       echo ""
       
-      # Get network name from user
-      read "SSID?Enter the WiFi network name (SSID): "
+      # Get network name from user (bash syntax)
+      read -p "Enter the WiFi network name (SSID): " SSID
       
       if [[ -z "$SSID" ]]; then
         echo "❌ Error: Network name cannot be empty"
@@ -134,7 +133,7 @@
         SIGNAL=$(${pkgs.iwd}/bin/iwctl station "$INTERFACE" show | grep -i "rssi" | awk '{print $2}')
         if [[ -n "$SIGNAL" ]]; then
           # Convert RSSI to percentage and quality description
-          RSSI_NUM=''${SIGNAL}
+          RSSI_NUM=${SIGNAL}
           if (( RSSI_NUM >= -50 )); then
             QUALITY="Excellent 📶"
           elif (( RSSI_NUM >= -60 )); then
