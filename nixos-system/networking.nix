@@ -85,27 +85,22 @@
       echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
       echo ""
       
-      # Check if iwd is running
       if ! systemctl is-active --quiet iwd; then
         echo "❌ Error: iwd service is not running"
         exit 1
       fi
 
-      # Scan for networks
       echo "🔍 Scanning for WiFi networks..."
       ${pkgs.iwd}/bin/iwctl station "$INTERFACE" scan
       sleep 2
       
-      # Show available networks with signal strength
       echo ""
       echo "Available networks (signal strength shown as bars):"
-      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo ""
       ${pkgs.iwd}/bin/iwctl station "$INTERFACE" get-networks
       echo ""
-      echo "Signal guide: ▂▄▆█ = Excellent | ▂▄▆_ = Good | ▂▄__ = Fair | ▂___ = Weak"
       echo ""
       
-      # Get network name from user (bash syntax)
       read -p "Enter the WiFi network name (SSID): " SSID
       
       if [[ -z "$SSID" ]]; then
@@ -113,35 +108,32 @@
         exit 1
       fi
       
-      # Connect to network
       echo ""
       echo "🔗 Connecting to '$SSID'..."
       
       if ${pkgs.iwd}/bin/iwctl station "$INTERFACE" connect "$SSID"; then
         echo ""
-        echo "✅ Successfully connected to '$SSID'!"
+        echo "Successfully connected to '$SSID'!"
         sleep 1
         
-        # Show detailed connection info including signal strength
         echo ""
         echo "Connection details:"
-        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        echo ""
         ${pkgs.iwd}/bin/iwctl station "$INTERFACE" show
         
-        # Extract and highlight signal strength
         echo ""
         SIGNAL=$(${pkgs.iwd}/bin/iwctl station "$INTERFACE" show | grep -i "rssi" | awk '{print $2}')
         if [[ -n "$SIGNAL" ]]; then
           # Convert RSSI to percentage and quality description
           RSSI_NUM=''${SIGNAL}
           if (( RSSI_NUM >= -50 )); then
-            QUALITY="Excellent 📶"
+            QUALITY="Excellent"
           elif (( RSSI_NUM >= -60 )); then
-            QUALITY="Good 📶"
+            QUALITY="Good"
           elif (( RSSI_NUM >= -70 )); then
-            QUALITY="Fair 📶"
+            QUALITY="Fair"
           else
-            QUALITY="Weak 📶"
+            QUALITY="Weak"
           fi
           echo "📡 Signal Strength: $SIGNAL dBm ($QUALITY)"
         fi
