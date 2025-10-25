@@ -53,10 +53,6 @@
         dhcpV6Config.RouteMetric = 200;
         linkConfig.RequiredForOnline = "no";
       };
-      "15-tailscale" = {
-        matchConfig.Name = "tailscale0";
-        linkConfig.RequiredForOnline = "no";
-      };
     } // lib.optionalAttrs (config.networking.hostName == "thinkpad") {
       "20-ethernet-dock" = {
         matchConfig.Name = "enp0s20f0u2u1u2";
