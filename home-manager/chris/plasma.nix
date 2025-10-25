@@ -178,11 +178,11 @@ in
               #  "org.kde.plasma.battery"
               #  "org.kde.plasma.bluetooth"
               #  "org.kde.plasma.brightness"
-              #  "org.kde.plasma.networkmanagement"
               #];
-              #hidden = [
-              #  "org.kde.plasma.clipboard"
-              #];
+              hidden = [
+                "org.kde.plasma.clipboard"
+                "org.kde.plasma.networkmanagement"
+              ];
             };
           }
           "org.kde.plasma.digitalclock"
