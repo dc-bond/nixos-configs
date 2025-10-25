@@ -19,8 +19,6 @@
 
   environment = {
     systemPackages = with pkgs; [
-      #kdePackages.sddm-kcm # configuration module for sddm
-      kdePackages.krdp # kde rdp remote desktop tooling
       wayland-utils # wayland utilities
       wl-clipboard # command-line copy/paste utilities for wayland
     ];
@@ -65,7 +63,7 @@
   };
 
   #networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 5900 ]; # open vnc port on tailscale interface for remote desktop
-  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 3389 ]; # open rdp port on tailscale interface for remote desktop
+  #networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 3389 ]; # open rdp port on tailscale interface for remote desktop
 
   systemd.user.services = {
     "app-org.kde.discover.notifier@autostart".enable = false; # disable auto-update checker

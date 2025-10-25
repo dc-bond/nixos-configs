@@ -1,7 +1,6 @@
 { 
   config,
   configVars,
-  #osConfig,
   lib,
   configLib,
   pkgs, 
@@ -17,7 +16,6 @@ let
     sparseCheckout = [ "wallpaper" ];
     hash = "sha256-qb6KxcuxMJxcG4KbGH2yMbqJDbGMlSF6KxuWtaPKofs=";
   };
-  #krfbPasswdPath = osConfig.sops.templates."krfbPasswd".path;
 in
 
 {
@@ -35,8 +33,8 @@ in
     element-desktop # matrix chat app
     nextcloud-client # nextcloud local syncronization client
     whitesur-cursors # cursor theme
-    #trayscale # tailscale tray applet
     iwgtk # tray applet for wifi
+    #trayscale # tailscale tray applet
   ];
 
   services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
@@ -297,21 +295,6 @@ in
   };
 
   systemd.user.services = {
-    krdp = {
-      Unit = {
-        Description = "Plasma Remote Desktop (RDP)";
-        After = [ "plasma-workspace.target" "pipewire.service" ];
-        PartOf = [ "plasma-workspace.target" ];
-      };
-      Service = {
-        ExecStart = "${pkgs.kdePackages.krdp}/bin/krdp";
-        Restart = "on-failure";
-        Slice = "session.slice";
-      };
-      Install = {
-        WantedBy = [ "plasma-workspace.target" ];
-      }; 
-    };
     iwgtk = {
       Unit = {
         Description = "Tray applet for iwd wireless networking";
