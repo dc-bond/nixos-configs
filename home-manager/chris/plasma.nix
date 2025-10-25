@@ -36,7 +36,6 @@ in
     nextcloud-client # nextcloud local syncronization client
     whitesur-cursors # cursor theme
     trayscale # tailscale tray applet
-    ktailctl # tailscale tray applet
     iwgtk # tray applet for wifi
   ];
 
@@ -298,64 +297,6 @@ in
   };
 
   systemd.user.services = {
-    #krfb-config-setup = {
-    #  Unit = {
-    #    Description = "Setup krfb configuration with password from sops";
-    #    Before = [ "krfb.service" ];
-    #  };
-    #  Service = {
-    #    Type = "oneshot";
-    #    RemainAfterExit = true;
-    #    ExecStart = pkgs.writeShellScript "krfb-config-setup" ''
-    #      set -e
-    #      
-    #      if [ ! -f "${krfbPasswdPath}" ]; then
-    #        echo "error: password secret not found at ${krfbPasswdPath}"
-    #        exit 1
-    #      fi
-    #      
-    #      PASSWORD=$(cat "${krfbPasswdPath}")
-    #      
-    #      mkdir -p ${config.home.homeDirectory}/.config
-    #      cat > ${config.home.homeDirectory}/.config/krfbrc << EOF
-    #      [FrameBuffer]
-    #      preferredFrameBufferPlugin=pw
-
-    #      [Security]
-    #      allowUnattendedAccess=true
-    #      allowUninvitedConnections=true
-    #      askOnConnect=false
-    #      desktopPassword=$PASSWORD
-    #      noWallet=true
-    #      unattendedPassword=$PASSWORD
-    #      
-    #      EOF
-    #      
-    #      chmod 600 ${config.home.homeDirectory}/.config/krfbrc
-    #      echo "krfb configuration created successfully"
-    #    '';
-    #  };
-    #  Install.WantedBy = [ "graphical-session.target" ];
-    #};
-    #krfb = {
-    #  Unit = {
-    #    Description = "KDE Remote Frame Buffer Server";
-    #    After = [ "graphical-session.target" "krfb-config-setup.service" ];
-    #    Requires = [ "krfb-config-setup.service" ];
-    #    PartOf = [ "graphical-session.target" ];
-    #  };
-    #  Service = {
-    #    Type = "simple";
-    #    ExecStart = "${pkgs.kdePackages.krfb}/bin/krfb --nodialog";
-    #    Restart = "on-failure";
-    #    RestartSec = "5s";
-    #    PrivateTmp = true;
-    #    NoNewPrivileges = true;
-    #  };
-    #  Install = {
-    #    WantedBy = [ "graphical-session.target" ];
-    #  };
-    #};
     krdp = {
       Unit = {
         Description = "Plasma Remote Desktop (RDP)";
@@ -371,23 +312,34 @@ in
         WantedBy = [ "plasma-workspace.target" ];
       }; 
     };
-    #tailscale-operator = {
-    #  Unit = {
-    #    Description = "Configure tailscale for tray applet";
-    #    After = [ "tailscaled.service" "network-online.target" ];
-    #    Wants = [ "tailscaled.service" ];
-    #  };
-    #  Service = {
-    #    Type = "oneshot";
-    #    ExecStart = "${pkgs.tailscale}/bin/tailscale set --operator=${configVars.chrisUsername}";
-    #    RemainAfterExit = true;
-    #    Restart = "on-failure";
-    #    RestartSec = 5;
-    #  };
-    #  Install = {
-    #    WantedBy = [ "default.target" ];
-    #  };
-    #};
+    iwgtk = {
+      Unit = {
+        Description = "Tray applet for iwd wireless networking";
+        After = [ "graphical-session.target" ];
+        PartOf = [ "graphical-session.target" ];
+      };
+      Service = {
+        ExecStart = "${pkgs.iwgtk}/bin/iwgtk --indicators";
+        Restart = "on-failure";
+      };
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
+      };
+    };
+    trayscale = {
+      Unit = {
+        Description = "Trayscale Tailscale tray applet";
+        After = [ "graphical-session.target" ];
+        PartOf = [ "graphical-session.target" ];
+      };
+      Service = {
+        ExecStart = "${pkgs.trayscale}/bin/trayscale --hide-window";
+        Restart = "on-failure";
+      };
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
+      };
+    };
   };
 
 }
