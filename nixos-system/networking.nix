@@ -43,22 +43,26 @@
         matchConfig.Name = "lo";
         linkConfig.RequiredForOnline = "no";
       };
-      "10-ethernet" = {
+      "10-ethernet-builtin" = {
         matchConfig.Name = 
           if config.networking.hostName == "thinkpad" then "enp0s31f6"
           else if config.networking.hostName == "aspen" then "enp4s0"
           else "enp1s0"; # juniper and cypress fallback
         networkConfig.DHCP = "ipv4";
-        dhcpV4Config.RouteMetric = 300;
-        dhcpV6Config.RouteMetric = 400;
+        dhcpV4Config.RouteMetric = 200;
+        dhcpV6Config.RouteMetric = 200;
+        linkConfig.RequiredForOnline = "no";
+      };
+      "15-tailscale" = {
+        matchConfig.Name = "tailscale0";
         linkConfig.RequiredForOnline = "no";
       };
     } // lib.optionalAttrs (config.networking.hostName == "thinkpad") {
       "20-ethernet-dock" = {
         matchConfig.Name = "enp0s20f0u2u1u2";
         networkConfig.DHCP = "ipv4";
-        dhcpV4Config.RouteMetric = 300;
-        dhcpV6Config.RouteMetric = 400;
+        dhcpV4Config.RouteMetric = 100;
+        dhcpV6Config.RouteMetric = 100;
         linkConfig.RequiredForOnline = "no";
       };
       "30-wifi" = {
@@ -67,8 +71,8 @@
           DHCP = "ipv4";
           IgnoreCarrierLoss = "3s"; # avoid re-configuring interface when wireless roaming between APs
         };
-        dhcpV4Config.RouteMetric = 500;
-        dhcpV6Config.RouteMetric = 600;
+        dhcpV4Config.RouteMetric = 300;
+        dhcpV6Config.RouteMetric = 300;
         linkConfig.RequiredForOnline = "no";
       };
     };
