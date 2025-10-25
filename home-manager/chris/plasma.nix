@@ -158,30 +158,37 @@ in
               compactDisplayStyle = true;
               favoritesDisplayMode = "list";
               applicationsDisplayMode = "list";
-              #settings = {
-              #  General = {
-              #    favorites = "chromium-browser.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
-              #    showRecentApps = false;
-              #    showRecentDocs = false;
-              #    showRecentContacts = false;
-              #  };
-              #};
+              settings = {
+                General = {
+                  favorites = "firefox-browser.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
+                  showRecentApps = false;
+                  showRecentDocs = false;
+                  showRecentContacts = false;
+                };
+              };
             };
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
-          #"org.kde.plasma.systemtray"
           {
             systemTray.items = {
-              showAll = true;
-              #shown = [
-              #  "org.kde.plasma.volume"
-              #  "org.kde.plasma.battery"
-              #  "org.kde.plasma.bluetooth"
-              #  "org.kde.plasma.brightness"
-              #];
+              shown = [
+                "org.kde.plasma.volume"
+                "org.kde.plasma.cameraindicator"
+                "org.kde.plasma.bluetooth"
+                "org.kde.plasma.battery"
+                "org.kde.plasma.brightness"
+                "org.kde.kscreen"
+                "org.kde.plasma.printmanager"
+              ];
               hidden = [
                 "org.kde.plasma.clipboard"
                 "org.kde.plasma.networkmanagement"
+                "org.kde.plasma.devicenotifier"
+                "org.kde.plasma.manage-inputmethod"
+                "org.kde.plasma.mediacontroller"
+                "org.kde.plasma.notifications"
+                "org.kde.plasma.keyboardindicator"
+                "org.kde.plasma.keyboardlayout"
               ];
             };
           }
