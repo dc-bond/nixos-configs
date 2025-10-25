@@ -172,16 +172,17 @@ in
           #"org.kde.plasma.systemtray"
           {
             systemTray.items = {
-              shown = [
-                "org.kde.plasma.volume"
-                "org.kde.plasma.battery"
-                "org.kde.plasma.bluetooth"
-                "org.kde.plasma.brightness"
-                "org.kde.plasma.networkmanagement"
-              ];
-              hidden = [
-                "org.kde.plasma.clipboard"
-              ];
+              showAll = true;
+              #shown = [
+              #  "org.kde.plasma.volume"
+              #  "org.kde.plasma.battery"
+              #  "org.kde.plasma.bluetooth"
+              #  "org.kde.plasma.brightness"
+              #  "org.kde.plasma.networkmanagement"
+              #];
+              #hidden = [
+              #  "org.kde.plasma.clipboard"
+              #];
             };
           }
           "org.kde.plasma.digitalclock"
