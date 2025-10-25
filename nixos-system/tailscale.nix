@@ -37,6 +37,7 @@ in
     ++ lib.optionals isClient [ "--accept-routes" ]
     ++ lib.optional (hostname == "aspen") "--advertise-routes=192.168.1.0/24,192.168.4.0/27"
     ++ lib.optional (hostname == "thinkpad") "--exit-node=${configVars.aspenTailscaleIp}"; # thinkpad laptop (client) always needs to default to using server exit node (aspen or juniper)
+    extraSetFlags = lib.optionals (hostname == "thinkpad") [ "--operator=${configVars.chrisUsername}" ];
   };
 
 }

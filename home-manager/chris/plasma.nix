@@ -371,23 +371,23 @@ in
         WantedBy = [ "plasma-workspace.target" ];
       }; 
     };
-    tailscale-operator = {
-      Unit = {
-        Description = "Configure tailscale for tray applet";
-        After = [ "tailscaled.service" "network-online.target" ];
-        Wants = [ "tailscaled.service" ];
-      };
-      Service = {
-        Type = "oneshot";
-        ExecStart = "${pkgs.tailscale}/bin/tailscale set --operator=${configVars.chrisUsername}";
-        RemainAfterExit = true;
-        Restart = "on-failure";
-        RestartSec = 5;
-      };
-      Install = {
-        WantedBy = [ "default.target" ];
-      };
-    };
+    #tailscale-operator = {
+    #  Unit = {
+    #    Description = "Configure tailscale for tray applet";
+    #    After = [ "tailscaled.service" "network-online.target" ];
+    #    Wants = [ "tailscaled.service" ];
+    #  };
+    #  Service = {
+    #    Type = "oneshot";
+    #    ExecStart = "${pkgs.tailscale}/bin/tailscale set --operator=${configVars.chrisUsername}";
+    #    RemainAfterExit = true;
+    #    Restart = "on-failure";
+    #    RestartSec = 5;
+    #  };
+    #  Install = {
+    #    WantedBy = [ "default.target" ];
+    #  };
+    #};
   };
 
 }
