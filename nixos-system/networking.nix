@@ -74,4 +74,85 @@
     };
   };
 
+  environment.systemPackages = lib.mkIf (config.networking.hostName == "thinkpad") [
+    (pkgs.writeShellScriptBin "connect-wifi" ''
+      #!${pkgs.zsh}/bin/zsh
+      set -euo pipefail
+
+      INTERFACE="wlan0"
+      
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo "        WiFi Connection Helper"
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      echo ""
+      
+      # Check if iwd is running
+      if ! systemctl is-active --quiet iwd; then
+        echo "❌ Error: iwd service is not running"
+        exit 1
+      fi
+
+      # Scan for networks
+      echo "🔍 Scanning for WiFi networks..."
+      ${pkgs.iwd}/bin/iwctl station "$INTERFACE" scan
+      sleep 2
+      
+      # Show available networks with signal strength
+      echo ""
+      echo "Available networks (signal strength shown as bars):"
+      echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+      ${pkgs.iwd}/bin/iwctl station "$INTERFACE" get-networks
+      echo ""
+      echo "Signal guide: ▂▄▆█ = Excellent | ▂▄▆_ = Good | ▂▄__ = Fair | ▂___ = Weak"
+      echo ""
+      
+      # Get network name from user
+      read "SSID?Enter the WiFi network name (SSID): "
+      
+      if [[ -z "$SSID" ]]; then
+        echo "❌ Error: Network name cannot be empty"
+        exit 1
+      fi
+      
+      # Connect to network
+      echo ""
+      echo "🔗 Connecting to '$SSID'..."
+      
+      if ${pkgs.iwd}/bin/iwctl station "$INTERFACE" connect "$SSID"; then
+        echo ""
+        echo "✅ Successfully connected to '$SSID'!"
+        sleep 1
+        
+        # Show detailed connection info including signal strength
+        echo ""
+        echo "Connection details:"
+        echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        ${pkgs.iwd}/bin/iwctl station "$INTERFACE" show
+        
+        # Extract and highlight signal strength
+        echo ""
+        SIGNAL=$(${pkgs.iwd}/bin/iwctl station "$INTERFACE" show | grep -i "rssi" | awk '{print $2}')
+        if [[ -n "$SIGNAL" ]]; then
+          # Convert RSSI to percentage and quality description
+          RSSI_NUM=''${SIGNAL}
+          if (( RSSI_NUM >= -50 )); then
+            QUALITY="Excellent 📶"
+          elif (( RSSI_NUM >= -60 )); then
+            QUALITY="Good 📶"
+          elif (( RSSI_NUM >= -70 )); then
+            QUALITY="Fair 📶"
+          else
+            QUALITY="Weak 📶"
+          fi
+          echo "📡 Signal Strength: $SIGNAL dBm ($QUALITY)"
+        fi
+      else
+        echo ""
+        echo "❌ Failed to connect to '$SSID'"
+        echo "Please check the network name and password, then try again"
+        exit 1
+      fi
+    '')
+  ];
+
 }
