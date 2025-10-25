@@ -35,7 +35,7 @@ in
     element-desktop # matrix chat app
     nextcloud-client # nextcloud local syncronization client
     whitesur-cursors # cursor theme
-    trayscale # tailscale tray applet
+    #trayscale # tailscale tray applet
     iwgtk # tray applet for wifi
   ];
 
@@ -326,20 +326,20 @@ in
         WantedBy = [ "graphical-session.target" ];
       };
     };
-    trayscale = {
-      Unit = {
-        Description = "Trayscale Tailscale tray applet";
-        After = [ "graphical-session.target" ];
-        PartOf = [ "graphical-session.target" ];
-      };
-      Service = {
-        ExecStart = "${pkgs.trayscale}/bin/trayscale --hide-window";
-        Restart = "on-failure";
-      };
-      Install = {
-        WantedBy = [ "graphical-session.target" ];
-      };
-    };
+    #trayscale = {
+    #  Unit = {
+    #    Description = "Trayscale Tailscale tray applet";
+    #    After = [ "graphical-session.target" ];
+    #    PartOf = [ "graphical-session.target" ];
+    #  };
+    #  Service = {
+    #    ExecStart = "${pkgs.trayscale}/bin/trayscale --hide-window";
+    #    Restart = "on-failure";
+    #  };
+    #  Install = {
+    #    WantedBy = [ "graphical-session.target" ];
+    #  };
+    #};
   };
 
 }

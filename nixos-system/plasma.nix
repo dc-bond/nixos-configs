@@ -19,7 +19,7 @@
 
   environment = {
     systemPackages = with pkgs; [
-      kdePackages.sddm-kcm # configuration module for sddm
+      #kdePackages.sddm-kcm # configuration module for sddm
       kdePackages.krdp # kde rdp remote desktop tooling
       wayland-utils # wayland utilities
       wl-clipboard # command-line copy/paste utilities for wayland
