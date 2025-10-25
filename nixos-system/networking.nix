@@ -125,13 +125,13 @@
         if [[ -n "$SIGNAL" ]]; then
           RSSI_NUM=''${SIGNAL}
           if (( RSSI_NUM >= -50 )); then
-            QUALITY="Excellent (very fast & reliable)"
+            QUALITY="excellent - very fast & reliable"
           elif (( RSSI_NUM >= -60 )); then
-            QUALITY="Good (reasonably fast and reliable)"
+            QUALITY="good - reasonably fast and reliable"
           elif (( RSSI_NUM >= -70 )); then
-            QUALITY="Fair (browsing ok, streaming/video calls may buffer)"
+            QUALITY="fair - browsing ok, streaming/video calls may buffer"
           else
-            QUALITY="Weak (browsing slow, may disconnect)"
+            QUALITY="weak - browsing slow, may disconnect"
           fi
           echo "📡 Signal Strength: $SIGNAL dBm ($QUALITY)"
         fi
