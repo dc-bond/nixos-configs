@@ -158,6 +158,16 @@ in
               compactDisplayStyle = true;
               favoritesDisplayMode = "list";
               applicationsDisplayMode = "list";
+              showButtonsFor = {
+                custom = [
+                  "lock-screen"
+                  "logout"
+                  "switch-user"
+                  "suspend"
+                  "reboot"
+                  "shutdown"
+                ];
+              };
               settings = {
                 General = {
                   favorites = "firefox.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
