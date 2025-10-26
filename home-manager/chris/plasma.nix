@@ -166,7 +166,7 @@ in
               compactDisplayStyle = true;
               favoritesDisplayMode = "list";
               applicationsDisplayMode = "list";
-              showButtonsFor = "powerAndSession";
+              showButtonsFor = "session";
               #showButtonsFor.custom = [
               #  "logout"
               #  "switch-user"
@@ -190,13 +190,13 @@ in
             };
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
-          {
-            iconTasks = {
-              launchers = [
-                "applications:org.kde.connectWifi.desktop"
-              ];
-            };
-          }
+          #{
+          #  iconTasks = {
+          #    launchers = [
+          #      "applications:org.kde.connectWifi.desktop"
+          #    ];
+          #  };
+          #}
           {
             systemTray.items = {
               showAll = true;
