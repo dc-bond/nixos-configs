@@ -191,7 +191,7 @@ in
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
           {
-            name = "org.kde.plasma.icon";
+            name = "org.kde.plasma.icon"; # test
             config.General = {
               url = "file://${pkgs.writeScript "WiFi Connection Script" ''
                 #!${pkgs.bash}/bin/bash
