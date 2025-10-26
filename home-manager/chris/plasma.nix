@@ -149,7 +149,7 @@ in
       {
         location = "bottom";
         height = 30;
-        hiding = "autohide";
+        #hiding = "autohide";
         widgets = [
           {
             kickoff = {
@@ -158,13 +158,14 @@ in
               compactDisplayStyle = true;
               favoritesDisplayMode = "list";
               applicationsDisplayMode = "list";
-              showButtonsFor.custom = [
-                "logout"
-                "switch-user"
-                "suspend"
-                "reboot"
-                "shutdown"
-              ];
+              showButtonsFor = "power";
+              #showButtonsFor.custom = [
+              #  "logout"
+              #  "switch-user"
+              #  "suspend"
+              #  "reboot"
+              #  "shutdown"
+              #];
               settings = {
                 General = {
                   favorites = "firefox.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
@@ -173,6 +174,11 @@ in
                   showRecentContacts = false;
                 };
               };
+            };
+          }
+          {
+            iconTasks = {
+              launchers = [ ];
             };
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
