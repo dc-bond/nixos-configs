@@ -166,7 +166,7 @@ in
               compactDisplayStyle = true;
               favoritesDisplayMode = "list";
               applicationsDisplayMode = "list";
-              showButtonsFor = "session";
+              showButtonsFor = "powerAndSession";
               #showButtonsFor.custom = [
               #  "logout"
               #  "switch-user"
@@ -191,19 +191,12 @@ in
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
           {
-            name = "org.kde.plasma.icon";
-            config.General.url = "file://${config.home.homeDirectory}/.nix-profile/share/applications/connectWifi.desktop";
+            iconTasks = {
+              launchers = [
+                "applications:org.kde.connectWifi.desktop"
+              ];
+            };
           }
-          #{
-          #  name = "org.kde.plasma.icon"; # test
-          #  config.General = {
-          #    url = "file://${pkgs.writeScript "WiFi Connection Script" ''
-          #      #!${pkgs.bash}/bin/bash
-          #      ${pkgs.alacritty}/bin/alacritty -e wifi
-          #    ''}";
-          #    icon = "network-wireless";
-          #  };
-          #}
           {
             systemTray.items = {
               showAll = true;
