@@ -158,7 +158,7 @@ in
               compactDisplayStyle = true;
               favoritesDisplayMode = "list";
               applicationsDisplayMode = "list";
-              showButtonsFor = "power";
+              showButtonsFor = "session";
               #showButtonsFor.custom = [
               #  "logout"
               #  "switch-user"
@@ -183,6 +183,9 @@ in
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
           {
+            applicationLauncher.launcherUrl = "applications:wifi.desktop";
+          }
+          {
             systemTray.items = {
               showAll = true;
               extra = [
@@ -194,25 +197,6 @@ in
                 "org.kde.kscreen"
                 "org.kde.plasma.printmanager"
               ];
-              #shown = [
-              #  "org.kde.plasma.volume"
-              #  "org.kde.plasma.cameraindicator"
-              #  "org.kde.plasma.bluetooth"
-              #  "org.kde.plasma.battery"
-              #  "org.kde.plasma.brightness"
-              #  "org.kde.kscreen"
-              #  "org.kde.plasma.printmanager"
-              #];
-              #hidden = [
-              #  "org.kde.plasma.clipboard"
-              #  "org.kde.plasma.networkmanagement"
-              #  "org.kde.plasma.devicenotifier"
-              #  "org.kde.plasma.manage-inputmethod"
-              #  "org.kde.plasma.mediacontroller"
-              #  "org.kde.plasma.notifications"
-              #  "org.kde.plasma.keyboardindicator"
-              #  "org.kde.plasma.keyboardlayout"
-              #];
             };
           }
           "org.kde.plasma.digitalclock"
@@ -338,6 +322,15 @@ in
     };
 
   };
+
+  (pkgs.makeDesktopItem {
+    name = "wifi";
+    desktopName = "WiFi Connection Script";
+    exec = "${pkgs.alacritty}/bin/alacritty -e wifi";
+    icon = "network-wireless";
+    type = "Application";
+    categories = [ "Network" "System" ];
+  })
 
   #systemd.user.services = {
   #  iwgtk = {
