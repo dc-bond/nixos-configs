@@ -201,7 +201,6 @@ in
                 "org.kde.plasma.brightness"
                 "org.kde.kscreen"
                 "org.kde.plasma.printmanager"
-                "org.kde.plasma.networkmanagement"
               ];
             };
           }
