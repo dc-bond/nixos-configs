@@ -323,15 +323,6 @@ in
 
   };
 
-  (pkgs.makeDesktopItem {
-    name = "wifi";
-    desktopName = "WiFi Connection Script";
-    exec = "${pkgs.alacritty}/bin/alacritty -e wifi";
-    icon = "network-wireless";
-    type = "Application";
-    categories = [ "Network" "System" ];
-  })
-
   #systemd.user.services = {
   #  iwgtk = {
   #    Unit = {

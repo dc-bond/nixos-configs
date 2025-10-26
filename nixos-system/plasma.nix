@@ -62,6 +62,15 @@
     };
   };
 
+  (pkgs.makeDesktopItem {
+    name = "wifi";
+    desktopName = "WiFi Connection Script";
+    exec = "${pkgs.alacritty}/bin/alacritty -e wifi";
+    icon = "network-wireless";
+    type = "Application";
+    categories = [ "Network" "System" ];
+  })
+
   #networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 5900 ]; # open vnc port on tailscale interface for remote desktop
   #networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 3389 ]; # open rdp port on tailscale interface for remote desktop
 
