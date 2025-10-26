@@ -36,7 +36,7 @@ in
     #iwgtk # tray applet for wifi
     #trayscale # tailscale tray applet
     (pkgs.makeDesktopItem {
-      name = "wifi";
+      name = "connectWifi";
       desktopName = "WiFi Connection Script";
       exec = "${pkgs.alacritty}/bin/alacritty -e wifi";
       icon = "network-wireless";
@@ -191,15 +191,19 @@ in
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
           {
-            name = "org.kde.plasma.icon"; # test
-            config.General = {
-              url = "file://${pkgs.writeScript "WiFi Connection Script" ''
-                #!${pkgs.bash}/bin/bash
-                ${pkgs.alacritty}/bin/alacritty -e wifi
-              ''}";
-              icon = "network-wireless";
-            };
+            name = "org.kde.plasma.icon";
+            config.General.url = "file://${config.home.homeDirectory}/.nix-profile/share/applications/connectWifi.desktop";
           }
+          #{
+          #  name = "org.kde.plasma.icon"; # test
+          #  config.General = {
+          #    url = "file://${pkgs.writeScript "WiFi Connection Script" ''
+          #      #!${pkgs.bash}/bin/bash
+          #      ${pkgs.alacritty}/bin/alacritty -e wifi
+          #    ''}";
+          #    icon = "network-wireless";
+          #  };
+          #}
           {
             systemTray.items = {
               showAll = true;
