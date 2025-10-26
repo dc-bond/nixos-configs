@@ -35,6 +35,14 @@ in
     whitesur-cursors # cursor theme
     #iwgtk # tray applet for wifi
     #trayscale # tailscale tray applet
+    (pkgs.makeDesktopItem {
+      name = "wifi";
+      desktopName = "WiFi Connection Script";
+      exec = "${pkgs.alacritty}/bin/alacritty -e wifi";
+      icon = "network-wireless";
+      type = "Application";
+      categories = [ "Network" "System" ];
+    })
   ];
 
   services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
