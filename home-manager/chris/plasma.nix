@@ -190,8 +190,12 @@ in
             };
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
+          #{
+          #  applicationLauncher.launcherUrl = "applications:wifi.desktop";
+          #}
           {
-            applicationLauncher.launcherUrl = "applications:wifi.desktop";
+            name = "org.kde.plasma.icon";
+            config.General.url = "applications:connect-wifi.desktop";
           }
           {
             systemTray.items = {
