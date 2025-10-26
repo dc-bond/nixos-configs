@@ -35,14 +35,14 @@ in
     whitesur-cursors # cursor theme
     #iwgtk # tray applet for wifi
     #trayscale # tailscale tray applet
-    (pkgs.makeDesktopItem {
-      name = "connectWifi";
-      desktopName = "WiFi Connection Script";
-      exec = "${pkgs.alacritty}/bin/alacritty -e wifi";
-      icon = "network-wireless";
-      type = "Application";
-      categories = [ "Network" "System" ];
-    })
+    #(pkgs.makeDesktopItem {
+    #  name = "connectWifi";
+    #  desktopName = "WiFi Connection Script";
+    #  exec = "${pkgs.alacritty}/bin/alacritty -e wifi";
+    #  icon = "network-wireless";
+    #  type = "Application";
+    #  categories = [ "Network" "System" ];
+    #})
   ];
 
   services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
@@ -190,13 +190,6 @@ in
             };
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
-          #{
-          #  iconTasks = {
-          #    launchers = [
-          #      "applications:org.kde.connectWifi.desktop"
-          #    ];
-          #  };
-          #}
           {
             systemTray.items = {
               showAll = true;
@@ -208,6 +201,7 @@ in
                 "org.kde.plasma.brightness"
                 "org.kde.kscreen"
                 "org.kde.plasma.printmanager"
+                "org.kde.plasma.networkmanagement"
               ];
             };
           }
