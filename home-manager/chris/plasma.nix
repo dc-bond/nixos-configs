@@ -190,12 +190,15 @@ in
             };
           }
           "org.kde.plasma.panelspacer" # everything subsequent is moved to the right of the panel
-          #{
-          #  applicationLauncher.launcherUrl = "applications:wifi.desktop";
-          #}
           {
             name = "org.kde.plasma.icon";
-            config.General.url = "applications:wifi.desktop";
+            config.General = {
+              url = "file://${pkgs.writeScript "WiFi Connection Script" ''
+                #!${pkgs.bash}/bin/bash
+                ${pkgs.alacritty}/bin/alacritty -e wifi
+              ''}";
+              icon = "network-wireless";
+            };
           }
           {
             systemTray.items = {

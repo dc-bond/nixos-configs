@@ -21,14 +21,6 @@
     systemPackages = with pkgs; [
       wayland-utils # wayland utilities
       wl-clipboard # command-line copy/paste utilities for wayland
-      #(pkgs.makeDesktopItem {
-      #  name = "wifi";
-      #  desktopName = "WiFi Connection Script";
-      #  exec = "${pkgs.alacritty}/bin/alacritty -e wifi";
-      #  icon = "network-wireless";
-      #  type = "Application";
-      #  categories = [ "Network" "System" ];
-      #})
     ];
     plasma6.excludePackages = with pkgs.kdePackages; [
       baloo-widgets
