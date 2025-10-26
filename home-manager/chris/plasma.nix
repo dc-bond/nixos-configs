@@ -195,7 +195,7 @@ in
           #}
           {
             name = "org.kde.plasma.icon";
-            config.General.url = "applications:connect-wifi.desktop";
+            config.General.url = "applications:wifi.desktop";
           }
           {
             systemTray.items = {
