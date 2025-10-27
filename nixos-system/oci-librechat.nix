@@ -83,6 +83,10 @@ in
                   fetch: true
                 titleConvo: true
                 titleModel: "current_model"
+                "titleModelParameters": {
+                  "temperature": 0.7,
+                  "top_p": 0.9
+                },
                 summarize: false
                 summaryModel: "current_model"
                 forcePrompt: false
