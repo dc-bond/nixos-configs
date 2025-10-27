@@ -45,53 +45,51 @@ in
         text = ''
           version: 1.2.8
           cache: true
-
-          memory:
-            disabled: true
-            personalize: true
-            tokenLimit: 2000
-            messageWindowSize: 4 
-            validKeys:
-              - "general_facts"
-              - "communication_preferences"
-              - "personal_interests"
-              - "technical_context"
-            agent:
-              provider: "anthropic"
-              model: "claude-sonnet-4-20250514"
-              instructions: |
-                Store memory using only the specified validKeys categories:
-                - general_facts: Important facts about the user that provide useful context
-                - communication_preferences: How the user prefers explanations, formats, detail level
-                - personal_interests: Hobbies, interests, topics the user cares about (linux, NixOS, cooking, etc.)
-                - technical_context: System details, development environment, coding preferences, NixOS setup
-                Focus on information that will be helpful in future conversations across diverse topics. 
-                Delete outdated or corrected information promptly.
-              model_parameters:
-                temperature: 0.2
-                max_tokens: 1500
-           
-          endpoints:
-            custom:
-              - name: "Ollama"
-                apiKey: "ollama"
-                baseURL: "http://192.168.1.2:11434/v1"
-                models:
-                  default: [
-                    "mistral"
-                  ]
-                  fetch: true
-                titleConvo: true
-                titleModel: "current_model"
-                "titleModelParameters": {
-                  "temperature": 0.7,
-                  "top_p": 0.9
-                },
-                summarize: false
-                summaryModel: "current_model"
-                forcePrompt: false
-                modelDisplayLabel: "Ollama"
         '';
+          #memory:
+          #  disabled: true
+          #  personalize: true
+          #  tokenLimit: 2000
+          #  messageWindowSize: 4 
+          #  validKeys:
+          #    - "general_facts"
+          #    - "communication_preferences"
+          #    - "personal_interests"
+          #    - "technical_context"
+          #  agent:
+          #    provider: "anthropic"
+          #    model: "claude-sonnet-4-20250514"
+          #    instructions: |
+          #      Store memory using only the specified validKeys categories:
+          #      - general_facts: Important facts about the user that provide useful context
+          #      - communication_preferences: How the user prefers explanations, formats, detail level
+          #      - personal_interests: Hobbies, interests, topics the user cares about (linux, NixOS, cooking, etc.)
+          #      - technical_context: System details, development environment, coding preferences, NixOS setup
+          #      Focus on information that will be helpful in future conversations across diverse topics. 
+          #      Delete outdated or corrected information promptly.
+          #    model_parameters:
+          #      temperature: 0.2
+          #      max_tokens: 1500
+          #endpoints:
+          #  custom:
+          #    - name: "Ollama"
+          #      apiKey: "ollama"
+          #      baseURL: "http://192.168.1.2:11434/v1"
+          #      models:
+          #        default: [
+          #          "mistral"
+          #        ]
+          #        fetch: true
+          #      titleConvo: true
+          #      titleModel: "current_model"
+          #      "titleModelParameters": {
+          #        "temperature": 0.7,
+          #        "top_p": 0.9
+          #      },
+          #      summarize: false
+          #      summaryModel: "current_model"
+          #      forcePrompt: false
+          #      modelDisplayLabel: "Ollama"
         mode = "0644";
       };
       "${app}-${app2}-init.sh" = {
@@ -158,7 +156,7 @@ in
           #                     Endpoints                     #
           #===================================================#
           
-          ENDPOINTS=anthropic,custom
+          ENDPOINTS=anthropic
           PROXY=
           
           #===================================#
