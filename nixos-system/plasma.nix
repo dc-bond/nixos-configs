@@ -6,17 +6,6 @@
 
 {
 
-  #sops = {
-  #  secrets.krfbPasswd = {};
-  #  templates = {
-  #    "krfbPasswd" = {
-  #      content = config.sops.placeholder.krfbPasswd;
-  #      owner = "chris";
-  #      mode = "0400";
-  #    };
-  #  };
-  #};
-
   environment = {
     systemPackages = with pkgs; [
       wayland-utils # wayland utilities
@@ -51,30 +40,20 @@
         allow_empty_password = false;
         hide_borders = true;
         numlock = true;
-        animation = "matrix";
+        #animation = "matrix";
+        animation = "gameoflife";
+        gameoflife_initial_density = 0.4;
+        gameoflife_frame_delay = 6;
+        gameoflife_entropy_interval = 10;
         full_color = true;
-        default_input = "login";
+        #default_input = "login";
+        auto_login_service = "ly-autologin";
+        auto_login_user = "chris";
+        auto_login_session = "plasma";
         auth_fails = 3;
         save = true;
       };
     };
-    #displayManager.sddm = {
-    #  enable = true;
-    #  enableHidpi = true;
-    #  wayland.enable = true;
-    #  settings = {
-    #    General = {
-    #      Numlock = "on";
-    #    };
-    #    Theme = {
-    #      #Background = "${repo-wallpaper}/wallpaper/your-background.png";
-    #      Font = "Source Sans Pro";
-    #      CursorTheme = "WhiteSur-cursors";
-    #      CursorSize = "20";
-    #      EnableAvatars = "true"; # search ~/.face.icon for avatar picture
-    #    };
-    #  };
-    #};
   };
 
   #networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 5900 ]; # open vnc port on tailscale interface for remote desktop
