@@ -50,13 +50,14 @@
       wayland.enable = true;
       settings = {
         General = {
-          Session = "plasmawayland";
-          Theme = "breeze";
+          Numlock = "on";
+        };
+        Theme = {
           #Background = "${repo-wallpaper}/wallpaper/your-background.png";
           Font = "Source Sans Pro";
-          FontSize = "10";
           CursorTheme = "WhiteSur-cursors";
           CursorSize = "20";
+          EnableAvatars = "true"; # search ~/.face.icon for avatar picture
         };
       };
     };

@@ -94,26 +94,6 @@ in
           #    model_parameters:
           #      temperature: 0.2
           #      max_tokens: 1500
-          #endpoints:
-          #  custom:
-          #    - name: "Ollama"
-          #      apiKey: "ollama"
-          #      baseURL: "http://192.168.1.2:11434/v1"
-          #      models:
-          #        default: [
-          #          "mistral"
-          #        ]
-          #        fetch: true
-          #      titleConvo: true
-          #      titleModel: "current_model"
-          #      "titleModelParameters": {
-          #        "temperature": 0.7,
-          #        "top_p": 0.9
-          #      },
-          #      summarize: false
-          #      summaryModel: "current_model"
-          #      forcePrompt: false
-          #      modelDisplayLabel: "Ollama"
         mode = "0644";
       };
       "${app}-${app2}-init.sh" = {
