@@ -44,7 +44,17 @@
 
   services = {
     desktopManager.plasma6.enable = true;
-    displayManager.ly.enable = true;
+    displayManager.ly = {
+      enable = true;
+      settings = {
+        lang = en;
+        numlock = true;
+        animation = "out";
+        max_login_tries = 3;
+        save_session = true;
+        session = "plasmawayland";
+      };
+    };
     #displayManager.sddm = {
     #  enable = true;
     #  enableHidpi = true;
