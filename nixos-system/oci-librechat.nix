@@ -48,8 +48,7 @@ in
           endpoints:
             anthropic:
               streamRate: 25
-              titleModel: "claude-haiku-4-5-20251001"
-              titleMethod: "completion"
+              titleModel: "current_model"
               titleModelParameters:
                 temperature: 0.7
                 top_p: 0.9
