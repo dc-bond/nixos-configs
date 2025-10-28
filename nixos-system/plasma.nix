@@ -50,13 +50,11 @@
         lang = "en";
         allow_empty_password = false;
         hide_borders = true;
-        box_title = "authentication required to start graphical desktop environment";
         numlock = true;
-        animation = "colormix";
+        animation = "matrix";
         full_color = true;
         default_input = "login";
         auth_fails = 3;
-        waylandsessions = "$PREFIX_DIRECTORY/share/wayland-sessions";
         save = true;
       };
     };
