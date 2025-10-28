@@ -46,10 +46,10 @@
         #gameoflife_frame_delay = 6;
         #gameoflife_entropy_interval = 10;
         full_color = true;
-        #default_input = "login";
-        auto_login_service = "ly-autologin";
-        auto_login_user = "chris";
-        auto_login_session = "plasma";
+        default_input = "login";
+        #auto_login_service = "ly-autologin";
+        #auto_login_user = "chris";
+        #auto_login_session = "plasma";
         auth_fails = 3;
         save = true;
       };
