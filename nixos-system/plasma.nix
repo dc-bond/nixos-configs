@@ -44,23 +44,24 @@
 
   services = {
     desktopManager.plasma6.enable = true;
-    displayManager.sddm = {
-      enable = true;
-      enableHidpi = true;
-      wayland.enable = true;
-      settings = {
-        General = {
-          Numlock = "on";
-        };
-        Theme = {
-          #Background = "${repo-wallpaper}/wallpaper/your-background.png";
-          Font = "Source Sans Pro";
-          CursorTheme = "WhiteSur-cursors";
-          CursorSize = "20";
-          EnableAvatars = "true"; # search ~/.face.icon for avatar picture
-        };
-      };
-    };
+    displayManager.ly.enable = true;
+    #displayManager.sddm = {
+    #  enable = true;
+    #  enableHidpi = true;
+    #  wayland.enable = true;
+    #  settings = {
+    #    General = {
+    #      Numlock = "on";
+    #    };
+    #    Theme = {
+    #      #Background = "${repo-wallpaper}/wallpaper/your-background.png";
+    #      Font = "Source Sans Pro";
+    #      CursorTheme = "WhiteSur-cursors";
+    #      CursorSize = "20";
+    #      EnableAvatars = "true"; # search ~/.face.icon for avatar picture
+    #    };
+    #  };
+    #};
   };
 
   #networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 5900 ]; # open vnc port on tailscale interface for remote desktop
