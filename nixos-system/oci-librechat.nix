@@ -45,6 +45,30 @@ in
         text = ''
           version: 1.2.8
           cache: true
+          endpoints:
+            anthropic:
+              streamRate: 25
+              titleModel: "claude-haiku-4-5-20251001"
+              titleMethod: "completion"
+            custom:
+              - name: "Ollama"
+                apiKey: "ollama"
+                baseURL: "http://192.168.1.2:11434/v1"
+                models:
+                  default: [
+                    "mistral"
+                  ]
+                  fetch: true
+                titleConvo: true
+                titleModel: "current_model"
+                "titleModelParameters": {
+                  "temperature": 0.7,
+                  "top_p": 0.9
+                },
+                summarize: false
+                summaryModel: "current_model"
+                forcePrompt: false
+                modelDisplayLabel: "Ollama"
         '';
           #memory:
           #  disabled: true
@@ -156,7 +180,7 @@ in
           #                     Endpoints                     #
           #===================================================#
           
-          ENDPOINTS=anthropic
+          ENDPOINTS=anthropic,custom
           PROXY=
           
           #===================================#
