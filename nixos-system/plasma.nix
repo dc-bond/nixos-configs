@@ -47,7 +47,7 @@
     displayManager.ly = {
       enable = true;
       settings = {
-        lang = en;
+        lang = "en";
         numlock = true;
         animation = "out";
         max_login_tries = 3;
