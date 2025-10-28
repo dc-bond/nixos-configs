@@ -55,16 +55,14 @@ in
                 apiKey: "ollama"
                 baseURL: "http://192.168.1.2:11434/v1"
                 models:
-                  default: [
-                    "mistral"
-                  ]
+                  default:
+                    - "mistral"
                   fetch: true
                 titleConvo: true
                 titleModel: "current_model"
-                "titleModelParameters": {
-                  "temperature": 0.7,
-                  "top_p": 0.9
-                },
+                titleModelParameters:
+                  temperature: 0.7
+                  top_p: 0.9
                 summarize: false
                 summaryModel: "current_model"
                 forcePrompt: false
