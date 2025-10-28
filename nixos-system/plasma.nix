@@ -40,8 +40,8 @@
         allow_empty_password = false;
         hide_borders = true;
         numlock = true;
-        #animation = "matrix";
-        animation = "gameoflife";
+        animation = "matrix";
+        #animation = "gameoflife";
         #gameoflife_initial_density = 0.4;
         #gameoflife_frame_delay = 6;
         #gameoflife_entropy_interval = 10;
@@ -50,7 +50,7 @@
         #auto_login_service = "ly-autologin";
         #auto_login_user = "chris";
         #auto_login_session = "plasma";
-        waylandsessions = "/run/current-system/sw/share/wayland-sessions";
+        #waylandsessions = "/run/current-system/sw/share/wayland-sessions";
         auth_fails = 3;
         save = true;
       };
