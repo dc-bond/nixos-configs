@@ -50,6 +50,7 @@
         #auto_login_service = "ly-autologin";
         #auto_login_user = "chris";
         #auto_login_session = "plasma";
+        waylandsessions = "/run/current-system/sw/share/wayland-sessions";
         auth_fails = 3;
         save = true;
       };
