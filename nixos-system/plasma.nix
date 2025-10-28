@@ -48,11 +48,14 @@
       enable = true;
       settings = {
         lang = "en";
+        allow_empty_password = false;
+        initial_info_text = "authentication required to start graphical desktop environment";
         numlock = true;
-        animation = "out";
-        max_login_tries = 3;
-        save_session = true;
-        session = "plasmawayland";
+        animation = "colormix";
+        full_color = true;
+        default_input = "login";
+        auth_fails = 3;
+        save = true;
       };
     };
     #displayManager.sddm = {
