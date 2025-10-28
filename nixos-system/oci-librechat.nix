@@ -50,6 +50,9 @@ in
               streamRate: 25
               titleModel: "claude-haiku-4-5-20251001"
               titleMethod: "completion"
+              titleModelParameters:
+                temperature: 0.7
+                top_p: 0.9
             custom:
               - name: "Ollama"
                 apiKey: "ollama"
