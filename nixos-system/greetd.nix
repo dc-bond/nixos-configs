@@ -21,12 +21,12 @@ in
 
   services.greetd = {
     enable = true;
-    settings = {
-      default_session.command = ''
-        command = "${pkgs.cage}/bin/cage -s -m last -- ${pkgs.greetd.regreet}/bin/regreet";
-        user = "greeter";
-      '';
-    };
+    #settings = {
+    #  default_session.command = ''
+    #    command = "${pkgs.cage}/bin/cage -s -m last -- ${pkgs.greetd.regreet}/bin/regreet";
+    #    user = "greeter";
+    #  '';
+    #};
   };
 
   programs.regreet.enable = true;
