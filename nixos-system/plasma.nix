@@ -42,9 +42,6 @@
         numlock = true;
         #animation = "matrix";
         animation = "gameoflife";
-        #gameoflife_initial_density = 0.4;
-        #gameoflife_frame_delay = 6;
-        #gameoflife_entropy_interval = 10;
         full_color = true;
         default_input = "login";
         #auto_login_service = "ly-autologin";
