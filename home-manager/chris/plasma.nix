@@ -179,7 +179,7 @@ in
               extra = [
                 "org.kde.plasma.volume"
                 #"org.kde.plasma.cameraindicator"
-                #"org.kde.plasma.bluetooth"
+                "org.kde.plasma.bluetooth"
                 "org.kde.plasma.battery"
                 "org.kde.plasma.brightness"
                 "org.kde.kscreen"
@@ -309,12 +309,21 @@ in
       "kdeglobals"."General".TerminalApplication = "alacritty"; # set alacritty as default terminal
     };
 
-    startup.startupScript.nextcloud = {
-      text = ''
-        sleep 2
-        nextcloud --background &
-      '';
-      runAlways = true;
+    startup.startupScript = {
+      bluetoothPowerOn = {
+        text = ''
+          sleep 1 
+          bluetoothctl power on
+        '';
+        runAlways = true;
+      };
+      nextcloudClient = {
+        text = ''
+          sleep 2
+          nextcloud --background &
+        '';
+        runAlways = true;
+      };
     };
 
   };

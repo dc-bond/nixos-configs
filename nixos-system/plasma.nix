@@ -28,7 +28,6 @@
       spectacle # screenshot tool
       plasma-welcome # welcome screen
       discover # software center
-      bluedevil # bluetooth gui tooling
     ];
   };
 
