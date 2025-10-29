@@ -93,7 +93,7 @@
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       
-      #"nixos-system/hyprland.nix"
+      "nixos-system/hyprland.nix"
       "nixos-system/plasma.nix"
 
       "scripts/deploy-aspen.nix"
