@@ -11,7 +11,7 @@
     pinentry-rofi # use rofi for pinentry
   ];
 
-  services.gpg-agent.pinentry.package = pkgs.pinentry-rofi;
+  services.gpg-agent.pinentry.package = lib.mkDefault pkgs.pinentry-rofi;
   
   programs.rofi = {
     enable = true;

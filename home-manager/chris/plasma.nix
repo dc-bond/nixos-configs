@@ -35,7 +35,7 @@ in
     whitesur-cursors # cursor theme
   ];
 
-  services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
+  services.gpg-agent.pinentry.package = lib.mkForce pkgs.pinentry-qt;
 
   xdg.dataFile = {
     "applications/org.kde.kinfocenter.desktop".text = ''
@@ -310,36 +310,5 @@ in
     };
 
   };
-
-  #systemd.user.services = {
-  #  iwgtk = {
-  #    Unit = {
-  #      Description = "Tray applet for iwd wireless networking";
-  #      After = [ "graphical-session.target" ];
-  #      PartOf = [ "graphical-session.target" ];
-  #    };
-  #    Service = {
-  #      ExecStart = "${pkgs.iwgtk}/bin/iwgtk --indicators";
-  #      Restart = "on-failure";
-  #    };
-  #    Install = {
-  #      WantedBy = [ "graphical-session.target" ];
-  #    };
-  #  };
-  #  #trayscale = {
-  #  #  Unit = {
-  #  #    Description = "Trayscale Tailscale tray applet";
-  #  #    After = [ "graphical-session.target" ];
-  #  #    PartOf = [ "graphical-session.target" ];
-  #  #  };
-  #  #  Service = {
-  #  #    ExecStart = "${pkgs.trayscale}/bin/trayscale --hide-window";
-  #  #    Restart = "on-failure";
-  #  #  };
-  #  #  Install = {
-  #  #    WantedBy = [ "graphical-session.target" ];
-  #  #  };
-  #  #};
-  #};
 
 }
