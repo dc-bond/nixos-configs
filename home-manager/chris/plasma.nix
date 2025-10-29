@@ -309,6 +309,13 @@ in
       "kdeglobals"."General".TerminalApplication = "alacritty"; # set alacritty as default terminal
     };
 
+    startup.startupScript.nextcloud = {
+      text = ''
+        sleep 2
+        nextcloud --background &
+      '';
+    };
+
   };
 
 }
