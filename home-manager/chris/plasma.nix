@@ -178,12 +178,12 @@ in
               showAll = true;
               extra = [
                 "org.kde.plasma.volume"
-                "org.kde.plasma.cameraindicator"
+                #"org.kde.plasma.cameraindicator"
                 "org.kde.plasma.bluetooth"
                 "org.kde.plasma.battery"
                 "org.kde.plasma.brightness"
                 "org.kde.kscreen"
-                "org.kde.plasma.printmanager"
+                #"org.kde.plasma.printmanager"
               ];
             };
           }
