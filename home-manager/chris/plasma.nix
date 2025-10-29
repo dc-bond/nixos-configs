@@ -179,7 +179,7 @@ in
               extra = [
                 "org.kde.plasma.volume"
                 #"org.kde.plasma.cameraindicator"
-                "org.kde.plasma.bluetooth"
+                #"org.kde.plasma.bluetooth"
                 "org.kde.plasma.battery"
                 "org.kde.plasma.brightness"
                 "org.kde.kscreen"
