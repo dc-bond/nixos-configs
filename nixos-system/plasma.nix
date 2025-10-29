@@ -33,20 +33,30 @@
 
   services = {
     desktopManager.plasma6.enable = true;
-    displayManager.ly = {
-      enable = true;
-      settings = {
-        lang = "en";
-        allow_empty_password = false;
-        #hide_borders = true;
-        numlock = true;
-        #animation = "matrix";
-        animation = "gameoflife";
-        full_color = true;
-        default_input = "login";
-        #waylandsessions = "/run/current-system/sw/share/wayland-sessions";
-        auth_fails = 3;
-        save = true;
+    greetd.enable = true;
+    #displayManager.ly = {
+    #  enable = true;
+    #  settings = {
+    #    lang = "en";
+    #    allow_empty_password = false;
+    #    #hide_borders = true;
+    #    numlock = true;
+    #    #animation = "matrix";
+    #    animation = "gameoflife";
+    #    full_color = true;
+    #    default_input = "login";
+    #    #waylandsessions = "/run/current-system/sw/share/wayland-sessions";
+    #    auth_fails = 3;
+    #    save = true;
+    #  };
+    #};
+  };
+
+  programs.regreet = {
+    enable = true;
+    settings = {
+      widget.clock = {
+        format = "%T\n%A %B %e, %Y\nTime zone: %:V";
       };
     };
   };
