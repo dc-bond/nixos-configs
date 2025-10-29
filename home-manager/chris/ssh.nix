@@ -6,6 +6,22 @@
   ... 
 }: 
 
+let
+  pinentryAuto = pkgs.writeShellScriptBin "pinentryAuto" ''
+    case "$XDG_CURRENT_DESKTOP" in
+      KDE)
+        exec ${pkgs.pinentry-qt}/bin/pinentry-qt "$@"
+        ;;
+      Hyprland)
+        exec ${pkgs.pinentry-rofi}/bin/pinentry-rofi "$@"
+        ;;
+      *)
+        exec ${pkgs.pinentry-curses}/bin/pinentry-curses "$@"
+        ;;
+    esac
+  '';
+in
+
 {
 
   programs.ssh = {
@@ -93,7 +109,8 @@
     sshKeys = [ # adds keygrip identifier to .gnupg/sshcontrol file and load gpg auth private key into gpg-agent
       "DB9ADBBE6FBD1F0E694AF25D012321D46E090E61"
     ];
-    pinentry.package = lib.mkDefault pkgs.pinentry-curses; # curses default unless rofi module is imported
+    #pinentry.package = lib.mkDefault pkgs.pinentry-curses; # curses default unless rofi module is imported
+    pinentry.package = pinentryAuto; # should select qt for plasma, rofi for hyprland, and curses for fallback
   };
 
 }

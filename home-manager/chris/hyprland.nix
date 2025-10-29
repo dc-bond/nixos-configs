@@ -41,10 +41,6 @@
       package = pkgs.whitesur-cursors;
       size = 20;
       gtk.enable = true; # integrate with gtk apps
-      #hyprcursor = { # integrate with hyprland
-      #  enable = true;
-      #  size = 50;
-      #};
     };
   };
 
