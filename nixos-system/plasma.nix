@@ -40,8 +40,8 @@
         allow_empty_password = false;
         hide_borders = true;
         numlock = true;
-        animation = "matrix";
-        #animation = "gameoflife";
+        #animation = "matrix";
+        animation = "gameoflife";
         #gameoflife_initial_density = 0.4;
         #gameoflife_frame_delay = 6;
         #gameoflife_entropy_interval = 10;
