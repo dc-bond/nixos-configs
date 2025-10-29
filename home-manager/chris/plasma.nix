@@ -33,16 +33,6 @@ in
     element-desktop # matrix chat app
     nextcloud-client # nextcloud local syncronization client
     whitesur-cursors # cursor theme
-    #iwgtk # tray applet for wifi
-    #trayscale # tailscale tray applet
-    #(pkgs.makeDesktopItem {
-    #  name = "connectWifi";
-    #  desktopName = "WiFi Connection Script";
-    #  exec = "${pkgs.alacritty}/bin/alacritty -e wifi";
-    #  icon = "network-wireless";
-    #  type = "Application";
-    #  categories = [ "Network" "System" ];
-    #})
   ];
 
   services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
@@ -167,13 +157,6 @@ in
               favoritesDisplayMode = "list";
               applicationsDisplayMode = "list";
               showButtonsFor = "session";
-              #showButtonsFor.custom = [
-              #  "logout"
-              #  "switch-user"
-              #  "suspend"
-              #  "reboot"
-              #  "shutdown"
-              #];
               settings = {
                 General = {
                   favorites = "firefox.desktop,org.kde.dolphin.desktop,Alacritty.desktop";
