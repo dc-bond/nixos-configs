@@ -35,7 +35,7 @@ in
     whitesur-cursors # cursor theme
   ];
 
-  #services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
+  services.gpg-agent.pinentry.package = pkgs.pinentry-qt;
 
   xdg.dataFile = {
     "applications/org.kde.kinfocenter.desktop".text = ''

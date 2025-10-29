@@ -8,13 +8,6 @@ let
   customSessions = pkgs.runCommand "custom-wayland-sessions" {} ''
     mkdir -p $out/share/wayland-sessions
     
-    cat > $out/share/wayland-sessions/hyprland.desktop <<EOF
-    [Desktop Entry]
-    Name=Hyprland
-    Exec=Hyprland
-    Type=Application
-    EOF
-    
     cat > $out/share/wayland-sessions/zsh.desktop <<EOF
     [Desktop Entry]
     Name=Zsh (Console)
