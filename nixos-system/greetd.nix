@@ -4,6 +4,26 @@
   ... 
 }: 
 
+let
+  customSessions = pkgs.runCommand "custom-wayland-sessions" {} ''
+    mkdir -p $out/share/wayland-sessions
+    
+    cat > $out/share/wayland-sessions/hyprland.desktop <<EOF
+    [Desktop Entry]
+    Name=Hyprland
+    Exec=Hyprland
+    Type=Application
+    EOF
+    
+    cat > $out/share/wayland-sessions/zsh.desktop <<EOF
+    [Desktop Entry]
+    Name=Zsh (Console)
+    Exec=zsh
+    Type=Application
+    EOF
+  '';
+in
+
 {
 
   services.greetd = {
@@ -14,20 +34,16 @@
           --time \
           --time-format '%a, %d %b %Y • %H:%M' \
           --asterisks \
-          --theme 'border=blue;text=white;prompt=cyan;time=green;action=magenta;button=yellow' \
-          --greeting 'Access is restricted to authorized personnel only.' \
+          --theme 'border=blue;text=white;prompt=cyan;time=green;action=green;button=yellow' \
+          --greeting '⚠ RESTRICTED SYSTEM ⚠ Access is restricted to authorized personnel only. ⚠ RESTRICTED SYSTEM ⚠ \
           --user-menu \
           --remember \
           --remember-user-session \
+          --sessions ${customSessions}/share/wayland-sessions:/run/current-system/sw/share/wayland-sessions \
+          --xsessions /dev/null \
           --cmd startplasma-wayland
       '';
     };
   };
-
-  environment.etc."greetd/environments".text = ''
-    Hyprland
-    startplasma-wayland
-    zsh
-  '';
 
 }
