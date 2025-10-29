@@ -36,20 +36,17 @@
     displayManager.ly = {
       enable = true;
       settings = {
-        #lang = "en";
-        #allow_empty_password = false;
+        lang = "en";
+        allow_empty_password = false;
         #hide_borders = true;
-        #numlock = true;
+        numlock = true;
         #animation = "matrix";
-        #animation = "gameoflife";
-        #full_color = true;
-        #default_input = "login";
-        auto_login_service = "ly-autologin";
-        auto_login_user = "chris";
-        auto_login_session = "plasma";
-        waylandsessions = "/run/current-system/sw/share/wayland-sessions";
-        #auth_fails = 3;
-        #save = true;
+        animation = "gameoflife";
+        full_color = true;
+        default_input = "login";
+        #waylandsessions = "/run/current-system/sw/share/wayland-sessions";
+        auth_fails = 3;
+        save = true;
       };
     };
   };
