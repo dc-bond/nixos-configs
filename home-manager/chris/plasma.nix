@@ -314,6 +314,7 @@ in
         sleep 2
         nextcloud --background &
       '';
+      runAlways = true;
     };
 
   };
