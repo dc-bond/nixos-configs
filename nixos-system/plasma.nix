@@ -31,35 +31,7 @@
     ];
   };
 
-  services = {
-    desktopManager.plasma6.enable = true;
-    greetd.enable = true;
-    #displayManager.ly = {
-    #  enable = true;
-    #  settings = {
-    #    lang = "en";
-    #    allow_empty_password = false;
-    #    #hide_borders = true;
-    #    numlock = true;
-    #    #animation = "matrix";
-    #    animation = "gameoflife";
-    #    full_color = true;
-    #    default_input = "login";
-    #    #waylandsessions = "/run/current-system/sw/share/wayland-sessions";
-    #    auth_fails = 3;
-    #    save = true;
-    #  };
-    #};
-  };
-
-  programs.regreet = {
-    enable = true;
-    settings = {
-      widget.clock = {
-        format = "%T\n%A %B %e, %Y\nTime zone: %:V";
-      };
-    };
-  };
+  services.desktopManager.plasma6.enable = true;
 
   #networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 5900 ]; # open vnc port on tailscale interface for remote desktop
   #networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 3389 ]; # open rdp port on tailscale interface for remote desktop
