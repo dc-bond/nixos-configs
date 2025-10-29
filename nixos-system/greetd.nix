@@ -34,8 +34,8 @@ in
           --time \
           --time-format '%a, %d %b %Y • %H:%M' \
           --asterisks \
-          --theme 'border=blue;text=white;prompt=cyan;time=green;action=green;button=yellow' \
-          --greeting '⚠ RESTRICTED SYSTEM ⚠ Access is restricted to authorized personnel only. ⚠ RESTRICTED SYSTEM ⚠ \
+          --theme "border=blue;text=white;prompt=cyan;time=green;action=green;button=yellow" \
+          --greeting "Access is restricted to authorized personnel only." \
           --user-menu \
           --remember \
           --remember-user-session \
