@@ -29,7 +29,7 @@
 
     kernel.sysctl = { "vm.swappiness" = 30; };
 
-    kernelParams = [ "quiet" ];
+    #kernelParams = [ "quiet" ];
     
     initrd = {
       supportedFilesystems = {

@@ -25,6 +25,7 @@ in
 
   services.greetd = {
     enable = true;
+    vt = 2; # move to vt 2 to avoid long-running boot messages glitching tuigreet
     settings = {
       default_session.command = ''
         ${pkgs.greetd.tuigreet}/bin/tuigreet \
