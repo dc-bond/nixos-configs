@@ -76,9 +76,9 @@
             "cypress" = "~/.vscodium-server";
           };
         };
-        "claudeCode.environmentVariables" = [ 
+        "claudeCode.environmentVariables" = { 
           "ANTHROPIC_API_KEY" = "${config.sops.secrets.anthropicApiKey.path}";
-        ];
+        };
       };
     };
   };
