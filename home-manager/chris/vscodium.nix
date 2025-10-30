@@ -6,7 +6,7 @@
 
 {
 
-  sops.secrets.anthropicApiKey = {};
+  #sops.secrets.anthropicApiKey = {};
 
   programs.vscode = {
     enable = true;
@@ -76,9 +76,9 @@
             "cypress" = "~/.vscodium-server";
           };
         };
-        "claudeCode.environmentVariables" = { 
-          "ANTHROPIC_API_KEY" = "${config.sops.secrets.anthropicApiKey.path}";
-        };
+        #"claudeCode.environmentVariables" = { 
+        #  "ANTHROPIC_API_KEY" = "${config.sops.secrets.anthropicApiKey.path}";
+        #};
       };
     };
   };
