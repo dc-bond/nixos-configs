@@ -117,7 +117,7 @@ in
     secrets = {
       borgCryptPasswd = {};
       librechatOpenaiApiKey = {};
-      librechatAnthropicApiKey = {};
+      anthropicApiKey = {};
       librechatMeiliMasterKey = {};
       librechatCredsKey = {};
       librechatCredsIv = {};
@@ -187,7 +187,7 @@ in
           # Anthropic  #
           #============#
           
-          ANTHROPIC_API_KEY=${config.sops.placeholder.librechatAnthropicApiKey}
+          ANTHROPIC_API_KEY=${config.sops.placeholder.anthropicApiKey}
           ANTHROPIC_MODELS=claude-sonnet-4-5-20250929,claude-opus-4-1-20250805
           
           #============#
