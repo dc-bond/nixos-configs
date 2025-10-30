@@ -6,6 +6,8 @@
 
 {
 
+  sops.secrets.anthropicApiKey = {};
+
   programs.vscode = {
     enable = true;
     package = pkgs.vscodium;
@@ -74,6 +76,9 @@
             "cypress" = "~/.vscodium-server";
           };
         };
+        "claudeCode.environmentVariables" = [ 
+          "ANTHROPIC_API_KEY" = "${config.sops.secrets.anthropicApiKey.path}";
+        ];
       };
     };
   };
