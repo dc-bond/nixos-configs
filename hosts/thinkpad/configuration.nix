@@ -80,7 +80,6 @@
       "nixos-system/networking.nix"
       "nixos-system/tailscale.nix"
       "nixos-system/users.nix"
-      "nixos-system/greetd.nix"
       #"nixos-system/sshd.nix" # only use tailscale
       "nixos-system/audio.nix"
       "nixos-system/zsh.nix"
@@ -93,6 +92,7 @@
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       
+      "nixos-system/greetd.nix"
       #"nixos-system/hyprland.nix"
       "nixos-system/plasma.nix"
 

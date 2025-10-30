@@ -93,7 +93,7 @@
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       
-      #"nixos-system/display-manager.nix"
+      "nixos-system/greetd.nix"
       "nixos-system/hyprland.nix"
 
       "scripts/deploy-aspen.nix"
