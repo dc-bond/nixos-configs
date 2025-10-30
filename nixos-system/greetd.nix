@@ -14,11 +14,11 @@ let
     Type=Application
     EOF
   '';
-  defaultCmd = if config.networking.hostName == "thinkpad" 
-    then "startplasma-wayland"
-    else if config.networking.hostName == "cypress"
-    then "Hyprland"
-    else "startplasma-wayland";  # fallback default
+  defaultCmdByHost = {
+    thinkpad = "startplasma-wayland";
+    cypress = "Hyprland";
+  };
+  defaultCmd = defaultCmdByHost.${config.networking.hostName} or "zsh";
 in
 
 {
