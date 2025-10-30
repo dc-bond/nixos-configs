@@ -28,6 +28,8 @@
     };
 
     kernel.sysctl = { "vm.swappiness" = 30; };
+
+    kernelParams = [ "quiet" ];
     
     initrd = {
       supportedFilesystems = {
