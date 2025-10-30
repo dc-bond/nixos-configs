@@ -6,7 +6,11 @@
 
 {
 
-  #sops.secrets.anthropicApiKey = {};
+  sops.secrets.anthropicApiKey = {};
+
+  home.sessionVariables = {
+    ANTHROPIC_API_KEY = "$(cat ${config.sops.secrets.anthropicApiKey.path})";
+  };
 
   programs.vscode = {
     enable = true;
@@ -77,7 +81,7 @@
           };
         };
         #"claudeCode.environmentVariables" = { 
-        #  "ANTHROPIC_API_KEY" = "${config.sops.secrets.anthropicApiKey.path}";
+        #  "ANTHROPIC_API_KEY" = "";
         #};
       };
     };

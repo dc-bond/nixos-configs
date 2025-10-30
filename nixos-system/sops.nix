@@ -17,6 +17,9 @@
   
   home-manager.sharedModules = [
     inputs.sops-nix.homeManagerModules.sops # also import home-manager sops module so user level secrets also work
+    {
+      sops.defaultSopsFile = configLib.relativeToRoot "secrets.yaml"; # set default sops file for all home-manager users
+    }
   ];
 
   sops = {
