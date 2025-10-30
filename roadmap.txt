@@ -1,3 +1,7 @@
+glance
+
+teslamate
+
 authelia
 
 vaultwarden
