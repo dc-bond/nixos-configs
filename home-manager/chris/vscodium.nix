@@ -4,19 +4,6 @@
   ... 
 }: 
 
-let
-  vscodiumWrapped = pkgs.symlinkJoin {
-    name = "vscodium-wrapped";
-    paths = [ pkgs.vscodium ];
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      wrapProgram $out/bin/codium \
-        --prefix PATH : $out/bin \
-        --run 'export ANTHROPIC_API_KEY="$(cat ${config.sops.secrets.anthropicApiKey.path})"'
-    '';
-  };
-in
-
 {
 
   sops.secrets.anthropicApiKey = {};
@@ -91,6 +78,14 @@ in
         };
       };
     };
+  };
+
+  xdg.desktopEntries.codium = {
+    name = "VSCodium";
+    exec = "sh -c 'export ANTHROPIC_API_KEY=\"$(cat ${config.sops.secrets.anthropicApiKey.path})\"; exec codium %F'";
+    icon = "vscodium";
+    type = "Application";
+    categories = [ "Utility" "TextEditor" "Development" "IDE" ];
   };
 
 }
