@@ -4,19 +4,9 @@
   ... 
 }: 
 
-let
-  codiumWithSecret = pkgs.writeShellScriptBin "codium-wrapped" ''
-    #!/usr/bin/env bash
-    export ANTHROPIC_API_KEY="$(cat ${config.sops.secrets.anthropicApiKey.path})"
-    exec ${pkgs.vscodium}/bin/codium "$@"
-  '';
-in
-
 {
 
-  sops.secrets.anthropicApiKey = {};
-
-  home.packages = [ codiumWithSecret ];
+  #sops.secrets.anthropicApiKey = {};
 
   programs.vscode = {
     enable = true;
