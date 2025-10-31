@@ -4,13 +4,19 @@
   ... 
 }: 
 
+let
+  vscodiumWrapped = pkgs.writeShellScriptBin "codium" ''
+    #!/usr/bin/env bash
+    export ANTHROPIC_API_KEY="$(cat ${config.sops.secrets.anthropicApiKey.path})"
+    exec ${pkgs.vscodium}/bin/codium "$@"
+  '';
+in
+
 {
 
   sops.secrets.anthropicApiKey = {};
 
-  #home.sessionVariables = {
-  #  ANTHROPIC_API_KEY = "$(cat ${config.sops.secrets.anthropicApiKey.path})";
-  #};
+  home.packages = [ vscodiumWrapped ];
 
   programs.vscode = {
     enable = true;
@@ -79,9 +85,6 @@
           "serverInstallPath" = {
             "cypress" = "~/.vscodium-server";
           };
-        };
-        "claudeCode.environmentVariables" = { 
-          "ANTHROPIC_API_KEY" = "${config.sops.secrets.anthropicApiKey.path}";
         };
       };
     };
