@@ -4,9 +4,19 @@
   ... 
 }: 
 
+let
+  codiumWithSecret = pkgs.writeShellScriptBin "codium-wrapped" ''
+    #!/usr/bin/env bash
+    export ANTHROPIC_API_KEY="$(cat ${config.sops.secrets.anthropicApiKey.path})"
+    exec ${pkgs.vscodium}/bin/codium "$@"
+  '';
+in
+
 {
 
   sops.secrets.anthropicApiKey = {};
+
+  home.packages = [ codiumWithSecret ];
 
   programs.vscode = {
     enable = true;
@@ -78,14 +88,6 @@
         };
       };
     };
-  };
-
-  xdg.desktopEntries.codium = {
-    name = "VSCodium";
-    exec = "sh -c 'export ANTHROPIC_API_KEY=\"$(cat ${config.sops.secrets.anthropicApiKey.path})\"; exec codium %F'";
-    icon = "vscodium";
-    type = "Application";
-    categories = [ "Utility" "TextEditor" "Development" "IDE" ];
   };
 
 }
