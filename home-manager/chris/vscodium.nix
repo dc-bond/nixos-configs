@@ -8,9 +8,10 @@ let
   vscodiumWrapped = pkgs.symlinkJoin {
     name = "vscodium-wrapped";
     paths = [ pkgs.vscodium ];
-    buildInputs = [ pkgs.makeWrapper ];
+    nativeBuildInputs = [ pkgs.makeWrapper ];
     postBuild = ''
       wrapProgram $out/bin/codium \
+        --prefix PATH : $out/bin \
         --run 'export ANTHROPIC_API_KEY="$(cat ${config.sops.secrets.anthropicApiKey.path})"'
     '';
   };
