@@ -20,7 +20,6 @@
       "home-manager/chris/git.nix"
       "home-manager/chris/gnupg.nix"
       "home-manager/chris/pass.nix"
-      "home-manager/chris/claude-code.nix"
 
       "home-manager/chris/hyprland.nix"
     ])
