@@ -8,6 +8,10 @@
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    home-manager-unstable = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     plasma-manager = {
       #url = "github:nix-community/plasma-manager";
       url = "github:nix-community/plasma-manager/6a7d78cebd9a0f84a508bec9bc47ac504c5f51f4";
@@ -32,6 +36,7 @@
     self,
     nixpkgs,
     home-manager,
+    home-manager-unstable,
     plasma-manager,
     sops-nix,
     disko,
