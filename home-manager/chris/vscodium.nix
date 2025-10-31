@@ -5,18 +5,20 @@
 }: 
 
 let
-  vscodiumWrapped = pkgs.writeShellScriptBin "codium" ''
-    #!/usr/bin/env bash
-    export ANTHROPIC_API_KEY="$(cat ${config.sops.secrets.anthropicApiKey.path})"
-    exec ${pkgs.vscodium}/bin/codium "$@"
-  '';
+  vscodiumWrapped = pkgs.symlinkJoin {
+    name = "vscodium-wrapped";
+    paths = [ pkgs.vscodium ];
+    buildInputs = [ pkgs.makeWrapper ];
+    postBuild = ''
+      wrapProgram $out/bin/codium \
+        --run 'export ANTHROPIC_API_KEY="$(cat ${config.sops.secrets.anthropicApiKey.path})"'
+    '';
+  };
 in
 
 {
 
   sops.secrets.anthropicApiKey = {};
-
-  home.packages = [ vscodiumWrapped ];
 
   programs.vscode = {
     enable = true;
