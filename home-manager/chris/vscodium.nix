@@ -8,9 +8,9 @@
 
   sops.secrets.anthropicApiKey = {};
 
-  home.sessionVariables = {
-    ANTHROPIC_API_KEY = "$(cat ${config.sops.secrets.anthropicApiKey.path})";
-  };
+  #home.sessionVariables = {
+  #  ANTHROPIC_API_KEY = "$(cat ${config.sops.secrets.anthropicApiKey.path})";
+  #};
 
   programs.vscode = {
     enable = true;
@@ -80,9 +80,9 @@
             "cypress" = "~/.vscodium-server";
           };
         };
-        #"claudeCode.environmentVariables" = { 
-        #  "ANTHROPIC_API_KEY" = "";
-        #};
+        "claudeCode.environmentVariables" = { 
+          "ANTHROPIC_API_KEY" = "${config.sops.secrets.anthropicApiKey.path}";
+        };
       };
     };
   };
