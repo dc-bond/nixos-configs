@@ -34,6 +34,7 @@
       nextcloud-client # nextcloud local syncronization client
       hyprshot # screenshot tool
       pwvucontrol # pipewire audio volume control app
+      claude-code # agentic ai coding assistant
     ];
     pointerCursor = {
       enable = true;
