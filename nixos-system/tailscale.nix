@@ -40,4 +40,24 @@ in
     #extraSetFlags = lib.optionals (hostname == "thinkpad") [ "--operator=${configVars.chrisUsername}" ]; # necessary for trayscale applet in plasma
   };
 
+  # optimizations for subnet routers and exit nodes
+  # https://tailscale.com/kb/1320/performance-best-practices#linux-optimizations-for-subnet-routers-and-exit-nodes
+  systemd.services.tailscale-udp-optimization = lib.mkIf isServer {
+    description = "Tailscale UDP GRO forwarding optimization";
+    before = [ "tailscaled.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+    path = with pkgs; [ 
+      ethtool 
+      iproute2 
+    ];
+    script = ''
+      NETDEV=$(ip -o route get 1.1.1.1 | cut -f 5 -d " ")
+      ethtool -K $NETDEV rx-udp-gro-forwarding on rx-gro-list off
+    '';
+  };
+
 }

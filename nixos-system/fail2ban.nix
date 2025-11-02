@@ -112,7 +112,7 @@
       
       # Ignore legitimate Authelia redirects and health checks
       ignoreregex = ^.*"/api/verify.*$
-                   ^.*"/_health.*$
+                    ^.*"/_health.*$
     '';
     
     # Traefik scanning/probing attempts  
@@ -122,8 +122,8 @@
       
       # Match common scan patterns for non-existent endpoints
       failregex = ^.*"(GET|POST)" "/(\.env|\.git|wp-admin|wp-login|phpmyadmin|admin|xmlrpc|config\.php|\.htaccess)" HTTP/\d+\.\d+" (404|403) .*"<HOST>".*$
-                 ^.*"(GET|POST)" "/\.(svn|bzr|hg)/" HTTP/\d+\.\d+" (404|403) .*"<HOST>".*$
-                 ^.*"(GET|POST)" "/(test|debug|api/v\d+/test)" HTTP/\d+\.\d+" (404|403) .*"<HOST>".*$
+                  ^.*"(GET|POST)" "/\.(svn|bzr|hg)/" HTTP/\d+\.\d+" (404|403) .*"<HOST>".*$
+                  ^.*"(GET|POST)" "/(test|debug|api/v\d+/test)" HTTP/\d+\.\d+" (404|403) .*"<HOST>".*$
       
       ignoreregex =
     '';
@@ -138,8 +138,8 @@
       
       # Ignore static assets and health checks
       ignoreregex = ^.*"\.(css|js|png|jpg|jpeg|gif|ico|woff|woff2|svg)" .*$
-                   ^.*"/_health.*$
-                   ^.*"/api/verify.*$
+                    ^.*"/_health.*$
+                    ^.*"/api/verify.*$
     '';
     
     # Nextcloud authentication failures
@@ -149,8 +149,8 @@
       
       # Match Nextcloud login failures from systemd journal
       failregex = ^\[.*\] WARNING -- .*Login failed: '.*' \(Remote IP: '<HOST>'\).*$
-                 ^\[.*\] WARNING -- .*Bruteforce attempt from "<HOST>".*$
-                 ^\[.*\] ERROR -- .*Login attempt blocked for <HOST>.*$
+                  ^\[.*\] WARNING -- .*Bruteforce attempt from "<HOST>".*$
+                  ^\[.*\] ERROR -- .*Login attempt blocked for <HOST>.*$
       
       ignoreregex =
     '';
@@ -162,8 +162,8 @@
       
       # Match Matrix authentication failures
       failregex = ^.*- synapse\.access\.http\.\d+ - \d+ - \{.*\} "POST .*/_matrix/client/.*/login HTTP.*" "401" .* "<HOST>" .*$
-                 ^.*- synapse\.access\.http\.\d+ - \d+ - \{.*\} "POST .*/_matrix/client/.*/register HTTP.*" "401" .* "<HOST>" .*$
-                 ^.*Failed to authenticate request.*client_ip='<HOST>'.*$
+                  ^.*- synapse\.access\.http\.\d+ - \d+ - \{.*\} "POST .*/_matrix/client/.*/register HTTP.*" "401" .* "<HOST>" .*$
+                  ^.*Failed to authenticate request.*client_ip='<HOST>'.*$
       
       ignoreregex =
     '';
