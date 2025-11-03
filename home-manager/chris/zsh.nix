@@ -26,6 +26,12 @@
     initContent = # added to zsh interactive shell (.zshrc)
     ''
       pfetch
+      nrun() {
+        nix run nixpkgs#"$1" "${@:2}"
+      }
+      nshell() {
+        nix shell nixpkgs#"$1"
+      }
     '' + lib.optionalString (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) ''
       reconnect-mouse() {
         echo "restarting bluetooth service..."
