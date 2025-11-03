@@ -27,7 +27,13 @@
       ext4 = true;
     };
 
-    kernel.sysctl = { "vm.swappiness" = 30; };
+    kernel.sysctl = { 
+      "vm.swappiness" = 30;
+      "kernel.kptr_restrict" = 2;         # hide kernel pointers
+      "net.core.bpf_jit_harden" = 2;      # harden BPF JIT compiler
+      #"kernel.dmesg_restrict" = 1;        # restrict dmesg access
+      #"kernel.sysrq" = 0;                 # disable SysRq key
+    };
 
     #kernelParams = [ "quiet" ];
     
