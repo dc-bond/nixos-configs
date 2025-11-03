@@ -27,7 +27,7 @@
     ''
       pfetch
       nrun() {
-        nix run nixpkgs#"$1" "${@:2}"
+        nix run nixpkgs#"$1" -- "''${@:2}"
       }
       nshell() {
         nix shell nixpkgs#"$1"
