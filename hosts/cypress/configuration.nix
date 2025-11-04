@@ -81,7 +81,7 @@
       "nixos-system/networking.nix"
       "nixos-system/tailscale.nix"
       "nixos-system/users.nix"
-      "nixos-system/sshd.nix"
+      #"nixos-system/sshd.nix" # only use tailscale ssh
       "nixos-system/audio.nix"
       "nixos-system/zsh.nix"
       "nixos-system/fonts.nix"

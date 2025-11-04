@@ -49,6 +49,7 @@
       "hosts/juniper/hardware-configuration.nix"
       "nixos-system/boot.nix"
       "nixos-system/networking.nix"
+      "nixos-system/fail2ban.nix"
       "nixos-system/tailscale.nix"
       "nixos-system/users.nix"
       "nixos-system/sshd.nix"
