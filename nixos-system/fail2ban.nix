@@ -90,7 +90,7 @@
       [Definition]
 
       # match common scan patterns returning 404/403/400
-      failregex = ^<HOST> - - \[.*\] "(GET|POST|HEAD) /(\.env|\.git|wp-admin|wp-login\.php|phpmyadmin|admin|xmlrpc\.php|config\.php|\.htaccess|wp-content|wordpress|\.svn|\.bzr|\.hg|manager|console|actuator|api/v1/pods|solr|jenkins).*HTTP/\d\.\d" (404|403|400) .*$
+      failregex = ^<HOST> - - \[.*\] "(GET|POST|HEAD) /(\.env|\.git|\.aws|wp-admin|wp-login\.php|phpmyadmin|admin|xmlrpc\.php|config\.php|\.htaccess|wp-content|wordpress|\.svn|\.bzr|\.hg|manager|console|actuator|api/v1/pods|solr|jenkins).*HTTP/\d\.\d" (404|403|400) .*$
                   ^<HOST> - - \[.*\] "(GET|POST) .*\.(php|asp|aspx|cgi|jsp).*" (404|403) .*$
                   ^<HOST> - - \[.*\] "GET /robots\.txt HTTP/1\.0" 404 .*$
       
