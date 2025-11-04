@@ -36,6 +36,7 @@
         enabled = true;
         maxretry = 3; # stricter than global 5
         findtime = "5m"; # look for patters over 5 minutes
+        backend = "systemd";
       };
 
       traefik-auth.settings = {
@@ -45,6 +46,7 @@
         maxretry = 5; # allow more retries for legitimate users
         bantime = "2h"; # longer ban for persistent attackers
         findtime = "10m"; # look for patterns over 10 minutes
+        backend = "systemd";
       };
       
       traefik-scan.settings = {
@@ -54,6 +56,7 @@
         maxretry = 2; # very low tolerance for scanning
         bantime = "4h"; # long ban for reconnaissance attempts
         findtime = "5m"; # quick detection window
+        backend = "systemd";
       };
       
       traefik-flood.settings = {
@@ -63,6 +66,7 @@
         maxretry = 100; # allow reasonable request volume
         bantime = "30m"; # shorter ban for potential false positives
         findtime = "2m"; # short window to detect rapid requests
+        backend = "systemd";
       };
 
     };
