@@ -17,7 +17,6 @@
     banaction = "iptables-ipset-proto6-allports"; # use ipset to ban ipv4 and ipv6 on all ports for offending ip
     bantime-increment = { # incremental ban time for repeat offendending ips
       enable = true;
-      formula = "ban.Time * math.exp(float(ban.Count+1)*banFactor)/math.exp(1*banFactor)";
       multipliers = "1 2 4 8 16 32 64";
       maxtime = "168h"; # max one week
       overalljails = true; # calculate bandtime based on all jail violations
