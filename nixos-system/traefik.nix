@@ -173,6 +173,7 @@ in
             trusted-allow = {
               ipAllowList = {
                 sourceRange = [
+                  "127.0.0.1/32" # uptime-kuma running on same host as services
                   "${configVars.cypressLanIp}" # cypress LAN IP
                   #"${configVars.thinkpadLanIp}" # thinkpad LAN IP
                   "${configVars.rokuGymVlanIp}" # roku IP
