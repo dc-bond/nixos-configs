@@ -13,7 +13,6 @@
     enable = true;
     maxretry = 5;
     bantime = "1h";
-    findtime = "10m";
     extraPackages = [ pkgs.ipset ];
     banaction = "iptables-ipset-proto6-allports"; # use ipset to ban ipv4 and ipv6 on all ports for offending ip
     bantime-increment = { # incremental ban time for repeat offendending ips
@@ -35,7 +34,7 @@
       sshd.settings = {
         enabled = true;
         maxretry = 3; # stricter than global 5
-        findtime = "5m"; # shorter window
+        findtime = "5m";
       };
     };
   };
