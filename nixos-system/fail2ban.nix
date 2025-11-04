@@ -77,7 +77,7 @@
       [Definition]
 
       # match 401 (unauthorized) and 403 (forbidden) responses
-      failregex = ^<HOST> - - \[.*\] "(GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH) .* HTTP/\d\.\d" (401|403) .*$
+      failregex = ^<HOST> - - \[.*\] "(GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH).*HTTP/\d\.\d" (401|403) .*$
       
       # ignore health checks and authelia verify endpoints
       ignoreregex = ^.*"(GET|POST) /api/verify.*$
@@ -90,7 +90,7 @@
       [Definition]
 
       # match common scan patterns returning 404/403/400
-      failregex = ^<HOST> - - \[.*\] "(GET|POST|HEAD) /(\.env|\.git|wp-admin|wp-login\.php|phpmyadmin|admin|xmlrpc\.php|config\.php|\.htaccess|wp-content|wordpress|\.svn|\.bzr|\.hg|manager|console|actuator|api/v1/pods|solr|jenkins) .* HTTP/\d\.\d" (404|403|400) .*$
+      failregex = ^<HOST> - - \[.*\] "(GET|POST|HEAD) /(\.env|\.git|wp-admin|wp-login\.php|phpmyadmin|admin|xmlrpc\.php|config\.php|\.htaccess|wp-content|wordpress|\.svn|\.bzr|\.hg|manager|console|actuator|api/v1/pods|solr|jenkins).*HTTP/\d\.\d" (404|403|400) .*$
                   ^<HOST> - - \[.*\] "(GET|POST) .*\.(php|asp|aspx|cgi|jsp).*" (404|403) .*$
                   ^<HOST> - - \[.*\] "GET /robots\.txt HTTP/1\.0" 404 .*$
       
@@ -103,7 +103,7 @@
       [Definition]
 
       # match any HTTP request (relies on maxretry for rate limiting)
-      failregex = ^<HOST> - - \[.*\] "(GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH) .* HTTP/\d\.\d" \d+ .*$
+      failregex = ^<HOST> - - \[.*\] "(GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH).*HTTP/\d\.\d" \d+ .*$
       
       # ignore static assets, health checks, and known automated processes
       ignoreregex = ^.*"GET .*\.(css|js|png|jpg|jpeg|gif|ico|woff|woff2|svg|webp|mp4|webm|ttf|eot).*$
