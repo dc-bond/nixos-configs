@@ -72,8 +72,8 @@
   # custom filter definitions
   environment.etc = {
 
-    # traefik authentication failures (401/403)
-    "fail2ban/filter.d/traefik-auth.conf".text = ''
+    # traefik authentication failures (401/403) # use .local extension to override default traefik-auth filter in filter.d that ships with fail2ban
+    "fail2ban/filter.d/traefik-auth.local".text = ''
       [Definition]
 
       # match 401 (unauthorized) and 403 (forbidden) responses
@@ -85,7 +85,7 @@
                     ^.*"GET / HTTP.*" 403.*"(searxng|sonarr|prowlarr|radarr|sabnzbd|jellyseerr|home-assistant|zwavejs|actual|frigate|pihole|fava|unifi|photoprism|stirling-pdf|recipesage)@.*$
     '';
     
-    # traefik scanning/probing attempts  
+    # traefik scanning/probing attempts # add new traefik-scan.conf filter to filter.d
     "fail2ban/filter.d/traefik-scan.conf".text = ''
       [Definition]
 
@@ -98,7 +98,7 @@
       ignoreregex = ^.*"GET /.* HTTP/2\.0" 404.*"(nextcloud|jellyfin|home-assistant)@.*$
     '';
     
-    # traefik request flooding
+    # traefik request flooding # add new traefik-flood filter to filter.d
     "fail2ban/filter.d/traefik-flood.conf".text = ''
       [Definition]
 
