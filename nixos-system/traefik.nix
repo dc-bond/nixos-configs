@@ -174,9 +174,8 @@ in
               ipAllowList = {
                 sourceRange = [
                   "192.168.1.0/24" # home LAN including aspen services (e.g. uptime kuma)
-                  #"192.168.4.0/27" # IOT-VLAN for Rokus
                   "${configVars.thinkpadTailscaleIp}" # thinkpad tailscale IP
-                  "${configVars.cypressTailscaleIp}" # cypress tailscale IP
+                  #"${configVars.cypressTailscaleIp}" # cypress tailscale IP
                   "${configVars.chrisIphone15TailscaleIp}" # chris iPhone tailscale IP
                   "${configVars.daniellePixel7aTailscaleIp}" # danielle pixel 7a tailscale IP
                   "${configVars.sydneyIphone6TailscaleIp}" # sydney iPhone tailscale IP
