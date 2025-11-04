@@ -173,7 +173,8 @@ in
             trusted-allow = {
               ipAllowList = {
                 sourceRange = [
-                  "192.168.1.0/24" # Home-LAN
+                  "${configVars.cypressLanIp}" # cypress on LAN
+                  "${configVars.thinkpadLanIp}" # thinkpad on LAN
                   "${configVars.rokuGymVlanIp}" # roku IP
                   "${configVars.rokuLivingroomVlanIp}" # roku IP
                   "${configVars.thinkpadTailscaleIp}" # thinkpad tailscale IP
