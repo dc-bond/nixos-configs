@@ -173,11 +173,13 @@ in
             trusted-allow = {
               ipAllowList = {
                 sourceRange = [
-                  "127.0.0.1/32" # uptime-kuma running on same host as services
+                  #"192.168.1.0/24" # Home-VLAN
+                  #"192.168.4.0/27" # IOT-VLAN for Rokus
+                  "${configVars.aspenLanIp}" # for Uptime Kuma
                   "${configVars.cypressLanIp}" # cypress LAN IP
                   #"${configVars.thinkpadLanIp}" # thinkpad LAN IP
-                  "${configVars.rokuGymVlanIp}" # roku IP
-                  "${configVars.rokuLivingroomVlanIp}" # roku IP
+                  #"${configVars.rokuGymVlanIp}" # roku IP
+                  #"${configVars.rokuLivingroomVlanIp}" # roku IP
                   #"${configVars.thinkpadTailscaleIp}" # thinkpad tailscale IP
                   "${configVars.cypressTailscaleIp}" # cypress tailscale IP
                   "${configVars.chrisIphone15TailscaleIp}" # chris iPhone tailscale IP
