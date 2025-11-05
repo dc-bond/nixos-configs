@@ -175,7 +175,7 @@ in
                 sourceRange = [
                   "192.168.1.0/24" # home LAN including aspen services (e.g. uptime kuma)
                   "${configVars.thinkpadTailscaleIp}" # thinkpad tailscale IP
-                  #"${configVars.cypressTailscaleIp}" # cypress tailscale IP
+                  "${configVars.cypressTailscaleIp}" # cypress tailscale IP
                   "${configVars.chrisIphone15TailscaleIp}" # chris iPhone tailscale IP
                   "${configVars.daniellePixel7aTailscaleIp}" # danielle pixel 7a tailscale IP
                   "${configVars.sydneyIphone6TailscaleIp}" # sydney iPhone tailscale IP
