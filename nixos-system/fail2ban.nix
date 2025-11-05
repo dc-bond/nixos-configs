@@ -91,6 +91,9 @@
     
     # traefik scanning/probing attempts # add new traefik-scan.conf filter to filter.d
     "fail2ban/filter.d/traefik-scan.conf".text = ''
+      [INCLUDES]
+      before = common.conf
+      
       [Definition]
 
       # match common scan patterns returning 404/403/400
