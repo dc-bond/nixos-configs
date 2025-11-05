@@ -6,10 +6,42 @@
 
 {
 
-  imports = [ "${inputs.nixpkgs-unstable}/nixos/modules/services/security/crowdsec.nix" ];
+  imports = [ 
+    "${inputs.nixpkgs-unstable}/nixos/modules/services/security/crowdsec.nix" 
+    "${inputs.nixpkgs-unstable}/nixos/modules/services/security/crowdsec-firewall-bouncer.nix"
+  ];
 
-  services.crowdsec = {
-    enable = true;
+  services = {
+
+    crowdsec = {
+      enable = true;
+      package = pkgs.unstable.crowdsec;
+      hub = {
+        collections = [
+          "crowdsecurity/linux" # linux system protection
+          "crowdsecurity/sshd" # ssh brute-force protection
+        ];
+      };
+      localConfig.acquisitions = [
+        {
+          source = "journalctl";
+          journalctl_filter = [ "_SYSTEMD_UNIT=sshd.service" ];
+          labels.type = "syslog";
+        }
+        #{
+        #  source = "journalctl";
+        #  journalctl_filter = [ "_SYSTEMD_UNIT=traefik.service" ];
+        #  labels.type = "traefik";
+        #}
+      ];
+    };
+
+    crowdsec-firewall-bouncer = {
+      enable = true;
+      package = pkgs.unstable.crowdsec-firewall-bouncer;
+      registerBouncer.bouncerName = "firewall-bouncer-${config.networking.hostName}";
+    };
+  
   };
 
 }
