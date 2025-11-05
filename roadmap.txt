@@ -1,4 +1,6 @@
-fail2ban
+Crowdsec
+
+Logging Solution
 
 drives
 
@@ -9,9 +11,5 @@ teslamate
 authelia
 
 vaultwarden
-
-Logging Solution
-
-Crowdsec
 
 Mailserver
