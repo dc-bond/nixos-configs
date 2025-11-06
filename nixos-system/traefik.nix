@@ -81,15 +81,32 @@ in
           level = "WARN";
           noColor = false;
         };
-        accessLog = { # logs to journal under traefik.service
-          addInternals = false; # do not show requests for the traefik dashboard
+        #accessLog = { # logs to journal under traefik.service
+        #  addInternals = false; # do not show requests for the traefik dashboard
+        #  format = "json";
+        #  bufferingSize = 0; # write to journal immediately (crowdsec detection faster)
+        #  filters.statusCodes = [
+        #    "200-206"
+        #    "400-499"
+        #    "500-599"
+        #  ];
+        #};
+        accessLog = {
+          filePath = "/var/log/traefik/access.log";
+          addInternals = false;
           format = "json";
-          bufferingSize = 0; # write to journal immediately (crowdsec detection faster)
+          bufferingSize = 0;
           filters.statusCodes = [
             "200-206"
             "400-499"
             "500-599"
           ];
+          fields.headers = {
+            defaultMode = "drop";
+            names = {
+              User-Agent = "keep";  # helps CrowdSec identify bad bots/tools
+            };
+          };
         };
         entryPoints = {
           web = {
@@ -230,6 +247,20 @@ in
         };
       };
 
+    };
+
+    logrotate = {
+      enable = true;
+      settings.traefik = {
+        files = "/var/log/traefik/access.log";
+        frequency = "daily";
+        rotate = 14; # keep 14 days
+        compress = true;
+        delaycompress = true;  # don't compress most recent rotation
+        missingok = true;
+        notifempty = true;
+        postrotate = "systemctl kill --signal=SIGUSR1 traefik.service";  # tell traefik to reopen log file
+      };
     };
 
     borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "/var/lib/${app}" ];
