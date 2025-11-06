@@ -44,7 +44,7 @@ in
     shellAliases = {
       tstat = "sudo tailscale status";
       tdown = "sudo tailscale down";
-    } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {
+    } // lib.optionalAttrs isClient {
       taspen = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${configVars.aspenTailscaleIp} --reset";
       tjuniper = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${configVars.juniperTailscaleIp} --reset";
       tup = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --reset";
