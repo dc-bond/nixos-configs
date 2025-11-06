@@ -324,29 +324,27 @@ in
         '';
         runAlways = true;
       };
-      networkCheck = {
+      networkAndTailscaleCheck = {
         text = ''
-          # wait for network (up to 20 seconds)
           for i in {1..10}; do
             if ${pkgs.systemd}/bin/networkctl status | grep -q "State: routable"; then
-              ${pkgs.libsForQt5.kdialog}/bin/kdialog --passivepopup "NETWORK CONNECTED!" 3
+              ${pkgs.libnotify}/bin/notify-send -u normal "Network" "Connected successfully"
               
-              # network up, now check Tailscale (up to 20 seconds)
               for j in {1..10}; do
                 if ${pkgs.tailscale}/bin/tailscale status >/dev/null 2>&1; then
-                  ${pkgs.libsForQt5.kdialog}/bin/kdialog --passivepopup "TAILSCALE CONNECTED!" 3
+                  ${pkgs.libnotify}/bin/notify-send -u normal "Tailscale" "Connected successfully"
                   exit 0
                 fi
                 sleep 2
               done
               
-              ${pkgs.libsForQt5.kdialog}/bin/kdialog --sorry "TAILSCALE ERROR"
+              ${pkgs.libnotify}/bin/notify-send -u critical "Tailscale" "Not connected"
               exit 0
             fi
             sleep 2
           done
           
-          ${pkgs.libsForQt5.kdialog}/bin/kdialog --error "NETWORK ERROR\n\nOpen terminal and type 'wifi' to start wifi connection script"
+          ${pkgs.libnotify}/bin/notify-send -u critical "Network" "No connection detected\nRun your wifi helper"
         '';
         runAlways = true;
       };
