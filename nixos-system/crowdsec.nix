@@ -51,7 +51,7 @@ in
             labels.type = "traefik";
           }
         ];
-        localConfig.parsers.s02Enrich = [
+        parsers.s02Enrich = [
           {
             name = "homelab/whitelist-trusted-networks";
             description = "whitelist internal and vpn networks";
