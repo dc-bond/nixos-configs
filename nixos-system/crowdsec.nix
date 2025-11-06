@@ -27,6 +27,7 @@ in
           listen_uri = "127.0.0.1:${toString crowdsecApiPort}";
         };
         lapi.credentialsFile = "/var/lib/crowdsec/state/lapi-credentials.yaml";
+        capi.credentialsFile = "/var/lib/crowdsec/state/capi-credentials.yaml";
       };
       hub = {
         collections = [
@@ -86,12 +87,10 @@ in
 
   programs.zsh = {
     shellAliases = {
-      csalerts = "sudo cscli alerts list --limit 10";
-      csbans = "sudo cscli decisions list";
       csmetrics = "sudo cscli metrics";
+      csbans = "sudo cscli decisions list";
+      csalerts = "sudo cscli alerts list --limit 10";
       csbouncers = "sudo cscli bouncers list";
-      csallow = "sudo cscli allowlist list";
-      csmachines = "sudo cscli machines list";
     };
     interactiveShellInit = '' 
       # function to unban an ip
