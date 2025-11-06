@@ -34,7 +34,15 @@ in
         };
         lapi.credentialsFile = "/var/lib/crowdsec/state/lapi-credentials.yaml";
         capi.credentialsFile = "/var/lib/crowdsec/state/capi-credentials.yaml";
-        #console.tokenFile = config.sops.secrets.crowdsecConsoleToken.path;
+        console = {
+          configuration = {
+            share_manual_decisions = true;
+            share_tainted = false;
+            share_custom = false;
+            share_context = true;
+          };
+          #tokenFile = config.sops.secrets.crowdsecConsoleToken.path; # possible upstream bug with this - automatic enrollment - check after migrate to 25.11?
+        };
       };
       hub = {
         collections = [
@@ -113,17 +121,17 @@ in
 
 }
 
-# imperative whitelist home WAN IP (for uptime-kuma pings routed through cloudflare to public-facing services) TO-DO - make this more declarative somehow
+# imperative whitelist home wan ip (for uptime-kuma pings routed through cloudflare to public-facing services) TO-DO - make this more declarative somehow
 
 # create an allowlist if it doesn't exist
-  # sudo cscli allowlist create WAN-IP -d 'Home WAN IP'
+  # sudo cscli allowlist create home-wan -d 'Home WAN IP'
 
 # add WAN IP
-  # sudo cscli allowlist add WAN-IP <insert>
+  # sudo cscli allowlist add home-wan <insert>
 
 # view it
-  # sudo cscli allowlist inspect WAN-IP
+  # sudo cscli allowlist inspect home-wan
 
 # when IP changes, delete old and add new
-  # sudo cscli allowlist delete WAN-IP <old-IP>
-  # sudo cscli allowlist add WAN-IP <new-IP>
+  # sudo cscli allowlist delete home-wan <old-IP>
+  # sudo cscli allowlist add home-wan <new-IP>
