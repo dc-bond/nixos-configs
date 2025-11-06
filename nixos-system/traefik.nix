@@ -267,4 +267,8 @@ in
 
   };
 
+  systemd.tmpfiles.rules = [
+    "d /var/log/traefik 0755 traefik traefik -"
+  ];
+
 }
