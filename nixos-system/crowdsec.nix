@@ -44,7 +44,10 @@ in
           {
             source = "journalctl";
             journalctl_filter = [ "_SYSTEMD_UNIT=sshd.service" ];
-            labels.type = "syslog";
+            labels = {
+              type = "syslog";
+              program = "sshd";
+            };
           }
           {
             filenames = [ "/var/log/traefik/access.log" ];
