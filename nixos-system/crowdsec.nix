@@ -31,10 +31,10 @@ in
         general.api.server = {
           enable = true;
           listen_uri = "127.0.0.1:${toString crowdsecApiPort}";
-          console_path = "/etc/crowdsec/console.yaml";
+          #console_path = "/etc/crowdsec/console.yaml";
         };
-        lapi.credentialsFile = "/var/lib/crowdsec/state/lapi-credentials.yaml";
-        capi.credentialsFile = "/var/lib/crowdsec/state/capi-credentials.yaml";
+        #lapi.credentialsFile = "/var/lib/crowdsec/state/lapi-credentials.yaml";
+        #capi.credentialsFile = "/var/lib/crowdsec/state/capi-credentials.yaml";
         #console = {
         #  configuration = {
         #    share_manual_decisions = true;
