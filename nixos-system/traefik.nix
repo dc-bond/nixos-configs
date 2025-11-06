@@ -83,7 +83,8 @@ in
         };
         accessLog = { # logs to journal under traefik.service
           addInternals = false; # do not show requests for the traefik dashboard
-          bufferingSize = 100;
+          format = "json";
+          bufferingSize = 0; # write to journal immediately (crowdsec detection faster)
           filters.statusCodes = [
             "200-206"
             "400-499"

@@ -21,6 +21,9 @@
         collections = [
           "crowdsecurity/linux" # linux system protection
           "crowdsecurity/sshd" # ssh brute-force protection
+          "crowdsecurity/traefik" # traefik reverse proxy protection
+          "crowdsecurity/base-http-scenarios" # generic http attacks
+          "crowdsecurity/http-cve" # known http exploits
         ];
       };
       localConfig.acquisitions = [
@@ -29,11 +32,11 @@
           journalctl_filter = [ "_SYSTEMD_UNIT=sshd.service" ];
           labels.type = "syslog";
         }
-        #{
-        #  source = "journalctl";
-        #  journalctl_filter = [ "_SYSTEMD_UNIT=traefik.service" ];
-        #  labels.type = "traefik";
-        #}
+        {
+          source = "journalctl";
+          journalctl_filter = [ "_SYSTEMD_UNIT=traefik.service" ];
+          labels.type = "traefik";
+        }
       ];
     };
 
