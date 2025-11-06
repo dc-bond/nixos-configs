@@ -16,6 +16,11 @@ in
     "${inputs.nixpkgs-unstable}/nixos/modules/services/security/crowdsec-firewall-bouncer.nix"
   ];
 
+  sops.secrets.crowdsecConsoleToken = {
+    owner = "crowdsec";
+    group = "crowdsec";
+  };
+
   services = {
 
     crowdsec = {
@@ -28,7 +33,7 @@ in
         };
         lapi.credentialsFile = "/var/lib/crowdsec/state/lapi-credentials.yaml";
         capi.credentialsFile = "/var/lib/crowdsec/state/capi-credentials.yaml";
-        console.tokenFile = "/var/lib/crowdsec/state/console-token";
+        console.tokenFile = config.sops.secrets.crowdsecConsoleToken.path;
       };
       hub = {
         collections = [
