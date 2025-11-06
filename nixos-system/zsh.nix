@@ -13,14 +13,6 @@
       jlog() {
         journalctl -e -u "$1" --since "''${2:-1 day ago}" --no-pager --follow
       }
-      # function to show status of all fail2ban jails
-      f2bstats() {
-        for jail in $(sudo fail2ban-client status | grep "Jail list" | sed 's/.*://;s/,//g'); do
-          echo "=== $jail ==="
-          sudo fail2ban-client status $jail
-          echo
-        done
-      }
     '';
   };
   

@@ -82,30 +82,21 @@ in
           level = "WARN";
           noColor = false;
         };
-        #accessLog = { # logs to journal under traefik.service
-        #  addInternals = false; # do not show requests for the traefik dashboard
-        #  format = "json";
-        #  bufferingSize = 0; # write to journal immediately (crowdsec detection faster)
-        #  filters.statusCodes = [
-        #    "200-206"
-        #    "400-499"
-        #    "500-599"
-        #  ];
-        #};
         accessLog = {
           filePath = "/var/log/traefik/access.log";
           addInternals = false;
           format = "json";
           bufferingSize = 0;
           filters.statusCodes = [
-            "200-206"
-            "400-499"
-            "500-599"
+            "200-206" # 200 ok, 201 created, 204 no content, 206 partial content
+            "307-308" # temporary/permanent redirect (more interesting than 301/302)
+            "400-499" # client errors (bad requests, unauthorized, forbidden, not found, etc.)
+            "500-599" # server errors (internal errors, bad gateway, service unavailable, etc.)
           ];
           fields.headers = {
-            defaultMode = "drop";
+            defaultMode = "drop"; # default drop all headers
             names = {
-              User-Agent = "keep";  # helps CrowdSec identify bad bots/tools
+              User-Agent = "keep";  # except keep User-Agent header - relevant for CrowdSec to identify bad bots/tools
             };
           };
         };
@@ -255,7 +246,7 @@ in
       settings.traefik = {
         files = "/var/log/traefik/access.log";
         frequency = "daily";
-        rotate = 14; # keep 14 days
+        rotate = 7; # keep 7 days
         compress = true;
         delaycompress = true;  # don't compress most recent rotation
         missingok = true;

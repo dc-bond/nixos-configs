@@ -30,24 +30,44 @@ in
       };
       hub = {
         collections = [
+          # reads from syslog acquisition
           "crowdsecurity/linux" # linux system protection
           "crowdsecurity/sshd" # ssh brute-force protection
+          # reads from traefik acquisition
           "crowdsecurity/traefik" # traefik reverse proxy protection
           "crowdsecurity/base-http-scenarios" # generic http attacks
           "crowdsecurity/http-cve" # known http exploits
         ];
       };
-      localConfig.acquisitions = [
-        {
-          source = "journalctl";
-          journalctl_filter = [ "_SYSTEMD_UNIT=sshd.service" ];
-          labels.type = "syslog";
-        }
-        {
-          filenames = [ "/var/log/traefik/access.log" ];
-          labels.type = "traefik";
-        }
-      ];
+      localConfig = {
+        acquisitions = [
+          {
+            source = "journalctl";
+            journalctl_filter = [ "_SYSTEMD_UNIT=sshd.service" ];
+            labels.type = "syslog";
+          }
+          {
+            filenames = [ "/var/log/traefik/access.log" ];
+            labels.type = "traefik";
+          }
+        ];
+        localConfig.parsers.s02Enrich = [
+          {
+            name = "homelab/whitelist-trusted-networks";
+            description = "whitelist internal and vpn networks";
+            whitelist = {
+              reason = "trusted internal networks";
+              cidr = [
+                "192.168.1.0/24" # home LAN including aspen services (e.g. uptime kuma)
+                "100.64.0.0/10" # tailscale vpn range
+              ];
+              #ip = [
+              #  ""
+              #];
+            };
+          }
+        ]; 
+      };
     };
 
     crowdsec-firewall-bouncer = {
@@ -59,6 +79,27 @@ in
       };
     };
   
+  };
+
+  programs.zsh = {
+    shellAliases = {
+      csalerts = "sudo cscli alerts list --limit 10";
+      csbans = "sudo cscli decisions list";
+      csmetrics = "sudo cscli metrics";
+      csbouncers = "sudo cscli bouncers list";
+      csallow = "sudo cscli allowlist list";
+      csmachines = "sudo cscli machines list";
+    };
+    interactiveShellInit = '' 
+      # function to unban an ip
+      csunban() {
+        if [ -z "$1" ]; then
+          echo "Usage: csunban <IP>"
+          return 1
+        fi
+        sudo cscli decisions delete --ip "$1"
+      }
+    '';
   };
 
 }
