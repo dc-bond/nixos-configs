@@ -112,3 +112,18 @@ in
   };
 
 }
+
+# imperative whitelist home WAN IP (for uptime-kuma pings routed through cloudflare to public-facing services) TO-DO - make this more declarative somehow
+
+# create an allowlist if it doesn't exist
+  # sudo cscli allowlist create WAN-IP -d 'Home WAN IP'
+
+# add WAN IP
+  # sudo cscli allowlist add WAN-IP <insert>
+
+# view it
+  # sudo cscli allowlist inspect WAN-IP
+
+# when IP changes, delete old and add new
+  # sudo cscli allowlist delete WAN-IP <old-IP>
+  # sudo cscli allowlist add WAN-IP <new-IP>
