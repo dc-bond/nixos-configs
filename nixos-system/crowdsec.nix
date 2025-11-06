@@ -34,15 +34,15 @@ in
         };
         lapi.credentialsFile = "/var/lib/crowdsec/state/lapi-credentials.yaml";
         capi.credentialsFile = "/var/lib/crowdsec/state/capi-credentials.yaml";
-        console = {
-          configuration = {
-            share_manual_decisions = true;
-            share_tainted = false;
-            share_custom = false;
-            share_context = true;
-          };
-          #tokenFile = config.sops.secrets.crowdsecConsoleToken.path; # possible upstream bug with this - automatic enrollment - check after migrate to 25.11?
-        };
+        #console = {
+        #  configuration = {
+        #    share_manual_decisions = true;
+        #    share_tainted = false;
+        #    share_custom = false;
+        #    share_context = true;
+        #  };
+        #  tokenFile = config.sops.secrets.crowdsecConsoleToken.path; # possible upstream bug with this - automatic enrollment - check after migrate to 25.11?
+        #};
       };
       hub = {
         collections = [
