@@ -28,6 +28,7 @@ in
         };
         lapi.credentialsFile = "/var/lib/crowdsec/state/lapi-credentials.yaml";
         capi.credentialsFile = "/var/lib/crowdsec/state/capi-credentials.yaml";
+        console.tokenFile = "/var/lib/crowdsec/state/console-token";
       };
       hub = {
         collections = [
