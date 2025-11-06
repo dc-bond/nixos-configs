@@ -40,6 +40,17 @@ in
     #extraSetFlags = lib.optionals (hostname == "thinkpad") [ "--operator=${configVars.chrisUsername}" ]; # necessary for trayscale applet in plasma
   };
 
+  programs.zsh = {
+    shellAliases = {
+      tstat = "sudo tailscale status";
+      tdown = "sudo tailscale down";
+    } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {
+      taspen = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${configVars.aspenTailscaleIp} --reset";
+      tjuniper = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${configVars.juniperTailscaleIp} --reset";
+      tup = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --reset";
+    };
+  };
+
   # optimizations for subnet routers and exit nodes
   # https://tailscale.com/kb/1320/performance-best-practices#linux-optimizations-for-subnet-routers-and-exit-nodes
   systemd.services.tailscale-udp-optimization = lib.mkIf isServer {
