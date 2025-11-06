@@ -44,8 +44,7 @@ in
           labels.type = "syslog";
         }
         {
-          source = "journalctl";
-          journalctl_filter = [ "_SYSTEMD_UNIT=traefik.service" ];
+          filenames = [ "/var/log/traefik/access.log" ];
           labels.type = "traefik";
         }
       ];
