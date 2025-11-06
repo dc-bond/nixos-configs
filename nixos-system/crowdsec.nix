@@ -17,6 +17,11 @@
     crowdsec = {
       enable = true;
       package = pkgs.unstable.crowdsec;
+      settings = {
+        lapi = {
+          listen = "127.0.0.1:8080";
+        };
+      };
       hub = {
         collections = [
           "crowdsecurity/linux" # linux system protection
