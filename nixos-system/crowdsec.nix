@@ -77,11 +77,10 @@ in
             whitelist = {
               reason = "trusted internal networks";
               cidr = [
-                "192.168.1.0/24" # home LAN including aspen services (e.g. uptime kuma)
                 "100.64.0.0/10" # tailscale vpn range
-              ];
+              ] ++ lib.optional (config.networking.hostName == "aspen") "192.168.1.0/24"; # home lan including uptime-kuma pings to internal services not routed through cloudflare
               #ip = [
-              #  ""
+              #  "" # don't want to expose home wan here so using imperative approach below
               #];
             };
           }
