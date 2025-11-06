@@ -17,7 +17,10 @@
     crowdsec = {
       enable = true;
       package = pkgs.unstable.crowdsec;
-      settings.general.api.server.enable = true;
+      settings = {
+        general.api.server.enable = true;
+        lapi.credentialsFile = "/var/lib/crowdsec/state/lapi-credentials.yaml";
+      };
       hub = {
         collections = [
           "crowdsecurity/linux" # linux system protection
