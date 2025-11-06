@@ -324,6 +324,32 @@ in
         '';
         runAlways = true;
       };
+      networkCheck = {
+        text = ''
+          # wait for network (up to 20 seconds)
+          for i in {1..10}; do
+            if ${pkgs.systemd}/bin/networkctl status | grep -q "State: routable"; then
+              ${pkgs.libsForQt5.kdialog}/bin/kdialog --passivepopup "NETWORK CONNECTED!" 3
+              
+              # network up, now check Tailscale (up to 20 seconds)
+              for j in {1..10}; do
+                if ${pkgs.tailscale}/bin/tailscale status >/dev/null 2>&1; then
+                  ${pkgs.libsForQt5.kdialog}/bin/kdialog --passivepopup "TAILSCALE CONNECTED!" 3
+                  exit 0
+                fi
+                sleep 2
+              done
+              
+              ${pkgs.libsForQt5.kdialog}/bin/kdialog --sorry "TAILSCALE ERROR"
+              exit 0
+            fi
+            sleep 2
+          done
+          
+          ${pkgs.libsForQt5.kdialog}/bin/kdialog --error "NETWORK ERROR\n\nOpen terminal and type 'wifi' to start wifi connection script"
+        '';
+        runAlways = true;
+      };
     };
 
   };
