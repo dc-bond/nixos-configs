@@ -16,10 +16,10 @@ in
     "${inputs.nixpkgs-unstable}/nixos/modules/services/security/crowdsec-firewall-bouncer.nix"
   ];
 
-  sops.secrets.crowdsecConsoleToken = {
-    owner = "crowdsec";
-    group = "crowdsec";
-  };
+  #sops.secrets.crowdsecConsoleToken = {
+  #  owner = "crowdsec";
+  #  group = "crowdsec";
+  #};
 
   services = {
 
@@ -30,10 +30,11 @@ in
         general.api.server = {
           enable = true;
           listen_uri = "127.0.0.1:${toString crowdsecApiPort}";
+          console_path = "/etc/crowdsec/console.yaml";
         };
         lapi.credentialsFile = "/var/lib/crowdsec/state/lapi-credentials.yaml";
         capi.credentialsFile = "/var/lib/crowdsec/state/capi-credentials.yaml";
-        console.tokenFile = config.sops.secrets.crowdsecConsoleToken.path;
+        #console.tokenFile = config.sops.secrets.crowdsecConsoleToken.path;
       };
       hub = {
         collections = [
