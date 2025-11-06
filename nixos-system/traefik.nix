@@ -47,6 +47,7 @@ in
   systemd.services.${app} = {
     serviceConfig = {
       WorkingDirectory = "/var/lib/${app}/";
+      LogsDirectory = "${app}"; # creates log directory at /var/log/traefik
     };
     environment = {
       CF_API_EMAIL = configVars.chrisEmail; 
@@ -266,9 +267,5 @@ in
     borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "/var/lib/${app}" ];
 
   };
-
-  systemd.tmpfiles.rules = [
-    "d /var/log/traefik 0755 traefik traefik -"
-  ];
 
 }
