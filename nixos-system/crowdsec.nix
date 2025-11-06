@@ -3,7 +3,11 @@
   pkgs, 
   config,
   ... 
-}: 
+}:
+
+let
+  crowdsecApiPort = 8590;
+in
 
 {
 
@@ -18,7 +22,10 @@
       enable = true;
       package = pkgs.unstable.crowdsec;
       settings = {
-        general.api.server.enable = true;
+        general.api.server = {
+          enable = true;
+          listen_uri = "127.0.0.1:${crowdsecApiPort}";
+        };
         lapi.credentialsFile = "/var/lib/crowdsec/state/lapi-credentials.yaml";
       };
       hub = {
@@ -48,6 +55,9 @@
       enable = true;
       package = pkgs.unstable.crowdsec-firewall-bouncer;
       registerBouncer.bouncerName = "firewall-bouncer-${config.networking.hostName}";
+      settings = {
+        api_url = "http://127.0.0.1:${crowdsecApiPort}/";
+      };
     };
   
   };
