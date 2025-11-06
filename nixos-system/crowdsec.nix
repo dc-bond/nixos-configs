@@ -24,7 +24,7 @@ in
       settings = {
         general.api.server = {
           enable = true;
-          listen_uri = "127.0.0.1:${crowdsecApiPort}";
+          listen_uri = "127.0.0.1:${toString crowdsecApiPort}";
         };
         lapi.credentialsFile = "/var/lib/crowdsec/state/lapi-credentials.yaml";
       };
@@ -56,7 +56,7 @@ in
       package = pkgs.unstable.crowdsec-firewall-bouncer;
       registerBouncer.bouncerName = "firewall-bouncer-${config.networking.hostName}";
       settings = {
-        api_url = "http://127.0.0.1:${crowdsecApiPort}/";
+        api_url = "http://127.0.0.1:${toString crowdsecApiPort}/";
       };
     };
   
