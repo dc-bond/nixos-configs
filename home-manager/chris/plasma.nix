@@ -307,6 +307,7 @@ in
       "kwinrc"."Windows"."Placement" = "Maximizing"; # automatically open all windows maximized by default
       "kdeglobals"."KDE"."ShowDeleteCommand" = false; # hide full on delete option in applications
       "kdeglobals"."General".TerminalApplication = "alacritty"; # set alacritty as default terminal
+      "plasmanotifyrc"."Notifications"."PopupPosition" = "TopRight";  # Options: TopLeft, TopRight, BottomLeft, BottomRight
     };
 
     startup.startupScript = {
