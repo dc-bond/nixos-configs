@@ -326,26 +326,31 @@ in
       };
       networkAndTailscaleCheck = {
         text = ''
-          sleep 5
-          for i in {1..10}; do
-            if ${pkgs.systemd}/bin/networkctl status | grep -q "State: routable"; then
-              ${pkgs.libnotify}/bin/notify-send -u normal "Network" "Connected successfully"
-              
-              for j in {1..10}; do
-                if ${pkgs.tailscale}/bin/tailscale status >/dev/null 2>&1; then
-                  ${pkgs.libnotify}/bin/notify-send -u normal "Tailscale" "Connected successfully"
-                  exit 0
-                fi
-                sleep 2
-              done
-              
-              ${pkgs.libnotify}/bin/notify-send -u critical "Tailscale" "Not connected"
-              exit 0
-            fi
-            sleep 2
-          done
-          
-          ${pkgs.libnotify}/bin/notify-send -u critical "Network" "No connection detected\nRun your wifi helper"
+          (
+            sleep 3
+            
+            # wait for network (up to 20 seconds)
+            for i in {1..10}; do
+              if ${pkgs.systemd}/bin/networkctl status | grep -q "State: routable"; then
+                ${pkgs.libnotify}/bin/notify-send -u normal "Network" "Connected successfully"
+                
+                # network up, now check Tailscale (up to 20 seconds)
+                for j in {1..10}; do
+                  if ${pkgs.tailscale}/bin/tailscale status >/dev/null 2>&1; then
+                    ${pkgs.libnotify}/bin/notify-send -u normal "Tailscale" "Connected successfully"
+                    exit 0
+                  fi
+                  sleep 2
+                done
+                
+                ${pkgs.libnotify}/bin/notify-send -u critical "Tailscale" "Not connected"
+                exit 0
+              fi
+              sleep 2
+            done
+            
+            ${pkgs.libnotify}/bin/notify-send -u critical "Network" "No connection detected\nRun your wifi helper"
+          ) &
         '';
         runAlways = true;
       };
