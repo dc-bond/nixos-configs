@@ -327,29 +327,28 @@ in
       networkAndTailscaleCheck = {
         text = ''
           (
-            sleep 3
+            sleep 7 
             
-            # wait for network (up to 20 seconds)
             for i in {1..10}; do
               if ${pkgs.systemd}/bin/networkctl status | grep -q "State: routable"; then
-                ${pkgs.libnotify}/bin/notify-send -u normal "Network" "Connected successfully"
+                ${pkgs.libnotify}/bin/notify-send -u normal "Network" "NETWORK CONNECTED"
                 
                 # network up, now check Tailscale (up to 20 seconds)
                 for j in {1..10}; do
                   if ${pkgs.tailscale}/bin/tailscale status >/dev/null 2>&1; then
-                    ${pkgs.libnotify}/bin/notify-send -u normal "Tailscale" "Connected successfully"
+                    ${pkgs.libnotify}/bin/notify-send -u normal "Tailscale" "TAILSCALE CONNECTED"
                     exit 0
                   fi
                   sleep 2
                 done
                 
-                ${pkgs.libnotify}/bin/notify-send -u critical "Tailscale" "Not connected"
+                ${pkgs.libnotify}/bin/notify-send -u critical "Tailscale" "TAILSCALE FAILURE/nOpen terminal and run 'tsaspen' to connect"
                 exit 0
               fi
               sleep 2
             done
             
-            ${pkgs.libnotify}/bin/notify-send -u critical "Network" "No connection detected\nRun your wifi helper"
+            ${pkgs.libnotify}/bin/notify-send -u critical "Network" "NETWORK FAILURE\nOpen terminal and run 'wifi' to start helper script"
           ) &
         '';
         runAlways = true;
