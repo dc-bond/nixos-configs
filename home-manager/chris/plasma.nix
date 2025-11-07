@@ -343,7 +343,7 @@ in
                   sleep 3 
                 done
                 
-                ${pkgs.libnotify}/bin/notify-send -u critical "Tailscale" "TAILSCALE FAILURE/nOpen terminal and run 'tsaspen' to connect"
+                ${pkgs.libnotify}/bin/notify-send -u critical "Tailscale" "TAILSCALE FAILURE/nCheck with Chris"
                 exit 0
               fi
               sleep 3 
