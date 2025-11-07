@@ -327,11 +327,12 @@ in
       networkAndTailscaleCheck = {
         text = ''
           (
-            sleep 7 
+            sleep 3 
             
             for i in {1..10}; do
               if ${pkgs.systemd}/bin/networkctl status | grep -q "State: routable"; then
                 ${pkgs.libnotify}/bin/notify-send -u normal "Network" "NETWORK CONNECTED"
+                sleep 3
                 
                 # network up, now check Tailscale (up to 20 seconds)
                 for j in {1..10}; do
@@ -339,13 +340,13 @@ in
                     ${pkgs.libnotify}/bin/notify-send -u normal "Tailscale" "TAILSCALE CONNECTED"
                     exit 0
                   fi
-                  sleep 2
+                  sleep 3 
                 done
                 
                 ${pkgs.libnotify}/bin/notify-send -u critical "Tailscale" "TAILSCALE FAILURE/nOpen terminal and run 'tsaspen' to connect"
                 exit 0
               fi
-              sleep 2
+              sleep 3 
             done
             
             ${pkgs.libnotify}/bin/notify-send -u critical "Network" "NETWORK FAILURE\nOpen terminal and run 'wifi' to start helper script"
