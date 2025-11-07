@@ -326,6 +326,7 @@ in
       };
       networkAndTailscaleCheck = {
         text = ''
+          sleep 5
           for i in {1..10}; do
             if ${pkgs.systemd}/bin/networkctl status | grep -q "State: routable"; then
               ${pkgs.libnotify}/bin/notify-send -u normal "Network" "Connected successfully"
