@@ -36,7 +36,7 @@ in
       enable = true;
       settings.server = {
         http_addr = "127.0.0.1";
-        http_port = 3001;
+        http_port = 3002;
         domain = "grafana.${configVars.domain2}";
         root_url = "https://grafana.${configVars.domain2}";
       };
@@ -69,7 +69,7 @@ in
         loadBalancer = {
           passHostHeader = true;
           servers = [{
-            url = "http://127.0.0.1:3001";
+            url = "http://127.0.0.1:3002";
           }];
         };
       };
