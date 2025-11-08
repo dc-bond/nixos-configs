@@ -58,6 +58,7 @@
       "nixos-system/zsh.nix"
       "nixos-system/sops.nix"
       "nixos-system/nixpkgs.nix"
+      "nixos-system/monitoring-client.nix"
       "nixos-system/oci-containers.nix"
       "nixos-system/postgresql.nix"
       "nixos-system/traefik.nix"

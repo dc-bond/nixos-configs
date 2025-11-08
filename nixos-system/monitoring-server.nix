@@ -20,25 +20,46 @@ in
       exporters.node = {
         enable = true;
         port = 9100;
-        enabledCollectors = [ "systemd" ];
+        enabledCollectors = [ 
+          "systemd" # service states and health
+          "processes" # process count, states, forks
+          "interrupts" # irq statistics
+          "tcpstat"  # tcp connection states
+          "buddyinfo"  # memory fragmentation
+        ];
       };
       scrapeConfigs = [
         {
-          job_name = "local-node";
-          static_configs = [{
-            targets = [ "localhost:9100" ];
-          }];
+          job_name = "nodes";
+          static_configs = [
+            {
+              targets = [ "127.0.0.1:9100" ];
+              labels.host = "aspen";
+            }
+            {
+              targets = [ "${configVars.cypressTailscaleIp}:9100" ];
+              labels.host = "cypress";
+            }
+            {
+              targets = [ "${configVars.thinkpadTailscaleIp}:9100" ];
+              labels.host = "thinkpad";
+            }
+            {
+              targets = [ "${configVars.juniperTailscaleIp}:9100" ];
+              labels.host = "juniper";
+            }
+          ];
         }
       ];
     };
 
-    grafana = {
+    ${app} = {
       enable = true;
       settings.server = {
         http_addr = "127.0.0.1";
         http_port = 3002;
-        domain = "grafana.${configVars.domain2}";
-        root_url = "https://grafana.${configVars.domain2}";
+        domain = "${app}.${configVars.domain2}";
+        root_url = "https://${app}.${configVars.domain2}";
       };
       provision = {
         enable = true;
@@ -54,7 +75,7 @@ in
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];
-        rule = "Host(`grafana.${configVars.domain2}`)";
+        rule = "Host(`${app}.${configVars.domain2}`)";
         service = "${app}";
         middlewares = [
           "secure-headers"
