@@ -79,6 +79,7 @@
       "nixos-system/nvidia.nix"
 
       "nixos-system/postgresql.nix"
+      "nixos-system/monitoring.nix"
       "nixos-system/traefik.nix"
       "nixos-system/mysql.nix"
       "nixos-system/photoprism.nix" # requires mysql.nix
