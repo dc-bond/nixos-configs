@@ -50,6 +50,19 @@ in
             }
           ];
         }
+        {
+          job_name = "traefik";
+          static_configs = [
+            {
+              targets = [ "127.0.0.1:9100" ];
+              labels.host = "aspen";
+            }
+            {
+              targets = [ "${configVars.juniperTailscaleIp}:9100" ];
+              labels.host = "juniper";
+            }
+          ];
+        }
       ];
     };
 
