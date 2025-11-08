@@ -54,11 +54,11 @@ in
           job_name = "traefik";
           static_configs = [
             {
-              targets = [ "127.0.0.1:9100" ];
+              targets = [ "127.0.0.1:8082" ];
               labels.host = "aspen";
             }
             {
-              targets = [ "${configVars.juniperTailscaleIp}:9100" ];
+              targets = [ "${configVars.juniperTailscaleIp}:8082" ];
               labels.host = "juniper";
             }
           ];
