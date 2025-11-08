@@ -100,11 +100,11 @@ in
             };
           };
         };
-        metrics.prometheus = {
-          addEntryPointsLabels = true;
-          addRoutersLabels = true;
-          addServicesLabels = true;
-        };
+        #metrics.prometheus = {
+        #  addEntryPointsLabels = true;
+        #  addRoutersLabels = true;
+        #  addServicesLabels = true;
+        #};
         entryPoints = {
           web = {
             address = ":80/tcp";
