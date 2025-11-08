@@ -100,14 +100,15 @@ in
             };
           };
         };
-        #metrics.prometheus = {
-        #  addEntryPointsLabels = true;
-        #  addRoutersLabels = true;
-        #  addServicesLabels = true;
-        #};
+        metrics.prometheus = {
+          addEntryPointsLabels = true;
+          addRoutersLabels = true;
+          addServicesLabels = true;
+        };
         entryPoints = {
+          metrics.address = "127.0.0.1:8082/tcp";
           web = {
-            address = ":80/tcp";
+            address = "0.0.0.0:80/tcp";
             http.redirections.entrypoint = {
               to = "websecure";
               scheme = "https";
@@ -115,7 +116,7 @@ in
             };
           };
           websecure = {
-            address = ":443/tcp";
+            address = "0.0.0.0:443/tcp";
             forwardedHeaders.trustedIPs = [ # only trust forwarding headers from Cloudflare - https://www.cloudflare.com/ips/
               "103.21.244.0/22"
               "103.22.200.0/22"
