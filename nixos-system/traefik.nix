@@ -101,6 +101,7 @@ in
           };
         };
         metrics.prometheus = {
+          entryPoint = "metrics";
           addEntryPointsLabels = true;
           addRoutersLabels = true;
           addServicesLabels = true;
