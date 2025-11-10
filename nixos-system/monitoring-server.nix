@@ -103,7 +103,11 @@ in
           };
         }];
         storage_config.filesystem.directory = "/var/lib/loki/chunks";
-        limits_config.retention_period = "168h";
+        limits_config = {
+          retention_period = "168h";
+          ingestion_rate_mb = 16; # default is 4MB/sec
+          ingestion_burst_size_mb = 32; # default is 6MB
+        };
         compactor = {
           working_directory = "/var/lib/loki/compactor";
           compaction_interval = "10m";
