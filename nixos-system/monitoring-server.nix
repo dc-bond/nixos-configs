@@ -93,6 +93,7 @@ in
           chunk_idle_period = "5m";
           chunk_retain_period = "30s";
         };
+        common.replication_factor = 1;
         schema_config.configs = [{
           from = "2024-04-01";
           store = "tsdb";
