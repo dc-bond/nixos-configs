@@ -94,19 +94,19 @@ in
           chunk_retain_period = "30s";
         };
         schema_config.configs = [{
-          from = "2024-01-01";
-          store = "boltdb-shipper";
+          from = "2024-04-01";
+          store = "tsdb";
           object_store = "filesystem";
-          schema = "v11";
+          schema = "v13";
           index = {
             prefix = "index_";
             period = "24h";
           };
         }];
         storage_config = {
-          boltdb_shipper = {
-            active_index_directory = "/var/lib/loki/index";
-            cache_location = "/var/lib/loki/cache";
+          tsdb_shipper = {
+            active_index_directory = "/var/lib/loki/tsdb-index";
+            cache_location = "/var/lib/loki/tsdb-cache";
           };
           filesystem.directory = "/var/lib/loki/chunks";
         };
@@ -117,6 +117,7 @@ in
           retention_enabled = true;
           retention_delete_delay = "2h";
           retention_delete_worker_count = 150;
+          delete_request_store = "filesystem";
         };
       };
     };
