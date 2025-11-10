@@ -173,12 +173,19 @@ in
       };
       provision = {
         enable = true;
-        datasources.settings.datasources = [{
-          name = "Prometheus";
-          type = "prometheus";
-          url = "http://127.0.0.1:9090";
-          isDefault = true;
-        }];
+        datasources.settings.datasources = [
+          {
+            name = "Prometheus";
+            type = "prometheus";
+            url = "http://127.0.0.1:9090";
+            isDefault = true;
+          }
+          {
+            name = "Loki";
+            type = "loki";
+            url = "http://127.0.0.1:3030";
+          }
+        ];
       };
     };
 
