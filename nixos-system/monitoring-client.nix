@@ -11,18 +11,31 @@
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 9100 ]; # open prometheus node exporter port on tailscale interface to allow monitoring-server to scrape data (server needs to connect to client's node exporter port)
 
   services = {
-    prometheus.exporters.node = {
-      enable = true;
-      port = 9100;
-      listenAddress = "0.0.0.0";  # listen on all interfaces, tailscale included, because remote monitoring-server needs to scrape from afar
-      enabledCollectors = [ 
-        "systemd" # service states and health
-        "processes" # process count, states, forks
-        "interrupts" # irq statistics
-        "tcpstat"  # tcp connection states
-        "buddyinfo"  # memory fragmentation
-      ];
+    
+    prometheus.exporters = {
+      node = {
+        enable = true;
+        port = 9100;
+        listenAddress = "0.0.0.0";  # listen on all interfaces, tailscale included, because remote monitoring-server needs to scrape from afar
+        enabledCollectors = [ 
+          "systemd" # service states and health
+          "processes" # process count, states, forks
+          "interrupts" # irq statistics
+          "tcpstat"  # tcp connection states
+          "buddyinfo"  # memory fragmentation
+        ];
+      };
+      #smartctl = {
+      #  enable = true;
+      #  port = 9633;
+      #  devices = [
+      #    "/dev/nvme0n1"
+      #    "/dev/sda"
+      #  ];
+      #  maxInterval = "60s";
+      #};
     };
+
     promtail = {
       enable = true;
       configuration = {

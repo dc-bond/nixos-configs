@@ -20,17 +20,28 @@ in
       enable = true;
       port = 9090;
       globalConfig.scrape_interval = "15s";
-      exporters.node = {
-        enable = true;
-        port = 9100;
-        listenAddress = "127.0.0.1";  # listen only on local interface because monitoring-server scraping its own metrics
-        enabledCollectors = [ 
-          "systemd" # service states and health
-          "processes" # process count, states, forks
-          "interrupts" # irq statistics
-          "tcpstat"  # tcp connection states
-          "buddyinfo"  # memory fragmentation
-        ];
+      exporters = {
+        node = {
+          enable = true;
+          port = 9100;
+          listenAddress = "127.0.0.1";  # listen only on local interface because monitoring-server scraping its own metrics
+          enabledCollectors = [ 
+            "systemd" # service states and health
+            "processes" # process count, states, forks
+            "interrupts" # irq statistics
+            "tcpstat"  # tcp connection states
+            "buddyinfo"  # memory fragmentation
+          ];
+        };
+        #smartctl = {
+        #  enable = true;
+        #  port = 9633;
+        #  devices = [
+        #    "/dev/nvme0n1"
+        #    "/dev/sda"
+        #  ];
+        #  maxInterval = "60s";
+        #};
       };
       scrapeConfigs = [
         {
@@ -50,6 +61,27 @@ in
             }
             {
               targets = [ "${configVars.juniperTailscaleIp}:9100" ];
+              labels.host = "juniper";
+            }
+          ];
+        }
+        {
+          job_name = "smartctl";
+          static_configs = [
+            {
+              targets = [ "127.0.0.1:9633" ];
+              labels.host = "aspen";
+            }
+            {
+              targets = [ "${configVars.cypressTailscaleIp}:9633" ];
+              labels.host = "cypress";
+            }
+            {
+              targets = [ "${configVars.thinkpadTailscaleIp}:9633" ];
+              labels.host = "thinkpad";
+            }
+            {
+              targets = [ "${configVars.juniperTailscaleIp}:9633" ];
               labels.host = "juniper";
             }
           ];
@@ -165,6 +197,12 @@ in
           }
         ];
       };
+    };
+
+    smartd = {
+      enable = true;
+      autodetect = true;
+      notifications.wall.enable = false;
     };
 
     ${app} = {
