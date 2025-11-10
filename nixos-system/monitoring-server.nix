@@ -165,11 +165,19 @@ in
 
     ${app} = {
       enable = true;
-      settings.server = {
-        http_addr = "127.0.0.1";
-        http_port = 3002;
-        domain = "${app}.${configVars.domain2}";
-        root_url = "https://${app}.${configVars.domain2}";
+      settings = {
+        server = {
+          http_addr = "127.0.0.1";
+          http_port = 3002;
+          domain = "${app}.${configVars.domain2}";
+          root_url = "https://${app}.${configVars.domain2}";
+        };
+        news.news_feed_enabled = false;
+        analytics = {
+          reporting_enabled = false;
+          check_for_updates = false;
+          check_for_plugin_updates = false;
+        };
       };
       provision = {
         enable = true;
