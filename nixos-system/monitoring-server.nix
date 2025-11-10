@@ -79,6 +79,92 @@ in
       ];
     };
 
+    loki = {
+      enable = true;
+      configuration = {
+        auth_enabled = false;
+        server.http_listen_port = 3030;
+        ingester = {
+          lifecycler = {
+            address = "127.0.0.1";
+            ring.kvstore.store = "inmemory";
+            final_sleep = "0s";
+          };
+          chunk_idle_period = "5m";
+          chunk_retain_period = "30s";
+        };
+        schema_config.configs = [{
+          from = "2024-01-01";
+          store = "boltdb-shipper";
+          object_store = "filesystem";
+          schema = "v11";
+          index = {
+            prefix = "index_";
+            period = "24h";
+          };
+        }];
+        storage_config = {
+          boltdb_shipper = {
+            active_index_directory = "/var/lib/loki/index";
+            cache_location = "/var/lib/loki/cache";
+          };
+          filesystem.directory = "/var/lib/loki/chunks";
+        };
+        limits_config.retention_period = "168h"; # 7 days
+        compactor = {
+          working_directory = "/var/lib/loki/compactor";
+          compaction_interval = "10m";
+          retention_enabled = true;
+          retention_delete_delay = "2h";
+          retention_delete_worker_count = 150;
+        };
+      };
+    };
+
+    promtail = {
+      enable = true;
+      configuration = {
+        server = {
+          http_listen_port = 3031;
+          grpc_listen_port = 0;
+        };
+        clients = [{
+          url = "http://127.0.0.1:3030/loki/api/v1/push";
+        }];
+        scrape_configs = [
+          {
+            job_name = "journal";
+            journal = {
+              labels.host = config.networking.hostName;
+            };
+            relabel_configs = [{
+              source_labels = ["__journal__systemd_unit"];
+              target_label = "unit";
+            }];
+          }
+          {
+            job_name = "traefik";
+            static_configs = [{
+              targets = [ "127.0.0.1" ];
+              labels = {
+                job = "traefik";
+                host = config.networking.hostName;
+                __path__ = "/var/log/traefik/access.log";
+              };
+            }];
+            pipeline_stages = [{
+              json.expressions = {
+                status = "DownstreamStatus";
+                method = "RequestMethod";
+                path = "RequestPath";
+                client_ip = "ClientHost";
+              };
+            }];
+          }
+        ];
+      };
+    };
+
     ${app} = {
       enable = true;
       settings.server = {
