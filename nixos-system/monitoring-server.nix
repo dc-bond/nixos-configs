@@ -12,6 +12,8 @@ in
 
 {
 
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 3030 ]; # open loki port on tailscale interface to recieve logs pushed from other monitoring-clients (clients need to connect to server's loki port)
+
   services = {
 
     prometheus = {
@@ -21,6 +23,7 @@ in
       exporters.node = {
         enable = true;
         port = 9100;
+        listenAddress = "127.0.0.1";  # listen only on local interface because monitoring-server scraping its own metrics
         enabledCollectors = [ 
           "systemd" # service states and health
           "processes" # process count, states, forks
