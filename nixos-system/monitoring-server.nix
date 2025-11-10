@@ -84,16 +84,14 @@ in
       configuration = {
         auth_enabled = false;
         server.http_listen_port = 3030;
-        ingester = {
-          lifecycler = {
-            address = "127.0.0.1";
-            ring.kvstore.store = "inmemory";
-            final_sleep = "0s";
+        common = {
+          ring = {
+            instance_addr = "127.0.0.1";
+            kvstore.store = "inmemory";
           };
-          chunk_idle_period = "5m";
-          chunk_retain_period = "30s";
+          replication_factor = 1;
+          path_prefix = "/var/lib/loki";
         };
-        common.replication_factor = 1;
         schema_config.configs = [{
           from = "2024-04-01";
           store = "tsdb";
@@ -104,14 +102,8 @@ in
             period = "24h";
           };
         }];
-        storage_config = {
-          tsdb_shipper = {
-            active_index_directory = "/var/lib/loki/tsdb-index";
-            cache_location = "/var/lib/loki/tsdb-cache";
-          };
-          filesystem.directory = "/var/lib/loki/chunks";
-        };
-        limits_config.retention_period = "168h"; # 7 days
+        storage_config.filesystem.directory = "/var/lib/loki/chunks";
+        limits_config.retention_period = "168h";
         compactor = {
           working_directory = "/var/lib/loki/compactor";
           compaction_interval = "10m";
