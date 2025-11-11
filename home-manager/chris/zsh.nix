@@ -61,7 +61,7 @@
       garbage = "nix-collect-garbage -d && sudo nix-collect-garbage -d";
       speed = "nix run nixpkgs#speedtest-rs";
       gens = "nixos-rebuild list-generations | head -n 5";
-      yubigpg = ''gpg-connect-agent "scd serialno" "learn --force" /bye'';
+      yubigpg = ''gpg-connect-agent "scd serialno" "learn --force" /bye''; # force gpg to update its pointer towards whichever yubikey is plugged in
     } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {
       flakeupdate = "sudo nix flake update --flake ~/nixos-configs";
       ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop";

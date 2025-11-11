@@ -127,42 +127,17 @@ in
           access_control = {
             default_policy = "deny";
             rules = [
-              #{
-              #  domain = ["cloud.${configVars.domain1}"];# only allow chris@dcbond.com user to authenticate to nextcloud admin/login 
-              #  resources = [
-              #    "^/login?direct=1.*$"
-              #    "^/login?direct=1/.*$"
-              #  ];
-              #  subject = "user:admin";
-              #  policy = "one_factor";
-              #}
               {
-                domain = [ # root domain
-                  "${configVars.domain1}"
-                ];
+                domain = [ "identity.${configVars.domain1}" ]; # bypass authelia when connecting to authelia itself
+                policy = "bypass";
+              }
+              {
+                domain = [ "${configVars.domain1}" ]; # only allow admin user to authenticate with two-factor on root domain
                 subject = "user:admin";
                 policy = "two_factor";
               }
               {
-                domain = [ # bypass authelia when connecting to authelia itself
-                  "identity.${configVars.domain1}"
-                ];
-                policy = "bypass";
-              }
-              {
-                domain = [
-                  "lldap.${configVars.domain1}"
-                ];
-                subject = [ # only allow the following users to access lldap and only require one factor
-                  "user:admin"
-                  "user:danielle-bond"
-                ];
-                policy = "one_factor";
-              }
-              {
-                domain = [ # catchall for any remaining subdomains to only allow admin user to authenticate (assuming 'authelia-dcbond' traefik middleware set on the service)
-                  "*.${configVars.domain1}"
-                ];
+                domain = [ "*.${configVars.domain1}" ]; # catchall for any remaining subdomains to only allow admin user to authenticate (assuming 'authelia-dcbond' traefik middleware set on the service)
                 subject = "user:admin";
                 policy = "two_factor";
               }
