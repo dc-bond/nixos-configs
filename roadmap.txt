@@ -6,8 +6,6 @@ glance
 
 teslamate
 
-authelia
-
 vaultwarden
 
 Mailserver
