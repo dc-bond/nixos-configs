@@ -56,7 +56,6 @@ in
       listenAddress = if config.hostSpecificConfigs.isMonitoringServer
         then "127.0.0.1"
         else "0.0.0.0";
-      storageDriver = "memory";
     };
 
     promtail = {
