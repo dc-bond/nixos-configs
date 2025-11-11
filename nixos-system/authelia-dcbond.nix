@@ -164,6 +164,7 @@ in
                 client_secret = "$pbkdf2-sha512$310000$wFwB54/jYlnRZPYwL5Yj2A$6Umdwy/f6h5.GPITzV0PLg3r1vSUn5NsmaxJc6qZo7hkZbs4pixefwSA2DaZb0AQO4VawZPt7x7Zhyc4qMeINA";
                 redirect_uris = "https://login.tailscale.com/a/oauth_response";
                 authorization_policy = "one_factor";
+                #authorization_policy = "two_factor"; # requires yubikey webauthn
                 scopes = [
                   "openid"
                   "profile"
