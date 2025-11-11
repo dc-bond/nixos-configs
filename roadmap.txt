@@ -1,10 +1,4 @@
-plg stack
-
 drives
-
-glance
-
-teslamate
 
 vaultwarden
 
