@@ -47,15 +47,15 @@ in
           static_configs = [
             {
               targets = [ "127.0.0.1:9633" ];
-              labels.host = config.networking.hostName;
+              labels.node = config.networking.hostName;
             }
             {
               targets = [ "${configVars.cypressTailscaleIp}:9633" ];
-              labels.host = "cypress";
+              labels.node = "cypress";
             }
             {
               targets = [ "${configVars.thinkpadTailscaleIp}:9633" ];
-              labels.host = "thinkpad";
+              labels.node = "thinkpad";
             }
           ];
         }
