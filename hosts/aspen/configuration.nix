@@ -24,6 +24,11 @@
       type = lib.types.int;
       description = "ssh daemon port for this host";
     };
+    isMonitoringServer = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "whether this host runs the central monitoring stack (prometheus, loki, grafana)";
+    };
   };
 
   config = {
@@ -32,6 +37,7 @@
       storageDrive1 = "/storage/WD-WCC7K4RU947F";
       primaryIp = configVars.aspenLanIp;
       sshdPort = 28766;
+      isMonitoringServer = true;
     };
 
     fileSystems."${config.hostSpecificConfigs.storageDrive1}" = {
@@ -80,6 +86,7 @@
 
       "nixos-system/postgresql.nix"
       "nixos-system/monitoring-server.nix"
+      "nixos-system/monitoring-client.nix"
       "nixos-system/traefik.nix"
       "nixos-system/mysql.nix"
       "nixos-system/photoprism.nix" # requires mysql.nix

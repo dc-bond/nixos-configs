@@ -8,7 +8,10 @@
 
 {
 
-  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 9100 ]; # open prometheus node exporter port on tailscale interface to allow monitoring-server to scrape data (server needs to connect to client's node exporter port)
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = lib.optionals (!config.hostSpecificConfigs.isMonitoringServer) [ 
+    9100 # prometheus node exporter
+    9633 # smartctl exporter
+  ]; # monitoring-server needs to connect to these ports on monitoring-clients
 
   services = {
     
@@ -16,7 +19,9 @@
       node = {
         enable = true;
         port = 9100;
-        listenAddress = "0.0.0.0";  # listen on all interfaces, tailscale included, because remote monitoring-server needs to scrape from afar
+        listenAddress = if config.hostSpecificConfigs.isMonitoringServer
+          then "127.0.0.1" # local scraping on monitoring server
+          else "0.0.0.0"; # remote scraping from monitoring server
         enabledCollectors = [ 
           "systemd" # service states and health
           "processes" # process count, states, forks
@@ -25,15 +30,17 @@
           "buddyinfo"  # memory fragmentation
         ];
       };
-      #smartctl = {
-      #  enable = true;
-      #  port = 9633;
-      #  devices = [
-      #    "/dev/nvme0n1"
-      #    "/dev/sda"
-      #  ];
-      #  maxInterval = "60s";
-      #};
+      smartctl = {
+        enable = true;
+        port = 9633;
+        maxInterval = "60s";
+      };
+    };
+
+    smartd = {
+      enable = true;
+      autodetect = true;
+      notifications.wall.enable = false;
     };
 
     promtail = {
@@ -44,7 +51,9 @@
           grpc_listen_port = 0;
         };
         clients = [{
-          url = "http://${configVars.aspenTailscaleIp}:3030/loki/api/v1/push";
+          url = if config.hostSpecificConfigs.isMonitoringServer
+            then "http://127.0.0.1:3030/loki/api/v1/push"
+            else "http://${configVars.aspenTailscaleIp}:3030/loki/api/v1/push";
         }];
         scrape_configs = [
           {
@@ -57,7 +66,7 @@
               target_label = "unit";
             }];
           }
-        ] ++ lib.optionals (config.networking.hostName == "juniper") [
+        ] ++ lib.optionals config.services.traefik.enable [
           {
             job_name = "traefik";
             static_configs = [{

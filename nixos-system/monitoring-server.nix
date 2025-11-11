@@ -20,36 +20,13 @@ in
       enable = true;
       port = 9090;
       globalConfig.scrape_interval = "15s";
-      exporters = {
-        node = {
-          enable = true;
-          port = 9100;
-          listenAddress = "127.0.0.1";  # listen only on local interface because monitoring-server scraping its own metrics
-          enabledCollectors = [ 
-            "systemd" # service states and health
-            "processes" # process count, states, forks
-            "interrupts" # irq statistics
-            "tcpstat"  # tcp connection states
-            "buddyinfo"  # memory fragmentation
-          ];
-        };
-        #smartctl = {
-        #  enable = true;
-        #  port = 9633;
-        #  devices = [
-        #    "/dev/nvme0n1"
-        #    "/dev/sda"
-        #  ];
-        #  maxInterval = "60s";
-        #};
-      };
       scrapeConfigs = [
         {
           job_name = "node";
           static_configs = [
             {
               targets = [ "127.0.0.1:9100" ];
-              labels.host = "aspen";
+              labels.host = config.networking.hostName;
             }
             {
               targets = [ "${configVars.cypressTailscaleIp}:9100" ];
@@ -70,7 +47,7 @@ in
           static_configs = [
             {
               targets = [ "127.0.0.1:9633" ];
-              labels.host = "aspen";
+              labels.host = config.networking.hostName;
             }
             {
               targets = [ "${configVars.cypressTailscaleIp}:9633" ];
@@ -91,7 +68,7 @@ in
           static_configs = [
             {
               targets = [ "127.0.0.1:8082" ];
-              labels.host = "aspen";
+              labels.host = config.networking.hostName;
             }
             {
               targets = [ "${configVars.juniperTailscaleIp}:8082" ];
@@ -104,7 +81,7 @@ in
           static_configs = [
             {
               targets = [ "127.0.0.1:6060" ];
-              labels.host = "aspen";
+              labels.host = config.networking.hostName;
             }
             {
               targets = [ "${configVars.juniperTailscaleIp}:6060" ];
@@ -153,56 +130,6 @@ in
           delete_request_store = "filesystem";
         };
       };
-    };
-
-    promtail = {
-      enable = true;
-      configuration = {
-        server = {
-          http_listen_port = 3031;
-          grpc_listen_port = 0;
-        };
-        clients = [{
-          url = "http://127.0.0.1:3030/loki/api/v1/push";
-        }];
-        scrape_configs = [
-          {
-            job_name = "journal";
-            journal = {
-              labels.host = config.networking.hostName;
-            };
-            relabel_configs = [{
-              source_labels = ["__journal__systemd_unit"];
-              target_label = "unit";
-            }];
-          }
-          {
-            job_name = "traefik";
-            static_configs = [{
-              targets = [ "127.0.0.1" ];
-              labels = {
-                job = "traefik";
-                host = config.networking.hostName;
-                __path__ = "/var/log/traefik/access.log";
-              };
-            }];
-            pipeline_stages = [{
-              json.expressions = {
-                status = "DownstreamStatus";
-                method = "RequestMethod";
-                path = "RequestPath";
-                client_ip = "ClientHost";
-              };
-            }];
-          }
-        ];
-      };
-    };
-
-    smartd = {
-      enable = true;
-      autodetect = true;
-      notifications.wall.enable = false;
     };
 
     ${app} = {

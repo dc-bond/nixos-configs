@@ -30,6 +30,11 @@
       type = lib.types.int;
       description = "ssh daemon port for this host";
     };
+    isMonitoringServer = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "whether this host runs the central monitoring stack (prometheus, loki, grafana)";
+    };
   };
   
   config = {
