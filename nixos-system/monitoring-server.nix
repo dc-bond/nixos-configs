@@ -57,10 +57,6 @@ in
               targets = [ "${configVars.thinkpadTailscaleIp}:9633" ];
               labels.host = "thinkpad";
             }
-            {
-              targets = [ "${configVars.juniperTailscaleIp}:9633" ];
-              labels.host = "juniper";
-            }
           ];
         }
         {

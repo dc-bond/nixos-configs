@@ -6,6 +6,10 @@
   ...
 }: 
 
+let
+  enableSmart = builtins.elem config.networking.hostName [ "aspen" "cypress" "thinkpad" ]; # only enable smart on physical hardware (no VMs)
+in
+
 {
 
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = lib.optionals (!config.hostSpecificConfigs.isMonitoringServer) [ 
@@ -30,14 +34,17 @@
           "buddyinfo"  # memory fragmentation
         ];
       };
-      smartctl = {
+      smartctl = lib.mkIf enableSmart {
         enable = true;
         port = 9633;
+        listenAddress = if config.hostSpecificConfigs.isMonitoringServer
+          then "127.0.0.1"
+          else "0.0.0.0";
         maxInterval = "60s";
       };
     };
 
-    smartd = {
+    smartd = lib.mkIf enableSmart {
       enable = true;
       autodetect = true;
       notifications.wall.enable = false;
