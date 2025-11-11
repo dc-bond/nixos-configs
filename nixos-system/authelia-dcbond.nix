@@ -131,16 +131,16 @@ in
                 domain = [ "identity.${configVars.domain1}" ]; # bypass authelia when connecting to authelia itself
                 policy = "bypass";
               }
-              {
-                domain = [ "${configVars.domain1}" ]; # only allow admin user to authenticate with two-factor on root domain
-                subject = "user:admin";
-                policy = "two_factor";
-              }
-              {
-                domain = [ "*.${configVars.domain1}" ]; # catchall for any remaining subdomains to only allow admin user to authenticate (assuming 'authelia-dcbond' traefik middleware set on the service)
-                subject = "user:admin";
-                policy = "two_factor";
-              }
+              #{
+              #  domain = [ "${configVars.domain1}" ]; # only allow admin user to authenticate with two-factor on root domain
+              #  subject = "user:admin";
+              #  policy = "two_factor";
+              #}
+              #{
+              #  domain = [ "*.${configVars.domain1}" ]; # catchall for any remaining subdomains to only allow admin user to authenticate (assuming 'authelia-dcbond' traefik middleware set on the service)
+              #  subject = "user:admin";
+              #  policy = "two_factor";
+              #}
             ];
           };
           regulation = {
