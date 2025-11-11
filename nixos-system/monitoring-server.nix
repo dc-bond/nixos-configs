@@ -20,7 +20,7 @@ in
       enable = true;
       port = 9090;
       globalConfig.scrape_interval = "15s";
-      scrapeConfigs = [
+      scrapeConfigs = [ # tells prometheus on monitoring-server which services to scrape metrics from and which hosts (itself or others) it should scrape those metrics from
         {
           job_name = "node";
           static_configs = [
@@ -82,6 +82,15 @@ in
             {
               targets = [ "${configVars.juniperTailscaleIp}:6060" ];
               labels.host = "juniper";
+            }
+          ];
+        }
+        {
+          job_name = "cadvisor";
+          static_configs = [
+            {
+              targets = [ "127.0.0.1:7541" ];
+              labels.host = config.networking.hostName;
             }
           ];
         }

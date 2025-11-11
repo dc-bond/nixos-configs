@@ -50,6 +50,15 @@ in
       notifications.wall.enable = false;
     };
 
+    cadvisor = lib.mkIf (config.virtualisation.oci-containers.containers != {}) {
+      enable = true;
+      port = 7541;
+      listenAddress = if config.hostSpecificConfigs.isMonitoringServer
+        then "127.0.0.1"
+        else "0.0.0.0";
+      storageDriver = "memory";
+    };
+
     promtail = {
       enable = true;
       configuration = {
