@@ -110,8 +110,8 @@
       "nixos-system/oci-recipesage.nix"
       "nixos-system/oci-librechat.nix"
       "nixos-system/oci-unifi.nix"
+      #"nixos-system/oci-n8n.nix"
       "nixos-system/ollama.nix"
-      "nixos-system/n8n.nix" # won't build n8n package from source...
 
       "scripts/media-transfer.nix"
     ])

@@ -23,17 +23,14 @@ in
       enable = true;  
       settings = {
         N8N_LOG_LEVEL = "info";
-
         N8N_DIAGNOSTICS_ENABLED = false;
         N8N_VERSION_NOTIFICATIONS_ENABLED = false;
         N8N_TEMPLATES_ENABLED = false;
-
         DB_TYPE = "postgresdb";
         DB_POSTGRESDB_DATABASE = "${app}";
         DB_POSTGRESDB_HOST = "127.0.0.1";
         DB_POSTGRESDB_PORT = 5432;
         DB_POSTGRESDB_USER = "${app}";
-
         N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS = true;
         DOMAIN_NAME = "${configVars.domain2}";
         SUBDOMAIN = "${app}";
