@@ -131,16 +131,6 @@ in
                 domain = [ "identity.${configVars.domain1}" ]; # bypass authelia when connecting to authelia itself
                 policy = "bypass";
               }
-              #{
-              #  domain = [ "${configVars.domain1}" ]; # only allow admin user to authenticate with two-factor on root domain
-              #  subject = "user:admin";
-              #  policy = "two_factor";
-              #}
-              #{
-              #  domain = [ "*.${configVars.domain1}" ]; # catchall for any remaining subdomains to only allow admin user to authenticate (assuming 'authelia-dcbond' traefik middleware set on the service)
-              #  subject = "user:admin";
-              #  policy = "two_factor";
-              #}
             ];
           };
           regulation = {
@@ -173,6 +163,7 @@ in
                 client_id = "bond-tailnet";
                 client_secret = "$pbkdf2-sha512$310000$wFwB54/jYlnRZPYwL5Yj2A$6Umdwy/f6h5.GPITzV0PLg3r1vSUn5NsmaxJc6qZo7hkZbs4pixefwSA2DaZb0AQO4VawZPt7x7Zhyc4qMeINA";
                 redirect_uris = "https://login.tailscale.com/a/oauth_response";
+                authorization_policy = "one_factor";
                 scopes = [
                   "openid"
                   "profile"
