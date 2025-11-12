@@ -41,7 +41,7 @@ in
 
   sops = {
     secrets = {
-      n8nDbPassword = {};
+      n8nDbPasswd = {};
       borgCryptPasswd = {};
     };
     templates = {
@@ -55,7 +55,7 @@ in
         DB_POSTGRESDB_HOST=postgres
         DB_POSTGRESDB_PORT=5432
         DB_POSTGRESDB_USER=${app}
-        DB_POSTGRESDB_PASSWORD=${config.sops.placeholder.n8nDbPassword}
+        DB_POSTGRESDB_PASSWORD=${config.sops.placeholder.n8nDbPasswd}
         N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
         DOMAIN_NAME=${configVars.domain2}
         SUBDOMAIN=${app}
@@ -67,9 +67,9 @@ in
         WEBHOOK_URL=https://${app}.${configVars.domain2}/
         GENERIC_TIMEZONE=America/New_York
       '';
-      "postgres-env".content = ''
+      "${app}-postgres-env".content = ''
         POSTGRES_USER=${app}
-        POSTGRES_PASSWORD=${config.sops.placeholder.n8nDbPassword}
+        POSTGRES_PASSWORD=${config.sops.placeholder.n8nDbPasswd}
         POSTGRES_DB=${app}
       '';
     };
@@ -78,7 +78,7 @@ in
   virtualisation.oci-containers.containers = {
 
     "${app}" = {
-      image = "docker.io/n8nio/n8n:latest"; # https://hub.docker.com/r/n8nio/n8n
+      image = "docker.io/n8nio/n8n:1.120.1"; # https://hub.docker.com/r/n8nio/n8n
       autoStart = true;
       environmentFiles = [ config.sops.templates."${app}-env".path ];
       log-driver = "journald";
@@ -99,10 +99,10 @@ in
       };
     };
 
-    "postgres" = {
-      image = "docker.io/library/postgres:16-alpine"; # https://hub.docker.com/_/postgres
+    "${app}-postgres" = {
+      image = "docker.io/library/postgres:18.0"; # https://hub.docker.com/_/postgres
       autoStart = true;
-      environmentFiles = [ config.sops.templates."postgres-env".path ];
+      environmentFiles = [ config.sops.templates."${app}-postgres-env".path ];
       log-driver = "journald";
       volumes = [ "postgres-data:/var/lib/postgresql/data" ];
       extraOptions = [
@@ -127,12 +127,12 @@ in
         after = [
           "docker-network-${app}.service"
           "docker-volume-${app}.service"
-          "docker-postgres.service"
+          "docker-${app}-postgres.service"
         ];
         requires = [
           "docker-network-${app}.service"
           "docker-volume-${app}.service"
-          "docker-postgres.service"
+          "docker-${app}-postgres.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -169,7 +169,7 @@ in
         wantedBy = ["docker-${app}-root.target"];
       };
       
-      "docker-postgres" = {
+      "docker-${app}-postgres" = {
         serviceConfig = {
           Restart = lib.mkOverride 500 "always";
           RestartMaxDelaySec = lib.mkOverride 500 "1m";
@@ -178,11 +178,11 @@ in
         };
         after = [
           "docker-network-${app}.service"
-          "docker-volume-postgres-data.service"
+          "docker-volume-${app}-postgres.service"
         ];
         requires = [
           "docker-network-${app}.service"
-          "docker-volume-postgres-data.service"
+          "docker-volume-${app}-postgres.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -192,14 +192,14 @@ in
         ];
       };
 
-      "docker-volume-postgres-data" = {
+      "docker-volume-${app}-postgres" = {
         path = [pkgs.docker];
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
         };
         script = ''
-          docker volume inspect postgres-data || docker volume create postgres-data
+          docker volume inspect ${app}-postgres || docker volume create ${app}-postgres
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
@@ -209,7 +209,7 @@ in
     
     targets."docker-${app}-root" = {
       unitConfig = {
-        Description = "root target for docker-${app} and docker-postgres";
+        Description = "root target for docker-${app} and docker-${app}-postgres";
       };
       wantedBy = ["multi-user.target"];
     };

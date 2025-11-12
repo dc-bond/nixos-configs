@@ -110,7 +110,7 @@
       "nixos-system/oci-recipesage.nix"
       "nixos-system/oci-librechat.nix"
       "nixos-system/oci-unifi.nix"
-      #"nixos-system/oci-n8n.nix"
+      "nixos-system/oci-n8n.nix"
       "nixos-system/ollama.nix"
 
       "scripts/media-transfer.nix"
