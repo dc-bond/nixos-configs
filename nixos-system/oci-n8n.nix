@@ -85,6 +85,7 @@ in
       volumes = [ "${app}:/home/node/.n8n" ];
       extraOptions = [
         "--network=${app}"
+        "--ip=${configVars.n8nIp}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -107,6 +108,7 @@ in
       volumes = [ "postgres-data:/var/lib/postgresql/data" ];
       extraOptions = [
         "--network=${app}"
+        "--ip=${configVars.n8nPostgresIp}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -150,7 +152,7 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
         };
         script = ''
-          docker network inspect ${app} || docker network create --driver bridge --scope local --attachable ${app}
+          docker network inspect ${app} || docker network create --subnet ${configVars.n8nSubnet} --driver bridge --scope local --attachable ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];

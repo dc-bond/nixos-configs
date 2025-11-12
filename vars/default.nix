@@ -189,5 +189,9 @@
   librechatMeiliIp = "172.21.16.4";
   librechatVectorIp = "172.21.16.5";
   librechatRagIp = "172.21.16.6";
+
+  n8nSubnet = "172.21.17.0/25";
+  n8nIp = "172.21.17.2";
+  n8nPostgresIp = "172.21.17.3";
   
 }
