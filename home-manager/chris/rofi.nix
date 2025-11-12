@@ -7,9 +7,9 @@
 
 {
 
-  home.packages = with pkgs; [
-    pinentry-rofi # use rofi for pinentry
-  ];
+  #home.packages = with pkgs; [
+  #  pinentry-rofi # use rofi for pinentry
+  #];
 
   services.gpg-agent.pinentry.package = pkgs.pinentry-rofi;
   
