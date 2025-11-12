@@ -26,6 +26,6 @@
     };
   };
 
-  home-manager.sharedModules = [ inputs.sops-nix.homeManagerModules.sops ]; # import home-manager sops module so user level secrets also work
+  #home-manager.sharedModules = [ inputs.sops-nix.homeManagerModules.sops ]; # import home-manager sops module so user level secrets also work
 
 }

@@ -32,7 +32,7 @@
     self,
     nixpkgs,
     home-manager,
-    plasma-manager,
+    #plasma-manager,
     sops-nix,
     disko,
     firefox-addons,
@@ -71,7 +71,7 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              sharedModules = [ plasma-manager.homeModules.plasma-manager ];
+              #sharedModules = [ plasma-manager.homeModules.plasma-manager ];
               users.chris = import ./hosts/thinkpad/chris/home.nix;
               users.root = import ./hosts/thinkpad/root/home.nix;
               extraSpecialArgs = specialArgs; # passes flake inputs and outputs to home-manager module
