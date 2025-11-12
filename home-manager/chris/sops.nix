@@ -1,5 +1,4 @@
 { 
-  #inputs,
   config, 
   configLib,
   configVars,
@@ -7,8 +6,6 @@
 }: 
 
 {
-
-  #home-manager.sharedModules = [ inputs.sops-nix.homeManagerModules.sops ]; # import home-manager sops module so user level secrets also work
 
   sops = { # home-manager level sops config for specific user
     defaultSopsFile = configLib.relativeToRoot "secrets.yaml";

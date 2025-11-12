@@ -1,5 +1,5 @@
 { 
-  #inputs,
+  inputs,
   pkgs,
   config,
   ... 
@@ -7,7 +7,7 @@
 
 {
 
-  #home-manager.sharedModules = [ inputs.plasma-manager.homeModules.plasma-manager ]; # make plasma-manager available to home-manager
+  home-manager.sharedModules = [ inputs.plasma-manager.homeModules.plasma-manager ]; # make plasma-manager available to home-manager
 
   environment = {
     systemPackages = with pkgs; [

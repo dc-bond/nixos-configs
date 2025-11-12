@@ -1,5 +1,4 @@
 { 
-  inputs,
   config,
   configVars,
   lib,
@@ -20,8 +19,6 @@ let
 in
 
 {
-
-  home-manager.sharedModules = [ inputs.plasma-manager.homeModules.plasma-manager ]; # import home-manager plasma-manager module
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
