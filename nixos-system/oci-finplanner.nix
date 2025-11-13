@@ -27,21 +27,19 @@ let
       python313Packages.ipywidgets
       python313Packages.beancount
       python313Packages.pyyaml
+      coreutils
+      bash
     ];
     
     config = {
       Cmd = [ 
-        "${pkgs.python313Packages.jupyter}/bin/jupyter" 
-        "lab" 
-        "--ip=0.0.0.0"               # Listen on all interfaces (inside container)
-        "--port=${finplannerPort}"   # Port inside container
-        "--no-browser"               # Don't try to open a browser
-        "--allow-root"               # Allow running as root user
-        "--NotebookApp.token=''"     # Disable token authentication
-        "--NotebookApp.password=''"  # Disable password authentication
+        "${pkgs.bash}/bin/bash"
+        "-c"
+        "jupyter lab --ip=0.0.0.0 --port=${finplannerPort} --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''"
       ];
       Env = [
         "JUPYTER_ENABLE_LAB=yes"     # Use JupyterLab interface (not classic)
+        "PATH=/bin"
       ];
       WorkingDir = "/work";          # Default directory when Jupyter starts
       ExposedPorts = {
