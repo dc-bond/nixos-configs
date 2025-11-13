@@ -33,13 +33,17 @@ let
     
     config = {
       Cmd = [ 
-        "${pkgs.bash}/bin/bash"
-        "-c"
-        "jupyter lab --ip=0.0.0.0 --port=${finplannerPort} --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password=''"
+        "/bin/jupyter"
+        "lab"
+        "--ip=0.0.0.0"
+        "--port=${finplannerPort}"
+        "--no-browser"
+        "--allow-root"
+        "--NotebookApp.token=''"
+        "--NotebookApp.password=''"
       ];
       Env = [
         "JUPYTER_ENABLE_LAB=yes"     # Use JupyterLab interface (not classic)
-        "PATH=/bin"
       ];
       WorkingDir = "/work";          # Default directory when Jupyter starts
       ExposedPorts = {
