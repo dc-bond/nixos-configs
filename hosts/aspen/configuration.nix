@@ -111,7 +111,7 @@
       "nixos-system/oci-recipesage.nix"
       "nixos-system/oci-librechat.nix"
       "nixos-system/oci-unifi.nix"
-      "nixos-system/oci-finplanner.nix"
+      #"nixos-system/oci-finplanner.nix"
       #"nixos-system/oci-n8n.nix"
 
       "scripts/media-transfer.nix"

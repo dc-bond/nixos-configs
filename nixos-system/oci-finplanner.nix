@@ -11,26 +11,6 @@ let
   app = "finplanner";
   finplannerPort = "7111";
 
-  pythonKernelSpec = pkgs.runCommand "python-kernel-spec" {} ''
-    mkdir -p $out/share/jupyter/kernels/python3
-    cat > $out/share/jupyter/kernels/python3/kernel.json << EOF
-    {
-      "argv": [
-        "${pkgs.python313}/bin/python",
-        "-m",
-        "ipykernel_launcher",
-        "-f",
-        "{connection_file}"
-      ],
-      "display_name": "Python 3",
-      "language": "python",
-      "metadata": {
-        "debugger": true
-      }
-    }
-    EOF
-  '';
-  
   # build the custom Jupyter image with all dependencies
   finplannerImage = pkgs.dockerTools.buildLayeredImage {
     name = "finplanner";
