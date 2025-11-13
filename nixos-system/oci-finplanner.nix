@@ -20,6 +20,7 @@ let
       python313Packages.jupyter-core
       python313Packages.jupyter
       python313Packages.jupyterlab
+      python313Packages.ipykernel
       python313Packages.pandas
       python313Packages.numpy
       python313Packages.matplotlib
