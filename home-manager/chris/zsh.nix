@@ -64,7 +64,7 @@
       yubigpg = ''gpg-connect-agent "scd serialno" "learn --force" /bye''; # force gpg to update its pointer towards whichever yubikey is plugged in
     } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {
       flakeupdate = "sudo nix flake update --flake ~/nixos-configs";
-      ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop --command codium .";
+      ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop --command codium . && cd ~";
       cloneconfigs = "cd ~ && git clone https://github.com/dc-bond/nixos-configs";
     } // lib.optionalAttrs (osConfig.networking.hostName == "cypress") {
       storage = "cd /storage/WD-WX21DC86RU3P ; ls";
