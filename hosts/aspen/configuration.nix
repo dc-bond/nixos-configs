@@ -99,6 +99,7 @@
       "nixos-system/authelia-dcbond.nix" # requires lldap.nix
       "nixos-system/stirling-pdf.nix"
       "nixos-system/dcbond-root.nix"
+      "nixos-system/ollama.nix"
       "nixos-system/oci-containers.nix"
       "nixos-system/oci-fava.nix"
       "nixos-system/oci-media-server.nix" # requires nvidia.nix
@@ -110,8 +111,8 @@
       "nixos-system/oci-recipesage.nix"
       "nixos-system/oci-librechat.nix"
       "nixos-system/oci-unifi.nix"
+      "nixos-system/oci-finplanner.nix"
       #"nixos-system/oci-n8n.nix"
-      "nixos-system/ollama.nix"
 
       "scripts/media-transfer.nix"
     ])
