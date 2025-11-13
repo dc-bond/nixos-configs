@@ -11,11 +11,10 @@ let
   app = "finplanner";
   finplannerPort = "7111";
   
-  # Build the custom Jupyter image with all dependencies
+  # build the custom Jupyter image with all dependencies
   finplannerImage = pkgs.dockerTools.buildLayeredImage {
     name = "finplanner";
     tag = "latest";
-    
     contents = with pkgs; [
       python313
       python313Packages.jupyter-core
@@ -31,7 +30,6 @@ let
       coreutils
       bash
     ];
-    
     config = {
       Cmd = [ 
         "/bin/jupyter-lab"
@@ -43,11 +41,11 @@ let
         "--NotebookApp.password=''"
       ];
       Env = [
-        "JUPYTER_ENABLE_LAB=yes"     # Use JupyterLab interface (not classic)
+        "JUPYTER_ENABLE_LAB=yes" # use JupyterLab interface (not classic)
       ];
-      WorkingDir = "/work";          # Default directory when Jupyter starts
+      WorkingDir = "/work"; # default directory when Jupyter starts
       ExposedPorts = {
-        "${finplannerPort}/tcp" = {};   # Document which port is used
+        "${finplannerPort}/tcp" = {};
       };
     };
   };
@@ -56,7 +54,7 @@ in
 
 {
 
-  # Load the Nix-built image into Docker
+  # load the nix-built image into docker
   systemd.services."docker-load-${app}-image" = {
     description = "Load custom Jupyter Docker image from Nix";
     wantedBy = [ "docker-${app}.service" ];
@@ -76,19 +74,16 @@ in
     image = "finplanner:latest";
     autoStart = true;
     log-driver = "journald";
-    
     volumes = [
       "/var/lib/nextcloud/data/Chris Bond/files/Bond Family/Financial/bond-ledger/finplanner:/work"
       "/var/lib/nextcloud/data/Chris Bond/files/Bond Family/Financial/bond-ledger:/beancount:ro"
     ];
-    
     extraOptions = [
       "--network=${app}"
       "--ip=${configVars.finplannerIp}"
       "--tty=true"
       "--stop-signal=SIGINT"
     ];
-    
     labels = {
       "traefik.enable" = "true";
       "traefik.http.routers.${app}.entrypoints" = "websecure";
@@ -102,7 +97,6 @@ in
 
   systemd = {
     services = { 
-
       "docker-${app}" = {
         serviceConfig = {
           Restart = lib.mkOverride 500 "always";
@@ -125,7 +119,6 @@ in
           "docker-${app}-root.target"
         ];
       };
-      
       "docker-network-${app}" = {
         path = [pkgs.docker];
         serviceConfig = {
@@ -140,14 +133,12 @@ in
         wantedBy = ["docker-${app}-root.target"];
       };
     };
-    
     targets."docker-${app}-root" = {
       unitConfig = {
         Description = "root target for docker-${app} with custom Nix-built image";
       };
       wantedBy = ["multi-user.target"];
     };
-
   }; 
   
 }
