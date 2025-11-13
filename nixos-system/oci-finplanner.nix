@@ -18,6 +18,7 @@ let
     
     contents = with pkgs; [
       python313
+      python313Packages.jupyter-core
       python313Packages.jupyter
       python313Packages.jupyterlab
       python313Packages.pandas
@@ -33,8 +34,7 @@ let
     
     config = {
       Cmd = [ 
-        "/bin/jupyter"
-        "lab"
+        "/bin/jupyter-lab"
         "--ip=0.0.0.0"
         "--port=${finplannerPort}"
         "--no-browser"
