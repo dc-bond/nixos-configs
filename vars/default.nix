@@ -194,7 +194,7 @@
   n8nIp = "172.21.17.2";
   n8nPostgresIp = "172.21.17.3";
 
-  jupyterSubnet = "172.21.18.0/25";
-  jupyterIp = "172.21.18.2";
+  finplannerSubnet = "172.21.18.0/25";
+  finplannerIp = "172.21.18.2";
   
 }

@@ -82,7 +82,7 @@ in
     
     extraOptions = [
       "--network=${app}"
-      "--ip=${configVars.jupyterIp}"
+      "--ip=${configVars.finplannerIp}"
       "--tty=true"
       "--stop-signal=SIGINT"
     ];
@@ -132,7 +132,7 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
         };
         script = ''
-          docker network inspect ${app} || docker network create --subnet ${configVars.jupyterSubnet} --driver bridge --scope local --attachable ${app}
+          docker network inspect ${app} || docker network create --subnet ${configVars.finplannerSubnet} --driver bridge --scope local --attachable ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
