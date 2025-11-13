@@ -21,6 +21,11 @@ let
       python313Packages.jupyter
       python313Packages.jupyterlab
       python313Packages.ipykernel
+      python313Packages.jupyter-client      # <- ADD
+      python313Packages.jupyterlab-server   # <- ADD (might already be included)
+      python313Packages.notebook            # <- ADD
+      python313Packages.nbformat            # <- ADD
+      python313Packages.nbconvert           # <- ADD
       python313Packages.pandas
       python313Packages.numpy
       python313Packages.matplotlib
