@@ -10,22 +10,43 @@ let
 
   app = "finplanner";
   finplannerPort = "7111";
+
+  pythonKernelSpec = pkgs.runCommand "python-kernel-spec" {} ''
+    mkdir -p $out/share/jupyter/kernels/python3
+    cat > $out/share/jupyter/kernels/python3/kernel.json << EOF
+    {
+      "argv": [
+        "${pkgs.python313}/bin/python",
+        "-m",
+        "ipykernel_launcher",
+        "-f",
+        "{connection_file}"
+      ],
+      "display_name": "Python 3",
+      "language": "python",
+      "metadata": {
+        "debugger": true
+      }
+    }
+    EOF
+  '';
   
   # build the custom Jupyter image with all dependencies
   finplannerImage = pkgs.dockerTools.buildLayeredImage {
     name = "finplanner";
     tag = "latest";
     contents = with pkgs; [
+      pythonKernelSpec
       python313
       python313Packages.jupyter-core
       python313Packages.jupyter
       python313Packages.jupyterlab
       python313Packages.ipykernel
-      python313Packages.jupyter-client      # <- ADD
-      python313Packages.jupyterlab-server   # <- ADD (might already be included)
-      python313Packages.notebook            # <- ADD
-      python313Packages.nbformat            # <- ADD
-      python313Packages.nbconvert           # <- ADD
+      python313Packages.jupyter-client
+      python313Packages.jupyterlab-server
+      python313Packages.notebook
+      python313Packages.nbformat
+      python313Packages.nbconvert
       python313Packages.pandas
       python313Packages.numpy
       python313Packages.matplotlib
