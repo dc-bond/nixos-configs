@@ -5,13 +5,16 @@
   configVars,
   ...
 }:
+
 let
   app = "finplanner";
   appPort = 8501;
   gitRepo = "https://github.com/dc-bond/finplanner";
   repoDir = "/var/lib/${app}";
 in
+
 {
+
   virtualisation.oci-containers.containers."${app}" = {
     image = "${app}:latest";
     autoStart = true;
@@ -21,18 +24,29 @@ in
       "--ip=${configVars.finplannerIp}"
       "--tty=true"
       "--stop-signal=SIGINT"
-      #"--no-healthcheck"
     ];
     labels = {
       "traefik.enable" = "true";
       "traefik.http.routers.${app}.entrypoints" = "websecure";
-      "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
+      "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain1}`)";
       "traefik.http.routers.${app}.tls" = "true";
       "traefik.http.routers.${app}.tls.options" = "tls-13@file";
       "traefik.http.routers.${app}.middlewares" = "trusted-allow@file,secure-headers@file";
       "traefik.http.services.${app}.loadbalancer.server.port" = "8501";
     };
   };
+
+  services.authelia.instances."${configVars.domain1Short}".settings.access_control.rules = [
+    {
+      domain = [ "${app}.${configVars.domain1}" ];
+      subject = [ # only allow the following users to access finplanner and only require one factor
+        "user:admin"
+        "user:danielle-bond"
+      ];
+      policy = "one_factor";
+    }
+  ];
+
   
   systemd = {
     services = {
@@ -114,5 +128,7 @@ in
       };
       wantedBy = ["multi-user.target"];
     };
+
   };
+
 }
