@@ -21,6 +21,7 @@ in
       "--ip=${configVars.finplannerIp}"
       "--tty=true"
       "--stop-signal=SIGINT"
+      "--no-healthcheck"
     ];
     labels = {
       "traefik.enable" = "true";
