@@ -1,93 +1,27 @@
-{ 
+{
   config,
   lib,
-  pkgs, 
+  pkgs,
   configVars,
-  ... 
-}: 
+  ...
+}:
 
 let
-
   app = "finplanner";
-  finplannerPort = "7111";
-
-  # build the custom Jupyter image with all dependencies
-  finplannerImage = pkgs.dockerTools.buildLayeredImage {
-    name = "finplanner";
-    tag = "latest";
-    contents = with pkgs; [
-      pythonKernelSpec
-      python313
-      python313Packages.jupyter-core
-      python313Packages.jupyter
-      python313Packages.jupyterlab
-      python313Packages.ipykernel
-      python313Packages.jupyter-client
-      python313Packages.jupyterlab-server
-      python313Packages.notebook
-      python313Packages.nbformat
-      python313Packages.nbconvert
-      python313Packages.pandas
-      python313Packages.numpy
-      python313Packages.matplotlib
-      python313Packages.scipy
-      python313Packages.ipywidgets
-      python313Packages.beancount
-      python313Packages.pyyaml
-      coreutils
-      bash
-    ];
-    config = {
-      Cmd = [ 
-        "/bin/jupyter-lab"
-        "--ip=0.0.0.0"
-        "--port=${finplannerPort}"
-        "--no-browser"
-        "--allow-root"
-        "--NotebookApp.token=''"
-        "--NotebookApp.password=''"
-      ];
-      Env = [
-        "JUPYTER_ENABLE_LAB=yes" # use JupyterLab interface (not classic)
-      ];
-      WorkingDir = "/work"; # default directory when Jupyter starts
-      ExposedPorts = {
-        "${finplannerPort}/tcp" = {};
-      };
-    };
-  };
-
+  appPort = 8501;
+  gitRepo = "https://github.com/dc-bond/finplanner";
+  repoDir = "/var/lib/${app}";
 in
 
 {
 
-  # load the nix-built image into docker
-  systemd.services."docker-load-${app}-image" = {
-    description = "Load custom Jupyter Docker image from Nix";
-    wantedBy = [ "docker-${app}.service" ];
-    before = [ "docker-${app}.service" ];
-    after = [ "docker.service" ];
-    requires = [ "docker.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
-    script = ''
-      ${pkgs.docker}/bin/docker load < ${finplannerImage}
-    '';
-  };
-
   virtualisation.oci-containers.containers."${app}" = {
-    image = "finplanner:latest";
+    image = "localhost/${app}:latest";
     autoStart = true;
     log-driver = "journald";
-    volumes = [
-      "/var/lib/nextcloud/data/Chris Bond/files/Bond Family/Financial/bond-ledger/finplanner:/work"
-      "/var/lib/nextcloud/data/Chris Bond/files/Bond Family/Financial/bond-ledger:/beancount:ro"
-    ];
     extraOptions = [
       "--network=${app}"
-      "--ip=${configVars.finplannerIp}"
+      "--ip=${configVars.${app}Ip}"
       "--tty=true"
       "--stop-signal=SIGINT"
     ];
@@ -98,12 +32,36 @@ in
       "traefik.http.routers.${app}.tls" = "true";
       "traefik.http.routers.${app}.tls.options" = "tls-13@file";
       "traefik.http.routers.${app}.middlewares" = "trusted-allow@file,secure-headers@file";
-      "traefik.http.services.${app}.loadbalancer.server.port" = finplannerPort;
+      "traefik.http.services.${app}.loadbalancer.server.port" = toString appPort;
     };
   };
 
   systemd = {
-    services = { 
+    services = {
+      "docker-clone-${app}" = {
+        description = "clone ${app} repository";
+        path = [pkgs.git pkgs.coreutils];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = "${pkgs.bash}/bin/bash -c 'if [ ! -d ${repoDir} ]; then ${pkgs.git}/bin/git clone ${gitRepo} ${repoDir}; else cd ${repoDir} && ${pkgs.git}/bin/git pull; fi'";
+        };
+        before = ["docker-build-${app}.service"];
+      };
+
+      "docker-build-${app}" = {
+        description = "build ${app} docker image";
+        path = [pkgs.docker];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.docker}/bin/docker build -t ${app}:latest ${repoDir}";
+          ExecStartPost = "${pkgs.bash}/bin/bash -c 'rm -rf ${repoDir}'";
+        };
+        after = ["docker-clone-${app}.service"];
+        requires = ["docker-clone-${app}.service"];
+        before = ["docker-${app}.service"];
+      };
+
       "docker-${app}" = {
         serviceConfig = {
           Restart = lib.mkOverride 500 "always";
@@ -113,19 +71,16 @@ in
         };
         after = [
           "docker-network-${app}.service"
-          "docker-load-${app}-image.service"
+          "docker-build-${app}.service"
         ];
         requires = [
           "docker-network-${app}.service"
-          "docker-load-${app}-image.service"
+          "docker-build-${app}.service"
         ];
-        partOf = [
-          "docker-${app}-root.target"
-        ];
-        wantedBy = [
-          "docker-${app}-root.target"
-        ];
+        partOf = ["docker-${app}-root.target"];
+        wantedBy = ["docker-${app}-root.target"];
       };
+
       "docker-network-${app}" = {
         path = [pkgs.docker];
         serviceConfig = {
@@ -134,18 +89,18 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
         };
         script = ''
-          docker network inspect ${app} || docker network create --subnet ${configVars.finplannerSubnet} --driver bridge --scope local --attachable ${app}
+          docker network inspect ${app} || docker network create --subnet ${configVars.${app}Subnet} --driver bridge --scope local --attachable ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
       };
     };
+
     targets."docker-${app}-root" = {
       unitConfig = {
-        Description = "root target for docker-${app} with custom Nix-built image";
+        Description = "root target for docker-${app}";
       };
       wantedBy = ["multi-user.target"];
     };
-  }; 
-  
+  };
 }
