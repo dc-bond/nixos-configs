@@ -42,6 +42,7 @@ in
       subject = [ # only allow the following users to access finplanner and only require one factor
         "user:admin"
         "user:danielle-bond"
+        "user:guest-2025"
       ];
       policy = "one_factor";
     }
