@@ -29,7 +29,7 @@ in
       "traefik.http.routers.${app}.tls" = "true";
       "traefik.http.routers.${app}.tls.options" = "tls-13@file";
       "traefik.http.routers.${app}.middlewares" = "trusted-allow@file,secure-headers@file";
-      "traefik.http.services.${app}.loadbalancer.server.port" = toString appPort;
+      "traefik.http.services.${app}.loadbalancer.server.port" = "8501";
     };
   };
   
@@ -49,8 +49,8 @@ in
             cd ${repoDir} && ${pkgs.git}/bin/git pull
           fi
         '';
-        wantedBy = ["docker-${app}-root.target"];  # Added this
-        partOf = ["docker-${app}-root.target"];     # Added this
+        wantedBy = ["docker-${app}-root.target"]; 
+        partOf = ["docker-${app}-root.target"]; 
       };
       
       "docker-build-${app}" = {
@@ -66,9 +66,9 @@ in
           rm -rf ${repoDir}
         '';
         after = ["docker-clone-${app}.service" "docker.service"];
-        requires = ["docker-clone-${app}.service" "docker.service"];  # requires was already here
-        wantedBy = ["docker-${app}-root.target"];  # Added this
-        partOf = ["docker-${app}-root.target"];     # Added this
+        requires = ["docker-clone-${app}.service" "docker.service"];
+        wantedBy = ["docker-${app}-root.target"];
+        partOf = ["docker-${app}-root.target"];
       };
       
       "docker-${app}" = {
