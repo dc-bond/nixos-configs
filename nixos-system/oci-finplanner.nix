@@ -37,13 +37,20 @@ in
     services = {
       "docker-clone-${app}" = {
         description = "clone ${app} repository";
-        path = [pkgs.git pkgs.coreutils];
+        path = [pkgs.git pkgs.coreutils pkgs.bash];
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
-          ExecStart = "${pkgs.bash}/bin/bash -c 'if [ ! -d ${repoDir} ]; then ${pkgs.git}/bin/git clone ${gitRepo} ${repoDir}; else cd ${repoDir} && ${pkgs.git}/bin/git pull; fi'";
         };
-        before = ["docker-build-${app}.service"];
+        script = ''
+          if [ ! -d ${repoDir} ]; then
+            ${pkgs.git}/bin/git clone ${gitRepo} ${repoDir}
+          else
+            cd ${repoDir} && ${pkgs.git}/bin/git pull
+          fi
+        '';
+        wantedBy = ["docker-${app}-root.target"];  # Added this
+        partOf = ["docker-${app}-root.target"];     # Added this
       };
       
       "docker-build-${app}" = {
@@ -54,14 +61,14 @@ in
           RemainAfterExit = true;
         };
         script = ''
-          set -e  # Exit on any error
+          set -e
           docker build -t ${app}:latest ${repoDir}
-          # Only remove repo if build succeeded
           rm -rf ${repoDir}
         '';
         after = ["docker-clone-${app}.service" "docker.service"];
-        requires = ["docker-clone-${app}.service" "docker.service"];
-        before = ["docker-${app}.service"];
+        requires = ["docker-clone-${app}.service" "docker.service"];  # requires was already here
+        wantedBy = ["docker-${app}-root.target"];  # Added this
+        partOf = ["docker-${app}-root.target"];     # Added this
       };
       
       "docker-${app}" = {
