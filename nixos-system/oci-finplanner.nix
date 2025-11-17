@@ -31,7 +31,7 @@ in
       "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain1}`)";
       "traefik.http.routers.${app}.tls" = "true";
       "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-      "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
+      "traefik.http.routers.${app}.middlewares" = "authelia-dcbond@file,secure-headers@file";
       "traefik.http.services.${app}.loadbalancer.server.port" = "8501";
     };
   };
