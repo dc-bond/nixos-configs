@@ -5,18 +5,15 @@
   configVars,
   ...
 }:
-
 let
   app = "finplanner";
   appPort = 8501;
   gitRepo = "https://github.com/dc-bond/finplanner";
   repoDir = "/var/lib/${app}";
 in
-
 {
-
   virtualisation.oci-containers.containers."${app}" = {
-    image = "localhost/${app}:latest";
+    image = "${app}:latest";
     autoStart = true;
     log-driver = "journald";
     extraOptions = [
@@ -35,7 +32,7 @@ in
       "traefik.http.services.${app}.loadbalancer.server.port" = toString appPort;
     };
   };
-
+  
   systemd = {
     services = {
       "docker-clone-${app}" = {
@@ -48,20 +45,25 @@ in
         };
         before = ["docker-build-${app}.service"];
       };
-
+      
       "docker-build-${app}" = {
         description = "build ${app} docker image";
-        path = [pkgs.docker];
+        path = [pkgs.docker pkgs.bash];
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${pkgs.docker}/bin/docker build -t ${app}:latest ${repoDir}";
-          ExecStartPost = "${pkgs.bash}/bin/bash -c 'rm -rf ${repoDir}'";
+          RemainAfterExit = true;
         };
-        after = ["docker-clone-${app}.service"];
-        requires = ["docker-clone-${app}.service"];
+        script = ''
+          set -e  # Exit on any error
+          docker build -t ${app}:latest ${repoDir}
+          # Only remove repo if build succeeded
+          rm -rf ${repoDir}
+        '';
+        after = ["docker-clone-${app}.service" "docker.service"];
+        requires = ["docker-clone-${app}.service" "docker.service"];
         before = ["docker-${app}.service"];
       };
-
+      
       "docker-${app}" = {
         serviceConfig = {
           Restart = lib.mkOverride 500 "always";
@@ -80,7 +82,7 @@ in
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
       };
-
+      
       "docker-network-${app}" = {
         path = [pkgs.docker];
         serviceConfig = {
@@ -91,11 +93,13 @@ in
         script = ''
           docker network inspect ${app} || docker network create --subnet ${configVars.finplannerSubnet} --driver bridge --scope local --attachable ${app}
         '';
+        after = ["docker.service"];
+        requires = ["docker.service"];
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
       };
     };
-
+    
     targets."docker-${app}-root" = {
       unitConfig = {
         Description = "root target for docker-${app}";
