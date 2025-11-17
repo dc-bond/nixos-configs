@@ -21,7 +21,7 @@ in
     log-driver = "journald";
     extraOptions = [
       "--network=${app}"
-      "--ip=${configVars.${app}Ip}"
+      "--ip=${configVars.finplannerIp}"
       "--tty=true"
       "--stop-signal=SIGINT"
     ];
@@ -89,7 +89,7 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
         };
         script = ''
-          docker network inspect ${app} || docker network create --subnet ${configVars.${app}Subnet} --driver bridge --scope local --attachable ${app}
+          docker network inspect ${app} || docker network create --subnet ${configVars.finplannerSubnet} --driver bridge --scope local --attachable ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
