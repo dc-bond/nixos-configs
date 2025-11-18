@@ -28,11 +28,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1763429982,
-        "narHash": "sha256-hVPNairJdjQbLZCs2yR8L6Pm8QOSWjKw40/cG9vSkYQ=",
+        "lastModified": 1763478800,
+        "narHash": "sha256-hXrzfBSuiRDR1kX/qybbQSbvp7nS7Cn32VkGcQB92/w=",
         "owner": "dc-bond",
         "repo": "finplanner",
-        "rev": "809c7d675c86317f34a63ac2728c4cb40fa8afe6",
+        "rev": "4177347111e8a9e2560a3853f028c1ef19dde986",
         "type": "github"
       },
       "original": {
