@@ -27,6 +27,10 @@
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    finplanner = {
+      url = "github:dc-bond/finplanner";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { 

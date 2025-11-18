@@ -100,6 +100,7 @@
       "nixos-system/stirling-pdf.nix"
       "nixos-system/dcbond-root.nix"
       "nixos-system/ollama.nix"
+      "nixos-system/finplanner.nix"
       "nixos-system/oci-containers.nix"
       "nixos-system/oci-fava.nix"
       "nixos-system/oci-media-server.nix" # requires nvidia.nix
