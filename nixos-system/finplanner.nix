@@ -6,13 +6,17 @@
   ... 
 }: 
 
+let
+  app = "finplanner";
+in
+
 {
 
   imports = [ inputs.finplanner.nixosModules.default ];
   
   services = {
 
-    finplanner = {
+    ${app} = {
       enable = true;
       port = 8502;
       address = "127.0.0.1";
@@ -21,7 +25,7 @@
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];
-        rule = "Host(`finplanner.${configVars.domain2}`)";
+        rule = "Host(`${app}.${configVars.domain2}`)";
         service = "${app}";
         middlewares = [
           "secure-headers"
