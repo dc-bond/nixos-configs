@@ -9,6 +9,8 @@
   services = {
     samba = {
       enable = true;
+      nmbd.enable = false;
+      winbindd.enable = false;
       openFirewall = false; # tailscale access only
       settings = {
         global = {
