@@ -94,7 +94,7 @@ in
         PHOTOPRISM_SITE_CAPTION = "Bond Private Family Photo and Video Server";
         PHOTOPRISM_SITE_DESCRIPTION = "Bond Family Photos and Videos";
         PHOTOPRISM_SITE_AUTHOR = "${configVars.chrisFullName}";
-        PHOTOPRISM_THUMB_UNCACHED: "true"
+        PHOTOPRISM_THUMB_UNCACHED = "true";
         NVIDIA_VISIBLE_DEVICES = "all";
         PHOTOPRISM_INDEX_SCHEDULE = "";
       };
