@@ -22,7 +22,7 @@
           "map to guest" = "never";
         };
         "media-uploads" = {
-          "path" = "/srv/samba/media-uploads";
+          "path" = "${config.hostSpecificConfigs.storageDrive1}/samba/media-uploads";
           "browseable" = "yes";
           "writable" = "yes";
           "guest ok" = "no";
@@ -31,7 +31,7 @@
           "valid users" = "samba-uploader";
         };
         "general-uploads" = {
-          "path" = "/srv/samba/general-uploads";
+          "path" = "${config.hostSpecificConfigs.storageDrive1}/samba/general-uploads";
           "browseable" = "yes";
           "writable" = "yes";
           "guest ok" = "no";
@@ -46,8 +46,8 @@
   systemd = {
 
     tmpfiles.rules = [
-      "d /srv/samba/media-uploads 0755 samba-uploader samba-uploader -"
-      "d /srv/samba/general-uploads 0755 samba-uploader samba-uploader -"
+      "d ${config.hostSpecificConfigs.storageDrive1}/samba/media-uploads 0755 samba-uploader samba-uploader -"
+      "d ${config.hostSpecificConfigs.storageDrive1}/samba/general-uploads 0755 samba-uploader samba-uploader -"
     ];
 
     services.samba-setup-password = {

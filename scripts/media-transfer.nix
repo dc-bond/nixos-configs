@@ -14,7 +14,7 @@ let
     #!/bin/bash
 
     # Configuration
-    DIR_A="/var/lib/nextcloud/data/Chris Bond/files/Bond Family/media-transfer"  # Directory containing original files to be processed
+    DIR_A="${config.hostSpecificConfigs.storageDrive1}/samba/media-uploads"  # Samba share for mobile uploads
     DIR_B="${config.hostSpecificConfigs.storageDrive1}/media/media-transfer-review"  # Directory for manual review after processing
     DIR_C="${config.hostSpecificConfigs.storageDrive1}/media/family-media"  # Directory for final disposition of processed photos and videos
     EMAIL_CONTENT_FILE="${config.hostSpecificConfigs.storageDrive1}/media/email_content.txt"
@@ -163,10 +163,6 @@ let
         log_info "results.txt does not exist or has already been removed."
     fi
 
-    # Update nextcloud database to ensure deleted files are accounted for
-    log_info "Updating Nextcloud database to ensure deleted files are accounted for..."
-    ${lib.getExe config.services.nextcloud.occ} files:scan --all
-    
     # Generate a date-time string for email subject
     CURRENT_DATETIME=$(date "+%Y-%m-%d %H:%M:%S")
 
@@ -204,6 +200,10 @@ let
         log_info "No files were processed. No email will be sent."
     fi
   '';
+    #DIR_A="/var/lib/nextcloud/data/Chris Bond/files/Bond Family/media-transfer"  # Directory containing original files to be processed
+    ## Update nextcloud database to ensure deleted files are accounted for
+    #log_info "Updating Nextcloud database to ensure deleted files are accounted for..."
+    #${lib.getExe config.services.nextcloud.occ} files:scan --all
 
 in
 
