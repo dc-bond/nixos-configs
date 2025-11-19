@@ -83,6 +83,7 @@
       "nixos-system/backups.nix"
       "nixos-system/sops.nix"
       "nixos-system/nvidia.nix"
+      "nixos-system/samba.nix"
 
       "nixos-system/postgresql.nix"
       "nixos-system/monitoring-server.nix"
