@@ -6,6 +6,8 @@
 
 {
 
+  sops.secrets.sambaPasswd = {};
+
   services = {
     samba = {
       enable = true;
@@ -26,23 +28,51 @@
           "guest ok" = "no";
           "create mask" = "0644";
           "directory mask" = "0755";
-          "valid users" = "media-uploader";
+          "valid users" = "samba-uploader";
+        };
+        "general-uploads" = {
+          "path" = "/srv/samba/general-uploads";
+          "browseable" = "yes";
+          "writable" = "yes";
+          "guest ok" = "no";
+          "create mask" = "0644";
+          "directory mask" = "0755";
+          "valid users" = "samba-uploader";
         };
       };
     };
   };
 
-  systemd.tmpfiles.rules = [
-    "d /srv/samba/media-uploads 0755 media-uploader media-uploader -"
-  ];
+  systemd = {
+
+    tmpfiles.rules = [
+      "d /srv/samba/media-uploads 0755 samba-uploader samba-uploader -"
+      "d /srv/samba/general-uploads 0755 samba-uploader samba-uploader -"
+    ];
+
+    services.samba-setup-password = {
+      description = "set samba user password";
+      after = [ "samba-smbd.service" "systemd-tmpfiles-setup.service" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+      script = ''
+        password=$(cat ${config.sops.secrets.sambaPasswd.path})
+        (echo "$password"; echo "$password") | ${pkgs.samba}/bin/smbpasswd -a -s samba-uploader
+      '';
+    };
+
+  };
 
   users = {
-    users.media-uploader = {
+    users.samba-uploader = {
       isSystemUser = true;
-      group = "media-uploader";
-      description = "samba media-uploads directory user";
+      group = "samba-uploader";
+      description = "samba upload directory user";
     };
-    groups.media-uploader = {};
+    groups.samba-uploader = {};
   };
 
 }
