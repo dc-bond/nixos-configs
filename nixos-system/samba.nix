@@ -46,6 +46,7 @@
   systemd = {
 
     tmpfiles.rules = [
+      "d ${config.hostSpecificConfigs.storageDrive1}/samba 0755 root root -"
       "d ${config.hostSpecificConfigs.storageDrive1}/samba/media-uploads 0755 samba-uploader samba-uploader -"
       "d ${config.hostSpecificConfigs.storageDrive1}/samba/general-uploads 0755 samba-uploader samba-uploader -"
     ];
