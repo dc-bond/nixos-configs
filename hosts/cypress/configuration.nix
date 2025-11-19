@@ -98,6 +98,7 @@
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"
+      "nixos-system/usb-phone-mount.nix"
       
       "nixos-system/greetd.nix"
       "nixos-system/hyprland.nix"
