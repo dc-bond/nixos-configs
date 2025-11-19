@@ -17,7 +17,7 @@ in
   sops.secrets."${hostname}TailscaleAuthKey" = {};
 
   networking = {
-    firewall.trustedInterfaces = ["tailscale0"];
+    firewall.trustedInterfaces = [ "tailscale0" ]; # allow all ports open on tailscale interface
     nat = lib.mkIf (hostname == "aspen") {
       enable = true;
       internalInterfaces = [ "tailscale0" ];

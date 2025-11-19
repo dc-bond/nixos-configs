@@ -12,7 +12,7 @@ in
 
 {
 
-  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 3030 ]; # open loki port on tailscale interface to recieve logs pushed from other monitoring-clients (clients need to connect to server's loki port)
+  #networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 3030 ]; # open loki port on tailscale interface to recieve logs pushed from other monitoring-clients (clients need to connect to server's loki port)
 
   services = {
 

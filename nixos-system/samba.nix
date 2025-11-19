@@ -8,6 +8,8 @@
 
   sops.secrets.sambaPasswd = {};
 
+  #networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 445 ]; # open samba port on tailscale interface to recieve uploads pushed from outside clients
+
   services = {
     samba = {
       enable = true;
@@ -29,6 +31,8 @@
           "create mask" = "0644";
           "directory mask" = "0755";
           "valid users" = "samba-uploader";
+          "force user" = "chris";
+          "force group" = "users";
         };
         "general-uploads" = {
           "path" = "${config.hostSpecificConfigs.storageDrive1}/samba/general-uploads";
@@ -38,6 +42,8 @@
           "create mask" = "0644";
           "directory mask" = "0755";
           "valid users" = "samba-uploader";
+          "force user" = "chris";
+          "force group" = "users";
         };
       };
     };
@@ -46,9 +52,9 @@
   systemd = {
 
     tmpfiles.rules = [
-      "d ${config.hostSpecificConfigs.storageDrive1}/samba 0755 root root -"
-      "d ${config.hostSpecificConfigs.storageDrive1}/samba/media-uploads 0755 samba-uploader samba-uploader -"
-      "d ${config.hostSpecificConfigs.storageDrive1}/samba/general-uploads 0755 samba-uploader samba-uploader -"
+      "d ${config.hostSpecificConfigs.storageDrive1}/samba 0755 chris users -"
+      "d ${config.hostSpecificConfigs.storageDrive1}/samba/media-uploads 0755 chris users -"
+      "d ${config.hostSpecificConfigs.storageDrive1}/samba/general-uploads 0755 chris users -"
     ];
 
     services.samba-setup-password = {

@@ -12,10 +12,10 @@ in
 
 {
 
-  networking.firewall.interfaces.tailscale0.allowedTCPPorts = lib.optionals (!config.hostSpecificConfigs.isMonitoringServer) [ 
-    9100 # prometheus node exporter
-    9633 # smartctl exporter
-  ]; # monitoring-server needs to connect to these ports on monitoring-clients
+  #networking.firewall.interfaces.tailscale0.allowedTCPPorts = lib.optionals (!config.hostSpecificConfigs.isMonitoringServer) [ 
+  #  9100 # prometheus node exporter
+  #  9633 # smartctl exporter
+  #]; # monitoring-server needs to connect to these ports on monitoring-clients
 
   services = {
     
