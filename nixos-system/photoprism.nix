@@ -84,7 +84,7 @@ in
         PHOTOPRISM_DISABLE_CLASSIFICATION = "true";                                             # disables image classification (requires TensorFlow)
         PHOTOPRISM_DISABLE_RAW = "false";                                                       # disables indexing and conversion of RAW files
         PHOTOPRISM_RAW_PRESETS = "false";                                                       # enables applying user presets when converting RAW files (reduces performance)
-        PHOTOPRISM_JPEG_QUALITY = "30";                                                         # a higher value increases the quality and file size of JPEG images and thumbnails (25-100)
+        PHOTOPRISM_JPEG_QUALITY = "100";                                                        # a higher value increases the quality and file size of JPEG images and thumbnails (25-100)
         PHOTOPRISM_DETECT_NSFW = "false";                                                       # automatically flags photos as private that MAY be offensive (requires TensorFlow)
         PHOTOPRISM_UPLOAD_NSFW = "true";                                                        # allows uploads that MAY be offensive (no effect without TensorFlow)
         PHOTOPRISM_DATABASE_DRIVER = "mysql";                                                   # use MariaDB 10.5+ or MySQL 8+ instead of SQLite for improved performance
@@ -94,6 +94,7 @@ in
         PHOTOPRISM_SITE_CAPTION = "Bond Private Family Photo and Video Server";
         PHOTOPRISM_SITE_DESCRIPTION = "Bond Family Photos and Videos";
         PHOTOPRISM_SITE_AUTHOR = "${configVars.chrisFullName}";
+        PHOTOPRISM_THUMB_UNCACHED: "true"
         NVIDIA_VISIBLE_DEVICES = "all";
         PHOTOPRISM_INDEX_SCHEDULE = "";
       };

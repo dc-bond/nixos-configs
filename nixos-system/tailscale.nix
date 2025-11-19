@@ -72,3 +72,48 @@ in
   };
 
 }
+
+
+
+#{
+#  # Service to automatically retrieve Taildrop files
+#  systemd.services.taildrop-receive = {
+#    description = "Automatically receive Taildrop files";
+#    after = [ "tailscale.service" ];
+#    wants = [ "tailscale.service" ];
+#    wantedBy = [ "multi-user.target" ];
+#    
+#    serviceConfig = {
+#      Type = "simple";
+#      User = "chris";
+#      Group = "users";
+#      Restart = "always";
+#      RestartSec = "10s";
+#    };
+#    
+#    path = [ config.services.tailscale.package ];
+#    
+#    script = ''
+#      # Destination directory
+#      DEST="${config.hostSpecificConfigs.storageDrive1}/samba/media-uploads"
+#      
+#      # Poll for new files every 5 seconds
+#      while true; do
+#        # Get list of waiting files
+#        FILES=$(tailscale file get --wait --conflict=rename "$DEST" 2>&1 || true)
+#        
+#        if [[ $FILES != *"no files waiting"* ]] && [[ -n "$FILES" ]]; then
+#          echo "Received files via Taildrop: $FILES"
+#          # Your processing script could run here
+#        fi
+#        
+#        sleep 5
+#      done
+#    '';
+#  };
+#
+#  # Ensure destination directory exists
+#  systemd.tmpfiles.rules = [
+#    "d ${config.hostSpecificConfigs.storageDrive1}/samba/media-uploads 0755 chris users -"
+#  ];
+#}
