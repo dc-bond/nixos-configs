@@ -53,8 +53,6 @@ in
     after = [ "mysql.service" ];
   };
 
-  users.users.photoprism.extraGroups = [ "users" ]; # allow photoprism to write to originals directory
-
   backups.serviceHooks = {
     preHook = lib.mkAfter [
       "systemctl stop ${app}.service"
