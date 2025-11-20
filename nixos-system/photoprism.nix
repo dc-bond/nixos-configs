@@ -53,6 +53,8 @@ in
     after = [ "mysql.service" ];
   };
 
+  users.users.photoprism.extraGroups = [ "users" ]; # allow photoprism to write to originals directory
+
   backups.serviceHooks = {
     preHook = lib.mkAfter [
       "systemctl stop ${app}.service"
@@ -79,7 +81,7 @@ in
         PHOTOPRISM_LOG_LEVEL = "info";                                                          # log level: trace, debug, info, warning, error, fatal, or panic
         PHOTOPRISM_READONLY = "false";                                                          # do not modify originals directory (reduced functionality)
         PHOTOPRISM_EXPERIMENTAL = "false";                                                      # enables experimental features
-        PHOTOPRISM_DISABLE_CHOWN = "false";                                                     # disables updating storage permissions via chmod and chown on startup
+        PHOTOPRISM_DISABLE_CHOWN = "true";                                                      # disables updating storage permissions via chmod and chown on startup (manually set)
         PHOTOPRISM_DISABLE_WEBDAV = "false";                                                    # disables built-in WebDAV server
         PHOTOPRISM_DISABLE_SETTINGS = "true";                                                   # disables settings UI and API in "public" auth mode
         PHOTOPRISM_DISABLE_TENSORFLOW = "true";                                                 # disables all features depending on TensorFlow
