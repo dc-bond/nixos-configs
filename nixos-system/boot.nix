@@ -10,16 +10,16 @@
   boot = {
 
     loader = {
-      systemd-boot = lib.mkIf (lib.elem config.networking.hostName ["thinkpad" "cypress" "aspen"]) {
+      systemd-boot = lib.mkIf (config.hostSpecificConfigs.bootLoader == "systemd-boot") {
         enable = true;
         configurationLimit = 5; # only display last 5 generations
       };
-      grub = lib.mkIf (config.networking.hostName == "juniper") {
+      grub = lib.mkIf (config.hostSpecificConfigs.bootLoader == "grub") {
         enable = true;
         efiSupport = false;
         configurationLimit = 5;
       };
-      efi.canTouchEfiVariables = lib.elem config.networking.hostName ["thinkpad" "cypress" "aspen"]; # this sets to "true", while excluded systems default to "false"
+      efi.canTouchEfiVariables = config.hostSpecificConfigs.bootLoader == "systemd-boot";
     };
 
     supportedFilesystems = {
