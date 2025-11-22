@@ -19,4 +19,6 @@ creation_rules: # when sops creates/edits a secrets.yaml file it encrypts using 
         - *juniper
         - *chris-age
 
+
+# run 'age-keygen' to create private/public keypair(s); save in pass; add public key(s) above
 # run 'sops updatekeys /home/chris/nixos-configs/secrets.yaml' on the encrypted secrets file to update with new user or host encryption keys when added above

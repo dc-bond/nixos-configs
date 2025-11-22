@@ -2,10 +2,10 @@
 # update configuration.nix, disko configs, home.nix, 
 # update users.nix, greetd.nix
 # update configVars
+# add host and user age keys to sops.yaml, update keys on secrets.yaml (see notes in sops.yaml)
 # add user(s) hashed password to secrets.yaml
 # add user(s) password to pass repo
 # tailscale auth key - generate new key in console, add to secrets.yaml - key non-reusable, 90-day expiration, pre-authorized, non-ephemeral, add new tailscale IP in configVars
-
 # update deploy script
 
 
@@ -47,11 +47,11 @@
   config = {
 
     #hostSpecificConfigs = {
-    #  #primaryIp = configVars.walnutLanIp;
+    #  #primaryIp = ;
     #  #sshdPort = ; # only use tailscale ssh
     #};
 
-    networking.hostName = "walnut";
+    networking.hostName = "alder";
 
     environment.systemPackages = with pkgs; [
       age # encryption tool
@@ -85,8 +85,8 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/walnut/disk-config-btrfs-luks.nix"
-      "hosts/walnut/hardware-configuration.nix"
+      "hosts/alder/disk-config-btrfs-luks.nix"
+      "hosts/alder/hardware-configuration.nix"
       "nixos-system/boot.nix"
       "nixos-system/networking.nix"
       "nixos-system/tailscale.nix"
