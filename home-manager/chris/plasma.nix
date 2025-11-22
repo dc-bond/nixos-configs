@@ -14,7 +14,7 @@ let
     repo = "nixos-configs";
     rev = "c832b826a616ea800d29948c38967aa193a31bb1";
     sparseCheckout = [ "wallpaper" ];
-    hash = "sha256-qb6KxcuxMJxcG4KbGH2yMbqJDbGMlSF6KxuWtaPKofs=";
+    hash = "sha256-SOo9fyJZbETB4iYUnPTutgzxMmtmkyRRe0FKmJ3zNWY=";
   };
 in
 
