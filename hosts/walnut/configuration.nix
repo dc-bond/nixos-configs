@@ -1,12 +1,17 @@
-# MANUAL SETUP ON FRESH INSTALL
-#run "gpg --card-status" to register yubikey
-#clone nixos-configs and pass repos using ssh
-#bluetooth connect mouse (bluetoothctl, press pairing button, scan on, pair xx:xx, trust xx:xx, update script?)
-#nextcloud-client setup (keyring passwd?)
-#firefox setup (activate extensions, etc.)
-#vscode github authentication
-#vscode extension setup
-#tailscale auth key - remove old machine, generate new key in console, replace in secrets.yaml - key non-reusable, 90-day expiration, pre-authorized, non-ephemeral, update new tailscale IP in conficVars
+# MANUAL SETUP PRE- FRESH INSTALL
+# update configuration.nix, disko configs, home.nix, 
+# update users.nix, greetd.nix
+# update configVars
+# add user(s) hashed password to secrets.yaml
+# add user(s) password to pass repo
+# tailscale auth key - generate new key in console, add to secrets.yaml - key non-reusable, 90-day expiration, pre-authorized, non-ephemeral, add new tailscale IP in configVars
+
+# update deploy script
+
+
+# MANUAL SETUP POST- FRESH INSTALL
+# bluetooth connect mouse (bluetoothctl, press pairing button, scan on, pair xx:xx, trust xx:xx, update script)
+# firefox setup (activate extensions, etc.)
 
 { 
   inputs, 
@@ -41,12 +46,12 @@
   
   config = {
 
-    hostSpecificConfigs = {
-      primaryIp = configVars.thinkpadLanIp;
-      #sshdPort = ; # only use tailscale ssh
-    };
+    #hostSpecificConfigs = {
+    #  #primaryIp = configVars.walnutLanIp;
+    #  #sshdPort = ; # only use tailscale ssh
+    #};
 
-    networking.hostName = "thinkpad";
+    networking.hostName = "walnut";
 
     environment.systemPackages = with pkgs; [
       age # encryption tool
@@ -61,7 +66,6 @@
       unzip # utility to unzip directories
       btop # system monitor
       nmap # network scanning
-      #wgnord # nordvpn
       brightnessctl # screen brightness application
       ddcutil # query and change monitor settings using DDC/CI and USB
       i2c-tools # hardware interface tools required by ddcutil
@@ -75,14 +79,14 @@
     services.logind.lidSwitch = "ignore"; # disable suspend on laptop lid close
 
     # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
-    system.stateVersion = "23.11";
+    system.stateVersion = "25.05";
 
   };
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/thinkpad/disk-config-btrfs-luks.nix"
-      "hosts/thinkpad/hardware-configuration.nix"
+      "hosts/walnut/disk-config-btrfs-luks.nix"
+      "hosts/walnut/hardware-configuration.nix"
       "nixos-system/boot.nix"
       "nixos-system/networking.nix"
       "nixos-system/tailscale.nix"
@@ -91,8 +95,7 @@
       "nixos-system/audio.nix"
       "nixos-system/zsh.nix"
       "nixos-system/fonts.nix"
-      "nixos-system/yubikey.nix"
-      "nixos-system/printing.nix"
+      #"nixos-system/printing.nix"
       "nixos-system/misc.nix"
       "nixos-system/nixpkgs.nix"
       #"nixos-system/backups.nix"
@@ -101,12 +104,7 @@
       "nixos-system/monitoring-client.nix"
       
       "nixos-system/greetd.nix"
-      #"nixos-system/hyprland.nix"
       "nixos-system/plasma.nix"
-
-      "scripts/deploy-aspen.nix"
-      "scripts/deploy-cypress.nix"
-      "scripts/deploy-juniper.nix"
     ])
   ];
 

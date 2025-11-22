@@ -17,11 +17,13 @@
       description = "path to storage drive 1";
     };
     primaryIp = lib.mkOption {
-      type = lib.types.str;
+      type = lib.types.nullOr lib.types.str;
+      default = null;
       description = "primary ipv4 address for this host";
     };
     sshdPort = lib.mkOption {
-      type = lib.types.int;
+      type = lib.types.nullOr lib.types.int;
+      default = null;
       description = "ssh daemon port for this host";
     };
     isMonitoringServer = lib.mkOption {

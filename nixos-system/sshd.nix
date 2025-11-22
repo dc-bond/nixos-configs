@@ -6,7 +6,7 @@
 
 {
 
-  services.openssh = {
+  services.openssh = lib.mkIf (config.hostSpecificConfigs.sshdPort != null) {
     enable = true;
     ports = [ config.hostSpecificConfigs.sshdPort ];
     settings = {

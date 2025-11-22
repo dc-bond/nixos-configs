@@ -17,11 +17,13 @@
       description = "path to storage drive 1";
     };
     primaryIp = lib.mkOption {
-      type = lib.types.str;
+      type = lib.types.nullOr lib.types.str;
+      default = null;
       description = "primary ipv4 address for this host";
     };
     sshdPort = lib.mkOption {
-      type = lib.types.int;
+      type = lib.types.nullOr lib.types.int;
+      default = null;
       description = "ssh daemon port for this host";
     };
     isMonitoringServer = lib.mkOption {
@@ -36,7 +38,7 @@
     hostSpecificConfigs = {
       storageDrive1 = "/storage/WD-WX21DC86RU3P";
       primaryIp = configVars.cypressLanIp;
-      sshdPort = 28761;
+      #sshdPort = ; # only use tailscale ssh
     };
 
     fileSystems."${config.hostSpecificConfigs.storageDrive1}" = {
@@ -86,7 +88,7 @@
       "nixos-system/networking.nix"
       "nixos-system/tailscale.nix"
       "nixos-system/users.nix"
-      #"nixos-system/sshd.nix" # only use tailscale ssh
+      "nixos-system/sshd.nix"
       "nixos-system/audio.nix"
       "nixos-system/zsh.nix"
       "nixos-system/fonts.nix"

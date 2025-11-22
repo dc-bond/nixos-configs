@@ -245,10 +245,12 @@ in
       no-udp = false;
       no-tcp-relay = true; # force UDP only
       no-udp-relay = false;
-      listening-ips = [ "${config.hostSpecificConfigs.primaryIp}" ];
+      #listening-ips = [ "${config.hostSpecificConfigs.primaryIp}" ];
+      listening-ips = [ (config.hostSpecificConfigs.primaryIp or "127.0.0.1") ];
       listening-port = 3478;
       tls-listening-port = 5349;
-      relay-ips = [ "${config.hostSpecificConfigs.primaryIp}" ];
+      #relay-ips = [ "${config.hostSpecificConfigs.primaryIp}" ];
+      relay-ips = [ (config.hostSpecificConfigs.primaryIp or "127.0.0.1") ];
       min-port = 50100;
       max-port = 50200; # only anticipate a handful of concurrent calls, so only opening 100 ports which should still be on the liberal side
       use-auth-secret = true;
