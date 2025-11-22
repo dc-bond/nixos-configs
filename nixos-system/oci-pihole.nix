@@ -54,7 +54,6 @@ in
         VIRTUAL_HOST=${app}.${configVars.domain2}
       '';
     };
-        #FTLCONF_LOCAL_IPV4=${configVars.cypressLanIp}
   };
 
   virtualisation.oci-containers.containers = {

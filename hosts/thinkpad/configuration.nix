@@ -41,10 +41,10 @@
   
   config = {
 
-    hostSpecificConfigs = {
-      primaryIp = configVars.thinkpadLanIp;
-      #sshdPort = ; # only use tailscale ssh
-    };
+    #hostSpecificConfigs = {
+    #  #primaryIp = configVars.thinkpadLanIp;
+    #  #sshdPort = ; # only use tailscale ssh
+    #};
 
     networking.hostName = "thinkpad";
 

@@ -37,7 +37,7 @@
 
     hostSpecificConfigs = {
       storageDrive1 = "/storage/WD-WX21DC86RU3P";
-      primaryIp = configVars.cypressLanIp;
+      #primaryIp = configVars.cypressLanIp;
       #sshdPort = ; # only use tailscale ssh
     };
 
