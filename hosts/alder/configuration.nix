@@ -8,6 +8,7 @@
 # add user(s) password to pass repo
 # tailscale auth key - generate new key in console, add to secrets.yaml - key non-reusable, 90-day expiration, pre-authorized, non-ephemeral, add new tailscale IP in configVars
 # update deploy script
+# update wallpaper git rev and hash and save locally on deployment host
 ## MANUAL SETUP POST- FRESH INSTALL ##
 # firefox setup (activate extensions, etc.)
 
