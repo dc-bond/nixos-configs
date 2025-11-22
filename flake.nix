@@ -73,6 +73,7 @@
       cypress = mkHost "cypress" ["chris" "root"] "x86_64-linux";
       aspen = mkHost "aspen" ["chris" "root"] "x86_64-linux";
       juniper = mkHost "juniper" ["chris" "root"] "x86_64-linux";
+      alder = mkHost "alder" ["chris" "eric" "root"] "x86_64-linux";
     };
   };
 

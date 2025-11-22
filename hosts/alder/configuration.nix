@@ -1,4 +1,5 @@
 ## MANUAL SETUP PRE- FRESH INSTALL ##
+# update master flake.nix to add host
 # update configuration.nix, disko configs, home.nix, 
 # update users.nix, greetd.nix
 # update configVars
