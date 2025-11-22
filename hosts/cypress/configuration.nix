@@ -108,6 +108,7 @@
       "scripts/deploy-aspen.nix"
       "scripts/deploy-thinkpad.nix"
       "scripts/deploy-juniper.nix"
+      "scripts/deploy-alder.nix"
     ])
   ];
 

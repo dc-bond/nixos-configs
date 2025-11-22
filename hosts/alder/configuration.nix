@@ -1,4 +1,4 @@
-# MANUAL SETUP PRE- FRESH INSTALL
+## MANUAL SETUP PRE- FRESH INSTALL ##
 # update configuration.nix, disko configs, home.nix, 
 # update users.nix, greetd.nix
 # update configVars
@@ -7,10 +7,7 @@
 # add user(s) password to pass repo
 # tailscale auth key - generate new key in console, add to secrets.yaml - key non-reusable, 90-day expiration, pre-authorized, non-ephemeral, add new tailscale IP in configVars
 # update deploy script
-
-
-# MANUAL SETUP POST- FRESH INSTALL
-# bluetooth connect mouse (bluetoothctl, press pairing button, scan on, pair xx:xx, trust xx:xx, update script)
+## MANUAL SETUP POST- FRESH INSTALL ##
 # firefox setup (activate extensions, etc.)
 
 { 
