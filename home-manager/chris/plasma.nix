@@ -1,4 +1,5 @@
 { 
+  inputs,
   config,
   configVars,
   lib,
@@ -6,17 +7,6 @@
   pkgs, 
   ... 
 }: 
-
-# run "nix shell nixpkgs#nix-prefetch-github -c nix-prefetch-github dc-bond nixos-configs --rev main" to get rev and hash for most recent main branch
-let
-  wallpaperRepo = pkgs.fetchFromGitHub {
-    owner = "dc-bond";
-    repo = "nixos-configs";
-    rev = "387b367cb511982d074d0ec2138678c2ccf12d6f";
-    sparseCheckout = [ "wallpaper" ];
-    hash = "sha256-iXYBAXPntoY82dMabIui8SeZJuoA5hYX1WxQGiNncAo=";
-  };
-in
 
 {
 
@@ -293,7 +283,7 @@ in
     };
 
     workspace = {
-      wallpaperSlideShow.path = "${wallpaperRepo}/wallpaper";
+      wallpaperSlideShow.path = "${inputs.self}/wallpaper";
       cursor = {
         theme = "WhiteSur-cursors";
         size = 20;
