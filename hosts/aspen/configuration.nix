@@ -11,37 +11,16 @@
 
 {
 
-  options.hostSpecificConfigs = {
-    storageDrive1 = lib.mkOption {
-      type = lib.types.path;
-      description = "path to storage drive 1";
-    };
-    primaryIp = lib.mkOption {
-      type = lib.types.nullOr lib.types.str;
-      default = null;
-      description = "primary ipv4 address for this host";
-    };
-    sshdPort = lib.mkOption {
-      type = lib.types.nullOr lib.types.int;
-      default = null;
-      description = "ssh daemon port for this host";
-    };
-    isMonitoringServer = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "whether this host runs the central monitoring stack (prometheus, loki, grafana)";
-    };
-  };
-
   config = {
 
     hostSpecificConfigs = {
+      bootLoader = "systemd-boot";
       storageDrive1 = "/storage/WD-WCC7K4RU947F";
       primaryIp = configVars.aspenLanIp;
       sshdPort = 28766;
       isMonitoringServer = true;
     };
-
+    
     fileSystems."${config.hostSpecificConfigs.storageDrive1}" = {
       device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb";
       fsType = "ext4"; 
@@ -73,6 +52,7 @@
     (map configLib.relativeToRoot [
       "hosts/aspen/disk-config-btrfs.nix"
       "hosts/aspen/hardware-configuration.nix"
+      "nixos-system/host-config-options.nix"
       "nixos-system/boot.nix"
       "nixos-system/networking.nix"
       "nixos-system/crowdsec.nix"
