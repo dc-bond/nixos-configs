@@ -28,6 +28,9 @@
 
     hostSpecificConfigs = {
       bootLoader = "systemd-boot";
+      storageDrive1 = null;
+      primaryIp = null;
+      sshdPort = null; # only use tailscale ssh
     };
 
     networking.hostName = "alder";

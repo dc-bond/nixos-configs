@@ -24,6 +24,12 @@
       description = "ssh daemon port for this host";
     };
 
+    storageDrive1 = lib.mkOption {
+      type = lib.types.path;
+      default = null;
+      description = "path to storage drive 1";
+    };
+
     isMonitoringServer = lib.mkOption {
       type = lib.types.bool;
       default = false;
