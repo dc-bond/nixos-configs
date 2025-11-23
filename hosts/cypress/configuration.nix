@@ -85,10 +85,7 @@
       "nixos-system/greetd.nix"
       "nixos-system/hyprland.nix"
 
-      "scripts/deploy-aspen.nix"
-      "scripts/deploy-thinkpad.nix"
-      "scripts/deploy-juniper.nix"
-      "scripts/deploy-alder.nix"
+      #"scripts/deploy-alder.nix"
     ])
   ];
 
