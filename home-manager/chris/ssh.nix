@@ -43,12 +43,12 @@
         port = 22;
       };
       "cypress" = {
-        hostname = "${configVars.cypressLanIp}";
+        hostname = "${configVars.hosts.cypress.ipv4}";
         user = "${configVars.chrisUsername}";
         port = 28761;
       };
       "cypress-tailscale" = {
-        hostname = "${configVars.cypressTailscaleIp}";
+        hostname = "${configVars.hosts.cypress.tailscaleIp}";
         user = "${configVars.chrisUsername}";
         port = 22;
       };

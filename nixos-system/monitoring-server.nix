@@ -29,7 +29,7 @@ in
               labels.host = config.networking.hostName;
             }
             {
-              targets = [ "${configVars.cypressTailscaleIp}:9100" ];
+              targets = [ "${configVars.hosts.cypress.tailscaleIp}:9100" ];
               labels.host = "cypress";
             }
             {
@@ -50,7 +50,7 @@ in
               labels.host = config.networking.hostName;
             }
             {
-              targets = [ "${configVars.cypressTailscaleIp}:9633" ];
+              targets = [ "${configVars.hosts.cypress.tailscaleIp}:9633" ];
               labels.host = "cypress";
             }
             {

@@ -98,12 +98,76 @@
     -----END PGP PUBLIC KEY BLOCK-----
   '';
 
+  hosts = {
+    #aspen = {
+    #  users = [ "chris" ];
+    #  ipv4 = "192.168.1.2";
+    #  tailscaleIp = "100.68.250.108";
+    #};
+    #thinkpad = {
+    #  users = [ "chris" ];
+    #  ipv4 = "192.168.1.62";
+    #  tailscaleIp = "100.66.143.66";
+    #};
+    cypress = {
+      users = [ "chris" ];
+      ipv4 = "192.168.1.89";
+      tailscaleIp = "100.84.248.69";
+    };
+    #juniper = {
+    #  users = [ "chris" ];
+    #  ipv4 = "178.156.133.218";
+    #  tailscaleIp = "100.70.221.14";
+    #};
+    #alder = {
+    #  users = [ 
+    #    "chris" 
+    #    "eric" 
+    #  ];
+    #  ipv4 = "192.168.4.15";
+    #  tailscaleIp = null;
+    #};
+  };
+  
+  #devices = {
+  #  chrisIphone15 = {
+  #    tailscaleIp = "100.123.43.13";
+  #  };
+  #  daniellePixel7a = {
+  #    tailscaleIp = "100.91.224.34";
+  #  };
+  #  sydneyIphone6 = {
+  #    tailscaleIp = "100.122.145.11";
+  #  };
+  #  rokuGym = {
+  #    ipv4 = "192.168.4.9";
+  #  };
+  #  rokuLivingroom = {
+  #    ipv4 = "192.168.4.10";
+  #  };
+  #  unifiUsg = {
+  #    ipv4 = "192.168.1.1";
+  #  };
+  #  unifiSwitch8 = {
+  #    ipv4 = "192.168.1.199";
+  #  };
+  #  unifiSwitch8Lite = {
+  #    ipv4 = "192.168.1.151";
+  #  };
+  #  unifiUapGarage = {
+  #    ipv4 = "192.168.1.191";
+  #  };
+  #  unifiUapLivingRoom = {
+  #    ipv4 = "192.168.1.173";
+  #  };
+  #};
+
   aspenLanIp = "192.168.1.2";
   aspenTailscaleIp = "100.68.250.108";
   thinkpadLanIp = "192.168.1.62";
   thinkpadTailscaleIp = "100.66.143.66";
-  cypressLanIp = "192.168.1.89";
-  cypressTailscaleIp = "100.84.248.69";
+  #hosts.cypress.ipv4 = "192.168.1.89";
+  #hosts.cypress.tailscaleIp = "100.84.248.69";
   juniperIp = "178.156.133.218";
   juniperTailscaleIp = "100.70.221.14";
   chrisIphone15TailscaleIp = "100.123.43.13";
