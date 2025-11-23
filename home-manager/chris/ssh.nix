@@ -78,7 +78,7 @@
         port = 22;
       };
       "unifi-uap-livingroom" = {
-        hostname = "${configVars.unifiUapLivingRoomIp}";
+        hostname = "${configVars.devices.unifiUapLivingRoom.ipv4}";
         user = "dcbond";
         port = 22;
       };

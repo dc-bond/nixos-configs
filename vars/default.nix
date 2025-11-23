@@ -129,7 +129,7 @@
     #};
   };
   
-  #devices = {
+  devices = {
   #  chrisIphone15 = {
   #    tailscaleIp = "100.123.43.13";
   #  };
@@ -157,10 +157,19 @@
   #  unifiUapGarage = {
   #    ipv4 = "192.168.1.191";
   #  };
-  #  unifiUapLivingRoom = {
-  #    ipv4 = "192.168.1.173";
-  #  };
-  #};
+    unifiUapLivingRoom = {
+      ipv4 = "192.168.1.173";
+    };
+    #frontCamera = {
+    #  ipv4 = "192.168.1.132";
+    #};
+    #garageCamera = {
+    #  ipv4 = "192.168.1.131";
+    #};
+    #gymCamera = {
+    #  ipv4 = "192.168.1.30";
+    #};
+  };
 
   aspenLanIp = "192.168.1.2";
   aspenTailscaleIp = "100.68.250.108";
@@ -180,7 +189,7 @@
   unifiSwitch8Ip = "192.168.1.199";
   unifiSwitch8LiteIp = "192.168.1.151";
   unifiUapGarageIp = "192.168.1.191";
-  unifiUapLivingRoomIp = "192.168.1.173";
+  #devices.unifiUapLivingRoom.ipv4 = "192.168.1.173";
 
   frontCameraIp = "192.168.1.132";
   garageCameraIp = "192.168.1.131";
