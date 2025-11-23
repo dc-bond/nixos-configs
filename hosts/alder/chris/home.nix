@@ -8,13 +8,17 @@
   ... 
 }: 
 
+let
+  username = "chris";
+in
+
 {
   
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/chris/zsh.nix"
-      "home-manager/chris/starship.nix"
-      "home-manager/chris/neovim.nix"
+      "home-manager/${username}/zsh.nix"
+      "home-manager/${username}/starship.nix"
+      "home-manager/${username}/neovim.nix"
     ])
   ];
 
@@ -22,8 +26,8 @@
 
 # define username and home directory
   home = {
-    username = configVars.chrisUsername;
-    homeDirectory = "/home/${configVars.chrisUsername}";
+    username = username;
+    homeDirectory = "/home/${username}";
   };
 
 # define default folders in home directory

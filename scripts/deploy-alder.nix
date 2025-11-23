@@ -33,7 +33,7 @@ let
     
     # set the correct permissions
     chmod 600 "$temp/etc/age/${HOST}-age.key"
-
+    
     # create directories where sops expects to find age user keys
     install -d -m700 "$temp/home/${USER1}/.config/age"
     install -d -m700 "$temp/home/${USER2}/.config/age"
@@ -43,17 +43,23 @@ let
     chmod 600 "$temp/home/${USER1}/.config/age/${USER1}-age.key"
     pass users/${USER2}/age/private > "$temp/home/${USER2}/.config/age/${USER2}-age.key"
     chmod 600 "$temp/home/${USER2}/.config/age/${USER2}-age.key"
-
+    
+    # get UIDs from the flake configuration
+    CHRIS_UID=$(nix eval --raw ".#nixosConfigurations.${HOST}.config.users.users.${USER1}.uid")
+    ERIC_UID=$(nix eval --raw ".#nixosConfigurations.${HOST}.config.users.users.${USER2}.uid")
+    
     # move to correct directory to generate hardware-configuration.nix
     cd /home/${USER1}/nixos-configs/hosts/${HOST}
-
-    # install
+    
+    # install with proper ownership
     nix run github:nix-community/nixos-anywhere -- \
-    --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
-    --disk-encryption-keys /tmp/crypt-passwd.txt <(pass users/${USER2}/passwd) \
-    --extra-files "$temp" \
-    --flake '.#${HOST}' \
-    root@${IPV4}
+      --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
+      --disk-encryption-keys /tmp/crypt-passwd.txt <(pass users/${USER2}/passwd) \
+      --extra-files "$temp" \
+      --chown /home/${USER1} ${CHRIS_UID}:100 \
+      --chown /home/${USER2} ${ERIC_UID}:100 \
+      --flake '.#${HOST}' \
+      root@${IPV4}
   '';
 
 in

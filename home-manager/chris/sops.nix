@@ -16,7 +16,7 @@
     };
     age = {
       sshKeyPaths = [];
-      keyFile = "${config.home.homeDirectory}/.config/age/${configVars.chrisUsername}-age.key"; # sops/age will use private user age key in this location to decrypt secrets.yaml
+      keyFile = "${config.home.homeDirectory}/.config/age/${config.home.username}-age.key"; # sops/age will use private user age key in this location to decrypt secrets.yaml
     };
   };
 

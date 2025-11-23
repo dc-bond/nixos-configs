@@ -43,7 +43,7 @@
       "nixos-system/networking.nix"
       "nixos-system/crowdsec.nix"
       "nixos-system/tailscale.nix"
-      "nixos-system/users.nix"
+      "nixos-system/admin-users.nix"
       "nixos-system/sshd.nix"
       "nixos-system/backups.nix"
       "nixos-system/misc.nix"

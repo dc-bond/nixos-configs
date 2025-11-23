@@ -98,8 +98,6 @@
     -----END PGP PUBLIC KEY BLOCK-----
   '';
 
-  ericUsername = "eric";
-
   aspenLanIp = "192.168.1.2";
   aspenTailscaleIp = "100.68.250.108";
   thinkpadLanIp = "192.168.1.62";
