@@ -19,9 +19,7 @@
   config = {
 
     hostSpecificConfigs = {
-      bootLoader = "systemd-boot";
       storageDrive1 = "/storage/WD-WCC7K4RU947F";
-      isMonitoringServer = true;
     };
     
     fileSystems."${config.hostSpecificConfigs.storageDrive1}" = {

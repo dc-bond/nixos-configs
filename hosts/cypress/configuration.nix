@@ -14,7 +14,6 @@
   config = {
 
     hostSpecificConfigs = {
-      bootLoader = "systemd-boot";
       storageDrive1 = "/storage/WD-WX21DC86RU3P";
     };
 
