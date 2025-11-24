@@ -1,6 +1,7 @@
 { 
   pkgs, 
   config,
+  configVars,
   lib,
   ... 
 }: 
@@ -29,7 +30,7 @@
 
     chris = {
       isNormalUser = true;
-      uid = 1000;
+      uid = ${configVars.users.chris.uid};
       hashedPasswordFile = config.sops.secrets.chrisPasswd.path;
       extraGroups = [ "wheel" ] 
         ++ lib.optional config.hardware.i2c.enable "i2c"

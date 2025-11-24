@@ -26,8 +26,10 @@ let
       
       # Generate UID retrieval for all users
       uidEvals = lib.concatMapStringsSep "\n" (user: 
-        let upperUser = lib.toUpper user;
-        in ''${upperUser}_UID=$(nix eval --raw ".#nixosConfigurations.${hostname}.config.users.users.${user}.uid")''
+        let 
+          upperUser = lib.toUpper user;
+          uid = toString configVars.users.${user}.uid;
+        in ''${upperUser}_UID=${uid}''
       ) users;
       
       # Generate chown flags for all users
