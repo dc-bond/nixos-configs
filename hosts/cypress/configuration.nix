@@ -13,15 +13,15 @@
 
   config = {
 
-    hostSpecificConfigs = {
-      storageDrive1 = "/storage/WD-WX21DC86RU3P";
-    };
+    #hostSpecificConfigs = {
+    #  storageDrive1 = "/storage/WD-WX21DC86RU3P";
+    #};
 
-    fileSystems."${config.hostSpecificConfigs.storageDrive1}" = {
-      device = "/dev/disk/by-uuid/f3fb53cc-52fa-48e3-8cac-b69d85a8aff1";
-      fsType = "ext4"; 
-      options = [ "defaults" ];
-    };
+    #fileSystems."${config.hostSpecificConfigs.storageDrive1}" = {
+    #  device = "/dev/disk/by-uuid/f3fb53cc-52fa-48e3-8cac-b69d85a8aff1";
+    #  fsType = "ext4"; 
+    #  options = [ "defaults" ];
+    #};
 
     networking.hostName = "cypress";
 
@@ -60,7 +60,7 @@
     (map configLib.relativeToRoot [
       "hosts/cypress/disk-config-btrfs.nix"
       "hosts/cypress/hardware-configuration.nix"
-      "nixos-system/host-config-options.nix"
+      "nixos-system/storage-drives.nix"
       "nixos-system/boot.nix"
       "nixos-system/networking.nix"
       "nixos-system/tailscale.nix"

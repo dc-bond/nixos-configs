@@ -32,13 +32,13 @@
       hardware = {
         diskEncryption = false;
         enableSmartMonitoring = true;
-        storageDrives = [
-          {
+        storageDrives = {
+          data = {
             mountPoint = "/storage/WD-WCC7K4RU947F";
             uuid = "2dbedc67-9a6b-477f-a3b4-75116994d1cb";
             fsType = "ext4";
-          }
-        ];
+          };
+        };
       };
     };
 
@@ -65,8 +65,7 @@
       hardware = {
         diskEncryption = true;
         enableSmartMonitoring = true;
-        #storageDrives = [
-        #];
+        storageDrives = {};
       };
     };
     
@@ -93,13 +92,13 @@
       hardware = {
         diskEncryption = false;
         enableSmartMonitoring = true;
-        storageDrives = [
-          {
+        storageDrives = {
+          data = {
             mountPoint = "/storage/WD-WX21DC86RU3P";
             uuid = "f3fb53cc-52fa-48e3-8cac-b69d85a8aff1";
             fsType = "ext4";
-          }
-        ];
+          };
+        };
       };
     };
 
@@ -126,8 +125,7 @@
       hardware = {
         diskEncryption = false;
         enableSmartMonitoring = false;
-        #storageDrives = [
-        #];
+        storageDrives = {};
       };
     };
     
@@ -157,8 +155,7 @@
       hardware = {
         diskEncryption = true;
         enableSmartMonitoring = true;
-        #storageDrives = [
-        #];
+        storageDrives = {};
       };
     };
 

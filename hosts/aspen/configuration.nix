@@ -9,11 +9,6 @@
   ... 
 }: 
 
-#let
-#  hostData = configVars.hosts.${config.networking.hostName};
-#  storageDrive1 = builtins.head hostData.hardware.storageDrives; # first storage drive
-#in
-
 {
 
   config = {
@@ -28,12 +23,6 @@
       options = [ "defaults" ];
     };
 
-    #fileSystems."${storageDrive1.mountPoint}" = {
-    #  device = "/dev/disk/by-uuid/${storageDrive1.uuid}";
-    #  fsType = storageDrive1.fsType;
-    #  options = [ "defaults" ];
-    #};
-
     networking.hostName = "aspen";
 
     backups = {
@@ -41,13 +30,8 @@
       startTime = "*-*-* 02:05:00"; # everyday at 2:05am
     };
 
-    #backups = {
-    #  borgDir = "${storageDrive1.mountPoint}/borgbackup";
-    #  startTime = "*-*-* 02:05:00";
-    #};
 
     services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.hostSpecificConfigs.storageDrive1}/media/family-media" ]; # backup media directory outside of any individual service backup context
-    #services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${storageDrive1.mountPoint}/media/family-media" ];
 
     environment.systemPackages = with pkgs; [
       wget # download tool
