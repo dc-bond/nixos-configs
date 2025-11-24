@@ -17,6 +17,8 @@ let
   app6 = "jellyseerr";
   app7 = "jellyfin";
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
+  hostData = configVars.hosts.${config.networking.hostName};
+  storage = hostData.hardware.storageDrives.data;
   recoveryPlan = {
     serviceName = "${app}";
     localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
@@ -143,7 +145,7 @@ in
       autoStart = true;
       volumes = [ 
         "${app2}:/config" 
-        "${config.hostSpecificConfigs.storageDrive1}/media/usenet:/media/usenet:rw" # bind mount for downloads
+        "${storage.mountPoint}/media/usenet:/media/usenet:rw" # bind mount for downloads
       ];
       environment = {
         PUID = "0";
@@ -164,7 +166,7 @@ in
       autoStart = true;
       volumes = [ 
         "${app3}:/config" 
-        "${config.hostSpecificConfigs.storageDrive1}/media:/media:rw" # bind mount for media access
+        "${storage.mountPoint}/media:/media:rw" # bind mount for media access
       ];
       environment = {
         PUID = "0";
@@ -185,7 +187,7 @@ in
       autoStart = true;
       volumes = [ 
         "${app4}:/config" 
-        "${config.hostSpecificConfigs.storageDrive1}/media:/media:rw" # bind mount for media access
+        "${storage.mountPoint}/media:/media:rw" # bind mount for media access
       ];
       environment = {
         PUID = "0";
@@ -238,10 +240,10 @@ in
       environment = { NVIDIA_VISIBLE_DEVICES = "all"; }; # enable GPU utilization
       volumes = [ 
         "${app7}:/config" 
-        "${config.hostSpecificConfigs.storageDrive1}/media/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
-        "${config.hostSpecificConfigs.storageDrive1}/media/movies:/data/movies:ro" # ditto for movies
-        "${config.hostSpecificConfigs.storageDrive1}/media/music:/data/music:ro" # ditto for music
-        "${config.hostSpecificConfigs.storageDrive1}/media/yt-downloads:/data/yt-downloads:ro" # ditto for youtube downloads
+        "${storage.mountPoint}/media/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
+        "${storage.mountPoint}/media/movies:/data/movies:ro" # ditto for movies
+        "${storage.mountPoint}/media/music:/data/music:ro" # ditto for music
+        "${storage.mountPoint}/media/yt-downloads:/data/yt-downloads:ro" # ditto for youtube downloads
       ];
       log-driver = "journald";
       dependsOn = ["${app1}"];

@@ -9,6 +9,8 @@
 let
   #app = "calibre-server";
   app2 = "calibre-web";
+  hostData = configVars.hosts.${config.networking.hostName};
+  storage = hostData.hardware.storageDrives.data;
 in
 
 {
@@ -18,7 +20,7 @@ in
     #"${app}" = {
     #  enable = true;
     #  port = 7189;
-    #  libraries = [ "${config.hostSpecificConfigs.storageDrive1}/media/ebooks/calibre/" ];
+    #  libraries = [ "${storage.mountPoint}/media/ebooks/calibre/" ];
     #};
 
     "${app2}" = {
@@ -31,7 +33,7 @@ in
       };
       options = {
         reverseProxyAuth.enable = true;
-        calibreLibrary = "${config.hostSpecificConfigs.storageDrive1}/media/ebooks/calibre/";
+        calibreLibrary = "${storage.mountPoint}/media/ebooks/calibre/";
         enableBookUploading = true;
       };
     };

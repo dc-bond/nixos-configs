@@ -11,6 +11,8 @@ let
 
   app = "photoprism";
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
+  hostData = configVars.hosts.${config.networking.hostName};
+  storage = hostData.hardware.storageDrives.data;
   recoveryPlan = {
     serviceName = "${app}";
     localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
@@ -69,7 +71,7 @@ in
     ${app} = {
       enable = true;
       address = "127.0.0.1";
-      originalsPath = "${config.hostSpecificConfigs.storageDrive1}/media/family-media";
+      originalsPath = "${storage.mountPoint}/media/family-media";
       passwordFile = "${config.sops.secrets.photoprismAdminPasswd.path}";
       settings = {
         PHOTOPRISM_AUTH_MODE = "public";                                                        # authentication mode (public, password)

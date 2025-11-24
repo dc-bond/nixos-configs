@@ -9,29 +9,23 @@
   ... 
 }: 
 
+let
+  hostData = configVars.hosts.${config.networking.hostName};
+  storage = hostData.hardware.storageDrives.data;
+in
+
 {
 
   config = {
 
-    hostSpecificConfigs = {
-      storageDrive1 = "/storage/WD-WCC7K4RU947F";
-    };
-    
-    fileSystems."${config.hostSpecificConfigs.storageDrive1}" = {
-      device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb";
-      fsType = "ext4"; 
-      options = [ "defaults" ];
-    };
-
     networking.hostName = "aspen";
 
     backups = {
-      borgDir = "${config.hostSpecificConfigs.storageDrive1}/borgbackup"; # host-specific borg backup directory override on backups.nix
+      borgDir = "${storage.mountPoint}/borgbackup"; # host-specific borg backup directory override on backups.nix
       startTime = "*-*-* 02:05:00"; # everyday at 2:05am
     };
 
-
-    services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.hostSpecificConfigs.storageDrive1}/media/family-media" ]; # backup media directory outside of any individual service backup context
+    services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${storage.mountPoint}/media/family-media" ]; # backup media directory outside of any individual service backup context
 
     environment.systemPackages = with pkgs; [
       wget # download tool
@@ -49,7 +43,7 @@
     (map configLib.relativeToRoot [
       "hosts/aspen/disk-config-btrfs.nix"
       "hosts/aspen/hardware-configuration.nix"
-      "nixos-system/host-config-options.nix"
+      "nixos-system/storage-drives.nix"
       "nixos-system/boot.nix"
       "nixos-system/networking.nix"
       "nixos-system/crowdsec.nix"

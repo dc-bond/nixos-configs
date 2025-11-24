@@ -8,6 +8,8 @@
 
 let
   app = "frigate";
+  hostData = configVars.hosts.${config.networking.hostName};
+  storage = hostData.hardware.storageDrives.data;
 in
 
 {
@@ -199,7 +201,7 @@ in
       volumes = [ 
         "/etc/localtime:/etc/localtime:ro" 
         "/etc/${app}.yml:/config/config.yml:ro"
-        "${config.hostSpecificConfigs.storageDrive1}/media/security-cameras:/media/frigate"
+        "${storage.mountPoint}/media/security-cameras:/media/frigate"
         "${app}:/sqlite"
       ]; 
       extraOptions = [
