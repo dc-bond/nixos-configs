@@ -43,22 +43,22 @@
         port = 22;
       };
       "cypress" = {
-        hostname = configVars.hosts.cypress.ipv4;
+        hostname = configVars.hosts.cypress.networking.ipv4;
         user = config.home.username;
         port = 28761;
       };
       "cypress-tailscale" = {
-        hostname = configVars.hosts.cypress.tailscaleIp;
+        hostname = configVars.hosts.cypress.networking.tailscaleIp;
         user = config.home.username;
         port = 22;
       };
       "thinkpad" = {
-        hostname = configVars.hosts.thinkpad.ipv4;
+        hostname = configVars.hosts.thinkpad.networking.ipv4;
         user = config.home.username;
         port = 28765;
       };
       "thinkpad-tailscale" = {
-        hostname = configVars.hosts.thinkpad.tailscaleIp;
+        hostname = configVars.hosts.thinkpad.networking.tailscaleIp;
         user = config.home.username;
         port = 22;
       };
@@ -73,7 +73,7 @@
         port = 22;
       };
       "alder-tailscale" = {
-        hostname = configVars.hosts.alder.tailscaleIp;
+        hostname = configVars.hosts.alder.networking.tailscaleIp;
         user = config.home.username;
         port = 22;
       };

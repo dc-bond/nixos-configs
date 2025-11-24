@@ -13,7 +13,7 @@
       isMonitoringServer = true;
       networking = {
         sshPort = 28766;
-        useResolved = false;
+        useResolved = false; # runs pihole
         ethernetInterface = "enp4s0";
         wifiInterface = null;
         dockInterface = null;
@@ -34,15 +34,47 @@
 
     thinkpad = {
       users = [ "chris" ];
-      ipv4 = "192.168.1.62";
-      tailscaleIp = "100.66.143.66";
-      diskEncryption = true;
+      bootLoader = "systemd-boot";
+      isMonitoringServer = false;
+      networking = {
+        sshPort = null; # only use tailscale ssh
+        useResolved = true;
+        ethernetInterface = "enp0s31f6";
+        wifiInterface = "wlan0";
+        dockInterface = "enp0s20f0u2u1u2";
+        ipv4 = "192.168.1.62";
+        tailscaleIp = "100.66.143.66";
+      };
+      hardware = {
+        diskEncryption = true;
+        #storageDrives = [
+        #];
+      };
     };
+    
     cypress = {
       users = [ "chris" ];
-      ipv4 = "192.168.1.89";
-      tailscaleIp = "100.84.248.69";
-      diskEncryption = false;
+      bootLoader = "systemd-boot";
+      isMonitoringServer = false;
+      networking = {
+        sshPort = null; # only use tailscale ssh
+        useResolved = true;
+        ethernetInterface = "enp1s0";
+        wifiInterface = null;
+        dockInterface = null;
+        ipv4 = "192.168.1.89";
+        tailscaleIp = "100.84.248.69";
+      };
+      hardware = {
+        diskEncryption = false;
+        storageDrives = [
+          {
+            mountPoint = "/storage/WD-WX21DC86RU3P";
+            uuid = "f3fb53cc-52fa-48e3-8cac-b69d85a8aff1";
+            fsType = "ext4";
+          }
+        ];
+      };
     };
 
     juniper = {
@@ -50,7 +82,7 @@
       bootLoader = "grub";
       isMonitoringServer = false;
       networking = {
-        sshPort = 28766;
+        sshPort = 28764;
         useResolved = true;
         ethernetInterface = "enp1s0";
         wifiInterface = null;
@@ -60,8 +92,8 @@
       };
       hardware = {
         diskEncryption = false;
-        storageDrives = [
-        ];
+        #storageDrives = [
+        #];
       };
     };
     
@@ -70,10 +102,24 @@
         "chris" 
         "eric" 
       ];
-      ipv4 = "192.168.4.15";
-      tailscaleIp = null;
-      diskEncryption = true;
+      bootLoader = "systemd-boot";
+      isMonitoringServer = false;
+      networking = {
+        sshPort = null;
+        useResolved = true;
+        ethernetInterface = null;
+        wifiInterface = "wlp1s0";
+        dockInterface = null;
+        ipv4 = "192.168.4.15";
+        tailscaleIp = null;
+      };
+      hardware = {
+        diskEncryption = true;
+        #storageDrives = [
+        #];
+      };
     };
+
   };
   
   devices = {

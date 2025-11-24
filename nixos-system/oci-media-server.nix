@@ -68,8 +68,8 @@ in
   services.traefik.dynamicConfigOptions.http.middlewares.jellyfin-trusted-allow.ipAllowList.sourceRange = [
     "192.168.1.0/24" # home LAN including aspen services (e.g. uptime kuma)
     "192.168.4.0/27" # iot VLAN (e.g. rokus)
-    "${configVars.hosts.thinkpad.tailscaleIp}" # thinkpad tailscale IP
-    "${configVars.hosts.cypress.tailscaleIp}" # cypress tailscale IP
+    "${configVars.hosts.thinkpad.networking.tailscaleIp}" # thinkpad tailscale IP
+    "${configVars.hosts.cypress.networking.tailscaleIp}" # cypress tailscale IP
     "${configVars.devices.chrisIphone15.tailscaleIp}" # chris iPhone tailscale IP
     "${configVars.devices.daniellePixel7a.tailscaleIp}" # danielle pixel 7a tailscale IP
     "${configVars.devices.sydneyIphone6.tailscaleIp}" # sydney iphone 6 tailscale IP

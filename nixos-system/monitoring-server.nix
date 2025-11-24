@@ -29,11 +29,11 @@ in
               labels.host = config.networking.hostName;
             }
             {
-              targets = [ "${configVars.hosts.cypress.tailscaleIp}:9100" ];
+              targets = [ "${configVars.hosts.cypress.networking.tailscaleIp}:9100" ];
               labels.host = "cypress";
             }
             {
-              targets = [ "${configVars.hosts.thinkpad.tailscaleIp}:9100" ];
+              targets = [ "${configVars.hosts.thinkpad.networking.tailscaleIp}:9100" ];
               labels.host = "thinkpad";
             }
             {
@@ -50,11 +50,11 @@ in
               labels.host = config.networking.hostName;
             }
             {
-              targets = [ "${configVars.hosts.cypress.tailscaleIp}:9633" ];
+              targets = [ "${configVars.hosts.cypress.networking.tailscaleIp}:9633" ];
               labels.host = "cypress";
             }
             {
-              targets = [ "${configVars.hosts.thinkpad.tailscaleIp}:9633" ];
+              targets = [ "${configVars.hosts.thinkpad.networking.tailscaleIp}:9633" ];
               labels.host = "thinkpad";
             }
           ];
