@@ -9,7 +9,7 @@
 }: 
 
 let
-  username = builtins.baseNameOf (builtins.dirOf ./.);
+  username = builtins.baseNameOf ./.;
 in
 
 {
