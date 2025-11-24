@@ -41,7 +41,7 @@ let
 
       # Conditionally include disk encryption flag
       diskEncryptionFlag = lib.optionalString useDiskEncryption ''
-        --disk-encryption-keys /tmp/crypt-passwd.txt <(pass hosts/${hostname}/disk-encryption-password)
+        --disk-encryption-keys /tmp/crypt-passwd.txt <(pass hosts/${hostname}/disk-encryption-passwd)
       '';
       
     in pkgs.writeShellScriptBin "deploy-${hostname}" ''
