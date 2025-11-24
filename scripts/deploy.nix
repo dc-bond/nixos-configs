@@ -15,6 +15,7 @@ let
     let
       users = hostConfig.users;
       ipv4 = hostConfig.ipv4;
+      useDiskEncryption = hostConfig.diskEncryption or false;
       
       # Generate age key setup commands for all users
       userAgeSetup = lib.concatMapStringsSep "\n" (user: ''
@@ -37,12 +38,18 @@ let
         let upperUser = lib.toUpper user;
         in ''--chown /home/${user} ''${${upperUser}_UID}:100''
       ) users;
+
+      # Conditionally include disk encryption flag
+      diskEncryptionFlag = lib.optionalString useDiskEncryption ''
+        --disk-encryption-keys /tmp/crypt-passwd.txt <(pass hosts/${hostname}/disk-encryption-password)
+      '';
       
     in pkgs.writeShellScriptBin "deploy-${hostname}" ''
       #!/usr/bin/env bash
       set -euo pipefail
       
       echo "Deploying ${hostname} to ${ipv4}..."
+      ${lib.optionalString useDiskEncryption ''echo "Using disk encryption for this host..."''}
       
       # Create a temporary directory
       temp=$(mktemp -d)
@@ -71,7 +78,7 @@ let
       # Install with proper ownership
       nix run github:nix-community/nixos-anywhere -- \
         --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
-        --disk-encryption-keys /tmp/crypt-passwd.txt <(pass hosts/${hostname}/disk-encryption-password) \
+        ${diskEncryptionFlag} \
         --extra-files "$temp" \
         ${chownFlags} \
         --flake '.#${hostname}' \

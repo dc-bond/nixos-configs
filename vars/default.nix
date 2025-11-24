@@ -10,21 +10,25 @@
       users = [ "chris" ];
       ipv4 = "192.168.1.2";
       tailscaleIp = "100.68.250.108";
+      diskEncryption = false;
     };
     thinkpad = {
       users = [ "chris" ];
       ipv4 = "192.168.1.62";
       tailscaleIp = "100.66.143.66";
+      diskEncryption = true;
     };
     cypress = {
       users = [ "chris" ];
       ipv4 = "192.168.1.89";
       tailscaleIp = "100.84.248.69";
+      diskEncryption = false;
     };
     juniper = {
       users = [ "chris" ];
       ipv4 = "178.156.133.218";
       tailscaleIp = "100.70.221.14";
+      diskEncryption = false;
     };
     alder = {
       users = [ 
@@ -33,6 +37,7 @@
       ];
       ipv4 = "192.168.4.15";
       tailscaleIp = null;
+      diskEncryption = true;
     };
   };
   
