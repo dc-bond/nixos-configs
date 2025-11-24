@@ -72,6 +72,11 @@
         user = config.home.username;
         port = 22;
       };
+      "alder-tailscale" = {
+        hostname = configVars.hosts.alder.tailscaleIp;
+        user = config.home.username;
+        port = 22;
+      };
       "unifi-usg" = {
         hostname = configVars.devices.unifiUsg.ipv4;
         user = "dcbond";
