@@ -68,7 +68,7 @@ in
         clients = [{
           url = if config.hostSpecificConfigs.isMonitoringServer
             then "http://127.0.0.1:3030/loki/api/v1/push"
-            else "http://${configVars.aspenTailscaleIp}:3030/loki/api/v1/push";
+            else "http://${configVars.hosts.aspen.tailscaleIp}:3030/loki/api/v1/push";
         }];
         scrape_configs = [
           {

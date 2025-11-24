@@ -28,7 +28,7 @@
     enable = true;
     matchBlocks = {
       "aspen" = {
-        hostname = "${configVars.aspenLanIp}";
+        hostname = "${configVars.hosts.aspen.ipv4}";
         user = "${configVars.chrisUsername}";
         port = 28766;
       };
@@ -38,7 +38,7 @@
         port = 28766;
       };
       "aspen-tailscale" = {
-        hostname = "${configVars.aspenTailscaleIp}";
+        hostname = "${configVars.hosts.aspen.tailscaleIp}";
         user = "${configVars.chrisUsername}";
         port = 22;
       };
@@ -53,27 +53,27 @@
         port = 22;
       };
       "thinkpad" = {
-        hostname = "${configVars.thinkpadLanIp}";
+        hostname = "${configVars.hosts.thinkpad.ipv4}";
         user = "${configVars.chrisUsername}";
         port = 28765;
       };
       "thinkpad-tailscale" = {
-        hostname = "${configVars.thinkpadTailscaleIp}";
+        hostname = "${configVars.hosts.thinkpad.tailscaleIp}";
         user = "${configVars.chrisUsername}";
         port = 22;
       };
       "juniper" = {
-        hostname = "${configVars.juniperIp}";
+        hostname = "${configVars.hosts.juniper.ipv4}";
         user = "${configVars.chrisUsername}";
         port = 28764;
       };
       "juniper-tailscale" = {
-        hostname = "${configVars.juniperTailscaleIp}";
+        hostname = "${configVars.hosts.juniper.tailscaleIp}";
         user = "${configVars.chrisUsername}";
         port = 22;
       };
       "unifi-usg" = {
-        hostname = "${configVars.unifiUsgIp}";
+        hostname = "${configVars.devices.unifiUsg.ipv4}";
         user = "dcbond";
         port = 22;
       };
@@ -83,17 +83,17 @@
         port = 22;
       };
       "unifi-uap-garage" = {
-        hostname = "${configVars.unifiUapGarageIp}";
+        hostname = "${configVars.devices.unifiUapGarage.ipv4}";
         user = "dcbond";
         port = 22;
       };
       "unifi-switch8" = {
-        hostname = "${configVars.unifiSwitch8Ip}";
+        hostname = "${configVars.devices.unifiSwitch8.ipv4}";
         user = "dcbond";
         port = 22;
       };
       "unifi-switch8-lite" = {
-        hostname = "${configVars.unifiSwitch8LiteIp}";
+        hostname = "${configVars.devices.unifiSwitch8Lite.ipv4}";
         user = "dcbond";
         port = 22;
       };

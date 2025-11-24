@@ -33,11 +33,11 @@ in
               labels.host = "cypress";
             }
             {
-              targets = [ "${configVars.thinkpadTailscaleIp}:9100" ];
+              targets = [ "${configVars.hosts.thinkpad.tailscaleIp}:9100" ];
               labels.host = "thinkpad";
             }
             {
-              targets = [ "${configVars.juniperTailscaleIp}:9100" ];
+              targets = [ "${configVars.hosts.juniper.tailscaleIp}:9100" ];
               labels.host = "juniper";
             }
           ];
@@ -54,7 +54,7 @@ in
               labels.host = "cypress";
             }
             {
-              targets = [ "${configVars.thinkpadTailscaleIp}:9633" ];
+              targets = [ "${configVars.hosts.thinkpad.tailscaleIp}:9633" ];
               labels.host = "thinkpad";
             }
           ];
@@ -67,7 +67,7 @@ in
               labels.host = config.networking.hostName;
             }
             {
-              targets = [ "${configVars.juniperTailscaleIp}:8082" ];
+              targets = [ "${configVars.hosts.juniper.tailscaleIp}:8082" ];
               labels.host = "juniper";
             }
           ];
@@ -80,7 +80,7 @@ in
               labels.host = config.networking.hostName;
             }
             {
-              targets = [ "${configVars.juniperTailscaleIp}:6060" ];
+              targets = [ "${configVars.hosts.juniper.tailscaleIp}:6060" ];
               labels.host = "juniper";
             }
           ];

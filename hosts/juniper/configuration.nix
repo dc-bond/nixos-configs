@@ -16,7 +16,7 @@
     hostSpecificConfigs = {
       bootLoader = "grub";
       storageDrive1 = null;
-      primaryIp = configVars.juniperIp;
+      primaryIp = configVars.hosts.juniper.ipv4;
       sshdPort = 28764;
     };
 
