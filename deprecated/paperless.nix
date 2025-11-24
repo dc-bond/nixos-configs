@@ -41,7 +41,7 @@ in
       passwordFile = "${config.sops.secrets.paperlessAdminPasswd.path}";
       configureTika = true;
       settings = {
-        PAPERLESS_ADMIN_USER = "${configVars.chrisEmail}";
+        PAPERLESS_ADMIN_USER = "${configVars.users.chris.email}";
         PAPERLESS_REDIS = "unix:///run/redis-${app}/redis.sock";
         PAPERLESS_DBHOST = "/run/postgresql";
         PAPERLESS_DBENGINE = "postgresql";

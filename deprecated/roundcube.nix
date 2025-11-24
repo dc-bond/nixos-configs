@@ -33,7 +33,7 @@ in
         $config['default_port'] = 993;
         $config['smtp_server'] = 'ssl://mail.privateemail.com';
         $config['smtp_port'] = 465;
-        $config['smtp_user'] = '${configVars.chrisEmail}';
+        $config['smtp_user'] = '${configVars.users.chris.email}';
         $config['smtp_pass'] = '$SMTP_PASS';
         $config['smtp_auth_type'] = 'LOGIN';
       '';

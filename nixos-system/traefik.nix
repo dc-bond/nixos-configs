@@ -50,7 +50,7 @@ in
       LogsDirectory = "${app}"; # creates log directory at /var/log/traefik
     };
     environment = {
-      CF_API_EMAIL = configVars.chrisEmail; 
+      CF_API_EMAIL = configVars.users.chris.email; 
       CF_API_KEY_FILE = "${config.sops.secrets.cloudflareApiKey.path}"; 
     };
   }; 
@@ -154,7 +154,7 @@ in
               ];
               propagation.delayBeforeChecks = 5;
             };
-            email = configVars.chrisEmail;
+            email = configVars.users.chris.email;
             keyType = "RSA4096";
             certificatesDuration = 180;
             storage = "/var/lib/${app}/acme.json"; # where acme certificates live

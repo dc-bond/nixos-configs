@@ -217,11 +217,11 @@
   accounts.email = {
     maildirBasePath = "${config.home.homeDirectory}/email";
     accounts = {
-      "${configVars.chrisEmail}" = {
-        address = "${configVars.chrisEmail}";
-        userName = "${configVars.chrisEmail}";
+      "${configVars.users.chris.email}" = {
+        address = "${configVars.users.chris.email}";
+        userName = "${configVars.users.chris.email}";
         realName = "${configVars.users.chris.fullName}";
-        passwordCommand = "pass email/${configVars.chrisEmail}";
+        passwordCommand = "pass email/${configVars.users.chris.email}";
         primary = true;
         imap = {
           host = "mail.privateemail.com";
@@ -261,7 +261,7 @@
           enable = true;
           create = "maildir";
           groups = {
-            "${configVars.chrisEmail}" = {
+            "${configVars.users.chris.email}" = {
               channels = {
                 "inbox" = {
                   farPattern = "INBOX";
@@ -322,7 +322,7 @@
           showSignature = "append";
         };
         gpg = {
-          key = "${configVars.chrisGpgKeyFingerprint}";
+          key = "${configVars.users.chris.gpgKeyFingerprint}";
           signByDefault = true;
         };
       };

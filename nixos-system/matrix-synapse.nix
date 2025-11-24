@@ -79,7 +79,7 @@ in
             smtp_port: 587
             force_tls: false
             require_transport_security: true
-            smtp_user: ${configVars.chrisEmail}
+            smtp_user: ${configVars.users.chris.email}
             smtp_pass: ${config.sops.placeholder.chrisEmailPasswd}
             notif_from: "Bond Encrypted Communications <noreply@dcbond.com>"
           encryption_enabled_by_default_for_room_type: all

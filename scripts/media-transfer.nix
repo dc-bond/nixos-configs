@@ -174,8 +174,8 @@ let
     if [[ "$FILE_COUNT" -gt 0 ]]; then
         {
             echo "Subject: Bond Media-Transfer Processing Report - $CURRENT_DATETIME"
-            echo "To: ${configVars.chrisEmail}, dmiller208@gmail.com"
-            echo "From: ${configVars.chrisEmail}"
+            echo "To: ${configVars.users.chris.email}, dmiller208@gmail.com"
+            echo "From: ${configVars.users.chris.email}"
             echo ""
             echo "Summary of Media Transfer Actions:"
             echo "---------------------------------------------"
@@ -190,11 +190,11 @@ let
         --host=mail.privateemail.com \
         --port=587 \
         --auth=on \
-        --user="${configVars.chrisEmail}" \
+        --user="${configVars.users.chris.email}" \
         --passwordeval "cat ${chrisEmailPasswd}" \
         --tls=on \
         --tls-starttls=on \
-        --from="${configVars.chrisEmail}" \
+        --from="${configVars.users.chris.email}" \
         -t < "$EMAIL_CONTENT_FILE"
     
         # Clean up

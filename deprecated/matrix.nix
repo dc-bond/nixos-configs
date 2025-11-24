@@ -52,7 +52,7 @@ in
             smtp_host: mail.privateemail.com
             smtp_port: 465
             force_tls: true
-            smtp_user: ${configVars.chrisEmail}
+            smtp_user: ${configVars.users.chris.email}
             smtp_pass: '${config.sops.placeholder.chrisEmailPasswd}'
             notif_from: "Bond Encrypted Communications <noreply@dcbond.com>"
           encryption_enabled_by_default_for_room_type: all

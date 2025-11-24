@@ -65,19 +65,19 @@ let
     
     {
       echo "Subject: Nightly Backup SUCCESS - ${config.networking.hostName}"
-      echo "To: ${configVars.chrisEmail}"
-      echo "From: ${configVars.chrisEmail}"
+      echo "To: ${configVars.users.chris.email}"
+      echo "From: ${configVars.users.chris.email}"
       echo ""
       echo "Time: $(date "+%Y-%m-%d %H:%M:%S")"
     } | ${pkgs.msmtp}/bin/msmtp \
       --host=mail.privateemail.com \
       --port=587 \
       --auth=on \
-      --user="${configVars.chrisEmail}" \
+      --user="${configVars.users.chris.email}" \
       --passwordeval "cat ${chrisEmailPasswd}" \
       --tls=on \
       --tls-starttls=on \
-      --from="${configVars.chrisEmail}" \
+      --from="${configVars.users.chris.email}" \
       -t
   '';
 
@@ -88,8 +88,8 @@ let
     
     {
       echo "Subject: Nightly Backup FAILED - ${config.networking.hostName}"
-      echo "To: ${configVars.chrisEmail}"
-      echo "From: ${configVars.chrisEmail}"
+      echo "To: ${configVars.users.chris.email}"
+      echo "From: ${configVars.users.chris.email}"
       echo ""
       echo "CRITICAL: Backup process FAILED!"
       echo ""
@@ -110,11 +110,11 @@ let
       --host=mail.privateemail.com \
       --port=587 \
       --auth=on \
-      --user="${configVars.chrisEmail}" \
+      --user="${configVars.users.chris.email}" \
       --passwordeval "cat ${chrisEmailPasswd}" \
       --tls=on \
       --tls-starttls=on \
-      --from="${configVars.chrisEmail}" \
+      --from="${configVars.users.chris.email}" \
       -t
   '';
 
