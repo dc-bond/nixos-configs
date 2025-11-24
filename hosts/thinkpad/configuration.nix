@@ -16,7 +16,6 @@
     hostSpecificConfigs = {
       bootLoader = "systemd-boot";
       storageDrive1 = null;
-      primaryIp = null;
     };
 
     networking.hostName = "thinkpad";
