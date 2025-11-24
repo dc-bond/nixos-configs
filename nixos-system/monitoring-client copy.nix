@@ -7,14 +7,15 @@
 }: 
 
 let
-  hostData = configVars.hosts.${config.networking.hostName};
-  monitoringServer = lib.findFirst 
-    (h: h.isMonitoringServer) 
-    null 
-    (lib.attrValues configVars.hosts);
+  enableSmart = builtins.elem config.networking.hostName [ "aspen" "cypress" "thinkpad" ]; # only enable smart on physical hardware (no VMs)
 in
 
 {
+
+  #networking.firewall.interfaces.tailscale0.allowedTCPPorts = lib.optionals (!config.hostSpecificConfigs.isMonitoringServer) [ 
+  #  9100 # prometheus node exporter
+  #  9633 # smartctl exporter
+  #]; # monitoring-server needs to connect to these ports on monitoring-clients
 
   services = {
     
@@ -22,7 +23,7 @@ in
       node = {
         enable = true;
         port = 9100;
-        listenAddress = if hostData.isMonitoringServer
+        listenAddress = if config.hostSpecificConfigs.isMonitoringServer
           then "127.0.0.1" # local scraping on monitoring server
           else "0.0.0.0"; # remote scraping from monitoring server
         enabledCollectors = [ 
@@ -33,17 +34,17 @@ in
           "buddyinfo"  # memory fragmentation
         ];
       };
-      smartctl = lib.mkIf (hostData.hardware.enableSmartMonitoring or false) {
+      smartctl = lib.mkIf enableSmart {
         enable = true;
         port = 9633;
-        listenAddress = if hostData.isMonitoringServer
+        listenAddress = if config.hostSpecificConfigs.isMonitoringServer
           then "127.0.0.1"
           else "0.0.0.0";
         maxInterval = "60s";
       };
     };
 
-    smartd = lib.mkIf (hostData.hardware.enableSmartMonitoring or false) {
+    smartd = lib.mkIf enableSmart {
       enable = true;
       autodetect = true;
       notifications.wall.enable = false;
@@ -52,7 +53,7 @@ in
     cadvisor = lib.mkIf (config.virtualisation.oci-containers.containers != {}) {
       enable = true;
       port = 7541;
-      listenAddress = if hostData.isMonitoringServer
+      listenAddress = if config.hostSpecificConfigs.isMonitoringServer
         then "127.0.0.1"
         else "0.0.0.0";
     };
@@ -65,9 +66,9 @@ in
           grpc_listen_port = 0;
         };
         clients = [{
-          url = if hostData.isMonitoringServer
+          url = if config.hostSpecificConfigs.isMonitoringServer
             then "http://127.0.0.1:3030/loki/api/v1/push"
-            else "http://${monitoringServer.networking.tailscaleIp}:3030/loki/api/v1/push";
+            else "http://${configVars.hosts.aspen.networking.tailscaleIp}:3030/loki/api/v1/push";
         }];
         scrape_configs = [
           {

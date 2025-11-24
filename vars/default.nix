@@ -31,6 +31,7 @@
       };
       hardware = {
         diskEncryption = false;
+        enableSmartMonitoring = true;
         storageDrives = [
           {
             mountPoint = "/storage/WD-WCC7K4RU947F";
@@ -63,6 +64,7 @@
       };
       hardware = {
         diskEncryption = true;
+        enableSmartMonitoring = true;
         #storageDrives = [
         #];
       };
@@ -90,6 +92,7 @@
       };
       hardware = {
         diskEncryption = false;
+        enableSmartMonitoring = true;
         storageDrives = [
           {
             mountPoint = "/storage/WD-WX21DC86RU3P";
@@ -122,6 +125,7 @@
       };
       hardware = {
         diskEncryption = false;
+        enableSmartMonitoring = false;
         #storageDrives = [
         #];
       };
@@ -152,6 +156,7 @@
       };
       hardware = {
         diskEncryption = true;
+        enableSmartMonitoring = true;
         #storageDrives = [
         #];
       };
