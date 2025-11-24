@@ -1,8 +1,14 @@
 { 
   pkgs, 
   config,
+  configVars,
   ... 
 }: 
+
+let
+  hostData = configVars.hosts.${config.networking.hostName};
+  storage = hostData.hardware.storageDrives.data;
+in
 
 {
 
@@ -24,7 +30,7 @@
           "map to guest" = "never";
         };
         "media-uploads" = {
-          "path" = "${config.hostSpecificConfigs.storageDrive1}/samba/media-uploads";
+          "path" = "${storage.mountPoint}/samba/media-uploads";
           "browseable" = "yes";
           "writable" = "yes";
           "guest ok" = "no";
@@ -35,7 +41,7 @@
           "force group" = "users";
         };
         "general-uploads" = {
-          "path" = "${config.hostSpecificConfigs.storageDrive1}/samba/general-uploads";
+          "path" = "${storage.mountPoint}/samba/general-uploads";
           "browseable" = "yes";
           "writable" = "yes";
           "guest ok" = "no";
@@ -52,9 +58,9 @@
   systemd = {
 
     tmpfiles.rules = [
-      "d ${config.hostSpecificConfigs.storageDrive1}/samba 0755 chris users -"
-      "d ${config.hostSpecificConfigs.storageDrive1}/samba/media-uploads 0755 chris users -"
-      "d ${config.hostSpecificConfigs.storageDrive1}/samba/general-uploads 0755 chris users -"
+      "d ${storage.mountPoint}/samba 0755 chris users -"
+      "d ${storage.mountPoint}/samba/media-uploads 0755 chris users -"
+      "d ${storage.mountPoint}/samba/general-uploads 0755 chris users -"
     ];
 
     services.samba-setup-password = {

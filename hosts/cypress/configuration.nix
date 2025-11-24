@@ -13,16 +13,6 @@
 
   config = {
 
-    #hostSpecificConfigs = {
-    #  storageDrive1 = "/storage/WD-WX21DC86RU3P";
-    #};
-
-    #fileSystems."${config.hostSpecificConfigs.storageDrive1}" = {
-    #  device = "/dev/disk/by-uuid/f3fb53cc-52fa-48e3-8cac-b69d85a8aff1";
-    #  fsType = "ext4"; 
-    #  options = [ "defaults" ];
-    #};
-
     networking.hostName = "cypress";
 
     programs.nix-ld.enable = true; # run generic linux binaries (e.g. for vscodium server installation)
