@@ -44,12 +44,27 @@
       tailscaleIp = "100.84.248.69";
       diskEncryption = false;
     };
+
     juniper = {
       users = [ "chris" ];
-      ipv4 = "178.156.133.218";
-      tailscaleIp = "100.70.221.14";
-      diskEncryption = false;
+      bootLoader = "grub";
+      isMonitoringServer = false;
+      networking = {
+        sshPort = 28766;
+        useResolved = true;
+        ethernetInterface = "enp1s0";
+        wifiInterface = null;
+        dockInterface = null;
+        ipv4 = "178.156.133.218";
+        tailscaleIp = "100.70.221.14";
+      };
+      hardware = {
+        diskEncryption = false;
+        storageDrives = [
+        ];
+      };
     };
+    
     alder = {
       users = [ 
         "chris" 
