@@ -19,6 +19,15 @@
         dockInterface = null;
         ipv4 = "192.168.1.2";
         tailscaleIp = "100.68.250.108";
+        tailscale = {
+          role = "exit-node";
+          advertiseRoutes = [ 
+            "192.168.1.0/24" 
+            "192.168.4.0/27" 
+          ];
+          enableNAT = true;
+          defaultExitNode = null;
+        };
       };
       hardware = {
         diskEncryption = false;
@@ -44,6 +53,13 @@
         dockInterface = "enp0s20f0u2u1u2";
         ipv4 = "192.168.1.62";
         tailscaleIp = "100.66.143.66";
+        tailscale = {
+          role = "client";
+          #advertiseRoutes = [ 
+          #];
+          enableNAT = false;
+          defaultExitNode = "aspen";
+        };
       };
       hardware = {
         diskEncryption = true;
@@ -64,6 +80,13 @@
         dockInterface = null;
         ipv4 = "192.168.1.89";
         tailscaleIp = "100.84.248.69";
+        tailscale = {
+          role = "client";
+          #advertiseRoutes = [ 
+          #];
+          enableNAT = false;
+          defaultExitNode = "aspen";
+        };
       };
       hardware = {
         diskEncryption = false;
@@ -89,6 +112,13 @@
         dockInterface = null;
         ipv4 = "178.156.133.218";
         tailscaleIp = "100.70.221.14";
+        tailscale = {
+          role = "exit-node";
+          #advertiseRoutes = [ 
+          #];
+          enableNAT = false;
+          defaultExitNode = null;
+        };
       };
       hardware = {
         diskEncryption = false;
@@ -112,6 +142,13 @@
         dockInterface = null;
         ipv4 = "192.168.4.15";
         tailscaleIp = null;
+        tailscale = {
+          role = "client";
+          #advertiseRoutes = [ 
+          #];
+          enableNAT = false;
+          defaultExitNode = "aspen";
+        };
       };
       hardware = {
         diskEncryption = true;

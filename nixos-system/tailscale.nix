@@ -7,52 +7,67 @@
 }: 
 
 let
-  hostname = config.networking.hostName;
-  isServer = lib.elem hostname ["aspen" "juniper"]; # true if hostname is aspen or juniper
-  isClient = lib.elem hostname ["thinkpad" "cypress"]; # true if hostname is thinkpad or cypress
+  hostData = configVars.hosts.${config.networking.hostName};
+  tsConfig = hostData.networking.tailscale or {};
+  isExitNode = (tsConfig.role or "") == "exit-node";
+  isClient = (tsConfig.role or "") == "client";
+  defaultExitNodeIp = 
+  if (tsConfig ? defaultExitNode) && (tsConfig.defaultExitNode != null)
+  then configVars.hosts.${tsConfig.defaultExitNode}.networking.tailscaleIp
+  else null;
 in
 
 {
-
-  sops.secrets."${hostname}TailscaleAuthKey" = {};
+  
+  sops.secrets."${config.networking.hostName}TailscaleAuthKey" = {};
 
   networking = {
     firewall.trustedInterfaces = [ "tailscale0" ]; # allow all ports open on tailscale interface
-    nat = lib.mkIf (hostname == "aspen") {
+    nat = lib.mkIf (tsConfig.enableNAT or false) { # allow clients to access advertised subnets without needing to use the subnet-advertising host as an exit-node
       enable = true;
       internalInterfaces = [ "tailscale0" ];
-      externalInterface = "enp4s0";
+      externalInterface = hostData.networking.ethernetInterface;
     };
   };
 
   services.tailscale = {
     enable = true;
-    authKeyFile = config.sops.secrets."${hostname}TailscaleAuthKey".path;
-    useRoutingFeatures = if isServer then "server" else "client";
-    extraDaemonFlags = ["--no-logs-no-support"];
+    authKeyFile = config.sops.secrets."${config.networking.hostName}TailscaleAuthKey".path;
+    useRoutingFeatures = if isExitNode then "server" else "client";
+    extraDaemonFlags = [ "--no-logs-no-support" ];
     extraUpFlags = [
-      "-ssh"
+      "--ssh"
     ] 
-    ++ lib.optionals isServer [ "--advertise-exit-node" ]
+    ++ lib.optionals isExitNode [ "--advertise-exit-node" ]
     ++ lib.optionals isClient [ "--accept-routes" ]
-    ++ lib.optional (hostname == "aspen") "--advertise-routes=192.168.1.0/24,192.168.4.0/27"
-    ++ lib.optional (hostname == "thinkpad") "--exit-node=${configVars.hosts.aspen.networking.tailscaleIp}"; # thinkpad laptop (client) always needs to default to using server exit node (aspen or juniper)
+    ++ lib.optional (tsConfig ? advertiseRoutes) 
+        "--advertise-routes=${lib.concatStringsSep "," tsConfig.advertiseRoutes}"
+    ++ lib.optional (defaultExitNodeIp != null)
+        "--exit-node=${defaultExitNodeIp}";
   };
 
-  programs.zsh = {
-    shellAliases = {
-      tstat = "sudo tailscale status";
-      tdown = "sudo tailscale down";
-    } // lib.optionalAttrs isClient {
-      taspen = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${configVars.hosts.aspen.networking.tailscaleIp} --reset";
-      tjuniper = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${configVars.hosts.juniper.networking.tailscaleIp} --reset";
-      tup = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --reset";
-    };
-  };
+  programs.zsh.shellAliases = {
+    tstat = "sudo tailscale status";
+    tdown = "sudo tailscale down";
+  } // lib.optionalAttrs isClient (
+    let
+      exitNodes = lib.filterAttrs 
+        (name: host: 
+          (host.networking.tailscale.role or "") == "exit-node" 
+          && host.networking.tailscaleIp != null
+        ) 
+        configVars.hosts;
+      mkExitNodeAlias = name: host: {
+        "t${name}" = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${host.networking.tailscaleIp} --reset";
+      };
+    in
+      { tup = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --reset"; }
+      // lib.foldl' (acc: name: acc // mkExitNodeAlias name exitNodes.${name}) {} (lib.attrNames exitNodes)
+  );
 
   # optimizations for subnet routers and exit nodes
   # https://tailscale.com/kb/1320/performance-best-practices#linux-optimizations-for-subnet-routers-and-exit-nodes
-  systemd.services.tailscale-udp-optimization = lib.mkIf isServer {
+  systemd.services.tailscale-udp-optimization = lib.mkIf isExitNode {
     description = "Tailscale UDP GRO forwarding optimization";
     before = [ "tailscaled.service" ];
     wantedBy = [ "multi-user.target" ];
@@ -60,10 +75,7 @@ in
       Type = "oneshot";
       RemainAfterExit = true;
     };
-    path = with pkgs; [ 
-      ethtool 
-      iproute2 
-    ];
+    path = with pkgs; [ ethtool iproute2 ];
     script = ''
       NETDEV=$(ip -o route get 1.1.1.1 | cut -f 5 -d " ")
       ethtool -K $NETDEV rx-udp-gro-forwarding on rx-gro-list off
@@ -71,48 +83,3 @@ in
   };
 
 }
-
-
-
-#{
-#  # Service to automatically retrieve Taildrop files
-#  systemd.services.taildrop-receive = {
-#    description = "Automatically receive Taildrop files";
-#    after = [ "tailscale.service" ];
-#    wants = [ "tailscale.service" ];
-#    wantedBy = [ "multi-user.target" ];
-#    
-#    serviceConfig = {
-#      Type = "simple";
-#      User = "chris";
-#      Group = "users";
-#      Restart = "always";
-#      RestartSec = "10s";
-#    };
-#    
-#    path = [ config.services.tailscale.package ];
-#    
-#    script = ''
-#      # Destination directory
-#      DEST="${config.hostSpecificConfigs.storageDrive1}/samba/media-uploads"
-#      
-#      # Poll for new files every 5 seconds
-#      while true; do
-#        # Get list of waiting files
-#        FILES=$(tailscale file get --wait --conflict=rename "$DEST" 2>&1 || true)
-#        
-#        if [[ $FILES != *"no files waiting"* ]] && [[ -n "$FILES" ]]; then
-#          echo "Received files via Taildrop: $FILES"
-#          # Your processing script could run here
-#        fi
-#        
-#        sleep 5
-#      done
-#    '';
-#  };
-#
-#  # Ensure destination directory exists
-#  systemd.tmpfiles.rules = [
-#    "d ${config.hostSpecificConfigs.storageDrive1}/samba/media-uploads 0755 chris users -"
-#  ];
-#}
