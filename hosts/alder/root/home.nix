@@ -9,7 +9,7 @@
 }: 
 
 let
-  username = "root";
+  username = builtins.baseNameOf ./.;
 in
 
 {

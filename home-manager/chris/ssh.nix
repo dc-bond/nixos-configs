@@ -28,72 +28,72 @@
     enable = true;
     matchBlocks = {
       "aspen" = {
-        hostname = "${configVars.hosts.aspen.ipv4}";
-        user = "${configVars.chrisUsername}";
+        hostname = configVars.hosts.aspen.ipv4;
+        user = config.home.username;
         port = 28766;
       };
       "aspen-wan" = {
         hostname = "ssh.${configVars.domain1}";
-        user = "${configVars.chrisUsername}";
+        user = config.home.username;
         port = 28766;
       };
       "aspen-tailscale" = {
-        hostname = "${configVars.hosts.aspen.tailscaleIp}";
-        user = "${configVars.chrisUsername}";
+        hostname = configVars.hosts.aspen.tailscaleIp;
+        user = config.home.username;
         port = 22;
       };
       "cypress" = {
-        hostname = "${configVars.hosts.cypress.ipv4}";
-        user = "${configVars.chrisUsername}";
+        hostname = configVars.hosts.cypress.ipv4;
+        user = config.home.username;
         port = 28761;
       };
       "cypress-tailscale" = {
-        hostname = "${configVars.hosts.cypress.tailscaleIp}";
-        user = "${configVars.chrisUsername}";
+        hostname = configVars.hosts.cypress.tailscaleIp;
+        user = config.home.username;
         port = 22;
       };
       "thinkpad" = {
-        hostname = "${configVars.hosts.thinkpad.ipv4}";
-        user = "${configVars.chrisUsername}";
+        hostname = configVars.hosts.thinkpad.ipv4;
+        user = config.home.username;
         port = 28765;
       };
       "thinkpad-tailscale" = {
-        hostname = "${configVars.hosts.thinkpad.tailscaleIp}";
-        user = "${configVars.chrisUsername}";
+        hostname = configVars.hosts.thinkpad.tailscaleIp;
+        user = config.home.username;
         port = 22;
       };
       "juniper" = {
-        hostname = "${configVars.hosts.juniper.ipv4}";
-        user = "${configVars.chrisUsername}";
+        hostname = configVars.hosts.juniper.ipv4;
+        user = config.home.username;
         port = 28764;
       };
       "juniper-tailscale" = {
-        hostname = "${configVars.hosts.juniper.tailscaleIp}";
-        user = "${configVars.chrisUsername}";
+        hostname = configVars.hosts.juniper.tailscaleIp;
+        user = config.home.username;
         port = 22;
       };
       "unifi-usg" = {
-        hostname = "${configVars.devices.unifiUsg.ipv4}";
+        hostname = configVars.devices.unifiUsg.ipv4;
         user = "dcbond";
         port = 22;
       };
       "unifi-uap-livingroom" = {
-        hostname = "${configVars.devices.unifiUapLivingRoom.ipv4}";
+        hostname = configVars.devices.unifiUapLivingRoom.ipv4;
         user = "dcbond";
         port = 22;
       };
       "unifi-uap-garage" = {
-        hostname = "${configVars.devices.unifiUapGarage.ipv4}";
+        hostname = configVars.devices.unifiUapGarage.ipv4;
         user = "dcbond";
         port = 22;
       };
       "unifi-switch8" = {
-        hostname = "${configVars.devices.unifiSwitch8.ipv4}";
+        hostname = configVars.devices.unifiSwitch8.ipv4;
         user = "dcbond";
         port = 22;
       };
       "unifi-switch8-lite" = {
-        hostname = "${configVars.devices.unifiSwitch8Lite.ipv4}";
+        hostname = configVars.devices.unifiSwitch8Lite.ipv4;
         user = "dcbond";
         port = 22;
       };

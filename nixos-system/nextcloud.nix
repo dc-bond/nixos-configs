@@ -181,7 +181,7 @@ in
         dbhost = "/run/postgresql";
         dbname = "${app}";
         dbuser = "${app}";
-        adminuser = "${configVars.chrisFullName}";
+        adminuser = "${configVars.users.chris.fullName}";
         adminpassFile = "${config.sops.secrets.nextcloudAdminPasswd.path}";
       };
       phpOptions = {

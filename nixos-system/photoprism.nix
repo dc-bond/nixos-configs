@@ -107,7 +107,7 @@ in
         PHOTOPRISM_DATABASE_USER = "${app}";                                                    # MariaDB or MySQL database user name
         PHOTOPRISM_SITE_CAPTION = "Bond Private Family Photo and Video Server";
         PHOTOPRISM_SITE_DESCRIPTION = "Bond Family Photos and Videos";
-        PHOTOPRISM_SITE_AUTHOR = "${configVars.chrisFullName}";
+        PHOTOPRISM_SITE_AUTHOR = "${configVars.users.chris.fullName}";
         NVIDIA_VISIBLE_DEVICES = "all";
         PHOTOPRISM_INDEX_SCHEDULE = "0 6 * * *";                                                # auto-index daily at 6am
       };

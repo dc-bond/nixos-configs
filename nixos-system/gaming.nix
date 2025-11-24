@@ -15,7 +15,7 @@
     ];
     sessionVariables = {
       STEAM_EXTRA_COMPAT_TOOLS_PATHS = 
-        "/home/${configVars.chrisUsername}/.steam/root/compatibilitytools.d";
+        "/home/chris/.steam/root/compatibilitytools.d";
     };
   };
 

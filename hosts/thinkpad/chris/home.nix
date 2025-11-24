@@ -8,22 +8,26 @@
   ... 
 }: 
 
+let
+  username = builtins.baseNameOf ./.;
+in
+
 {
   
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/chris/zsh.nix"
-      "home-manager/chris/starship.nix"
-      "home-manager/chris/neovim.nix"
-      "home-manager/chris/ssh.nix"
-      "home-manager/chris/git.nix"
-      "home-manager/chris/gnupg.nix"
-      "home-manager/chris/pass.nix"
+      "home-manager/${username}/zsh.nix"
+      "home-manager/${username}/starship.nix"
+      "home-manager/${username}/neovim.nix"
+      "home-manager/${username}/ssh.nix"
+      "home-manager/${username}/git.nix"
+      "home-manager/${username}/gnupg.nix"
+      "home-manager/${username}/pass.nix"
       
-      #"home-manager/chris/email.nix"
+      #"home-manager/${username}/email.nix"
 
-      "home-manager/chris/plasma.nix"
-      #"home-manager/chris/hyprland.nix"
+      "home-manager/${username}/plasma.nix"
+      #"home-manager/${username}/hyprland.nix"
     ])
   ];
 
@@ -35,8 +39,8 @@
 
 # define username and home directory
   home = {
-    username = configVars.chrisUsername;
-    homeDirectory = "/home/${configVars.chrisUsername}";
+    username = username;
+    homeDirectory = "/home/${username}";
   };
 
 # define default folders in home directory
