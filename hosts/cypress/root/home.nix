@@ -8,13 +8,17 @@
   ... 
 }: 
 
+let
+  username = builtins.baseNameOf (builtins.dirOf ./.);
+in
+
 {
   
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/root/neovim.nix"
-      "home-manager/root/zsh.nix"
-      "home-manager/root/starship.nix"
+      "home-manager/${username}/neovim.nix"
+      "home-manager/${username}/zsh.nix"
+      "home-manager/${username}/starship.nix"
     ])
   ];
 
@@ -23,8 +27,8 @@
 
 # define username and home directory
   home = {
-    username = "root";
-    homeDirectory = "/root";
+    username = username;
+    homeDirectory = "/${username}";
   };
 
 # original home state version - defines the first version of home-manager installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated

@@ -98,6 +98,15 @@
     -----END PGP PUBLIC KEY BLOCK-----
   '';
 
+  users = {
+    chris = {
+      uid = 1000;
+    };
+    eric = {
+      uid = 1001;
+    };
+  };
+
   hosts = {
     aspen = {
       users = [ "chris" ];
