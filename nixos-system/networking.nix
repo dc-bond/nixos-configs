@@ -1,18 +1,26 @@
 { 
   lib, 
   config, 
+  configVars,
   pkgs, 
   ... 
 }: 
 
+let
+  hostData = configVars.hosts.${config.networking.hostName};
+  hasWifi = hostData.networking.wifiInterface != null;
+  hasDock = hostData.networking.dockInterface != null;
+  hasEthernet = hostData.networking.ethernetInterface != null;
+in
+
 {
 
   services.resolved = {
-    enable = lib.elem config.networking.hostName ["juniper" "thinkpad" "cypress"]; # use systemd-resolved for DNS functionality, defaults to "false" (e.g. for aspen)
-    llmnr = "false"; # disable link-local multicast name resolution
+    enable = hostData.networking.useResolved;
+    llmnr = "false";
   };
 
-  environment.etc."resolv.conf" = lib.mkIf (config.networking.hostName == "aspen") { # networking.resolvconf.enable automatically sets itself to "false" (e.g. for aspen) if environment.etc."resolv.conf" defined
+  environment.etc."resolv.conf" = lib.mkIf (!hostData.networking.useResolved) { # if not using systemd-resolved, than manually create resolv.conf
     text = ''
       nameserver 127.0.0.1
       nameserver 1.1.1.1
@@ -20,9 +28,9 @@
   };
 
   networking = {
-    useDHCP = false; # disable default dhcpcd networking backend in favor of systemd-networkd enabled below
+    useDHCP = false; # disable dhcpcd in favor of systemd-networkd below
     firewall.enable = true;
-    wireless.iwd = lib.mkIf (config.networking.hostName == "thinkpad") {
+    wireless.iwd = lib.mkIf hasWifi {
       enable = true;
       settings = {
         IPv6.Enabled = false;
@@ -43,29 +51,28 @@
         matchConfig.Name = "lo";
         linkConfig.RequiredForOnline = "no";
       };
+    } // lib.optionalAttrs hasEthernet {
       "10-ethernet-builtin" = {
-        matchConfig.Name = 
-          if config.networking.hostName == "thinkpad" then "enp0s31f6"
-          else if config.networking.hostName == "aspen" then "enp4s0"
-          else "enp1s0"; # juniper and cypress fallback
+        matchConfig.Name = hostData.networking.ethernetInterface;
         networkConfig.DHCP = "ipv4";
         dhcpV4Config.RouteMetric = 200;
         dhcpV6Config.RouteMetric = 200;
         linkConfig.RequiredForOnline = "no";
       };
-    } // lib.optionalAttrs (config.networking.hostName == "thinkpad") {
+    } // lib.optionalAttrs hasDock {
       "20-ethernet-dock" = {
-        matchConfig.Name = "enp0s20f0u2u1u2";
+        matchConfig.Name = hostData.networking.dockInterface;
         networkConfig.DHCP = "ipv4";
         dhcpV4Config.RouteMetric = 100;
         dhcpV6Config.RouteMetric = 100;
         linkConfig.RequiredForOnline = "no";
       };
+    } // lib.optionalAttrs hasWifi {
       "30-wifi" = {
-        matchConfig.Name = "wlan0";
+        matchConfig.Name = hostData.networking.wifiInterface;
         networkConfig = {
           DHCP = "ipv4";
-          IgnoreCarrierLoss = "3s"; # avoid re-configuring interface when wireless roaming between APs
+          IgnoreCarrierLoss = "3s";
         };
         dhcpV4Config.RouteMetric = 300;
         dhcpV6Config.RouteMetric = 300;
@@ -74,11 +81,11 @@
     };
   };
 
-  environment.systemPackages = lib.mkIf (config.networking.hostName == "thinkpad") [
+  environment.systemPackages = lib.optional hasWifi
     (pkgs.writeShellScriptBin "wifi" ''
       set -euo pipefail
 
-      INTERFACE="wlan0"
+      INTERFACE="${hostData.networking.wifiInterface}"
       
       echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
       echo "        WiFi Connection Helper"
@@ -141,7 +148,6 @@
         echo "Please check the network name and password, then try again"
         exit 1
       fi
-    '')
-  ];
+    '');
 
 }

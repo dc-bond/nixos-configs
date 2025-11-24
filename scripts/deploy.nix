@@ -14,7 +14,7 @@ let
   mkDeployScript = hostname: hostConfig:
     let
       users = hostConfig.users;
-      ipv4 = hostConfig.ipv4;
+      ipv4 = hostConfig.networking.ipv4;
       useDiskEncryption = hostConfig.hardware.diskEncryption or false;
       
       # generate age key setup commands for all users
