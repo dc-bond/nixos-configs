@@ -34,7 +34,7 @@ let
       ) users;
       
       # Generate chown flags for all users
-      chownFlags = lib.concatMapStringsSep " \\\n " (user:
+      chownFlags = lib.concatMapStringsSep " \\\n      " (user:
         let upperUser = lib.toUpper user;
         in ''--chown /home/${user} ''${${upperUser}_UID}:100''
       ) users;
