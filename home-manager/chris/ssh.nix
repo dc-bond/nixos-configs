@@ -28,7 +28,7 @@
     enable = true;
     matchBlocks = {
       "aspen" = {
-        hostname = configVars.hosts.aspen.ipv4;
+        hostname = configVars.hosts.aspen.networking.ipv4;
         user = config.home.username;
         port = 28766;
       };
@@ -38,7 +38,7 @@
         port = 28766;
       };
       "aspen-tailscale" = {
-        hostname = configVars.hosts.aspen.tailscaleIp;
+        hostname = configVars.hosts.aspen.networking.tailscaleIp;
         user = config.home.username;
         port = 22;
       };

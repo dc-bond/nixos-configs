@@ -9,6 +9,7 @@
 
 let
 
+  hostData = configVars.hosts.${config.networking.hostName};
   app = "pihole";
   app2 = "unbound";
   borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
@@ -50,7 +51,7 @@ in
       "${app}-env".content = ''
         TZ=America/New_York
         WEBPASSWORD=${config.sops.placeholder.piholeWebPasswd}
-        FTLCONF_LOCAL_IPV4=${config.hostSpecificConfigs.primaryIp}
+        FTLCONF_LOCAL_IPV4=${hostData.networking.ipv4}
         VIRTUAL_HOST=${app}.${configVars.domain2}
       '';
     };

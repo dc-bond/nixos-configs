@@ -6,12 +6,32 @@
 {
 
   hosts = {
+
     aspen = {
       users = [ "chris" ];
-      ipv4 = "192.168.1.2";
-      tailscaleIp = "100.68.250.108";
-      diskEncryption = false;
+      bootLoader = "systemd-boot";
+      isMonitoringServer = true;
+      networking = {
+        sshPort = 28766;
+        useResolved = false;
+        ethernetInterface = "enp4s0";
+        wifiInterface = null;
+        dockInterface = null;
+        ipv4 = "192.168.1.2";
+        tailscaleIp = "100.68.250.108";
+      };
+      hardware = {
+        diskEncryption = false;
+        storageDrives = [
+          {
+            mountPoint = "/storage/WD-WCC7K4RU947F";
+            uuid = "2dbedc67-9a6b-477f-a3b4-75116994d1cb";
+            fsType = "ext4";
+          }
+        ];
+      };
     };
+
     thinkpad = {
       users = [ "chris" ];
       ipv4 = "192.168.1.62";

@@ -15,7 +15,7 @@ let
     let
       users = hostConfig.users;
       ipv4 = hostConfig.ipv4;
-      useDiskEncryption = hostConfig.diskEncryption or false;
+      useDiskEncryption = hostConfig.hardware.diskEncryption or false;
       
       # generate age key setup commands for all users
       userAgeSetup = lib.concatMapStringsSep "\n" (user: ''

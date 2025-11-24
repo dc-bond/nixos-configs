@@ -36,7 +36,7 @@ in
     ++ lib.optionals isServer [ "--advertise-exit-node" ]
     ++ lib.optionals isClient [ "--accept-routes" ]
     ++ lib.optional (hostname == "aspen") "--advertise-routes=192.168.1.0/24,192.168.4.0/27"
-    ++ lib.optional (hostname == "thinkpad") "--exit-node=${configVars.hosts.aspen.tailscaleIp}"; # thinkpad laptop (client) always needs to default to using server exit node (aspen or juniper)
+    ++ lib.optional (hostname == "thinkpad") "--exit-node=${configVars.hosts.aspen.networking.tailscaleIp}"; # thinkpad laptop (client) always needs to default to using server exit node (aspen or juniper)
   };
 
   programs.zsh = {
@@ -44,7 +44,7 @@ in
       tstat = "sudo tailscale status";
       tdown = "sudo tailscale down";
     } // lib.optionalAttrs isClient {
-      taspen = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${configVars.hosts.aspen.tailscaleIp} --reset";
+      taspen = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${configVars.hosts.aspen.networking.tailscaleIp} --reset";
       tjuniper = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${configVars.hosts.juniper.tailscaleIp} --reset";
       tup = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --reset";
     };
