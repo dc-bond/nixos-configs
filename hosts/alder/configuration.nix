@@ -44,7 +44,7 @@
     
       eric = {
         isNormalUser = true;
-        uid = ${configVars.users.eric.uid};
+        uid = configVars.users.eric.uid;
         hashedPasswordFile = config.sops.secrets.ericPasswd.path;
         extraGroups = [ "wheel" ] 
           ++ lib.optional config.hardware.i2c.enable "i2c"
