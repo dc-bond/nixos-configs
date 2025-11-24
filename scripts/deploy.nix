@@ -34,14 +34,14 @@ let
       ) users;
       
       # Generate chown flags for all users
-      chownFlags = lib.concatMapStringsSep " \\\n      " (user:
+      chownFlags = lib.concatMapStringsSep " \\\n " (user:
         let upperUser = lib.toUpper user;
         in ''--chown /home/${user} ''${${upperUser}_UID}:100''
       ) users;
 
       # Conditionally include disk encryption flag
       diskEncryptionFlag = lib.optionalString useDiskEncryption ''
-        --disk-encryption-keys /tmp/crypt-passwd.txt <(pass hosts/${hostname}/disk-encryption-passwd)
+        --disk-encryption-keys /tmp/crypt-passwd.txt <(pass hosts/${hostname}/disk-encryption-passwd) \
       '';
       
     in pkgs.writeShellScriptBin "deploy-${hostname}" ''
@@ -78,7 +78,7 @@ let
       # Install with proper ownership
       nix run github:nix-community/nixos-anywhere -- \
         --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
-        ${diskEncryptionFlag} \
+        ${diskEncryptionFlag}
         --extra-files "$temp" \
         ${chownFlags} \
         --flake '.#${hostname}' \
