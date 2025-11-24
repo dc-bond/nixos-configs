@@ -27,11 +27,6 @@
   
   config = {
 
-    hostSpecificConfigs = {
-      bootLoader = "systemd-boot";
-      storageDrive1 = null;
-    };
-
     networking.hostName = "alder";
 
     sops.secrets = {
@@ -89,7 +84,6 @@
     (map configLib.relativeToRoot [
       "hosts/alder/disk-config-btrfs-luks.nix"
       "hosts/alder/hardware-configuration.nix"
-      "nixos-system/host-config-options.nix"
       "nixos-system/boot.nix"
       "nixos-system/networking.nix"
       "nixos-system/tailscale.nix"

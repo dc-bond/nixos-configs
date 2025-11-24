@@ -13,11 +13,6 @@
   
   config = {
     
-    hostSpecificConfigs = {
-      bootLoader = "systemd-boot";
-      storageDrive1 = null;
-    };
-
     networking.hostName = "thinkpad";
 
     environment.systemPackages = with pkgs; [
@@ -55,7 +50,6 @@
     (map configLib.relativeToRoot [
       "hosts/thinkpad/disk-config-btrfs-luks.nix"
       "hosts/thinkpad/hardware-configuration.nix"
-      "nixos-system/host-config-options.nix"
       "nixos-system/boot.nix"
       "nixos-system/networking.nix"
       "nixos-system/tailscale.nix"

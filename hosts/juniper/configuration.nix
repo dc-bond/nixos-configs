@@ -13,11 +13,6 @@
   
   config = {
 
-    hostSpecificConfigs = {
-      bootLoader = "grub";
-      storageDrive1 = null;
-    };
-
     networking.hostName = "juniper";
 
     environment.systemPackages = with pkgs; [
@@ -36,7 +31,6 @@
     (map configLib.relativeToRoot [
       "hosts/juniper/disk-config-btrfs.nix"
       "hosts/juniper/hardware-configuration.nix"
-      "nixos-system/host-config-options.nix"
       "nixos-system/boot.nix"
       "nixos-system/networking.nix"
       "nixos-system/crowdsec.nix"
