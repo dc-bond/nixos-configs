@@ -37,7 +37,7 @@ in
               labels.host = "thinkpad";
             }
             {
-              targets = [ "${configVars.hosts.juniper.tailscaleIp}:9100" ];
+              targets = [ "${configVars.hosts.juniper.networking.tailscaleIp}:9100" ];
               labels.host = "juniper";
             }
           ];
@@ -67,7 +67,7 @@ in
               labels.host = config.networking.hostName;
             }
             {
-              targets = [ "${configVars.hosts.juniper.tailscaleIp}:8082" ];
+              targets = [ "${configVars.hosts.juniper.networking.tailscaleIp}:8082" ];
               labels.host = "juniper";
             }
           ];
@@ -80,7 +80,7 @@ in
               labels.host = config.networking.hostName;
             }
             {
-              targets = [ "${configVars.hosts.juniper.tailscaleIp}:6060" ];
+              targets = [ "${configVars.hosts.juniper.networking.tailscaleIp}:6060" ];
               labels.host = "juniper";
             }
           ];

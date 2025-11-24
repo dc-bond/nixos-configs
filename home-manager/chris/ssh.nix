@@ -63,12 +63,12 @@
         port = 22;
       };
       "juniper" = {
-        hostname = configVars.hosts.juniper.ipv4;
+        hostname = configVars.hosts.juniper.networking.ipv4;
         user = config.home.username;
         port = 28764;
       };
       "juniper-tailscale" = {
-        hostname = configVars.hosts.juniper.tailscaleIp;
+        hostname = configVars.hosts.juniper.networking.tailscaleIp;
         user = config.home.username;
         port = 22;
       };

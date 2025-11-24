@@ -45,7 +45,7 @@ in
       tdown = "sudo tailscale down";
     } // lib.optionalAttrs isClient {
       taspen = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${configVars.hosts.aspen.networking.tailscaleIp} --reset";
-      tjuniper = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${configVars.hosts.juniper.tailscaleIp} --reset";
+      tjuniper = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --exit-node=${configVars.hosts.juniper.networking.tailscaleIp} --reset";
       tup = "sudo tailscale down && sleep 5 && sudo tailscale up --ssh --accept-routes --reset";
     };
   };
