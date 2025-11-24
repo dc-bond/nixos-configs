@@ -18,12 +18,6 @@
       description = "primary ipv4 address for this host";
     };
 
-    sshdPort = lib.mkOption {
-      type = lib.types.nullOr lib.types.int;
-      default = null;
-      description = "ssh daemon port for this host";
-    };
-
     storageDrive1 = lib.mkOption {
       type = lib.types.path;
       default = null;

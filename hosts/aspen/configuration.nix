@@ -22,7 +22,6 @@
       bootLoader = "systemd-boot";
       storageDrive1 = "/storage/WD-WCC7K4RU947F";
       primaryIp = configVars.hosts.aspen.networking.ipv4;
-      sshdPort = 28766;
       isMonitoringServer = true;
     };
     

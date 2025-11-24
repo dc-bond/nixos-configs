@@ -5,11 +5,15 @@
   ... 
 }: 
 
+let
+  hostData = configVars.hosts.${config.networking.hostName};
+in
+
 {
 
-  services.openssh = lib.mkIf (config.hostSpecificConfigs.sshdPort != null) {
+  services.openssh = lib.mkIf (hostData.networking.sshPort != null) {
     enable = true;
-    ports = [ config.hostSpecificConfigs.sshdPort ];
+    ports = [ hostData.networking.sshPort ];
     settings = {
       PasswordAuthentication = false;
       PermitRootLogin = "no";

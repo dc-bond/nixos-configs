@@ -17,7 +17,6 @@
       bootLoader = "grub";
       storageDrive1 = null;
       primaryIp = configVars.hosts.juniper.networking.ipv4;
-      sshdPort = 28764;
     };
 
     networking.hostName = "juniper";

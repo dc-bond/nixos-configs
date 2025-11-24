@@ -17,7 +17,6 @@
       bootLoader = "systemd-boot";
       storageDrive1 = "/storage/WD-WX21DC86RU3P";
       primaryIp = null;
-      sshdPort = null; # only use tailscale ssh
     };
 
     fileSystems."${config.hostSpecificConfigs.storageDrive1}" = {
