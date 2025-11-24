@@ -48,8 +48,10 @@
       inherit inputs configVars configLib nixpkgs;
       outputs = self;
     };
-    mkHost = hostname: users: system: nixpkgs.lib.nixosSystem {
-      inherit system;
+    mkHost = hostname: nixpkgs.lib.nixosSystem {
+      system = configVars.hosts.${hostname}.system;
+    #mkHost = hostname: users: system: nixpkgs.lib.nixosSystem {
+    #  inherit system;
       inherit specialArgs;
       modules = [
         ./hosts/${hostname}/configuration.nix
@@ -58,7 +60,10 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            users = lib.genAttrs users (user: import ./hosts/${hostname}/${user}/home.nix);
+            users = lib.genAttrs 
+              (configVars.hosts.${hostname}.users ++ ["root"]) # always include root user in hosts
+              (user: import ./hosts/${hostname}/${user}/home.nix); # include users defined in each host in configVars
+            #users = lib.genAttrs users (user: import ./hosts/${hostname}/${user}/home.nix);
             extraSpecialArgs = specialArgs; # passes flake inputs and outputs to home-manager module
           };
         }
@@ -68,13 +73,14 @@
   
   {
     overlays = import ./overlays {inherit inputs;}; # custom packages and mods exported as overlays
-    nixosConfigurations = {
-      thinkpad = mkHost "thinkpad" ["chris" "root"] "x86_64-linux";
-      cypress = mkHost "cypress" ["chris" "root"] "x86_64-linux";
-      aspen = mkHost "aspen" ["chris" "root"] "x86_64-linux";
-      juniper = mkHost "juniper" ["chris" "root"] "x86_64-linux";
-      alder = mkHost "alder" ["chris" "eric" "root"] "x86_64-linux";
-    };
+    nixosConfigurations = lib.mapAttrs (hostname: _: mkHost hostname) configVars.hosts; # auto-generate all hosts defined in configVars
+    #nixosConfigurations = {
+    #  thinkpad = mkHost "thinkpad" ["chris" "root"] "x86_64-linux";
+    #  cypress = mkHost "cypress" ["chris" "root"] "x86_64-linux";
+    #  aspen = mkHost "aspen" ["chris" "root"] "x86_64-linux";
+    #  juniper = mkHost "juniper" ["chris" "root"] "x86_64-linux";
+    #  alder = mkHost "alder" ["chris" "eric" "root"] "x86_64-linux";
+    #};
   };
 
 }

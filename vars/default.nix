@@ -8,6 +8,7 @@
   hosts = {
 
     aspen = {
+      system = "x86_64-linux";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = true;
@@ -43,6 +44,7 @@
     };
 
     thinkpad = {
+      system = "x86_64-linux";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = false;
@@ -70,6 +72,7 @@
     };
     
     cypress = {
+      system = "x86_64-linux";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = false;
@@ -103,6 +106,7 @@
     };
 
     juniper = {
+      system = "x86_64-linux";
       users = [ "chris" ];
       bootLoader = "grub";
       isMonitoringServer = false;
@@ -130,6 +134,7 @@
     };
     
     alder = {
+      system = "x86_64-linux";
       users = [ 
         "chris" 
         "eric" 
@@ -279,6 +284,7 @@
   finplannerIp = "172.21.18.2";
 
   users = {
+
     chris = {
       uid = 1000;
       fullName = "Chris Bond";
@@ -373,6 +379,7 @@
         -----END PGP PUBLIC KEY BLOCK-----
       '';
     };
+
     eric = {
       uid = 1001;
       fullName = null;
@@ -380,6 +387,7 @@
       gpgKeyFingerprint = null;
       gpgPubKeyBlock = null; 
     };
+
   };
   
 }
