@@ -1,62 +1,88 @@
 # check ip on installation iso and update configVars
 # set root password on installation iso with 'sudo passwd'
 
-
 { 
   pkgs,
+  config,
   configVars,
   lib,
   ...
 }:
 
 let
-  deployScript = pkgs.writeShellScriptBin "deploy-nixos" ''
-    #!/usr/bin/env bash
-    set -euo pipefail
-    
-    HOST="$1"
-    
-    ${lib.concatStringsSep "\n    " (lib.mapAttrsToList (hostname: hostConfig: ''
-      if [ "$HOST" = "${hostname}" ]; then
-        IPV4="''${2:-${hostConfig.ipv4}}"
-        USERS=(${lib.concatStringsSep " " hostConfig.users})
-      fi
-    '') configVars.hosts)}
-    
-    temp=$(mktemp -d)
-    trap "rm -rf $temp" EXIT
-    
-    install -d -m755 "$temp/etc/age"
-    pass hosts/$HOST/age/private > "$temp/etc/age/$HOST-age.key"
-    chmod 600 "$temp/etc/age/$HOST-age.key"
-    
-    CHOWN_ARGS=()
-    for user in "''${USERS[@]}"; do
-      install -d -m700 "$temp/home/$user/.config/age"
-      pass users/$user/age/private > "$temp/home/$user/.config/age/$user-age.key"
-      chmod 600 "$temp/home/$user/.config/age/$user-age.key"
-      uid=$(nix eval --raw ".#nixosConfigurations.$HOST.config.users.users.$user.uid")
-      CHOWN_ARGS+=(--chown "/home/$user" "$uid:100")
-    done
-    
-    cd "$HOME/nixos-configs/hosts/$HOST"
-    
-    DISK_ENCRYPTION_ARGS=()
-    if [[ " ''${USERS[*]} " =~ " eric " ]]; then
-      DISK_ENCRYPTION_ARGS=(--disk-encryption-keys /tmp/crypt-passwd.txt <(pass users/eric/passwd))
-    fi
-    
-    nix run github:nix-community/nixos-anywhere -- \
-      --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
-      "''${DISK_ENCRYPTION_ARGS[@]}" \
-      --extra-files "$temp" \
-      "''${CHOWN_ARGS[@]}" \
-      --flake ".#$HOST" \
-      root@$IPV4
-  '';
+  # Generate deployment script for a specific host
+  mkDeployScript = hostname: hostConfig:
+    let
+      users = hostConfig.users;
+      ipv4 = hostConfig.ipv4;
+      
+      # Generate age key setup commands for all users
+      userAgeSetup = lib.concatMapStringsSep "\n" (user: ''
+        # Setup age key for ${user}
+        install -d -m700 "$temp/home/${user}/.config/age"
+        pass users/${user}/age/private > "$temp/home/${user}/.config/age/${user}-age.key"
+        chmod 600 "$temp/home/${user}/.config/age/${user}-age.key"
+      '') users;
+      
+      # Generate UID retrieval for all users
+      uidEvals = lib.concatMapStringsSep "\n" (user: 
+        let upperUser = lib.toUpper user;
+        in ''${upperUser}_UID=$(nix eval --raw ".#nixosConfigurations.${hostname}.config.users.users.${user}.uid")''
+      ) users;
+      
+      # Generate chown flags for all users
+      chownFlags = lib.concatMapStringsSep " \\\n " (user:
+        let upperUser = lib.toUpper user;
+        in ''--chown /home/${user} ''${${upperUser}_UID}:100''
+      ) users;
+      
+    in pkgs.writeShellScriptBin "deploy-${hostname}" ''
+      #!/usr/bin/env bash
+      set -euo pipefail
+      
+      echo "Deploying ${hostname} to ${ipv4}..."
+      
+      # Create a temporary directory
+      temp=$(mktemp -d)
+      
+      # Function to cleanup temporary directory on exit
+      cleanup() {
+        rm -rf "$temp"
+      }
+      trap cleanup EXIT
+      
+      # Create directory where sops expects to find the age host key
+      install -d -m755 "$temp/etc/age"
+      
+      # Decrypt private system key from password store and copy to temp directory
+      pass hosts/${hostname}/age/private > "$temp/etc/age/${hostname}-age.key"
+      chmod 600 "$temp/etc/age/${hostname}-age.key"
+      
+      ${userAgeSetup}
+      
+      # Get UIDs from the flake configuration
+      ${uidEvals}
+      
+      # Move to correct directory to generate hardware-configuration.nix
+      cd "$HOME/nixos-configs/hosts/${hostname}"
+      
+      # Install with proper ownership
+      nix run github:nix-community/nixos-anywhere -- \
+        --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
+        --disk-encryption-keys /tmp/crypt-passwd.txt <(pass hosts/${hostname}/disk-encryption-password) \
+        --extra-files "$temp" \
+        ${chownFlags} \
+        --flake '.#${hostname}' \
+        root@${ipv4}
+      
+      echo "Deployment of ${hostname} complete!"
+    '';
 
+  # Generate all deployment scripts
+  deployScripts = lib.mapAttrsToList mkDeployScript configVars.hosts;
+  
 in
 
 {
-  environment.systemPackages = [ deployScript ];
+  environment.systemPackages = deployScripts;
 }

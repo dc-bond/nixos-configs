@@ -85,7 +85,7 @@
       "nixos-system/greetd.nix"
       "nixos-system/hyprland.nix"
 
-      #"scripts/deploy-alder.nix"
+      "scripts/deploy.nix"
     ])
   ];
 
