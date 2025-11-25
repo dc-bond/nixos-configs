@@ -17,8 +17,8 @@ in
     profiles = {
       default = {
         id = 0;
-        name = "chris";
-        path = "chris.default";
+        name = config.home.username;
+        path = "${config.home.username}.default";
         isDefault = true;
         extensions.packages = with firefox-addons; [
           ublock-origin

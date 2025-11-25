@@ -12,9 +12,9 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/chris/alacritty.nix"
-      "home-manager/chris/vscodium.nix"
-      "home-manager/chris/firefox.nix"
+      "home-manager/${config.home.username}/alacritty.nix"
+      "home-manager/${config.home.username}/vscodium.nix"
+      "home-manager/${config.home.username}/firefox.nix"
     ])
   ];
 
