@@ -7,6 +7,7 @@
 
 let
   firefox-addons = inputs.firefox-addons.packages.${pkgs.system};
+  username = builtins.baseNameOf ./.;
 in
 
 {
@@ -17,8 +18,8 @@ in
     profiles = {
       default = {
         id = 0;
-        name = config.home.username;
-        path = "${config.home.username}.default";
+        name = username;
+        path = "${username}.default";
         isDefault = true;
         extensions.packages = with firefox-addons; [
           ublock-origin

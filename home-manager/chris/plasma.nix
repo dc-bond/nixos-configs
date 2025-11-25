@@ -8,13 +8,17 @@
   ... 
 }: 
 
+let
+  username = builtins.baseNameOf ./.;
+in
+
 {
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/${config.home.username}/alacritty.nix"
-      "home-manager/${config.home.username}/vscodium.nix"
-      "home-manager/${config.home.username}/firefox.nix"
+      "home-manager/${username}/alacritty.nix"
+      "home-manager/${username}/vscodium.nix"
+      "home-manager/${username}/firefox.nix"
     ])
   ];
 
