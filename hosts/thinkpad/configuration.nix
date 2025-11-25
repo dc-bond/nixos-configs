@@ -53,7 +53,7 @@
       "nixos-system/boot.nix"
       "nixos-system/networking.nix"
       "nixos-system/tailscale.nix"
-      "nixos-system/admin-users.nix"
+      "nixos-system/users.nix"
       "nixos-system/sshd.nix"
       "nixos-system/audio.nix"
       "nixos-system/zsh.nix"
