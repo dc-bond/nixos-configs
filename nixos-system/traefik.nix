@@ -199,11 +199,12 @@ in
               ipAllowList = {
                 sourceRange = [
                   "192.168.1.0/24" # home LAN including aspen services (e.g. uptime kuma)
-                  "${configVars.hosts.thinkpad.networking.tailscaleIp}" # thinkpad tailscale IP
-                  "${configVars.hosts.cypress.networking.tailscaleIp}" # cypress tailscale IP
-                  "${configVars.devices.chrisIphone15.tailscaleIp}" # chris iPhone tailscale IP
-                  "${configVars.devices.daniellePixel7a.tailscaleIp}" # danielle pixel 7a tailscale IP
-                  "${configVars.devices.sydneyIphone6.tailscaleIp}" # sydney iPhone tailscale IP
+                  "${configVars.hosts.thinkpad.networking.tailscaleIp}"
+                  "${configVars.hosts.cypress.networking.tailscaleIp}"
+                  "${configVars.hosts.alder.networking.tailscaleIp}"
+                  "${configVars.devices.chrisIphone15.tailscaleIp}"
+                  "${configVars.devices.daniellePixel7a.tailscaleIp}"
+                  "${configVars.devices.sydneyIphone6.tailscaleIp}"
                 ];
               };
             };

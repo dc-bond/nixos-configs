@@ -40,6 +40,10 @@ in
               targets = [ "${configVars.hosts.juniper.networking.tailscaleIp}:9100" ];
               labels.host = "juniper";
             }
+            {
+              targets = [ "${configVars.hosts.alder.networking.tailscaleIp}:9100" ];
+              labels.host = "alder";
+            }
           ];
         }
         {
@@ -56,6 +60,10 @@ in
             {
               targets = [ "${configVars.hosts.thinkpad.networking.tailscaleIp}:9633" ];
               labels.host = "thinkpad";
+            }
+            {
+              targets = [ "${configVars.hosts.alder.networking.tailscaleIp}:9100" ];
+              labels.host = "alder";
             }
           ];
         }
