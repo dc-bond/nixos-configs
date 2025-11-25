@@ -136,7 +136,6 @@
     alder = {
       system = "x86_64-linux";
       users = [ 
-        "chris" 
         "eric" 
       ];
       bootLoader = "systemd-boot";
@@ -145,7 +144,7 @@
         sshPort = null;
         useResolved = true;
         ethernetInterface = null;
-        wifiInterface = "wlp1s0";
+        wifiInterface = "wlan0";
         dockInterface = null;
         ipv4 = "192.168.4.15";
         tailscaleIp = null;

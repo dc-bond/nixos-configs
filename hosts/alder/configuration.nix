@@ -10,6 +10,7 @@
 # update deploy script
 # update wallpaper git rev and hash and save locally on deployment host
 ## MANUAL SETUP POST- FRESH INSTALL ##
+# ensure wifi and tailscale connection
 # firefox setup (activate extensions, etc.)
 
 { 
