@@ -74,7 +74,7 @@
       };
       "alder-tailscale" = {
         hostname = configVars.hosts.alder.networking.tailscaleIp;
-        user = config.home.username;
+        user = "eric";
         port = 22;
       };
       "unifi-usg" = {
