@@ -1,16 +1,16 @@
 ## MANUAL SETUP PRE- FRESH INSTALL ##
-# update master flake.nix to add host
+# update configVars to add host and users
 # update configuration.nix, disko configs, home.nix, 
-# update users.nix, greetd.nix
-# update configVars
+# update greetd.nix default cmd
 # add host and user age keys to sops.yaml, update keys on secrets.yaml (see notes in sops.yaml)
 # add user(s) hashed password to secrets.yaml
 # add user(s) password to pass repo
 # tailscale auth key - generate new key in console, add to secrets.yaml - key non-reusable, 90-day expiration, pre-authorized, non-ephemeral, add new tailscale IP in configVars
-# update deploy script
-# update wallpaper git rev and hash and save locally on deployment host
+# update monitoring server configs to add node
 ## MANUAL SETUP POST- FRESH INSTALL ##
-# ensure wifi and tailscale connection
+# first time wifi and tailscale connection
+# tailscale disable expiry in console
+# first time bluetooth devices setup
 # firefox setup (activate extensions, etc.)
 
 { 
