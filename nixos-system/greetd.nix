@@ -16,7 +16,6 @@ let
   '';
   defaultCmdByHost = {
     thinkpad = "startplasma-wayland";
-    #alder = "startplasma-wayland";
     alder = "startxfce4";
     cypress = "Hyprland";
   };
@@ -40,9 +39,10 @@ in
           --remember \
           --remember-user-session \
           --sessions ${customSessions}/share/wayland-sessions:/run/current-system/sw/share/wayland-sessions \
-          --xsessions /dev/null \
+          --xsessions /run/current-system/sw/share/xsessions \
           --cmd ${defaultCmd}
       '';
+          #--xsessions /dev/null \
     };
   };
 
