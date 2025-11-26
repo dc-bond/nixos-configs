@@ -9,7 +9,10 @@
 {
 
   services = {
-    displayManager.sessionPackages = [ pkgs.xfce.xfce4-session ];
+    displayManager = {
+      sessionPackages = [ pkgs.xfce.xfce4-session ];
+      defaultSession = "xfce";
+    };
     xserver = {
       enable = true;
       desktopManager.xfce = {
