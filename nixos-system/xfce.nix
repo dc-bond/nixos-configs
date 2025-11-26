@@ -13,7 +13,7 @@
       enable = true;
       desktopManager.xfce = {
         enable = true;
-        enableWaylandSession = true;
+        #enableWaylandSession = true;
         enableXfwm = true;
         enableScreensaver = false;
         noDesktop = false;  # show desktop icons and background
