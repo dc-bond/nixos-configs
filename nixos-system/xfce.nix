@@ -10,6 +10,13 @@
 
   services.xserver = {
     enable = true;
+    libinput = {
+      enable = true; # enable mouse support in x11
+      touchpad = {
+        tapping = true;
+        naturalScrolling = true;  # optional
+      };
+    };
     desktopManager.xfce = {
       enable = true;
       enableWaylandSession = true;
