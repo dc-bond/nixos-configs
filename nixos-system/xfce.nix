@@ -8,21 +8,23 @@
 
 {
 
-  services.xserver = {
-    enable = true;
+  services = {
+    xserver = {
+      enable = true;
+      desktopManager.xfce = {
+        enable = true;
+        enableWaylandSession = true;
+        enableXfwm = true;
+        enableScreensaver = false;
+        noDesktop = false;  # show desktop icons and background
+      };
+    };
     libinput = {
       enable = true; # enable mouse support in x11
       touchpad = {
         tapping = true;
         naturalScrolling = true;  # optional
       };
-    };
-    desktopManager.xfce = {
-      enable = true;
-      enableWaylandSession = true;
-      enableXfwm = true;
-      enableScreensaver = false;
-      noDesktop = false;  # show desktop icons and background
     };
   };
 
