@@ -10,6 +10,10 @@
 
 let
   username = builtins.baseNameOf ./.;
+  wallpaperDir = pkgs.runCommand "wallpapers" {} ''
+    mkdir -p $out
+    cp -r ${inputs.self}/wallpaper/* $out/
+  '';
 in
 
 {
@@ -283,7 +287,7 @@ in
     };
 
     workspace = {
-      wallpaperSlideShow.path = "${inputs.self}/wallpaper";
+      wallpaperSlideShow.path = "${wallpaperDir}";
       cursor = {
         theme = "WhiteSur-cursors";
         size = 20;
