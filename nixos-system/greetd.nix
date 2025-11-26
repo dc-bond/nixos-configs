@@ -16,7 +16,7 @@ let
   '';
   defaultCmdByHost = {
     thinkpad = "startplasma-wayland";
-    alder = "xfce";
+    alder = "lxqt";
     cypress = "Hyprland";
   };
   defaultCmd = defaultCmdByHost.${config.networking.hostName} or "zsh";
