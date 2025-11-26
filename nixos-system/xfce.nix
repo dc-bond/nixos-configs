@@ -46,6 +46,7 @@
   environment.systemPackages = with pkgs; [
     xfce.xfce4-pulseaudio-plugin
     xfce.xfce4-whiskermenu-plugin
+    xorg.xinit # required for startxfce4 x11
   ];
 
 }
