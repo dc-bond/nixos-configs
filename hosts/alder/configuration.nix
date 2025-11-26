@@ -81,7 +81,8 @@
       "nixos-system/monitoring-client.nix"
       
       "nixos-system/greetd.nix"
-      "nixos-system/plasma.nix"
+      #"nixos-system/plasma.nix"
+      "nixos-system/xfce.nix"
     ])
   ];
 
