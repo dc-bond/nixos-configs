@@ -9,6 +9,7 @@
 {
 
   services = {
+    displayManager.sessionPackages = [ pkgs.xfce.xfce4-session ];
     xserver = {
       enable = true;
       desktopManager.xfce = {
@@ -26,6 +27,9 @@
         naturalScrolling = true;  # optional
       };
     };
+    #gnome.gnome-keyring.enable = true;
+    gvfs.enable = true; # mount, trash, and other functionalities
+    tumbler.enable = true; # thumbnail support for images
   };
 
   programs = {
@@ -45,12 +49,6 @@
    ];
 
   # programs.gnupg.agent.pinentryPackage = pkgs.pinentry-gtk2;
-
-  services = {
-    #gnome.gnome-keyring.enable = true;
-    gvfs.enable = true; # mount, trash, and other functionalities
-    tumbler.enable = true; # thumbnail support for images
-  };
 
   environment.systemPackages = with pkgs; [
     xfce.xfce4-pulseaudio-plugin
