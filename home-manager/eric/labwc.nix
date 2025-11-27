@@ -304,18 +304,21 @@ in
       </openbox_menu>
     '';
     
-    "labwc/autostart".text = ''
-      #!/bin/sh
-      
-      # Start wallpaper daemon
-      swww-daemon &
-      
-      # Start notification daemon
-      dunst &
-      
-      # Wait a moment then reload desktop to set wallpaper and launch waybar
-      sleep 2 && desktopReload &
-    '';
+    "labwc/autostart" = {
+      text = ''
+        #!/bin/sh
+        
+        # Start wallpaper daemon
+        swww-daemon &
+        
+        # Start notification daemon
+        dunst &
+        
+        # Wait a moment then reload desktop to set wallpaper and launch waybar
+        sleep 2 && desktopReload &
+      '';
+      executable = true;
+    };
     
     "labwc/environment".text = ''
       XDG_CURRENT_DESKTOP=labwc
@@ -326,11 +329,6 @@ in
     '';
   };
   
-  # make autostart executable
-  home.activation.makeLabwcAutostartExecutable = lib.hm.dag.entryAfter ["writeBoundary"] ''
-    chmod +x ${config.xdg.configHome}/labwc/autostart
-  '';
-
   # waybar configuration
   programs.waybar = {
     enable = true;

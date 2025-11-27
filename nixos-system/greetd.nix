@@ -39,9 +39,10 @@ in
           --remember \
           --remember-user-session \
           --sessions ${customSessions}/share/wayland-sessions:/run/current-system/sw/share/wayland-sessions \
-          --xsessions /run/current-system/sw/share/xsessions \
+          --xsessions /dev/null \
           --cmd ${defaultCmd}
       '';
+          #--xsessions /run/current-system/sw/share/xsessions \
           #--xsessions /dev/null \
     };
   };
