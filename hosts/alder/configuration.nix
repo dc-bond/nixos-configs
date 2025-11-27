@@ -81,7 +81,7 @@
       "nixos-system/monitoring-client.nix"
       
       "nixos-system/greetd.nix"
-      "nixos-system/lxqt.nix"
+      "nixos-system/labwc.nix"
     ])
   ];
 

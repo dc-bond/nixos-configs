@@ -19,7 +19,7 @@ in
       "home-manager/${username}/zsh.nix"
       "home-manager/${username}/starship.nix"
       "home-manager/${username}/neovim.nix"
-      #"home-manager/${username}/plasma.nix"
+      "home-manager/${username}/labwc.nix"
     ])
   ];
 
