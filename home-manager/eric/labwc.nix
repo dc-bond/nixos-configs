@@ -135,80 +135,12 @@ in
           </keybind>
           ''}
 
-          <keybind key="A-F10">
-            <action name="Execute" command="rfkill toggle bluetooth" />
-          </keybind>
-          
-          <keybind key="A-F5">
+          <keybind key="A-F11">
             <action name="Execute" command="brightnessctl set 10%-" />
           </keybind>
           
-          <keybind key="A-F6">
+          <keybind key="A-F12">
             <action name="Execute" command="brightnessctl set +10%" />
-          </keybind>
-          
-          <!-- Workspaces -->
-          <keybind key="A-1">
-            <action name="GoToDesktop" to="1" />
-          </keybind>
-          <keybind key="A-2">
-            <action name="GoToDesktop" to="2" />
-          </keybind>
-          <keybind key="A-3">
-            <action name="GoToDesktop" to="3" />
-          </keybind>
-          <keybind key="A-4">
-            <action name="GoToDesktop" to="4" />
-          </keybind>
-          <keybind key="A-5">
-            <action name="GoToDesktop" to="5" />
-          </keybind>
-          <keybind key="A-6">
-            <action name="GoToDesktop" to="6" />
-          </keybind>
-          <keybind key="A-7">
-            <action name="GoToDesktop" to="7" />
-          </keybind>
-          <keybind key="A-8">
-            <action name="GoToDesktop" to="8" />
-          </keybind>
-          <keybind key="A-9">
-            <action name="GoToDesktop" to="9" />
-          </keybind>
-          <keybind key="A-0">
-            <action name="GoToDesktop" to="10" />
-          </keybind>
-          
-          <!-- Move windows to workspaces -->
-          <keybind key="A-S-1">
-            <action name="SendToDesktop" to="1" />
-          </keybind>
-          <keybind key="A-S-2">
-            <action name="SendToDesktop" to="2" />
-          </keybind>
-          <keybind key="A-S-3">
-            <action name="SendToDesktop" to="3" />
-          </keybind>
-          <keybind key="A-S-4">
-            <action name="SendToDesktop" to="4" />
-          </keybind>
-          <keybind key="A-S-5">
-            <action name="SendToDesktop" to="5" />
-          </keybind>
-          <keybind key="A-S-6">
-            <action name="SendToDesktop" to="6" />
-          </keybind>
-          <keybind key="A-S-7">
-            <action name="SendToDesktop" to="7" />
-          </keybind>
-          <keybind key="A-S-8">
-            <action name="SendToDesktop" to="8" />
-          </keybind>
-          <keybind key="A-S-9">
-            <action name="SendToDesktop" to="9" />
-          </keybind>
-          <keybind key="A-S-0">
-            <action name="SendToDesktop" to="10" />
           </keybind>
           
           <!-- Window resizing -->
@@ -276,26 +208,31 @@ in
           </context>
         </mouse>
         
-        <desktops number="10" />
+        <desktops number="1" />
       </labwc_config>
     '';
     
     "labwc/menu.xml".text = ''
       <?xml version="1.0"?>
       <openbox_menu>
-        <menu id="root-menu" label="Menu">
+        <menu id="root-menu" label="labwc">
           <item label="Terminal">
             <action name="Execute" command="alacritty" />
           </item>
-          <item label="Browser">
+          <item label="Firefox">
             <action name="Execute" command="firefox" />
           </item>
           <item label="Calculator">
             <action name="Execute" command="gnome-calculator" />
           </item>
+          <item label="File Manager">
+            <action name="Execute" command="thunar" />
           <separator />
-          <item label="Reconfigure">
-            <action name="Reconfigure" />
+          <item label="Reload Desktop">
+            <action name="Execute" command="desktopReload" />
+          <separator />
+          <item label="Lock">
+            <action name="Execute" command="swaylock" />
           </item>
           <item label="Exit">
             <action name="Execute" command="${pkgs.wlogout}/bin/wlogout" />
