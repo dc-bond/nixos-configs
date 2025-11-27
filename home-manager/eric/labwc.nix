@@ -297,7 +297,7 @@ in
       "modules-right" = [
         "tray"
       ] ++ lib.optionals (osConfig.networking.hostName == "alder") [
-        "battery"
+        #"battery"
         "backlight"
       ] ++ [
         "temperature"
@@ -307,9 +307,9 @@ in
         "bluetooth"
       ] ++ lib.optionals (osConfig.networking.hostName == "alder") [
         "network#wifi"
-        "network#ethernet-dock"
+        #"network#ethernet-dock"
       ] ++ [
-        "network#ethernet"
+        #"network#ethernet"
         "network#tailscale"
         "clock"
       ];
@@ -326,9 +326,6 @@ in
         "on-click" = "minimize-raise";
         "on-click-middle" = "close";
         "ignore-list" = [];
-        "app_ids-mapping" = {
-          "firefoxdeveloperedition" = "firefox-developer-edition";
-        };
       };
       "tray" = {
         "icon-size" = 18;
@@ -362,16 +359,16 @@ in
         "tooltip-format" = "Tailscale: {ipaddr}";
         "tooltip-format-disconnected" = "Tailscale: Disconnected";
       };
-      "network#ethernet" = {
-        "interface" = 
-         if osConfig.networking.hostName == "cypress" then "enp1s0"
-         else if osConfig.networking.hostName == "thinkpad" then "enp0s31f6"
-         else "eth0";
-        "format-ethernet" = "󰌗";
-        "format-disconnected" = "󰌗";
-        "tooltip-format-ethernet" = "Ethernet: {ipaddr}";
-        "tooltip-format-disconnected" = "Ethernet: Disconnected";
-      };
+      #"network#ethernet" = {
+      #  "interface" = 
+      #   if osConfig.networking.hostName == "cypress" then "enp1s0"
+      #   else if osConfig.networking.hostName == "thinkpad" then "enp0s31f6"
+      #   else "eth0";
+      #  "format-ethernet" = "󰌗";
+      #  "format-disconnected" = "󰌗";
+      #  "tooltip-format-ethernet" = "Ethernet: {ipaddr}";
+      #  "tooltip-format-disconnected" = "Ethernet: Disconnected";
+      #};
       "bluetooth" = {
         "format" = "";
         "format-connected" = " {num_connections}";
@@ -386,25 +383,25 @@ in
         "tooltip-format-wifi" = "Wifi: {essid} {ipaddr}";
         "tooltip-format-disconnected" = "Wifi: Disconnected";
       };
-      "network#ethernet-dock" = lib.mkIf (osConfig.networking.hostName == "thinkpad") {
-        "interface" = "enp0s20f0u2u1u2";
-        "format-ethernet" = "󰌗";
-        "format-disconnected" = "󰌗";
-        "tooltip-format-ethernet" = "Ethernet-Dock: {ipaddr}";
-        "tooltip-format-disconnected" = "Ethernet-Dock: Disconnected";
-      };
-      "battery" = lib.mkIf (osConfig.networking.hostName == "thinkpad") {
-        "interval" = 30;
-        "states" = {
-          "good" = 90;
-          "warning" = 30;
-          "critical" = 5;
-        };
-        "format" = "{capacity}% {icon}";
-        "format-charging" = "{capacity}% 󱠵";
-        "format-plugged" = "{capacity}% ";
-        "format-icons" = [" " " " " " " " " "];
-      };
+      #"network#ethernet-dock" = lib.mkIf (osConfig.networking.hostName == "thinkpad") {
+      #  "interface" = "enp0s20f0u2u1u2";
+      #  "format-ethernet" = "󰌗";
+      #  "format-disconnected" = "󰌗";
+      #  "tooltip-format-ethernet" = "Ethernet-Dock: {ipaddr}";
+      #  "tooltip-format-disconnected" = "Ethernet-Dock: Disconnected";
+      #};
+      #"battery" = lib.mkIf (osConfig.networking.hostName == "thinkpad") {
+      #  "interval" = 30;
+      #  "states" = {
+      #    "good" = 90;
+      #    "warning" = 30;
+      #    "critical" = 5;
+      #  };
+      #  "format" = "{capacity}% {icon}";
+      #  "format-charging" = "{capacity}% 󱠵";
+      #  "format-plugged" = "{capacity}% ";
+      #  "format-icons" = [" " " " " " " " " "];
+      #};
       "backlight" = lib.mkIf (osConfig.networking.hostName == "alder") {
         "device" = "intel_backlight";
         "format" = "{percent}% {icon}";
@@ -598,7 +595,7 @@ in
       };
       background = [
         {
-          path = "${wallpaperDir}/wallpaper-1.jpg";
+          path = "${wallpaperDir}/wallpaper-92.jpg";
           blur_passes = 3;
           contrast = 1;
           brightness = 0.5;
@@ -615,7 +612,7 @@ in
           dots_spacing = 0.35; # Scale of dots' absolute size, 0.0 - 1.0
           dots_center = true;
           outer_color = "rgba(0, 0, 0, 0)";
-          inner_color = "rgba(0, 0, 0, 0.2)";
+          inner_color = "rgba(0, 255, 34, 0.2)";
           fade_on_empty = false;
           rounding = -1;
           check_color = "rgb(204, 136, 34)";
