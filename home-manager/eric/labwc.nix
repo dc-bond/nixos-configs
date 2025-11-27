@@ -211,7 +211,7 @@ in
         <desktops number="1" />
       </labwc_config>
     '';
-    
+
     "labwc/menu.xml".text = ''
       <?xml version="1.0"?>
       <openbox_menu>
@@ -227,9 +227,15 @@ in
           </item>
           <item label="File Manager">
             <action name="Execute" command="thunar" />
+          </item>
           <separator />
           <item label="Reload Desktop">
             <action name="Execute" command="desktopReload" />
+          </item>
+          <separator />
+          <item label="Reconfigure labwc">
+            <action name="Reconfigure" />
+          </item>
           <separator />
           <item label="Lock">
             <action name="Execute" command="swaylock" />
