@@ -58,6 +58,14 @@ in
     dunst # notification daemon
     grim # screenshot tool
     wlr-randr # output management
+    gnome-calculator # calculator
+    loupe # image viewer
+    zathura # barebones pdf viewer
+    libreoffice-still # office suite
+    element-desktop # matrix chat app
+    #nextcloud-client # nextcloud local syncronization client
+    hyprshot # screenshot tool
+    pwvucontrol # pipewire audio volume control app
   ];
 
   # labwc configuration files
@@ -233,10 +241,6 @@ in
             <action name="Execute" command="desktopReload" />
           </item>
           <separator />
-          <item label="Reconfigure labwc">
-            <action name="Reconfigure" />
-          </item>
-          <separator />
           <item label="Lock">
             <action name="Execute" command="swaylock" />
           </item>
@@ -287,7 +291,8 @@ in
       "margin-left" = 0;
       "margin-right" = 0;
       "modules-left" = [
-        "wlr/workspaces"
+        #"wlr/workspaces"
+        "wlr/taskbar"
       ];
       "modules-right" = [
         "tray"
@@ -308,10 +313,22 @@ in
         "network#tailscale"
         "clock"
       ];
-      "wlr/workspaces" = {
-        "format" = "{name}";
-        "on-click" = "activate";
-        "sort-by-number" = true;
+      #"wlr/workspaces" = {
+      #  "format" = "{name}";
+      #  "on-click" = "activate";
+      #  "sort-by-number" = true;
+      #};
+      "wlr/taskbar" = {
+        "format" = "{icon}";
+        "icon-size" = 18;
+        "icon-theme" = "Papirus";
+        "tooltip-format" = "{title}";
+        "on-click" = "minimize-raise";
+        "on-click-middle" = "close";
+        "ignore-list" = [];
+        "app_ids-mapping" = {
+          "firefoxdeveloperedition" = "firefox-developer-edition";
+        };
       };
       "tray" = {
         "icon-size" = 18;
@@ -394,6 +411,24 @@ in
         "format-icons" = ["󰛨"];
       };
     }];
+      ##workspaces button {
+      #    color: @color11;
+      #    transition: all 0.3s ease-in-out;
+      #    opacity: 0.8;
+      #    border-radius: 20px;
+      #    font-size: 14px;
+      #}
+      ##workspaces button.active {
+      #    color: #ffffff;
+      #    background-color: @color11;
+      #    transition: all 0.3s ease-in-out;
+      #    border-radius: 20px;
+      #    opacity: 1.0;
+      #}
+      ##workspaces button:hover {
+      #    color: #ffffff;
+      #    background-color: @color1;
+      #}
     style = 
     ''
       @import 'colors-waybar.css';
@@ -407,23 +442,24 @@ in
           transition-property: background-color;
           transition-duration: .5s;
       }
-      #workspaces button {
-          color: @color11;
-          transition: all 0.3s ease-in-out;
-          opacity: 0.8;
-          border-radius: 20px;
-          font-size: 14px;
-      }
-      #workspaces button.active {
+      #taskbar button {
+          padding: 0 5px;
+          margin: 0 2px;
+          border-radius: 5px;
           color: #ffffff;
+          background-color: transparent;
+          opacity: 0.8;
+      }
+      #taskbar button.active {
           background-color: @color11;
-          transition: all 0.3s ease-in-out;
-          border-radius: 20px;
           opacity: 1.0;
       }
-      #workspaces button:hover {
-          color: #ffffff;
+      #taskbar button.minimized {
+          opacity: 0.5;
+      }
+      #taskbar button:hover {
           background-color: @color1;
+          opacity: 1.0;
       }
       tooltip {
           background-color: #ffffff;

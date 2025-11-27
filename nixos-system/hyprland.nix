@@ -8,7 +8,6 @@
 
   environment = {
     systemPackages = with pkgs; [
-      wayland-utils # wayland utilities
       wl-clipboard # command-line copy/paste utilities for wayland
       libsecret # secrets library for gnome keyring
     ];

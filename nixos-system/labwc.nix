@@ -10,24 +10,26 @@
 
   environment.systemPackages = with pkgs; [
     wl-clipboard # command-line copy/paste utilities for wayland
+    libsecret # secrets library for gnome keyring
   ];
 
   programs = {
     labwc.enable = true;
+    thunar = {
+      enable = true;
+      plugins = with pkgs.xfce; [
+        thunar-archive-plugin
+        thunar-volman
+      ];
+    };
+    seahorse.enable = true; # gnome secrets managegement tool
+    xfconf.enable = true; # enable xfconf to save preferences in thunar
   };
 
-  #services.displayManager.sessionPackages = [ 
-  #  (pkgs.writeTextFile {
-  #    name = "labwc-session";
-  #    destination = "/share/wayland-sessions/labwc.desktop";
-  #    text = ''
-  #      [Desktop Entry]
-  #      Name=labwc
-  #      Comment=Stacking Wayland compositor
-  #      Exec=${pkgs.labwc}/bin/labwc
-  #      Type=Application
-  #    '';
-  #  })
-  #];
+  services = {
+    gnome.gnome-keyring.enable = true;
+    gvfs.enable = true; # mount, trash, and other functionalities
+    tumbler.enable = true; # thumbnail support for images
+  };
 
 }
