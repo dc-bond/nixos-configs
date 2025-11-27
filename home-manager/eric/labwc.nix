@@ -336,20 +336,20 @@ in
         "format" = "{:%I:%M}";
       };
       "cpu" = {
-        "format" = "{usage}% ";
+        "format" = "{usage}% ";
       };
       "memory" = {
         "format" = "{percentage}% 󰘚";
       };
       "disk" = {
         "interval" = 10;
-        "format" = "{percentage_used}% ";
+        "format" = "{percentage_used}% ";
         "path" = "/";
       };
       "temperature" = {
-        "critical-threshold" = 80;
-        "format-critical" = "{temperatureC}°C ";
-        "format" = "{temperatureC}°C ";
+	      "critical-threshold" = 80;
+	      "format-critical" = "{temperatureC}°C ";
+	      "format" = "{temperatureC}°C ";
       };
       "network#tailscale" = {
         "interface" = "tailscale0";
@@ -370,9 +370,9 @@ in
       #  "tooltip-format-disconnected" = "Ethernet: Disconnected";
       #};
       "bluetooth" = {
-        "format" = "";
+	      "format" = "";
         "format-connected" = " {num_connections}";
-        "format-off" = "";
+	      "format-off" = "";
         "format-disabled" = "󰂲";
         "interval" = 5;
       };
