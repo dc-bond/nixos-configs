@@ -277,6 +277,7 @@
         "clock" = {
           "timezone" = "America/New_York";
 	        "format" = "{:%I:%M}";
+          "tooltip-format" = "{:%A, %B %d, %Y}";
         };
         "cpu" = {
           "format" = "{usage}% ";
@@ -314,9 +315,12 @@
         };
         "bluetooth" = {
 	        "format" = "";
-	        "format-connected" = " {num_connections}";
+          "format-connected" = "{num_connections}";
 	        "format-off" = "";
           "format-disabled" = "󰂲";
+          "tooltip-format" = "Bluetooth: {status}";
+          "tooltip-format-connected" = "Bluetooth: {device_enumerate}";
+          "tooltip-format-enumerate-connected" = "{device_alias}";
           "interval" = 5;
         };
         "network#wifi" = lib.mkIf (osConfig.networking.hostName == "thinkpad") {

@@ -61,18 +61,39 @@ in
     gnome-calculator # calculator
     loupe # image viewer
     zathura # barebones pdf viewer
-    libreoffice-still # office suite
-    element-desktop # matrix chat app
+    #libreoffice-still # office suite
+    #element-desktop # matrix chat app
     #nextcloud-client # nextcloud local syncronization client
     hyprshot # screenshot tool
     pwvucontrol # pipewire audio volume control app
   ];
+
+  gtk = {
+    enable = true;
+    theme = {
+      name = "Materia-light";
+      package = pkgs.materia-theme;
+    };
+    iconTheme = {
+      name = "Papirus";
+      package = pkgs.papirus-nord;
+    };
+    font = {
+      name = "Source Sans Pro";
+      package = null; # already installed in fonts.nix system-level module
+      size = 10;
+    };
+    gtk3.extraConfig = {
+      gtk-application-prefer-dark-theme = false;  # since using materia light
+    };
+  };
 
   # labwc configuration files
   xdg.configFile = {
     "labwc/rc.xml".text = ''
       <?xml version="1.0"?>
       <labwc_config>
+
         <core>
           <decoration>server</decoration>
         </core>
@@ -95,10 +116,6 @@ in
             <action name="Execute" command="rofi -modes run,ssh -show run" />
           </keybind>
           
-          <keybind key="A-s">
-            <action name="Execute" command="ddcutil -d 1 setvcp D6 05 &amp;&amp; systemctl suspend" />
-          </keybind>
-          
           <keybind key="A-q">
             <action name="Close" />
           </keybind>
@@ -111,37 +128,9 @@ in
             <action name="ToggleDecorations" />
           </keybind>
           
-          <!-- Focus movements -->
-          <keybind key="A-h">
-            <action name="Focus" direction="left" />
-          </keybind>
-          
-          <keybind key="A-l">
-            <action name="Focus" direction="right" />
-          </keybind>
-          
-          <keybind key="A-k">
-            <action name="Focus" direction="up" />
-          </keybind>
-          
-          <keybind key="A-j">
-            <action name="Focus" direction="down" />
-          </keybind>
-          
-          <!-- Monitor input switching -->
-          <keybind key="A-F1">
-            <action name="Execute" command="ddcutil -d 1 setvcp 60 0x11" />
-          </keybind>
-          
-          <keybind key="A-F2">
-            <action name="Execute" command="ddcutil -d 1 setvcp 60 0x12" />
-          </keybind>
-
-          ${lib.optionalString (osConfig.networking.hostName == "alder") ''
           <keybind key="A-F8">
             <action name="Execute" command="rfkill toggle wlan" />
           </keybind>
-          ''}
 
           <keybind key="A-F11">
             <action name="Execute" command="brightnessctl set 10%-" />
@@ -151,46 +140,12 @@ in
             <action name="Execute" command="brightnessctl set +10%" />
           </keybind>
           
-          <!-- Window resizing -->
-          <keybind key="A-S-Right">
-            <action name="Resize" left="-100" />
-          </keybind>
-          <keybind key="A-S-Left">
-            <action name="Resize" right="-100" />
-          </keybind>
-          <keybind key="A-S-Up">
-            <action name="Resize" bottom="-100" />
-          </keybind>
-          <keybind key="A-S-Down">
-            <action name="Resize" top="-100" />
-          </keybind>
-          
-          <!-- Window moving -->
-          <keybind key="A-S-h">
-            <action name="MoveToEdge" direction="left" />
-          </keybind>
-          <keybind key="A-S-l">
-            <action name="MoveToEdge" direction="right" />
-          </keybind>
-          <keybind key="A-S-k">
-            <action name="MoveToEdge" direction="up" />
-          </keybind>
-          <keybind key="A-S-j">
-            <action name="MoveToEdge" direction="down" />
-          </keybind>
-          
-          <!-- Reload and quit -->
-          <keybind key="A-S-r">
-            <action name="Execute" command="desktopReload" />
-          </keybind>
-          
           <keybind key="A-S-q">
             <action name="Execute" command="${pkgs.wlogout}/bin/wlogout" />
           </keybind>
           
-          <!-- Screenshot -->
           <keybind key="Print">
-            <action name="Execute" command="grim -g &quot;$(slurp)&quot; - | wl-copy" />
+            <action name="Execute" command="hyprshot -m region output --clipboard-only" />
           </keybind>
         </keyboard>
         
@@ -217,6 +172,7 @@ in
         </mouse>
         
         <desktops number="1" />
+
       </labwc_config>
     '';
 
@@ -237,11 +193,11 @@ in
             <action name="Execute" command="thunar" />
           </item>
           <separator />
-          <item label="Reload Desktop">
+          <item label="Reload Wallpaper">
             <action name="Execute" command="desktopReload" />
           </item>
           <separator />
-          <item label="Lock">
+          <item label="Lock Screen">
             <action name="Execute" command="hyprlock" />
           </item>
           <item label="Exit">
@@ -254,14 +210,8 @@ in
     "labwc/autostart" = {
       text = ''
         #!/bin/sh
-        
-        # Start wallpaper daemon
         swww-daemon &
-        
-        # Start notification daemon
         dunst &
-        
-        # Wait a moment then reload desktop to set wallpaper and launch waybar
         sleep 2 && desktopReload &
       '';
       executable = true;
@@ -291,33 +241,16 @@ in
       "margin-left" = 0;
       "margin-right" = 0;
       "modules-left" = [
-        #"wlr/workspaces"
         "wlr/taskbar"
       ];
       "modules-right" = [
         "tray"
-      ] ++ lib.optionals (osConfig.networking.hostName == "alder") [
-        #"battery"
         "backlight"
-      ] ++ [
-        "temperature"
-        "cpu"
-        "memory"
-        "disk"
         "bluetooth"
-      ] ++ lib.optionals (osConfig.networking.hostName == "alder") [
         "network#wifi"
-        #"network#ethernet-dock"
-      ] ++ [
-        #"network#ethernet"
         "network#tailscale"
         "clock"
       ];
-      #"wlr/workspaces" = {
-      #  "format" = "{name}";
-      #  "on-click" = "activate";
-      #  "sort-by-number" = true;
-      #};
       "wlr/taskbar" = {
         "format" = "{icon}";
         "icon-size" = 18;
@@ -334,22 +267,7 @@ in
       "clock" = {
         "timezone" = "America/New_York";
         "format" = "{:%I:%M}";
-      };
-      "cpu" = {
-        "format" = "{usage}% ";
-      };
-      "memory" = {
-        "format" = "{percentage}% 󰘚";
-      };
-      "disk" = {
-        "interval" = 10;
-        "format" = "{percentage_used}% ";
-        "path" = "/";
-      };
-      "temperature" = {
-	      "critical-threshold" = 80;
-	      "format-critical" = "{temperatureC}°C ";
-	      "format" = "{temperatureC}°C ";
+        "tooltip-format" = "{:%A, %B %d, %Y}";
       };
       "network#tailscale" = {
         "interface" = "tailscale0";
@@ -359,228 +277,142 @@ in
         "tooltip-format" = "Tailscale: {ipaddr}";
         "tooltip-format-disconnected" = "Tailscale: Disconnected";
       };
-      #"network#ethernet" = {
-      #  "interface" = 
-      #   if osConfig.networking.hostName == "cypress" then "enp1s0"
-      #   else if osConfig.networking.hostName == "thinkpad" then "enp0s31f6"
-      #   else "eth0";
-      #  "format-ethernet" = "󰌗";
-      #  "format-disconnected" = "󰌗";
-      #  "tooltip-format-ethernet" = "Ethernet: {ipaddr}";
-      #  "tooltip-format-disconnected" = "Ethernet: Disconnected";
-      #};
       "bluetooth" = {
 	      "format" = "";
-        "format-connected" = " {num_connections}";
+        "format-connected" = "{num_connections}";
 	      "format-off" = "";
         "format-disabled" = "󰂲";
+        "tooltip-format" = "Bluetooth: {status}";
+        "tooltip-format-connected" = "Bluetooth: {device_enumerate}";
+        "tooltip-format-enumerate-connected" = "{device_alias}";
         "interval" = 5;
       };
-      "network#wifi" = lib.mkIf (osConfig.networking.hostName == "alder") {
+      "network#wifi" = {
         "interface" = "wlan0";
         "format-wifi" = "{signalStrength}% ";
         "format-disconnected" = "󰖪";
         "tooltip-format-wifi" = "Wifi: {essid} {ipaddr}";
         "tooltip-format-disconnected" = "Wifi: Disconnected";
       };
-      #"network#ethernet-dock" = lib.mkIf (osConfig.networking.hostName == "thinkpad") {
-      #  "interface" = "enp0s20f0u2u1u2";
-      #  "format-ethernet" = "󰌗";
-      #  "format-disconnected" = "󰌗";
-      #  "tooltip-format-ethernet" = "Ethernet-Dock: {ipaddr}";
-      #  "tooltip-format-disconnected" = "Ethernet-Dock: Disconnected";
-      #};
-      #"battery" = lib.mkIf (osConfig.networking.hostName == "thinkpad") {
-      #  "interval" = 30;
-      #  "states" = {
-      #    "good" = 90;
-      #    "warning" = 30;
-      #    "critical" = 5;
-      #  };
-      #  "format" = "{capacity}% {icon}";
-      #  "format-charging" = "{capacity}% 󱠵";
-      #  "format-plugged" = "{capacity}% ";
-      #  "format-icons" = [" " " " " " " " " "];
-      #};
-      "backlight" = lib.mkIf (osConfig.networking.hostName == "alder") {
+      "backlight" = {
         "device" = "intel_backlight";
         "format" = "{percent}% {icon}";
         "format-icons" = ["󰛨"];
       };
     }];
-      ##workspaces button {
-      #    color: @color11;
-      #    transition: all 0.3s ease-in-out;
-      #    opacity: 0.8;
-      #    border-radius: 20px;
-      #    font-size: 14px;
-      #}
-      ##workspaces button.active {
-      #    color: #ffffff;
-      #    background-color: @color11;
-      #    transition: all 0.3s ease-in-out;
-      #    border-radius: 20px;
-      #    opacity: 1.0;
-      #}
-      ##workspaces button:hover {
-      #    color: #ffffff;
-      #    background-color: @color1;
-      #}
-    style = 
-    ''
+    style = ''
       @import 'colors-waybar.css';
+      
       * {
-          font-family: "SauceCodePro Nerd Font", "Font Awesome 6 Free";
-          border: none;
-          min-height: 0;
+        font-family: "SauceCodePro Nerd Font", "Font Awesome 6 Free";
+        border: none;
+        min-height: 0;
       }
+      
       window#waybar {
-          background: #000000;
-          transition-property: background-color;
-          transition-duration: .5s;
+        background: #000000;
+        transition-property: background-color;
+        transition-duration: .5s;
       }
+      
       #taskbar button {
-          padding: 0 5px;
-          margin: 0 2px;
-          border-radius: 5px;
-          color: #ffffff;
-          background-color: transparent;
-          opacity: 0.8;
+        padding: 0 5px;
+        margin: 0 2px;
+        border-radius: 5px;
+        color: #ffffff;
+        background-color: transparent;
+        opacity: 0.8;
       }
+      
       #taskbar button.active {
-          background-color: @color11;
-          opacity: 1.0;
+        background-color: @color11;
+        opacity: 1.0;
       }
+      
       #taskbar button.minimized {
-          opacity: 0.5;
+        opacity: 0.5;
       }
+      
       #taskbar button:hover {
-          background-color: @color1;
-          opacity: 1.0;
+        background-color: @color1;
+        opacity: 1.0;
       }
+      
       tooltip {
-          background-color: #ffffff;
-          border-radius: 10px;
-          opacity: 0.8;
-          padding: 20px;
-          margin: 0px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        opacity: 0.8;
+        padding: 20px;
+        margin: 0px;
       }
+      
       tooltip label {
-          color: @color11;
+        color: @color11;
       }
+      
       .modules-left > widget:first-child > #workspaces {
-          margin-left: 0;
+        margin-left: 0;
       }
+      
       .modules-right > widget:last-child > #workspaces {
-          margin-right: 0;
+        margin-right: 0;
       }
-      #temperature {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      #temperature.critical {
-          color: #ff3131;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      #cpu {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      #memory {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      #disk {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
+      
       #clock {
-          font-size: 14px;
-          color: #ffffff;
-          padding: 1px 10px 1px 10px;
+        font-size: 14px;
+        color: #ffffff;
+        padding: 1px 10px 1px 10px;
       }
+      
       #network {
-          color: #00ff00;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
+        color: #00ff00;
+        font-size: 14px;
+        padding: 1px 10px 1px 10px;
       }
-      #network.disconnected {
-          color: #77767b;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      #network.disabled {
-          color: #77767b;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
+      
+      #network.disconnected,
+      #network.disabled,
       #network.linked {
-          color: #77767b;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
+        color: #77767b;
+        font-size: 14px;
+        padding: 1px 10px 1px 10px;
       }
+      
       #bluetooth.on {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
+        color: #ffffff;
+        font-size: 14px;
+        padding: 1px 10px 1px 10px;
       }
+      
       #bluetooth.connected {
-          color: #00ff00;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
+        color: #00ff00;
+        font-size: 14px;
+        padding: 1px 10px 1px 10px;
       }
-      #bluetooth.off {
-          color: #77767b;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
+      
+      #bluetooth.off,
       #bluetooth.disabled {
-          color: #77767b;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
+        color: #77767b;
+        font-size: 14px;
+        padding: 1px 10px 1px 10px;
       }
+      
       #tray {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
+        color: #ffffff;
+        font-size: 14px;
+        padding: 1px 10px 1px 10px;
       }
-      #battery {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
-      }
-      #battery.charging, #battery.plugged {
-          color: #ffffff;
-      }
-      @keyframes blink {
-          to {
-              background-color: #ffffff;
-              color: #000000;
-          }
-      }
-      #battery.critical:not(.charging) {
-          background-color: #f53c3c;
-          color: #ffffff;
-          animation-name: blink;
-          animation-duration: 0.5s;
-          animation-timing-function: linear;
-          animation-iteration-count: infinite;
-          animation-direction: alternate;
-      }
+      
       label:focus {
-          background-color: #000000;
+        background-color: #000000;
       }
+      
       #backlight {
-          color: #ffffff;
-          font-size: 14px;
-          padding: 1px 10px 1px 10px;
+        color: #ffffff;
+        font-size: 14px;
+        padding: 1px 10px 1px 10px;
       }
-    ''; 
+    '';
   };
 
   programs.hyprlock = {
