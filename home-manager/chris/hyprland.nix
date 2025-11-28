@@ -325,9 +325,9 @@
         };
         "network#wifi" = lib.mkIf (osConfig.networking.hostName == "thinkpad") {
           "interface" = "wlan0";
-          "format-wifi" = "{signalStrength}% ";
+          "format-wifi" = "";
           "format-disconnected" = "󰖪";
-          "tooltip-format-wifi" = "Wifi: {essid} {ipaddr}";
+          "tooltip-format-wifi" = "{essid}: {signalStrength}% ({ipaddr})";
           "tooltip-format-disconnected" = "Wifi: Disconnected";
         };
         "network#ethernet-dock" = lib.mkIf (osConfig.networking.hostName == "thinkpad") {

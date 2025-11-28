@@ -245,10 +245,10 @@ in
       ];
       "modules-right" = [
         "tray"
-        "backlight"
         "bluetooth"
         "network#wifi"
         "network#tailscale"
+        "backlight"
         "clock"
       ];
       "wlr/taskbar" = {
@@ -264,19 +264,6 @@ in
         "icon-size" = 18;
         "spacing" = 10;
       };
-      "clock" = {
-        "timezone" = "America/New_York";
-        "format" = "{:%I:%M}";
-        "tooltip-format" = "{:%A, %B %d, %Y}";
-      };
-      "network#tailscale" = {
-        "interface" = "tailscale0";
-        "format" = "󰴳";
-        "format-disconnected" = "󰦞";
-        "format-linked" = "󰦞";
-        "tooltip-format" = "Tailscale: {ipaddr}";
-        "tooltip-format-disconnected" = "Tailscale: Disconnected";
-      };
       "bluetooth" = {
 	      "format" = "";
         "format-connected" = "{num_connections}";
@@ -289,15 +276,28 @@ in
       };
       "network#wifi" = {
         "interface" = "wlan0";
-        "format-wifi" = "{signalStrength}% ";
+        "format-wifi" = "";
         "format-disconnected" = "󰖪";
-        "tooltip-format-wifi" = "Wifi: {essid} {ipaddr}";
+        "tooltip-format-wifi" = "{essid}: {signalStrength}% ({ipaddr})";
         "tooltip-format-disconnected" = "Wifi: Disconnected";
+      };
+      "network#tailscale" = {
+        "interface" = "tailscale0";
+        "format" = "󰴳";
+        "format-disconnected" = "󰦞";
+        "format-linked" = "󰦞";
+        "tooltip-format" = "Tailscale: {ipaddr}";
+        "tooltip-format-disconnected" = "Tailscale: Disconnected";
       };
       "backlight" = {
         "device" = "intel_backlight";
         "format" = "{percent}% {icon}";
         "format-icons" = ["󰛨"];
+      };
+      "clock" = {
+        "timezone" = "America/New_York";
+        "format" = "{:%I:%M}";
+        "tooltip-format" = "{:%A, %B %d, %Y}";
       };
     }];
     style = ''
