@@ -23,7 +23,7 @@ in
       enable = false;
       target = "graphical-session.target";
     };
-    settings = [{
+    settings = {
       "position" = "bottom";
       "layer" = "top";
       "margin-bottom" = 0;
@@ -185,7 +185,7 @@ in
         "ignore-list" = [];
       };
 
-    }];
+    };
     
     style = ''
       @import 'colors-waybar.css';
