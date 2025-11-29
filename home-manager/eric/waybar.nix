@@ -23,171 +23,165 @@ in
       enable = false;
       target = "graphical-session.target";
     };
-    settings = [
-      {
-        "position" = "bottom";
-        "layer" = "top";
-        "margin-bottom" = 0;
-        "margin-top" = 0;
-        "margin-left" = 0;
-        "margin-right" = 0;
-        
-        "modules-left" = 
-          if wm == "hyprland" then [ "hyprland/workspaces" ]
-          else if wm == "labwc" then [ "wlr/taskbar" ]
-          else [];
-        
-        "modules-right" = [
-          "tray"
-          "battery"
-          "backlight"
-          "temperature"
-          "cpu"
-          "memory"
-          "disk"
-          "bluetooth"
-          "network#tailscale"
-        ] ++ lib.optionals hasWifi [
-          "network#wifi"
-        ] ++ lib.optionals hasDock [
-          "network#ethernet-dock"
-        ] ++ lib.optionals hasEthernet [
-          "network#ethernet"
-        ] ++ [
-          "clock"
-        ];
-        
-        "tray" = {
-          "icon_size" = 18;
-          "spacing" = 15;
-        };
-
-        "battery" = {
-          "interval" = 30;
-          "states" = {
-            "good" = 90;
-            "warning" = 30;
-            "critical" = 5;
-          };
-          "format" = "{capacity}% {icon}";
-          "format-charging" = "{capacity}% 󱠵";
-          "format-plugged" = "{capacity}% ";
-          "format-icons" = [" " " " " " " " " "];
-        };
-
-        "backlight" = {
-          "device" = "intel_backlight";
-          "format" = "{percent}% {icon}";
-          "format-icons" = ["󰛨"];
-        };
-
-        "temperature" = {
-          "critical-threshold" = 80;
-          "format-critical" = "{temperatureC}°C ";
-          "format" = "{temperatureC}°C ";
-        };
-        
-        "clock" = {
-          "timezone" = "America/New_York";
-          "format" = "{:%I:%M}";
-          "tooltip-format" = "{:%A, %B %d, %Y}";
-        };
-        
-        "cpu" = {
-          "format" = "{usage}% ";
-        };
-        
-        "memory" = {
-          "format" = "{percentage}% 󰘚";
-        };
-        
-        "disk" = {
-          "interval" = 10;
-          "format" = "{percentage_used}% ";
-          "path" = "/";
-        };
-
-        "bluetooth" = {
-          "format" = "";
-          "format-connected" = "{num_connections}";
-          "format-off" = "";
-          "format-disabled" = "󰂲";
-          "tooltip-format" = "Bluetooth: {status}";
-          "tooltip-format-connected" = "Bluetooth: {device_enumerate}";
-          "tooltip-format-enumerate-connected" = "{device_alias}";
-          "interval" = 5;
-        };
-        
-        "network#tailscale" = {
-          "interface" = "tailscale0";
-          "format" = "󰴳";
-          "format-disconnected" = "󰦞";
-          "format-linked" = "󰦞";
-          "tooltip-format" = "Tailscale: {ipaddr}";
-          "tooltip-format-disconnected" = "Tailscale: Disconnected";
-        };
+    settings = [{
       
-      } // lib.optionalAttrs hasWifi {
-        "network#wifi" = {
-          "interface" = hostData.networking.wifiInterface;
-          "format-wifi" = "";
-          "format-disconnected" = "󰖪";
-          "tooltip-format-wifi" = "{essid}: {signalStrength}% ({ipaddr})";
-          "tooltip-format-disconnected" = "Wifi: Disconnected";
-        };
+      "position" = "bottom";
+      "layer" = "top";
+      "margin-bottom" = 0;
+      "margin-top" = 0;
+      "margin-left" = 0;
+      "margin-right" = 0;
+      
+      "modules-left" = 
+        if wm == "hyprland" then [ "hyprland/workspaces" ]
+        else if wm == "labwc" then [ "wlr/taskbar" ]
+        else [];
+      
+      "modules-right" = [
+        "tray"
+        "battery"
+        "backlight"
+        "temperature"
+        "cpu"
+        "memory"
+        "disk"
+        "bluetooth"
+        "network#tailscale"
+      ] ++ lib.optionals hasWifi [
+        "network#wifi"
+      ] ++ lib.optionals hasDock [
+        "network#ethernet-dock"
+      ] ++ lib.optionals hasEthernet [
+        "network#ethernet"
+      ] ++ [
+        "clock"
+      ];
 
-      } // lib.optionalAttrs hasDock {
-        "network#ethernet-dock" = {
-          "interface" = hostData.networking.dockInterface;
-          "format-ethernet" = "󰌗";
-          "format-disconnected" = "󰌗";
-          "tooltip-format-ethernet" = "Ethernet-Dock: {ipaddr}";
-          "tooltip-format-disconnected" = "Ethernet-Dock: Disconnected";
+      "hyprland/workspaces" = {
+        "format" = "{icon}";
+        "tooltip" = false;
+        "all-outputs" = false;
+        "current-only" = false;
+        "sort-by-number" = true;
+        "format-icons" = {
+          "1" = "1";
+          "2" = "2";
+          "3" = "3";
+          "4" = "4";
+          "5" = "5";
+          "6" = "6";
+          "7" = "7";
+          "8" = "8";
+          "9" = "9";
+          "10" = "10";
         };
+      };
 
-      } // lib.optionalAttrs hasEthernet {
-        "network#ethernet" = {
-          "interface" = hostData.networking.ethernetInterface;
-          "format-ethernet" = "󰌗";
-          "format-disconnected" = "󰌗";
-          "tooltip-format-ethernet" = "Ethernet: {ipaddr}";
-          "tooltip-format-disconnected" = "Ethernet: Disconnected";
+      "wlr/taskbar" = {
+        "format" = "{icon}";
+        "icon-size" = 18;
+        "icon-theme" = "Papirus";
+        "tooltip-format" = "{title}";
+        "on-click" = "minimize-raise";
+        "on-click-middle" = "close";
+        "ignore-list" = [];
+      };
+      
+      "tray" = {
+        "icon_size" = 18;
+        "spacing" = 15;
+      };
+
+      "battery" = {
+        "interval" = 30;
+        "states" = {
+          "good" = 90;
+          "warning" = 30;
+          "critical" = 5;
         };
+        "format" = "{capacity}% {icon}";
+        "format-charging" = "{capacity}% 󱠵";
+        "format-plugged" = "{capacity}% ";
+        "format-icons" = [" " " " " " " " " "];
+      };
 
-      } // lib.optionalAttrs (wm == "hyprland") {
-        "hyprland/workspaces" = {
-          "format" = "{icon}";
-          "tooltip" = false;
-          "all-outputs" = false;
-          "current-only" = false;
-          "sort-by-number" = true;
-          "format-icons" = {
-            "1" = "1";
-            "2" = "2";
-            "3" = "3";
-            "4" = "4";
-            "5" = "5";
-            "6" = "6";
-            "7" = "7";
-            "8" = "8";
-            "9" = "9";
-            "10" = "10";
-          };
-        };
+      "backlight" = {
+        "device" = "intel_backlight";
+        "format" = "{percent}% {icon}";
+        "format-icons" = ["󰛨"];
+      };
 
-      } // lib.optionalAttrs (wm == "labwc") {
-        "wlr/taskbar" = {
-          "format" = "{icon}";
-          "icon-size" = 18;
-          "icon-theme" = "Papirus";
-          "tooltip-format" = "{title}";
-          "on-click" = "minimize-raise";
-          "on-click-middle" = "close";
-          "ignore-list" = [];
-        };
+      "temperature" = {
+        "critical-threshold" = 80;
+        "format-critical" = "{temperatureC}°C ";
+        "format" = "{temperatureC}°C ";
+      };
+      
+      "cpu" = {
+        "format" = "{usage}% ";
+      };
+      
+      "memory" = {
+        "format" = "{percentage}% 󰘚";
+      };
+      
+      "disk" = {
+        "interval" = 10;
+        "format" = "{percentage_used}% ";
+        "path" = "/";
+      };
 
-      }
-    ];
+      "bluetooth" = {
+        "format" = "";
+        "format-connected" = "{num_connections}";
+        "format-off" = "";
+        "format-disabled" = "󰂲";
+        "tooltip-format" = "Bluetooth: {status}";
+        "tooltip-format-connected" = "Bluetooth: {device_enumerate}";
+        "tooltip-format-enumerate-connected" = "{device_alias}";
+        "interval" = 5;
+      };
+      
+      "network#tailscale" = {
+        "interface" = "tailscale0";
+        "format" = "󰴳";
+        "format-disconnected" = "󰦞";
+        "format-linked" = "󰦞";
+        "tooltip-format" = "Tailscale: {ipaddr}";
+        "tooltip-format-disconnected" = "Tailscale: Disconnected";
+      };
+    
+      "network#wifi" = {
+        "interface" = hostData.networking.wifiInterface;
+        "format-wifi" = "";
+        "format-disconnected" = "󰖪";
+        "tooltip-format-wifi" = "{essid}: {signalStrength}% ({ipaddr})";
+        "tooltip-format-disconnected" = "Wifi: Disconnected";
+      };
+
+      "network#ethernet-dock" = {
+        "interface" = hostData.networking.dockInterface;
+        "format-ethernet" = "󰌗";
+        "format-disconnected" = "󰌗";
+        "tooltip-format-ethernet" = "Ethernet-Dock: {ipaddr}";
+        "tooltip-format-disconnected" = "Ethernet-Dock: Disconnected";
+      };
+
+      "network#ethernet" = {
+        "interface" = hostData.networking.ethernetInterface;
+        "format-ethernet" = "󰌗";
+        "format-disconnected" = "󰌗";
+        "tooltip-format-ethernet" = "Ethernet: {ipaddr}";
+        "tooltip-format-disconnected" = "Ethernet: Disconnected";
+      };
+
+      "clock" = {
+        "timezone" = "America/New_York";
+        "format" = "{:%I:%M}";
+        "tooltip-format" = "{:%A, %B %d, %Y}";
+      };
+
+    }];
     
     style = ''
       @import 'colors-waybar.css';
