@@ -114,9 +114,9 @@ in
       };
 
       "temperature" = {
-        "critical-threshold" = 80;
-        "format-critical" = "{temperatureC}°C ";
-        "format" = "{temperatureC}°C ";
+        "format" = "{temperatureF}°F ";
+        "critical-threshold" = 176;
+        "format-critical" = "{temperatureF}°F ";
       };
       
       "cpu" = {
