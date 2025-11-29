@@ -48,6 +48,7 @@ in
       "home-manager/${username}/gammastep.nix"
       "home-manager/${username}/firefox.nix"
       "home-manager/${username}/rofi.nix"
+      "home-manager/${username}/vscodium.nix"
       "home-manager/${username}/waybar.nix"
       "home-manager/${username}/hyprlock.nix"
     ])
@@ -55,12 +56,12 @@ in
 
   home = {
     packages = with pkgs; [
+      desktopReloadScript
       swww # animated wallpaper for wayland window managers
       pywal # color theme changer
       dunst # notification daemon
       gnome-calculator # calculator
       loupe # image viewer
-      feh # image viewer
       zathura # barebones pdf viewer
       libreoffice-still # office suite
       element-desktop # matrix chat app
