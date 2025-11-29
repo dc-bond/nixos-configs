@@ -448,14 +448,12 @@ in
           background: linear-gradient(135deg, @color11 0%, @color1 100%);
           border: 2px solid @color11;
           box-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
-          transform: translateY(-1px);
       }
       
       #workspaces button:hover {
           color: #ffffff;
           background: @color1;
           border: 2px solid @color1;
-          transform: translateY(-1px);
       }
       
       /* Taskbar styling */
@@ -480,7 +478,6 @@ in
           color: #ffffff;
           background: @color1;
           border: 2px solid @color1;
-          transform: translateY(-1px);
       }
       
       /* Module styling - creates pill-shaped containers */
@@ -515,7 +512,6 @@ in
           background: linear-gradient(135deg, @color11 0%, @color1 100%);
           border: 1px solid @color11;
           box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
-          transform: translateY(-1px);
       }
       
       /* Battery states */
@@ -603,7 +599,6 @@ in
       
       #clock:hover {
           box-shadow: 0 4px 16px rgba(255, 255, 255, 0.3);
-          transform: translateY(-1px);
       }
       
       label:focus {
