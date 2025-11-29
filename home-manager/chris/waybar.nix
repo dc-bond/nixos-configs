@@ -122,7 +122,7 @@ in
       };
       
       "memory" = {
-        "format" = "{percentage}% f538 󰘚";
+        "format" = "{percentage}% 󰘚";
       };
       
       "disk" = {
@@ -133,7 +133,7 @@ in
 
       "bluetooth" = {
         "format" = "";
-        "format-connected" = "{num_connections}";
+        "format-connected" = "";
         "format-off" = "";
         "format-disabled" = "󰂲";
         "tooltip-format" = "Bluetooth: {status}";
