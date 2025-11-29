@@ -35,7 +35,7 @@ in
       "modules-left" = 
         if wm == "hyprland" then [ "hyprland/workspaces" ]
         else if wm == "labwc" then [ 
-          "custom/launcher"
+          #"custom/launcher"
           "wlr/taskbar" 
         ]
         else [];
@@ -60,11 +60,11 @@ in
         "clock"
       ];
 
-      "custom/launcher" = {
-        "format" = "";
-        "on-click" = "nwg-menu";
-        "tooltip" = false;
-      };
+      #"custom/launcher" = {
+      #  "format" = "";
+      #  "on-click" = "nwg-menu";
+      #  "tooltip" = false;
+      #};
 
       "hyprland/workspaces" = {
         "format" = "{icon}";
@@ -228,15 +228,15 @@ in
           margin-right: 0;
       }
 
-      #custom-launcher {
-        font-size: 20px;
-        color: #ffffff;
-        padding: 0 15px;
-      }
-      
-      #custom-launcher:hover {
-        background-color: @color1;
-      }
+      ##custom-launcher {
+      #  font-size: 20px;
+      #  color: #ffffff;
+      #  padding: 0 15px;
+      #}
+      #
+      ##custom-launcher:hover {
+      #  background-color: @color1;
+      #}
       
       #workspaces button {
           color: @color11;

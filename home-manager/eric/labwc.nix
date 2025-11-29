@@ -65,7 +65,7 @@ in
     zathura # barebones pdf viewer
     hyprshot # screenshot tool
     pwvucontrol # pipewire audio volume control app
-    nwg-menu
+    #nwg-menu
   ];
 
   gtk = {
@@ -186,6 +186,12 @@ in
             </mousebind>
           </context>
         </mouse>
+
+        <context name="Client">
+          <mousebind button="A-Right" action="Press">
+            <action name="ShowMenu" menu="root-menu" />
+          </mousebind>
+        </context>
         
         <desktops number="1" />
 
