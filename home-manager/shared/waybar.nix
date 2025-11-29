@@ -322,7 +322,7 @@ in
       }
       
       #battery.critical:not(.charging) {
-          color: #ff0000ff;
+          color: #ff0000;
           background: linear-gradient(135deg, #f53c3c 0%, #c41e1e 100%);
           border: 1px solid #ff0000;
           animation-name: blink;
@@ -340,7 +340,7 @@ in
       }
       
       #temperature.critical {
-          color: #ff0000ff;
+          color: #ff0000;
           background: linear-gradient(135deg, #ff3131 0%, #c41e1e 100%);
           border: 1px solid #ff0000;
           box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
