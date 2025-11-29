@@ -118,16 +118,16 @@ in
       };
       
       "cpu" = {
-        "format" = "{usage}% ";
+        "format" = "{usage}% ";
       };
       
       "memory" = {
-        "format" = "{percentage}% 󰘚";
+        "format" = "{percentage}% f538 󰘚";
       };
       
       "disk" = {
         "interval" = 10;
-        "format" = "{percentage_used}% ";
+        "format" = "{percentage_used}% ";
         "path" = "/";
       };
 
