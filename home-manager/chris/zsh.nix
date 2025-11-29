@@ -9,29 +9,10 @@
 
 {
   
-  home.packages = with pkgs; [
-    eza # modern replacement for 'ls'
-    pfetch # system info displayed on shell startup
-  ];
 
   programs.zsh = {
-    enable = true;
-    syntaxHighlighting = { # highlight valid commands in green and invalid/unknown commands in red
-      enable = true;
-    };
-    autosuggestion = { # shadow text suggested completions ahead of typing command
-      enable = true;
-    };
-    defaultKeymap = "viins";
     initContent = # added to zsh interactive shell (.zshrc)
     ''
-      pfetch
-      nrun() {
-        nix run nixpkgs#"$1" -- "''${@:2}"
-      }
-      nshell() {
-        nix shell nixpkgs#"$1"
-      }
     '' + lib.optionalString (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) ''
       reconnect-mouse() {
         echo "restarting bluetooth service..."
@@ -54,14 +35,6 @@
       }
     '';
     shellAliases = {
-      ls = "eza -all --long -g -h --color=always --group-directories-first --git";
-      lsd = "eza -all --long -g -h --color=always --group-directories-first --git --total-size";
-      rbmain = "sudo nixos-rebuild switch --flake github:dc-bond/nixos-configs#$(hostname) --refresh";
-      rbdev = "sudo nixos-rebuild switch --flake github:dc-bond/nixos-configs/dev#$(hostname) --refresh";
-      garbage = "nix-collect-garbage -d && sudo nix-collect-garbage -d";
-      speed = "nix run nixpkgs#speedtest-rs";
-      gens = "nixos-rebuild list-generations | head -n 5";
-      yubigpg = ''gpg-connect-agent "scd serialno" "learn --force" /bye''; # force gpg to update its pointer towards whichever yubikey is plugged in
     } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {
       flakeupdate = "sudo nix flake update --flake ~/nixos-configs";
       ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop --command codium . && cd ~";
@@ -69,13 +42,9 @@
       cloneconfigs = "cd ~ && git clone https://github.com/dc-bond/nixos-configs";
     } // lib.optionalAttrs (osConfig.networking.hostName == "cypress") {
       storage = "cd /storage/WD-WX21DC86RU3P ; ls";
-    } // lib.optionalAttrs (osConfig.networking.hostName == "thinkpad") {
-      getnets = "iwctl station wlan0 get-networks";
     } // lib.optionalAttrs (osConfig.networking.hostName == "aspen") {
       storage = "cd /storage/WD-WCC7K4RU947F ; ls";
     };
-    history.size = 5000;
-    history.path = "${config.xdg.dataHome}/zsh/history";
   };
 
 }
