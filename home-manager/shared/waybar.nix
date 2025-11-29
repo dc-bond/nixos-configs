@@ -115,8 +115,8 @@ in
 
       "temperature" = {
         "critical-threshold" = 80;
-        "format-critical" = "{temperatureC}°C ";
-        "format" = "{temperatureC}°C ";
+        "format-critical" = "{temperatureC}°C ";
+        "format" = "{temperatureC}°C ";
       };
       
       "cpu" = {
