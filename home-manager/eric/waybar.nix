@@ -126,7 +126,7 @@ in
         "tooltip-format-disconnected" = "Tailscale: Disconnected";
       };
       
-    } ++ lib.optionalAttrs hasWifi {
+    } // lib.optionalAttrs hasWifi {
       "network#wifi" = {
         "interface" = hostData.networking.wifiInterface;
         "format-wifi" = "";
@@ -135,7 +135,7 @@ in
         "tooltip-format-disconnected" = "Wifi: Disconnected";
       };
 
-    } ++ lib.optionalAttrs hasDock {
+    } // lib.optionalAttrs hasDock {
       "network#ethernet-dock" = {
         "interface" = hostData.networking.dockInterface;
         "format-ethernet" = "󰌗";
@@ -144,7 +144,7 @@ in
         "tooltip-format-disconnected" = "Ethernet-Dock: Disconnected";
       };
 
-    } ++ lib.optionalAttrs hasEthernet {
+    } // lib.optionalAttrs hasEthernet {
       "network#ethernet" = {
         "interface" = hostData.networking.ethernetInterface;
         "format-ethernet" = "󰌗";
@@ -153,7 +153,7 @@ in
         "tooltip-format-disconnected" = "Ethernet: Disconnected";
       };
 
-    } ++ lib.optionalAttrs (wm == "hyprland") {
+    } // lib.optionalAttrs (wm == "hyprland") {
       "hyprland/workspaces" = {
         "format" = "{icon}";
         "tooltip" = false;
@@ -174,7 +174,7 @@ in
         };
       };
 
-    } ++ lib.optionalAttrs (wm == "labwc") {
+    } // lib.optionalAttrs (wm == "labwc") {
       "wlr/taskbar" = {
         "format" = "{icon}";
         "icon-size" = 18;
