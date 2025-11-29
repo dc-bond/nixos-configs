@@ -20,8 +20,8 @@ in
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/${username}/alacritty.nix"
-      "home-manager/${username}/firefox.nix"
+      "home-manager/shared/alacritty.nix"
+      "home-manager/shared/firefox.nix"
     ])
   ];
 

@@ -19,8 +19,8 @@ in
       "home-manager/shared/sops.nix"
       "home-manager/shared/starship.nix"
       "home-manager/shared/neovim.nix"
+      "home-manager/shared/zsh.nix"
 
-      "home-manager/${username}/zsh.nix"
       "home-manager/${username}/labwc.nix"
     ])
   ];
