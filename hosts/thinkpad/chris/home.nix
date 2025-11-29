@@ -20,6 +20,7 @@ in
       "home-manager/shared/starship.nix"
       "home-manager/shared/neovim.nix"
       "home-manager/shared/pass.nix"
+      "home-manager/shared/zsh.nix"
 
       "home-manager/${username}/git.nix"
       "home-manager/${username}/gnupg.nix"
