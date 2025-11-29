@@ -16,15 +16,15 @@ in
   
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/${username}/sops.nix"
-      "home-manager/${username}/zsh.nix"
-      "home-manager/${username}/starship.nix"
-      "home-manager/${username}/neovim.nix"
-      "home-manager/${username}/ssh.nix"
+      "home-manager/shared/sops.nix"
+      "home-manager/shared/starship.nix"
+      "home-manager/shared/neovim.nix"
+      "home-manager/shared/pass.nix"
+
       "home-manager/${username}/git.nix"
       "home-manager/${username}/gnupg.nix"
-      "home-manager/${username}/pass.nix"
-
+      "home-manager/${username}/ssh.nix"
+      "home-manager/${username}/zsh.nix"
       "home-manager/${username}/hyprland.nix"
     ])
   ];

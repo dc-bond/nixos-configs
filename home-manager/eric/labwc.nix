@@ -44,12 +44,13 @@ in
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "home-manager/${username}/alacritty.nix"
+      "home-manager/shared/alacritty.nix"
+      "home-manager/shared/firefox.nix"
+      "home-manager/shared/rofi.nix"
+      "home-manager/shared/waybar.nix"
+      "home-manager/shared/hyprlock.nix"
+      
       "home-manager/${username}/gammastep.nix"
-      "home-manager/${username}/firefox.nix"
-      "home-manager/${username}/rofi.nix"
-      "home-manager/${username}/waybar.nix"
-      "home-manager/${username}/hyprlock.nix"
     ])
   ];
 

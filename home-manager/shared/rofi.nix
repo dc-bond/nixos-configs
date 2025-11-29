@@ -7,7 +7,7 @@
 
 {
 
-  #services.gpg-agent.pinentry.package = pkgs.pinentry-rofi;
+  services.gpg-agent.pinentry.package = pkgs.pinentry-rofi;
   
   programs.rofi = {
     enable = true;

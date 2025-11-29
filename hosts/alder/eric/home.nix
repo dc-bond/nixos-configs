@@ -16,9 +16,14 @@ in
   
   imports = lib.flatten [
     (map configLib.relativeToRoot [
+      "home-manager/shared/sops.nix"
+      "home-manager/shared/starship.nix"
+      "home-manager/shared/neovim.nix"
+
+      "home-manager/${username}/git.nix"
+      "home-manager/${username}/gnupg.nix"
+      "home-manager/${username}/ssh.nix"
       "home-manager/${username}/zsh.nix"
-      "home-manager/${username}/starship.nix"
-      "home-manager/${username}/neovim.nix"
       "home-manager/${username}/labwc.nix"
     ])
   ];
