@@ -48,6 +48,8 @@ in
       "home-manager/${username}/gammastep.nix"
       "home-manager/${username}/firefox.nix"
       "home-manager/${username}/rofi.nix"
+      "home-manager/${username}/waybar.nix"
+      "home-manager/${username}/hyprlock.nix"
     ])
   ];
 
@@ -61,9 +63,6 @@ in
     gnome-calculator # calculator
     loupe # image viewer
     zathura # barebones pdf viewer
-    #libreoffice-still # office suite
-    #element-desktop # matrix chat app
-    #nextcloud-client # nextcloud local syncronization client
     hyprshot # screenshot tool
     pwvucontrol # pipewire audio volume control app
   ];
@@ -88,7 +87,6 @@ in
     };
   };
 
-  # labwc configuration files
   xdg.configFile = {
     "labwc/rc.xml".text = ''
       <?xml version="1.0"?>
@@ -224,238 +222,6 @@ in
       QT_QPA_PLATFORM=wayland
       QT_WAYLAND_DISABLE_WINDOWDECORATION=1
     '';
-  };
-  
-  # waybar configuration
-  programs.waybar = {
-    enable = true;
-    systemd = {
-      enable = false;
-      target = "graphical-session.target";
-    };
-    settings = [{
-      "position" = "bottom";
-      "layer" = "top";
-      "margin-bottom" = 0;
-      "margin-top" = 0;
-      "margin-left" = 0;
-      "margin-right" = 0;
-      "modules-left" = [
-        "wlr/taskbar"
-      ];
-      "modules-right" = [
-        "tray"
-        "bluetooth"
-        "network#wifi"
-        "network#tailscale"
-        "backlight"
-        "clock"
-      ];
-      "wlr/taskbar" = {
-        "format" = "{icon}";
-        "icon-size" = 18;
-        "icon-theme" = "Papirus";
-        "tooltip-format" = "{title}";
-        "on-click" = "minimize-raise";
-        "on-click-middle" = "close";
-        "ignore-list" = [];
-      };
-      "tray" = {
-        "icon-size" = 18;
-        "spacing" = 10;
-      };
-      "bluetooth" = {
-	      "format" = "";
-        "format-connected" = "{num_connections}";
-	      "format-off" = "";
-        "format-disabled" = "󰂲";
-        "tooltip-format" = "Bluetooth: {status}";
-        "tooltip-format-connected" = "Bluetooth: {device_enumerate}";
-        "tooltip-format-enumerate-connected" = "{device_alias}";
-        "interval" = 5;
-      };
-      "network#wifi" = {
-        "interface" = "wlan0";
-        "format-wifi" = "";
-        "format-disconnected" = "󰖪";
-        "tooltip-format-wifi" = "{essid}: {signalStrength}% ({ipaddr})";
-        "tooltip-format-disconnected" = "Wifi: Disconnected";
-      };
-      "network#tailscale" = {
-        "interface" = "tailscale0";
-        "format" = "󰴳";
-        "format-disconnected" = "󰦞";
-        "format-linked" = "󰦞";
-        "tooltip-format" = "Tailscale: {ipaddr}";
-        "tooltip-format-disconnected" = "Tailscale: Disconnected";
-      };
-      "backlight" = {
-        "device" = "intel_backlight";
-        "format" = "{percent}% {icon}";
-        "format-icons" = ["󰛨"];
-      };
-      "clock" = {
-        "timezone" = "America/New_York";
-        "format" = "{:%I:%M}";
-        "tooltip-format" = "{:%A, %B %d, %Y}";
-      };
-    }];
-    style = ''
-      @import 'colors-waybar.css';
-      
-      * {
-        font-family: "SauceCodePro Nerd Font", "Font Awesome 6 Free";
-        border: none;
-        min-height: 0;
-      }
-      
-      window#waybar {
-        background: #000000;
-        transition-property: background-color;
-        transition-duration: .5s;
-      }
-      
-      #taskbar button {
-        padding: 0 5px;
-        margin: 0 2px;
-        border-radius: 5px;
-        color: #ffffff;
-        background-color: transparent;
-        opacity: 0.8;
-      }
-      
-      #taskbar button.active {
-        background-color: @color11;
-        opacity: 1.0;
-      }
-      
-      #taskbar button.minimized {
-        opacity: 0.5;
-      }
-      
-      #taskbar button:hover {
-        background-color: @color1;
-        opacity: 1.0;
-      }
-      
-      tooltip {
-        background-color: #ffffff;
-        border-radius: 10px;
-        opacity: 0.8;
-        padding: 20px;
-        margin: 0px;
-      }
-      
-      tooltip label {
-        color: @color11;
-      }
-      
-      .modules-left > widget:first-child > #workspaces {
-        margin-left: 0;
-      }
-      
-      .modules-right > widget:last-child > #workspaces {
-        margin-right: 0;
-      }
-      
-      #clock {
-        font-size: 14px;
-        color: #ffffff;
-        padding: 1px 10px 1px 10px;
-      }
-      
-      #network {
-        color: #00ff00;
-        font-size: 14px;
-        padding: 1px 10px 1px 10px;
-      }
-      
-      #network.disconnected,
-      #network.disabled,
-      #network.linked {
-        color: #77767b;
-        font-size: 14px;
-        padding: 1px 10px 1px 10px;
-      }
-      
-      #bluetooth.on {
-        color: #ffffff;
-        font-size: 14px;
-        padding: 1px 10px 1px 10px;
-      }
-      
-      #bluetooth.connected {
-        color: #00ff00;
-        font-size: 14px;
-        padding: 1px 10px 1px 10px;
-      }
-      
-      #bluetooth.off,
-      #bluetooth.disabled {
-        color: #77767b;
-        font-size: 14px;
-        padding: 1px 10px 1px 10px;
-      }
-      
-      #tray {
-        color: #ffffff;
-        font-size: 14px;
-        padding: 1px 10px 1px 10px;
-      }
-      
-      label:focus {
-        background-color: #000000;
-      }
-      
-      #backlight {
-        color: #ffffff;
-        font-size: 14px;
-        padding: 1px 10px 1px 10px;
-      }
-    '';
-  };
-
-  programs.hyprlock = {
-    enable = true;
-    settings = {
-      general = {
-        disable_loading_bar = true;
-        grace = 0;
-        hide_cursor = true;
-        no_fade_in = false;
-        no_fade_out = false;
-      };
-      background = [
-        {
-          path = "${wallpaperDir}/wallpaper-92.jpg";
-          blur_passes = 3;
-          contrast = 1;
-          brightness = 0.5;
-          vibrancy = 0.2;
-          vibrancy_darkness = 0.2;
-        }
-      ];
-      input-field = [
-        {
-          monitor = "";
-          size = "350, 60";
-          outline_thickness = 2;
-          dots_size = 0.2; # Scale of input-field height, 0.2 - 0.8
-          dots_spacing = 0.35; # Scale of dots' absolute size, 0.0 - 1.0
-          dots_center = true;
-          outer_color = "rgba(0, 0, 0, 0)";
-          inner_color = "rgba(0, 255, 34, 0.2)";
-          fade_on_empty = false;
-          rounding = -1;
-          check_color = "rgb(204, 136, 34)";
-          placeholder_text = "<b><span foreground='##cdd6f4'>AUTHENTICATION REQUIRED</span></b>";
-          hide_input = false;
-          position = "0, -200";
-          halign = "center";
-          valign = "center";
-        }
-      ];
-    };
   };
   
 }

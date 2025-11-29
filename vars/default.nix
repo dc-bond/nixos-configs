@@ -12,6 +12,7 @@
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = true;
+      windowManager = null;
       networking = {
         sshPort = 28766;
         useResolved = false; # runs pihole
@@ -40,6 +41,9 @@
             fsType = "ext4";
           };
         };
+        hasBattery = false;
+        hasBluetooth = false;
+        hasBacklight = false;
       };
     };
 
@@ -48,6 +52,7 @@
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = false;
+      windowManager = "hyprland";
       networking = {
         sshPort = null; # only use tailscale ssh
         useResolved = true;
@@ -68,6 +73,9 @@
         diskEncryption = true;
         enableSmartMonitoring = true;
         storageDrives = {};
+        hasBattery = true;
+        hasBluetooth = true;
+        hasBacklight = true;
       };
     };
     
@@ -76,6 +84,7 @@
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = false;
+      windowManager = "hyprland";
       networking = {
         sshPort = null; # only use tailscale ssh
         useResolved = true;
@@ -102,6 +111,9 @@
             fsType = "ext4";
           };
         };
+        hasBattery = false;
+        hasBluetooth = true;
+        hasBacklight = false;
       };
     };
 
@@ -110,6 +122,7 @@
       users = [ "chris" ];
       bootLoader = "grub";
       isMonitoringServer = false;
+      windowManager = null;
       networking = {
         sshPort = 28764;
         useResolved = true;
@@ -130,6 +143,9 @@
         diskEncryption = false;
         enableSmartMonitoring = false;
         storageDrives = {};
+        hasBattery = false;
+        hasBluetooth = false;
+        hasBacklight = false;
       };
     };
     
@@ -140,6 +156,7 @@
       ];
       bootLoader = "systemd-boot";
       isMonitoringServer = false;
+      windowManager = "labwc";
       networking = {
         sshPort = null;
         useResolved = true;
@@ -160,6 +177,9 @@
         diskEncryption = true;
         enableSmartMonitoring = true;
         storageDrives = {};
+        hasBattery = false;
+        hasBluetooth = true;
+        hasBacklight = true;
       };
     };
 
