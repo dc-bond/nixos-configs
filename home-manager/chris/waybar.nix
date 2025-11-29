@@ -107,7 +107,7 @@ in
       };
 
       "bluetooth" = {
-        "format" = "";
+        "format" = "";
         "format-connected" = "{num_connections}";
         "format-off" = "";
         "format-disabled" = "󰂲";
@@ -129,7 +129,7 @@ in
     } // lib.optionalAttrs hasWifi {
       "network#wifi" = {
         "interface" = hostData.networking.wifiInterface;
-        "format-wifi" = "";
+        "format-wifi" = "";
         "format-disconnected" = "󰖪";
         "tooltip-format-wifi" = "{essid}: {signalStrength}% ({ipaddr})";
         "tooltip-format-disconnected" = "Wifi: Disconnected";
