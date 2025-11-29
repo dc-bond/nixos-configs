@@ -227,6 +227,16 @@ in
       .modules-right > widget:last-child > #workspaces {
           margin-right: 0;
       }
+
+      #custom-launcher {
+        font-size: 20px;
+        color: #ffffff;
+        padding: 0 15px;
+      }
+      
+      #custom-launcher:hover {
+        background-color: @color1;
+      }
       
       #workspaces button {
           color: @color11;
