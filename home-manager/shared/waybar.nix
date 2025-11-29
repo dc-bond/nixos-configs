@@ -134,7 +134,6 @@ in
         "tooltip-format-wifi" = "{essid}: {signalStrength}% ({ipaddr})";
         "tooltip-format-disconnected" = "Wifi: Disconnected";
       };
-
     } // lib.optionalAttrs hasDock {
       "network#ethernet-dock" = {
         "interface" = hostData.networking.dockInterface;
@@ -143,7 +142,6 @@ in
         "tooltip-format-ethernet" = "Ethernet-Dock: {ipaddr}";
         "tooltip-format-disconnected" = "Ethernet-Dock: Disconnected";
       };
-
     } // lib.optionalAttrs hasEthernet {
       "network#ethernet" = {
         "interface" = hostData.networking.ethernetInterface;
@@ -152,7 +150,6 @@ in
         "tooltip-format-ethernet" = "Ethernet: {ipaddr}";
         "tooltip-format-disconnected" = "Ethernet: Disconnected";
       };
-
     } // lib.optionalAttrs (wm == "hyprland") {
       "hyprland/workspaces" = {
         "format" = "{icon}";
@@ -173,7 +170,6 @@ in
           "10" = "10";
         };
       };
-
     } // lib.optionalAttrs (wm == "labwc") {
       "wlr/taskbar" = {
         "format" = "{icon}";
@@ -184,8 +180,7 @@ in
         "on-click-middle" = "close";
         "ignore-list" = [];
       };
-
-    };];
+    }];
     
     style = ''
       @import 'colors-waybar.css';
