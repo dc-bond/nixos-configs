@@ -115,21 +115,25 @@ in
 
       "temperature" = {
         "format" = "{temperatureF}°F ";
+        "tooltip" = false;
         "critical-threshold" = 176;
         "format-critical" = "{temperatureF}°F ";
       };
       
       "cpu" = {
         "format" = "{usage}% ";
+        "tooltip-format" = "CPU Usage";
       };
       
       "memory" = {
         "format" = "{percentage}% 󰘚";
+        "tooltip-format" = "RAM Usage";
       };
       
       "disk" = {
         "interval" = 10;
         "format" = "{percentage_used}% ";
+        "tooltip-format" = "Root Drive Storage Usage";
         "path" = "/";
       };
 
@@ -226,7 +230,6 @@ in
           margin-right: 8px;
       }
 
-      /* Workspace styling */
       #workspaces button {
           color: @color11;
           background: rgba(255, 255, 255, 0.05);
@@ -250,7 +253,6 @@ in
           border: 2px solid @color1;
       }
       
-      /* Taskbar styling */
       #taskbar button {
           color: @color11;
           background: rgba(255, 255, 255, 0.05);
@@ -274,7 +276,6 @@ in
           border: 2px solid @color1;
       }
       
-      /* Module styling - creates pill-shaped containers */
       #tray,
       #battery,
       #backlight,
@@ -308,7 +309,6 @@ in
           box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
       }
       
-      /* Battery states */
       #battery.charging, #battery.plugged {
           color: #00ff00;
           background: linear-gradient(135deg, rgba(0, 255, 0, 0.15) 0%, rgba(0, 255, 0, 0.05) 100%);
@@ -322,7 +322,7 @@ in
       }
       
       #battery.critical:not(.charging) {
-          color: #ffffff;
+          color: #ff0000ff;
           background: linear-gradient(135deg, #f53c3c 0%, #c41e1e 100%);
           border: 1px solid #ff0000;
           animation-name: blink;
@@ -339,15 +339,13 @@ in
           }
       }
       
-      /* Temperature states */
       #temperature.critical {
-          color: #ffffff;
+          color: #ff0000ff;
           background: linear-gradient(135deg, #ff3131 0%, #c41e1e 100%);
           border: 1px solid #ff0000;
           box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
       }
       
-      /* Bluetooth states */
       #bluetooth.on {
           color: #ffffff;
       }
@@ -365,7 +363,6 @@ in
           border: 1px solid rgba(119, 118, 123, 0.2);
       }
       
-      /* Network states */
       #network {
           color: #00ff00;
           background: linear-gradient(135deg, rgba(0, 255, 0, 0.15) 0%, rgba(0, 255, 0, 0.05) 100%);
@@ -380,7 +377,6 @@ in
           border: 1px solid rgba(119, 118, 123, 0.2);
       }
       
-      /* Clock styling - make it stand out */
       #clock {
           color: #ffffff;
           background: linear-gradient(135deg, @color11 0%, @color1 100%);
