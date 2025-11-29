@@ -404,7 +404,6 @@ in
       
       window#waybar {
           background: rgba(0, 0, 0, 0.85);
-          backdrop-filter: blur(10px);
           transition-property: background-color;
           transition-duration: .5s;
           border-top: 2px solid @color11;
