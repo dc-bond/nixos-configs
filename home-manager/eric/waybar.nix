@@ -186,7 +186,7 @@ in
           "ignore-list" = [];
         };
 
-      };
+      }
     ];
     
     style = ''
