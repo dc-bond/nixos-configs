@@ -65,6 +65,7 @@ in
     zathura # barebones pdf viewer
     hyprshot # screenshot tool
     pwvucontrol # pipewire audio volume control app
+    nwg-menu
   ];
 
   gtk = {

@@ -34,7 +34,10 @@ in
       
       "modules-left" = 
         if wm == "hyprland" then [ "hyprland/workspaces" ]
-        else if wm == "labwc" then [ "wlr/taskbar" ]
+        else if wm == "labwc" then [ 
+          "custom/launcher"
+          "wlr/taskbar" 
+        ]
         else [];
       
       "modules-right" = [
@@ -56,6 +59,12 @@ in
       ] ++ [
         "clock"
       ];
+
+      "custom/launcher" = {
+        "format" = "";
+        "on-click" = "nwg-menu";
+        "tooltip" = false;
+      };
 
       "hyprland/workspaces" = {
         "format" = "{icon}";
