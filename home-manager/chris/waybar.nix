@@ -134,7 +134,7 @@ in
       "bluetooth" = {
         "format" = "";
         "format-connected" = "";
-        "format-off" = "";
+        "format-off" = "󰂲";
         "format-disabled" = "󰂲";
         "tooltip-format" = "Bluetooth: {status}";
         "tooltip-format-connected" = "Bluetooth: {device_enumerate}";
