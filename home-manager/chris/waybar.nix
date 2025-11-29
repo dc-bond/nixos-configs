@@ -24,6 +24,7 @@ in
       target = "graphical-session.target";
     };
     settings = [{
+      
       "position" = "bottom";
       "layer" = "top";
       "margin-bottom" = 0;
@@ -55,6 +56,36 @@ in
       ] ++ [
         "clock"
       ];
+
+      "hyprland/workspaces" = {
+        "format" = "{icon}";
+        "tooltip" = false;
+        "all-outputs" = false;
+        "current-only" = false;
+        "sort-by-number" = true;
+        "format-icons" = {
+          "1" = "1";
+          "2" = "2";
+          "3" = "3";
+          "4" = "4";
+          "5" = "5";
+          "6" = "6";
+          "7" = "7";
+          "8" = "8";
+          "9" = "9";
+          "10" = "10";
+        };
+      };
+
+      "wlr/taskbar" = {
+        "format" = "{icon}";
+        "icon-size" = 18;
+        "icon-theme" = "Papirus";
+        "tooltip-format" = "{title}";
+        "on-click" = "minimize-raise";
+        "on-click-middle" = "close";
+        "ignore-list" = [];
+      };
       
       "tray" = {
         "icon_size" = 18;
@@ -84,12 +115,6 @@ in
         "critical-threshold" = 80;
         "format-critical" = "{temperatureC}°C ";
         "format" = "{temperatureC}°C ";
-      };
-      
-      "clock" = {
-        "timezone" = "America/New_York";
-        "format" = "{:%I:%M}";
-        "tooltip-format" = "{:%A, %B %d, %Y}";
       };
       
       "cpu" = {
@@ -125,8 +150,7 @@ in
         "tooltip-format" = "Tailscale: {ipaddr}";
         "tooltip-format-disconnected" = "Tailscale: Disconnected";
       };
-      
-    } // lib.optionalAttrs hasWifi {
+    
       "network#wifi" = {
         "interface" = hostData.networking.wifiInterface;
         "format-wifi" = "";
@@ -134,7 +158,7 @@ in
         "tooltip-format-wifi" = "{essid}: {signalStrength}% ({ipaddr})";
         "tooltip-format-disconnected" = "Wifi: Disconnected";
       };
-    } // lib.optionalAttrs hasDock {
+
       "network#ethernet-dock" = {
         "interface" = hostData.networking.dockInterface;
         "format-ethernet" = "󰌗";
@@ -142,7 +166,7 @@ in
         "tooltip-format-ethernet" = "Ethernet-Dock: {ipaddr}";
         "tooltip-format-disconnected" = "Ethernet-Dock: Disconnected";
       };
-    } // lib.optionalAttrs hasEthernet {
+
       "network#ethernet" = {
         "interface" = hostData.networking.ethernetInterface;
         "format-ethernet" = "󰌗";
@@ -150,36 +174,13 @@ in
         "tooltip-format-ethernet" = "Ethernet: {ipaddr}";
         "tooltip-format-disconnected" = "Ethernet: Disconnected";
       };
-    } // lib.optionalAttrs (wm == "hyprland") {
-      "hyprland/workspaces" = {
-        "format" = "{icon}";
-        "tooltip" = false;
-        "all-outputs" = false;
-        "current-only" = false;
-        "sort-by-number" = true;
-        "format-icons" = {
-          "1" = "1";
-          "2" = "2";
-          "3" = "3";
-          "4" = "4";
-          "5" = "5";
-          "6" = "6";
-          "7" = "7";
-          "8" = "8";
-          "9" = "9";
-          "10" = "10";
-        };
+
+      "clock" = {
+        "timezone" = "America/New_York";
+        "format" = "{:%I:%M}";
+        "tooltip-format" = "{:%A, %B %d, %Y}";
       };
-    } // lib.optionalAttrs (wm == "labwc") {
-      "wlr/taskbar" = {
-        "format" = "{icon}";
-        "icon-size" = 18;
-        "icon-theme" = "Papirus";
-        "tooltip-format" = "{title}";
-        "on-click" = "minimize-raise";
-        "on-click-middle" = "close";
-        "ignore-list" = [];
-      };
+
     }];
     
     style = ''
