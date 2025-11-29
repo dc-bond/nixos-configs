@@ -157,6 +157,7 @@ in
         "format-disconnected" = "󰖪";
         "tooltip-format-wifi" = "{essid}: {signalStrength}% ({ipaddr})";
         "tooltip-format-disconnected" = "Wifi: Disconnected";
+        "on-click" = "alacritty -e wifi"; # run wifi helper script on click
       };
 
       "network#ethernet-dock" = {

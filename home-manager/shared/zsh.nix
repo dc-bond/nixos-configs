@@ -24,6 +24,12 @@
     initContent = # added to zsh interactive shell (.zshrc)
     ''
       pfetch     
+      nrun() {
+        nix run nixpkgs#"$1" -- "''${@:2}"
+      }
+      nshell() {
+        nix shell nixpkgs#"$1"
+      }
     '';
     shellAliases = {
       ls = "eza -all --long -g -h --color=always --group-directories-first --git";
@@ -31,6 +37,8 @@
       rbmain = "sudo nixos-rebuild switch --flake github:dc-bond/nixos-configs#$(hostname) --refresh";
       rbdev = "sudo nixos-rebuild switch --flake github:dc-bond/nixos-configs/dev#$(hostname) --refresh";
       garbage = "nix-collect-garbage -d && sudo nix-collect-garbage -d";
+      speed = "nix run nixpkgs#speedtest-rs";
+      gens = "nixos-rebuild list-generations | head -n 5";
     };
     history.size = 5000;
     history.path = "${config.xdg.dataHome}/zsh/history";
