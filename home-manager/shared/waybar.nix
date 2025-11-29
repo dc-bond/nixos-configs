@@ -115,7 +115,7 @@ in
 
       "temperature" = {
         "format" = "{temperatureF}°F ";
-        "tooltip" = false;
+        "tooltip-format" = "CPU Temperature";
         "critical-threshold" = 176;
         "format-critical" = "{temperatureF}°F ";
       };
@@ -133,7 +133,7 @@ in
       "disk" = {
         "interval" = 10;
         "format" = "{percentage_used}% ";
-        "tooltip-format" = "Root Drive Storage Usage";
+        "tooltip-format" = "Drive Storage Used";
         "path" = "/";
       };
 
