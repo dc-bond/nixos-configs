@@ -65,7 +65,6 @@ in
     zathura # barebones pdf viewer
     hyprshot # screenshot tool
     pwvucontrol # pipewire audio volume control app
-    #nwg-menu
   ];
 
   gtk = {
@@ -89,16 +88,6 @@ in
   };
 
   xdg.configFile = {
-
-    #"nwg-menu/appendix".text = ''
-    #  Terminal; alacritty; utilities-terminal
-    #  Firefox; firefox-esr; firefox
-    #  Calculator; gnome-calculator; accessories-calculator
-    #  File Manager; thunar; system-file-manager
-    #  Reload Wallpaper; desktopReload; preferences-desktop-wallpaper
-    #  Lock Screen; hyprlock; system-lock-screen
-    #  Exit; ${pkgs.wlogout}/bin/wlogout; system-shutdown
-    #'';
 
     "labwc/rc.xml".text = ''
       <?xml version="1.0"?>
