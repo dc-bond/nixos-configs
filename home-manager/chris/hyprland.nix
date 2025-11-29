@@ -48,9 +48,8 @@ in
       "home-manager/shared/rofi.nix"
       "home-manager/shared/waybar.nix"
       "home-manager/shared/hyprlock.nix"
-      
+      "home-manager/shared/gammastep.nix"
       "home-manager/${username}/firefox.nix"
-      "home-manager/${username}/gammastep.nix"
       "home-manager/${username}/vscodium.nix"
     ])
   ];
