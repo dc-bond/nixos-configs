@@ -359,12 +359,28 @@ in
           box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
       }
 
+      #pulseaudio {
+          color: #00ff00;
+          background: linear-gradient(135deg, rgba(0, 255, 0, 0.15) 0%, rgba(0, 255, 0, 0.05) 100%);
+          padding: 4px 14px;
+          margin: 4px 4px;
+          border-radius: 12px;
+          border: 1px solid rgba(0, 255, 0, 0.3);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      
+      #pulseaudio:hover {
+          background: linear-gradient(135deg, @color11 0%, @color1 100%);
+          border: 1px solid @color11;
+          box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+      }
+      
       #pulseaudio.muted {
           color: #77767b;
           background: linear-gradient(135deg, rgba(119, 118, 123, 0.08) 0%, rgba(119, 118, 123, 0.04) 100%);
           border: 1px solid rgba(119, 118, 123, 0.2);
       }
-      
+
       #bluetooth.on {
           color: #ffffff;
       }
