@@ -132,8 +132,8 @@ in
       
       "disk" = {
         "interval" = 10;
-        "format" = "{percentage_used}% ";
-        "tooltip-format" = "Drive Storage Used";
+        "format" = "{percentage_used}% ";
+        "tooltip-format" = "Disk Space Used";
         "path" = "/";
       };
 
