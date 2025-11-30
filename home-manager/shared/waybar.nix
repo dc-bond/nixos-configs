@@ -139,10 +139,14 @@ in
       };
 
       "pulseaudio" = {
-        "format" = "";
+        "format" = "{icon}";
         "format-muted" = "󰖁";
         "format-icons" = {
-          "default" = ["" "" ""];
+          "default" = [ 
+            "" 
+            "" 
+            "" 
+          ];
         };
         "on-click" = "pwvucontrol";
         "tooltip-format" = "Volume: {volume}%";
@@ -166,6 +170,7 @@ in
         "format-linked" = "󰦞";
         "tooltip-format" = "Tailscale: {ipaddr}";
         "tooltip-format-disconnected" = "Tailscale: Disconnected";
+        "on-click" = "alacritty -e tstat"; # run 'tailscale status' on click
       };
     
       "network#wifi" = {
@@ -183,6 +188,7 @@ in
         "format-disconnected" = "󰌗";
         "tooltip-format-ethernet" = "Ethernet-Dock: {ipaddr}";
         "tooltip-format-disconnected" = "Ethernet-Dock: Disconnected";
+        "on-click" = "alacritty -e ip a"; # run 'ip a' on click
       };
 
       "network#ethernet" = {
@@ -191,6 +197,7 @@ in
         "format-disconnected" = "󰌗";
         "tooltip-format-ethernet" = "Ethernet: {ipaddr}";
         "tooltip-format-disconnected" = "Ethernet: Disconnected";
+        "on-click" = "alacritty -e ip a"; # run 'ip a' on click
       };
 
       "clock" = {
