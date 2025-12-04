@@ -36,10 +36,11 @@ in
     channel.enable = false; # disable channels because using flake
     registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs; # make flake registry match flake inputs
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs; # make nix path match flake inputs
-    gc = { # every hour, delete generations then garbage-collect unreferenced programs and symlinks
+    gc = {
       automatic = true;
-      randomizedDelaySec = "60m";
-      options = "--delete-older-than +3"; # keep last three generations
+      dates = "weekly"; # midnight on mondays
+      options = "--delete-older-than 30d"; # clear build cache from nix store older than 30 days
+      persistent = true; # ensure runs next time host is booted if it was powered off at midnight on monday
     };
   };
 
