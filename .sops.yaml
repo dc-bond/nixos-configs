@@ -1,0 +1,28 @@
+keys:
+  - &users: # public user gpg fingerprints
+    - &chris-gpg DB9ADBBE6FBD1F0E694AF25D012321D46E090E61 
+    - &chris-age age1t8c29c4tjeshdae3jr9ars2c32c0swk4yjnxqrrupym6lzmd75askf4mdh
+    - &eric-age age1zu44ae9wjvud9nkmyu08d9qt669fk4xh2hnvanqx7gkdax5whuhqzfpfnq
+  - &hosts: # public age host keys
+    - &thinkpad age1xdp3rwum0jjunk9l4vgp9k8w3fm685z70u0fx84gxpgj5mjdhg3s77v4mp
+    - &cypress age1h07t74u3eq9zsddn0pruzwmjpuuawtnpr7x722nfsen2qu0ege5qdje5xu 
+    - &aspen age1zeavlllujxttwxegdtae4yqmj5gc4prp8xdu8m9xwn49qml4s3eq2c2ck6 
+    - &juniper age12cej39r3mp6qqvxcnnw62r6cneu8h75vcgr4twr5curzfspaxpasxnpnkr
+    - &alder age1fk5pxts9lzk22zkn9hq95375x58n22mvu86uncrn2qp4k8uldfcqs2qy9d
+creation_rules: # when sops creates/edits a secrets.yaml file it encrypts using both gpg and age public keys and one or the other corresponding private keys will be required to decrypt
+  - path_regex: secrets.(yaml|json|env|ini)$
+    key_groups:
+      - pgp:
+        - *chris-gpg 
+        age:
+        - *chris-age
+        - *eric-age
+        - *thinkpad
+        - *cypress
+        - *aspen
+        - *juniper
+        - *alder
+
+
+# run 'age-keygen' to create private/public keypair(s); save in pass; add public key(s) above
+# run 'sops updatekeys /home/chris/nixos-configs/secrets.yaml' on the encrypted secrets file to update with new user or host encryption keys when added above
