@@ -6,22 +6,6 @@
   ... 
 }: 
 
-#let
-#  pinentryAuto = pkgs.writeShellScriptBin "pinentryAuto" ''
-#    case "$XDG_CURRENT_DESKTOP" in
-#      KDE)
-#        exec ${pkgs.pinentry-qt}/bin/pinentry-qt "$@"
-#        ;;
-#      Hyprland)
-#        exec ${pkgs.pinentry-rofi}/bin/pinentry-rofi "$@"
-#        ;;
-#      *)
-#        exec ${pkgs.pinentry-curses}/bin/pinentry-curses "$@"
-#        ;;
-#    esac
-#  '';
-#in
-
 {
 
   programs.ssh = {
