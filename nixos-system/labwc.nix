@@ -31,5 +31,16 @@
     gvfs.enable = true; # mount, trash, and other functionalities
     tumbler.enable = true; # thumbnail support for images
   };
+  
+  fonts = {
+    fontDir.enable = true;
+    packages = with pkgs; [
+      source-code-pro
+      source-sans-pro
+      font-awesome
+      nerd-fonts.sauce-code-pro
+      nerd-fonts.fira-code
+    ];
+  };
 
 }
