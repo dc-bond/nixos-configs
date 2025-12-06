@@ -101,7 +101,7 @@ in
       "custom/weather" = {
         "format" = "{} ";
         "interval" = 1800;  # update every 30 minutes
-        "exec" = "${pkgs.curl}/bin/curl -s --max-time 5 'wttr.in/?format=%c+%t' || echo '?'";
+        "exec" = "${pkgs.curl}/bin/curl -s --max-time 5 --retry 3 --retry-delay 2 'wttr.in/?format=%c+%t' || echo '?'";
         "return-type" = "";
         "on-click" = "${pkgs.alacritty}/bin/alacritty -e zsh -c 'curl wttr.in; read -k 1 \"?Press any key to continue...\"; exec zsh'";
         "tooltip-format" = "Outside Weather";
