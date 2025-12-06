@@ -31,7 +31,8 @@
       url = "github:dc-bond/finplanner";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    private.url = "path:/home/chris/nixos-configs-private";
+    private.url = "git+file:../nixos-configs-private";
+
   };
 
   outputs = { 

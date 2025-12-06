@@ -39,7 +39,7 @@
     rb() {
       local selected_host
       local available_hosts
-      local flake_dir="$HOME/nixos-configs"
+      local flake_dir="$HOME/nextcloud-client/Personal/nixos/nixos-configs"
       
       # get list of hosts from flake
       available_hosts=($(nix eval "$flake_dir#nixosConfigurations" --apply 'builtins.attrNames' --json 2>/dev/null | ${pkgs.jq}/bin/jq -r '.[]'))
