@@ -52,8 +52,6 @@ nixos-configs/
 └── .sops.yaml                   # SOPS configuration
 ```
 
-**Note:** This repository includes the vast majority of my NixOS configuration. Some sensitive modules are kept in a private flake input and are not included here.
-
 ## Architecture
 
 This configuration spans multiple machine types:
