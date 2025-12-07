@@ -36,7 +36,7 @@
     '';
     shellAliases = {
     } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {
-      flakeupdate = "sudo nix flake update --flake ~/nixos-configs";
+      flakeupdate = "nix flake update --flake $HOME/nextcloud-client/Personal/nixos/nixos-configs";
       ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop --command codium . && cd ~";
       finplanner = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/finplanner/ && nix develop";
       cloneconfigs = "cd ~ && git clone https://github.com/dc-bond/nixos-configs";
