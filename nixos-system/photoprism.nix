@@ -127,7 +127,6 @@ in
 
     mysqlBackup = { databases = [ "${app}" ]; };
 
-    #borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
     borgbackup.jobs."${config.networking.hostName}" = {
       paths = lib.mkAfter recoveryPlan.restoreItems;
       exclude = [ "/var/lib/private/${app}/cache/thumbnails" ]; # exclude thumbnails which are regenerated dynamically

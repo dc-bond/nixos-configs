@@ -36,9 +36,10 @@
     '';
     shellAliases = {
     } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {
-      flakeupdate = "nix flake update --flake $HOME/nextcloud-client/Personal/nixos/nixos-configs";
+      flakeupdate= "(cd $HOME/nextcloud-client/Personal/nixos/nixos-configs && nix flake update)";
       ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop --command codium . && cd ~";
       finplanner = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/finplanner/ && nix develop";
+      workouttracker = "cd /home/chris/nextcloud-client/Personal/misc/workout-tracker/ && nix develop";
       cloneconfigs = "cd ~ && git clone https://github.com/dc-bond/nixos-configs";
     } // lib.optionalAttrs (osConfig.networking.hostName == "cypress") {
       storage = "cd /storage/WD-WX21DC86RU3P ; ls";
