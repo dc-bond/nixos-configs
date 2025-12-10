@@ -307,6 +307,9 @@
   finplannerSubnet = "172.21.18.0/25";
   finplannerIp = "172.21.18.2";
 
+  workoutTrackerSubnet = "172.21.19.0/25";
+  workoutTrackerIp = "172.21.19.2";
+
   users = {
 
     chris = {

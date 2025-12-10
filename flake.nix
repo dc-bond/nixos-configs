@@ -32,12 +32,15 @@
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    simple-nixos-mailserver = {
+      url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-25.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     finplanner = {
       url = "github:dc-bond/finplanner";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     private.url = "git+file:../nixos-configs-private?ref=main";
-
   };
 
   outputs = { 
@@ -46,20 +49,19 @@
     nixpkgs-2511,
     home-manager,
     home-manager-2511,
-    private,
     ... 
-  } @ inputs:
+  } @ inputs: # the @inputs makes all input modules available for the rest of the configuration, but still need nixpkgs, home-manager, etc. because referencing those in the flake here itself below for mkHost function
 
   let
+
     inherit (nixpkgs) lib;
     configVars = import ./vars { inherit inputs lib; };
     configLib = import ./lib { inherit lib; };
-
     mkHost = hostname: 
       let
         hostConfig = configVars.hosts.${hostname};
         # select nixpkgs and home-manager based on host configuration
-        # defaults to "25.05" if nixpkgsVersion not specified in configVars
+        # defaults to nixpkgs.url in inputs above if nixpkgsVersion not specified in configVars
         nixpkgsVersion = hostConfig.nixpkgsVersion or "25.05";
         selectedNixpkgs = if nixpkgsVersion == "25.11"
                           then nixpkgs-2511
@@ -91,30 +93,6 @@
           }
         ];
       };
-
-    #specialArgs = {
-    #  inherit inputs configVars configLib nixpkgs;
-    #  outputs = self;
-    #};
-    #mkHost = hostname: nixpkgs.lib.nixosSystem {
-    #  system = configVars.hosts.${hostname}.system;
-    #  inherit specialArgs;
-    #  modules = [
-    #    ./hosts/${hostname}/configuration.nix
-    #    home-manager.nixosModules.home-manager
-    #    {
-    #      home-manager = {
-    #        useGlobalPkgs = true;
-    #        useUserPackages = true;
-    #        users = lib.genAttrs 
-    #          (configVars.hosts.${hostname}.users ++ ["root"]) # always include root user in hosts
-    #          (user: import ./hosts/${hostname}/${user}/home.nix); # include users defined in each host in configVars
-    #        extraSpecialArgs = specialArgs; # passes flake inputs and outputs to home-manager module
-    #      };
-    #    }
-    #  ];
-    #};
-
 
   in 
   
