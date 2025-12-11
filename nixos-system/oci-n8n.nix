@@ -17,6 +17,7 @@ let
     cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/docker/volumes/${app}"
+      "/var/lib/docker/volumes/${app}-postgres"
     ];
     stopServices = [ "docker-${app}-root.target" ];
     startServices = [ "docker-${app}-root.target" ];
@@ -52,7 +53,7 @@ in
         N8N_TEMPLATES_ENABLED=false
         DB_TYPE=postgresdb
         DB_POSTGRESDB_DATABASE=${app}
-        DB_POSTGRESDB_HOST=postgres
+        DB_POSTGRESDB_HOST=${app}-postgres
         DB_POSTGRESDB_PORT=5432
         DB_POSTGRESDB_USER=${app}
         DB_POSTGRESDB_PASSWORD=${config.sops.placeholder.n8nDbPasswd}
@@ -78,7 +79,7 @@ in
   virtualisation.oci-containers.containers = {
 
     "${app}" = {
-      image = "docker.io/n8nio/n8n:1.120.1"; # https://hub.docker.com/r/n8nio/n8n
+      image = "docker.io/n8nio/n8n:2.0.1"; # https://hub.docker.com/r/n8nio/n8n
       autoStart = true;
       environmentFiles = [ config.sops.templates."${app}-env".path ];
       log-driver = "journald";
@@ -105,7 +106,7 @@ in
       autoStart = true;
       environmentFiles = [ config.sops.templates."${app}-postgres-env".path ];
       log-driver = "journald";
-      volumes = [ "postgres-data:/var/lib/postgresql/data" ];
+      volumes = [ "${app}-postgres:/var/lib/postgresql" ];
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.n8nPostgresIp}"

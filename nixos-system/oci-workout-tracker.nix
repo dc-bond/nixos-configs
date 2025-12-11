@@ -3,6 +3,7 @@
   lib,
   pkgs,
   configVars,
+  dockerServiceRecoveryScript,
   ...
 }:
 
@@ -11,14 +12,39 @@ let
   appPort = 8502;
   gitRepo = "/var/lib/nextcloud/data/Chris Bond/files/Personal/misc/${app}";
   repoDir = "/var/lib/${app}";
+  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
+  recoveryPlan = {
+    serviceName = "${app}";
+    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
+    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
+    restoreItems = [
+      "/var/lib/docker/volumes/${app}"
+    ];
+    stopServices = [ "docker-${app}-root.target" ];
+    startServices = [ "docker-${app}-root.target" ];
+  };
+  recoverScript = dockerServiceRecoveryScript {
+    serviceName = app;
+    recoveryPlan = recoveryPlan;
+  };
 in
 
 {
+  
+  environment.systemPackages = with pkgs; [ recoverScript ];
+  
+  backups.serviceHooks = {
+    preHook = lib.mkAfter [ "systemctl stop docker-${app}-root.target" ];
+    postHook = lib.mkAfter [ "systemctl start docker-${app}-root.target" ];
+  };
+
+  services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
 
   virtualisation.oci-containers.containers."${app}" = {
     image = "${app}:latest";
     autoStart = true;
     log-driver = "journald";
+    volumes = [ "${app}:/app/data" ];
     extraOptions = [
       "--network=${app}"
       "--ip=${configVars.workoutTrackerIp}"
@@ -31,31 +57,29 @@ in
       "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
       "traefik.http.routers.${app}.tls" = "true";
       "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-      "traefik.http.routers.${app}.middlewares" = "authelia-dcbond@file,secure-headers@file";
+      "traefik.http.routers.${app}.middlewares" = "secure-headers@file";
       "traefik.http.services.${app}.loadbalancer.server.port" = "${toString appPort}";
     };
   };
 
   systemd = {
     services = {
-      "docker-clone-${app}" = {
-        description = "clone ${app} repository";
-        path = [pkgs.git pkgs.coreutils pkgs.bash];
+
+      "docker-copy-${app}" = {
+        description = "copy ${app} repository";
+        path = [pkgs.rsync pkgs.coreutils pkgs.bash];
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
         };
         script = ''
-          if [ ! -d ${repoDir} ]; then
-            ${pkgs.git}/bin/git clone ${gitRepo} ${repoDir}
-          else
-            cd ${repoDir} && ${pkgs.git}/bin/git pull
-          fi
+          mkdir -p "${repoDir}"
+          ${pkgs.rsync}/bin/rsync -av --delete "${gitRepo}/" "${repoDir}/"
         '';
         wantedBy = ["docker-${app}-root.target"]; 
         partOf = ["docker-${app}-root.target"]; 
       };
-      
+
       "docker-build-${app}" = {
         description = "build ${app} docker image";
         path = [pkgs.docker pkgs.bash];
@@ -65,15 +89,17 @@ in
         };
         script = ''
           set -e
-          docker build -t ${app}:latest ${repoDir}
+          if ! docker image inspect ${app}:latest >/dev/null 2>&1; then
+            docker build -t ${app}:latest ${repoDir}
+          fi
           rm -rf ${repoDir}
         '';
-        after = ["docker-clone-${app}.service" "docker.service"];
-        requires = ["docker-clone-${app}.service" "docker.service"];
+        after = ["docker-copy-${app}.service" "docker.service"];
+        requires = ["docker-copy-${app}.service" "docker.service"];
         wantedBy = ["docker-${app}-root.target"];
         partOf = ["docker-${app}-root.target"];
       };
-      
+
       "docker-${app}" = {
         serviceConfig = {
           Restart = lib.mkOverride 500 "always";
@@ -89,6 +115,21 @@ in
           "docker-network-${app}.service"
           "docker-build-${app}.service"
         ];
+        partOf = ["docker-${app}-root.target"];
+        wantedBy = ["docker-${app}-root.target"];
+      };
+
+      "docker-volume-${app}" = {
+        path = [pkgs.docker];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        script = ''
+          docker volume inspect ${app} || docker volume create ${app}
+        '';
+        after = ["docker.service"];
+        requires = ["docker.service"];
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
       };
