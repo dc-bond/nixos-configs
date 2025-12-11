@@ -74,7 +74,6 @@ in
       "nixos-system/stirling-pdf.nix"
       "nixos-system/dcbond-root.nix"
       "nixos-system/ollama.nix"
-      "nixos-system/finplanner.nix"
       "nixos-system/oci-containers.nix"
       "nixos-system/oci-fava.nix"
       "nixos-system/oci-frigate.nix" # requires nvidia.nix
@@ -86,7 +85,8 @@ in
       "nixos-system/oci-librechat.nix"
       "nixos-system/oci-unifi.nix"
       "nixos-system/oci-finplanner.nix"
-      #"nixos-system/oci-n8n.nix"
+      "nixos-system/oci-workout-tracker.nix"
+      "nixos-system/oci-n8n.nix"
 
       "scripts/media-transfer.nix"
     ])
