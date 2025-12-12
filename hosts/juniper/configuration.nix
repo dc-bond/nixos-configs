@@ -46,6 +46,7 @@
       "nixos-system/postgresql.nix"
       "nixos-system/traefik.nix"
       "nixos-system/matrix-synapse.nix"
+      "nixos-system/vaultwarden.nix"
     ])
   ];
 
