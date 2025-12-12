@@ -40,12 +40,32 @@ in
 
 {
 
-  sops.secrets = {
-    borgCryptPasswd = {};
-    mqttHassPasswd = {};
-    hassSecrets = {
-      owner = "hass";
-      path = "/var/lib/hass/secrets.yaml";
+  sops = {
+    secrets = {
+      borgCryptPasswd = {};
+      mqttHassPasswd = {};
+      chrisEmailPasswd = {};
+      #hassSecrets = {
+      #  owner = "hass";
+      #  path = "/var/lib/hass/secrets.yaml";
+      #};
+    };
+    templates = {
+      "hass-secrets" = {
+        content = ''
+          notifySenderEmail: ${configVars.users.chris.email}
+          notifySenderAlias: ${configVars.users.chris.email}
+          notifyDefaultRecipient: ${configVars.users.chris.email}
+          notifyEmailServer: ${configVars.mailservers.namecheap.smtpHost}
+          notifyEmailUsername: ${configVars.users.chris.email} 
+          notifyEmailPasswd: ${config.sops.placeholder.chrisEmailPasswd}
+          notifyEmailPort: ${toString configVars.mailservers.namecheap.smtpPort}
+        '';
+        path = "/var/lib/hass/secrets.yaml";
+        owner = "${config.users.users.hass.name}";
+        group = "${config.users.users.hass.group}";
+        mode = "0440";
+      };
     };
   };
 
@@ -109,8 +129,8 @@ in
           timeout = 60;
           username = "!secret notifyEmailUsername";
           password = "!secret notifyEmailPasswd";
-          #encryption = "starttls";
-          encryption = "tls";
+          encryption = "starttls"; # for port 587
+          #encryption = "tls"; # for port 465
         };
       };
     };

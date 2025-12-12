@@ -76,8 +76,8 @@ in
             purge_jobs:
               - interval: 12h
           email:
-            smtp_host: mail.privateemail.com
-            smtp_port: 587
+            smtp_host: ${configVars.mailservers.namecheap.smtpHost}
+            smtp_port: ${toString configVars.mailservers.namecheap.smtpPort}
             force_tls: false
             require_transport_security: true
             smtp_user: ${configVars.users.chris.email}

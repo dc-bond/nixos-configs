@@ -224,19 +224,19 @@
         passwordCommand = "pass email/${configVars.users.chris.email}";
         primary = true;
         imap = {
-          host = "mail.privateemail.com";
-          port = 993; 
+          host = ${configVars.mailservers.namecheap.smtpHost};
+          port = ${toString configVars.mailservers.namecheap.imapPort}; 
           tls = {
-            enable = true;
+            enable = true; # TLS on port 993
             useStartTls = false;
           };
         };
         smtp = {
-          host = "mail.privateemail.com";
-          port = 465; 
+          host = ${configVars.mailservers.namecheap.smtpHost};
+          port = ${toString configVars.mailservers.namecheap.smtpPort}; 
           tls = {
-            enable = true;
-            useStartTls = false;
+            enable = false; # TLS on port 465
+            useStartTls = true; # STARTTLS on port 587
           };
         };
         msmtp.enable = true;

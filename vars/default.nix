@@ -427,5 +427,13 @@
     };
 
   };
+
+  mailservers = {
+    namecheap = {
+      smtpHost = "mail.privateemail.com";
+      smtpPort = 587; # STARTTLS
+      imapPort = 993;
+    };
+  };
   
 }
