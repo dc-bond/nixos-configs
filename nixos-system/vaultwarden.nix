@@ -44,7 +44,6 @@ in
     secrets = {
       borgCryptPasswd = {};
       chrisEmailPasswd = {};
-      vaultwardenAdminToken = {};
     };
     templates = {
       "${app}-env".content = ''
@@ -55,15 +54,16 @@ in
         DATABASE_URL=postgresql://vaultwarden@/vaultwarden
         SIGNUPS_ALLOWED=false
         SMTP_HOST=${configVars.mailservers.namecheap.smtpHost}
-        SMTP_FROM=vaultwarden@${configVars.domain2}
-        SMTP_FROM_NAME=Vaultwarden
+        SMTP_FROM=${configVars.users.chris.email}
+        SMTP_FROM_NAME=vaultwarden
         SMTP_SECURITY=starttls
         SMTP_PORT=${toString configVars.mailservers.namecheap.smtpPort}
         SMTP_USERNAME=${configVars.users.chris.email}
         SMTP_PASSWORD=${config.sops.placeholder.chrisEmailPasswd}
         SMTP_TIMEOUT=15
         SMTP_EMBED_IMAGES=true
-        ADMIN_TOKEN=${config.sops.placeholder.vaultwardenAdminToken}
+        SMTP_AUTH_MECHANISM=Login
+        ADMIN_TOKEN=$argon2id$v=19$m=65540,t=3,p=4$TkZqT1Zpb3dnQ0hKcG10RjZOUFZHWTZFOVhlTFk3bVNNYlM0bFdHb3kzZz0$fzWizVbndJKOqEeuQ9GKNyorXZVe7rloQBKn4VEKiu4
       '';
     };
   };
@@ -91,7 +91,7 @@ in
     ${app} = {
       enable = true;
       dbBackend = "postgresql";
-      backupDir = "/var/backup/vaultwarden";
+      backupDir = null;
       environmentFile = config.sops.templates."${app}-env".path;
     };
 
