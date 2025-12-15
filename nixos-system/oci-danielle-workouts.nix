@@ -8,8 +8,8 @@
 }:
 
 let
-  app = "workout-tracker";
-  appPort = 8502;
+  app = "danielle-workouts";
+  appPort = 8503;
   gitRepo = "/var/lib/nextcloud/data/Chris Bond/files/Personal/misc/${app}";
   repoDir = "/var/lib/${app}";
   recoveryPlan = {
@@ -43,7 +43,7 @@ in
     volumes = [ "${app}:/app/data" ];
     extraOptions = [
       "--network=${app}"
-      "--ip=${configVars.workoutTrackerIp}"
+      "--ip=${configVars.danielleWorkoutsIp}"
       "--tty=true"
       "--stop-signal=SIGINT"
     ];
@@ -138,7 +138,7 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
         };
         script = ''
-          docker network inspect ${app} || docker network create --subnet ${configVars.workoutTrackerSubnet} --driver bridge --scope local --attachable ${app}
+          docker network inspect ${app} || docker network create --subnet ${configVars.danielleWorkoutsSubnet} --driver bridge --scope local --attachable ${app}
         '';
         after = ["docker.service"];
         requires = ["docker.service"];
