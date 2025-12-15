@@ -12,11 +12,7 @@ let
   hostData = configVars.hosts.${config.networking.hostName};
   app = "pihole";
   app2 = "unbound";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/docker/volumes/${app}"
       "/var/lib/docker/volumes/${app2}"
@@ -45,7 +41,6 @@ in
   sops = {
     secrets = {
       piholeWebPasswd = {};
-      borgCryptPasswd = {};
     };
     templates = {
       "${app}-env".content = ''

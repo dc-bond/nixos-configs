@@ -23,20 +23,6 @@ let
     echo "repository initialized successfully"
   '';
 
-  listLocalArchivesScript = pkgs.writeShellScriptBin "listLocalArchives" ''
-    #!/bin/bash
-    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
-    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-    ${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgDir}/${config.networking.hostName}
-  '';
-
-  infoLocalArchivesScript = pkgs.writeShellScriptBin "infoLocalArchives" ''
-    #!/bin/bash
-    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
-    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-    ${pkgs.borgbackup}/bin/borg info ${config.backups.borgDir}/${config.networking.hostName}
-  '';
-
   cloudBackupScript = pkgs.writeShellScriptBin "cloudBackup" ''
     #!/bin/bash
     set -euo pipefail
@@ -70,14 +56,14 @@ let
       echo ""
       echo "Time: $(date "+%Y-%m-%d %H:%M:%S")"
     } | ${pkgs.msmtp}/bin/msmtp \
-      --host=mail.privateemail.com \
-      --port=587 \
+      --host=${configVars.mailservers.namecheap.smtpHost} \
+      --port=${toString configVars.mailservers.namecheap.smtpPort} \
       --auth=on \
-      --user="${configVars.users.chris.email}" \
+      --user=${configVars.users.chris.email} \
       --passwordeval "cat ${chrisEmailPasswd}" \
       --tls=on \
       --tls-starttls=on \
-      --from="${configVars.users.chris.email}" \
+      --from=${configVars.users.chris.email} \
       -t
   '';
 
@@ -107,130 +93,370 @@ let
       echo ""
       echo "IMMEDIATE ACTION REQUIRED!"
     } | ${pkgs.msmtp}/bin/msmtp \
-      --host=mail.privateemail.com \
-      --port=587 \
+      --host=${configVars.mailservers.namecheap.smtpHost} \
+      --port=${toString configVars.mailservers.namecheap.smtpPort} \
       --auth=on \
-      --user="${configVars.users.chris.email}" \
+      --user=${configVars.users.chris.email} \
       --passwordeval "cat ${chrisEmailPasswd}" \
       --tls=on \
       --tls-starttls=on \
-      --from="${configVars.users.chris.email}" \
+      --from=${configVars.users.chris.email} \
       -t
   '';
 
-  cloudRestoreScript = pkgs.writeShellScriptBin "cloudRestore" ''
+  inspectLocalBackupsScript = pkgs.writeShellScriptBin "inspectLocalBackups" ''
     #!/bin/bash
-    echo "rclone cloud restore from backblaze started at $(date)"
-    if [ -d "${config.backups.borgCloudDir}/${config.networking.hostName}" ]; then
-      echo "stale restoration detected at ${config.backups.borgCloudDir}/${config.networking.hostName}... deleting"
-      rm -rf ${config.backups.borgCloudDir}/${config.networking.hostName}
-    fi
-    echo "creating restoration directory at ${config.backups.borgCloudDir}/${config.networking.hostName}"
-    mkdir ${config.backups.borgCloudDir}/${config.networking.hostName}
-    ${pkgs.rclone}/bin/rclone --config "${rcloneConf}" --verbose sync backblaze-b2:${config.networking.hostName}-backup-dcbond ${config.backups.borgCloudDir}/${config.networking.hostName}
-    echo "change ownership of restoration directory at ${config.backups.borgCloudDir}/${config.networking.hostName}"
-    chown -R root:root ${config.backups.borgCloudDir}/${config.networking.hostName}
-    echo "rclone cloud restore from backblaze finished at $(date)"
-  '';  
-
-  listCloudArchivesScript = pkgs.writeShellScriptBin "listCloudArchives" ''
-    #!/bin/bash
+    set -euo pipefail
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-    export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
-    ${pkgs.borgbackup}/bin/borg list --short ${config.backups.borgCloudDir}/${config.networking.hostName}
+    
+    LOCAL_REPO="${config.backups.borgDir}/${config.networking.hostName}"
+    
+    echo "=========================================="
+    echo "REPOSITORY INFO"
+    echo "=========================================="
+    ${pkgs.borgbackup}/bin/borg info "$LOCAL_REPO"
+    
+    echo ""
+    echo "=========================================="
+    echo "AVAILABLE ARCHIVES"
+    echo "=========================================="
+    ${pkgs.borgbackup}/bin/borg list --short "$LOCAL_REPO"
+    
+    echo ""
+    echo "Inspection complete!"
   '';
 
-  infoCloudArchivesScript = pkgs.writeShellScriptBin "infoCloudArchives" ''
+  inspectRemoteBackupsScript = pkgs.writeShellScriptBin "inspectRemoteBackups" ''
     #!/bin/bash
+    
+    set -euo pipefail
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-    export BORG_UNKNOWN_UNENCRYPTED_REPO_ACCESS_IS_OK=yes
-    ${pkgs.borgbackup}/bin/borg info ${config.backups.borgCloudDir}/${config.networking.hostName}
+    
+    TEMP_MOUNT=""
+    
+    # cleanup function
+    cleanup() {
+      if [ -n "$TEMP_MOUNT" ] && [ -d "$TEMP_MOUNT" ]; then
+        echo ""
+        echo "Cleaning up..."
+        if mountpoint -q "$TEMP_MOUNT" 2>/dev/null; then
+          fusermount -u "$TEMP_MOUNT" 2>/dev/null || umount "$TEMP_MOUNT" 2>/dev/null || true
+        fi
+        rmdir "$TEMP_MOUNT" 2>/dev/null || true
+      fi
+    }
+    
+    # register cleanup on exit
+    trap cleanup EXIT INT TERM
+    
+    # generate list of available hosts
+    HOSTS=(${lib.concatStringsSep " " (builtins.attrNames configVars.hosts)})
+    
+    echo "Available hosts:"
+    for i in "''${!HOSTS[@]}"; do
+      if [ "''${HOSTS[$i]}" = "${config.networking.hostName}" ]; then
+        echo "$((i+1))) ''${HOSTS[$i]} (current host)"
+      else
+        echo "$((i+1))) ''${HOSTS[$i]}"
+      fi
+    done
+    echo ""
+    
+    read -p "Select host number [1]: " host_num
+    host_num=''${host_num:-1}
+    
+    # validate selection
+    if ! [[ "$host_num" =~ ^[0-9]+$ ]] || [ "$host_num" -lt 1 ] || [ "$host_num" -gt "''${#HOSTS[@]}" ]; then
+      echo "Invalid selection"
+      exit 1
+    fi
+    
+    SOURCE_HOST="''${HOSTS[$((host_num-1))]}"
+    echo "Selected: $SOURCE_HOST"
+    echo ""
+    
+    TEMP_MOUNT="/tmp/borg-inspect-$SOURCE_HOST-$$"
+    mkdir -p "$TEMP_MOUNT"
+    
+    echo "Mounting remote backup from $SOURCE_HOST..."
+    ${pkgs.rclone}/bin/rclone mount \
+      --config "${rcloneConf}" \
+      --vfs-cache-mode writes \
+      --allow-other \
+      --daemon \
+      backblaze-b2:$SOURCE_HOST-backup-dcbond "$TEMP_MOUNT"
+    
+    sleep 5
+    
+    if ! mountpoint -q "$TEMP_MOUNT"; then
+      echo "ERROR: Failed to mount remote repository"
+      exit 1
+    fi
+    
+    echo "Repository mounted successfully"
+    echo ""
+    echo "=========================================="
+    echo "REPOSITORY INFO"
+    echo "=========================================="
+    ${pkgs.borgbackup}/bin/borg info "$TEMP_MOUNT"
+    
+    echo ""
+    echo "=========================================="
+    echo "AVAILABLE ARCHIVES"
+    echo "=========================================="
+    ${pkgs.borgbackup}/bin/borg list "$TEMP_MOUNT"
+    
+    echo ""
+    echo "Inspection complete!"
   '';
 
   dockerServiceRecoveryScript = { 
-    serviceName, 
-    recoveryPlan 
-  }: # function that generates a standardized recovery script for any dockerized container stack service
-    pkgs.writeShellScriptBin "recover${lib.strings.toUpper (builtins.substring 0 1 serviceName)}${builtins.substring 1 (-1) serviceName}" ''
-      #!/bin/bash
-     
-      # track errors
-      set -euo pipefail
+  serviceName, 
+  recoveryPlan 
+  }: # function that generates a standardized recovery script for any oci-container module service
+  pkgs.writeShellScriptBin "recover${lib.strings.toUpper (builtins.substring 0 1 serviceName)}${builtins.substring 1 (-1) serviceName}" ''
+    #!/bin/bash
+   
+    set -euo pipefail
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
-      # set borg passphrase environment variable
-      export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
-      export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+    TEMP_MOUNT=""
+    TEMP_EXTRACT=""
+    EXTRACT_TO_TEMP=false
+    CLEANUP_MOUNT=false
 
-      # repo selection
-      read -p "Use cloud repo? (y/N): " use_cloud
-      if [[ "$use_cloud" =~ ^[Yy]$ ]]; then
-        REPO="${recoveryPlan.cloudRestoreRepoPath}"
-        echo "Using cloud repo"
-      else
-        REPO="${recoveryPlan.localRestoreRepoPath}"
-        echo "Using local repo"
+    # cleanup function
+    cleanup() {
+      if [ "$CLEANUP_MOUNT" = true ] && [ -n "$TEMP_MOUNT" ] && [ -d "$TEMP_MOUNT" ]; then
+        echo "Cleaning up remote mount..."
+        if mountpoint -q "$TEMP_MOUNT" 2>/dev/null; then
+          fusermount -u "$TEMP_MOUNT" 2>/dev/null || umount "$TEMP_MOUNT" 2>/dev/null || true
+        fi
+        rmdir "$TEMP_MOUNT" 2>/dev/null || true
       fi
+      if [ -n "$TEMP_EXTRACT" ] && [ -d "$TEMP_EXTRACT" ]; then
+        echo "Cleaning up temp extraction..."
+        rm -rf "$TEMP_EXTRACT"
+      fi
+    }
 
-      # archive selection
-      echo "Available archives at $REPO:"
+    # register cleanup on exit
+    trap cleanup EXIT INT TERM
+
+    echo "========================================"
+    echo "Recovery: ${serviceName}"
+    echo "========================================"
+    echo ""
+
+    # repo source selection
+    echo "Select repository source:"
+    echo "  L) Local repository"
+    echo "  R) Remote repository (Backblaze B2)"
+    echo ""
+    read -p "Source [L]: " repo_type
+    repo_type=''${repo_type:-L}
+    
+    if [[ "$repo_type" =~ ^[Rr]$ ]]; then
+
+      # remote: host selection
+      HOSTS=(${lib.concatStringsSep " " (builtins.attrNames configVars.hosts)})
+      
       echo ""
-      archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
-      echo "$archives" | nl -w2 -s') '
+      echo "Available hosts:"
+      for i in "''${!HOSTS[@]}"; do
+        if [ "''${HOSTS[$i]}" = "${config.networking.hostName}" ]; then
+          echo "  $((i+1))) ''${HOSTS[$i]} (current host)"
+        else
+          echo "  $((i+1))) ''${HOSTS[$i]}"
+        fi
+      done
       echo ""
-      read -p "Enter number: " num
-      ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
-      if [ -z "$ARCHIVE" ]; then
+      
+      read -p "Select host [1]: " host_num
+      host_num=''${host_num:-1}
+      
+      if ! [[ "$host_num" =~ ^[0-9]+$ ]] || [ "$host_num" -lt 1 ] || [ "$host_num" -gt "''${#HOSTS[@]}" ]; then
         echo "Invalid selection"
         exit 1
       fi
-      echo "Selected: $ARCHIVE"
-
-      # stop services
-      for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
-        echo "Stopping $svc ..."
-        systemctl stop "$svc" || true
-      done
-
-      # allow for graceful container shutdown
-      echo "Ensure container stack fully down..."
-      sleep 15 
       
-      # extract volume names from restore items
-      VOLUMES=""
+      SOURCE_HOST="''${HOSTS[$((host_num-1))]}"
+      echo "Selected: $SOURCE_HOST"
+      
+      # mount remote
+      TEMP_MOUNT="/tmp/borg-mount-$$"
+      mkdir -p "$TEMP_MOUNT"
+      
+      echo ""
+      echo "Mounting remote backup from $SOURCE_HOST via Backblaze B2..."
+      echo "This may take a few moments..."
+      ${pkgs.rclone}/bin/rclone mount \
+        --config "${rcloneConf}" \
+        --vfs-cache-mode writes \
+        --allow-other \
+        --daemon \
+        backblaze-b2:$SOURCE_HOST-backup-dcbond "$TEMP_MOUNT"
+      
+      # wait for mount to be ready
+      sleep 5
+      
+      # verify mount succeeded
+      if ! mountpoint -q "$TEMP_MOUNT"; then
+        echo "ERROR: Failed to mount remote repository"
+        exit 1
+      fi
+      
+      REPO="$TEMP_MOUNT"
+      CLEANUP_MOUNT=true
+      EXTRACT_TO_TEMP=true
+      echo "Remote repository mounted"
+      
+    else
+    
+      # use local repository
+      REPO="${config.backups.borgDir}/${config.networking.hostName}"
+      
+      # verify local repo exists
+      if [ ! -d "$REPO" ]; then
+        echo "ERROR: Local repository not found at $REPO"
+        exit 1
+      fi
+      
+      echo "Using local repository: $REPO"
+    fi
+
+    # archive selection
+    echo ""
+    echo "Fetching archives..."
+    archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
+    
+    if [ -z "$archives" ]; then
+      echo "ERROR: No archives found"
+      exit 1
+    fi
+    
+    echo ""
+    echo "Available archives:"
+    echo "$archives" | nl -w2 -s') '
+    echo ""
+    read -p "Select archive: " num
+    
+    if ! [[ "$num" =~ ^[0-9]+$ ]]; then
+      echo "Invalid selection"
+      exit 1
+    fi
+    
+    ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
+    
+    if [ -z "$ARCHIVE" ]; then
+      echo "Invalid selection"
+      exit 1
+    fi
+    
+    echo "Selected: $ARCHIVE"
+
+    # extract data before bringing services down (if remote)
+    if [ "$EXTRACT_TO_TEMP" = true ]; then
+      echo ""
+      echo "========================================"
+      echo "Phase 1: downloading data"
+      echo "========================================"
+      
+      TEMP_EXTRACT="/tmp/borg-extract-$$"
+      mkdir -p "$TEMP_EXTRACT"
+      
+      echo ""
+      echo "Extracting to /tmp..."
+      
+      cd "$TEMP_EXTRACT"
+      if ! ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}; then
+        echo ""
+        echo "ERROR: Extraction failed. No changes made to services."
+        exit 1
+      fi
+      
+      echo ""
+      echo "✓ Data downloaded successfully"
+      
+      # unmount remote
+      fusermount -u "$TEMP_MOUNT" 2>/dev/null || true
+      rmdir "$TEMP_MOUNT" 2>/dev/null || true
+      CLEANUP_MOUNT=false
+    fi
+
+    echo ""
+    echo "========================================"
+    echo "Phase 2: applying recovery"
+    echo "========================================"
+    echo ""
+    echo "This will:"
+    echo "  Stop: ${lib.concatStringsSep ", " recoveryPlan.stopServices}"
+    echo "  Replace Docker service volume data"
+    echo ""
+    read -p "Proceed? (y/N): " confirm
+    if ! [[ "$confirm" =~ ^[Yy]$ ]]; then
+      echo "Aborted. No changes made."
+      exit 0
+    fi
+
+    echo ""
+    echo "Stopping services..."
+    for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
+      systemctl stop "$svc" || true
+    done
+
+    echo "Waiting for graceful container shutdown..."
+    sleep 15 
+    
+    # extract volume names from restore items
+    VOLUMES=""
+    for item in ${lib.concatStringsSep " " recoveryPlan.restoreItems}; do
+      VOLUME_NAME=$(basename "$item")
+      VOLUMES="$VOLUMES $VOLUME_NAME"
+    done
+    
+    echo "Removing existing volumes..."
+    for volume in $VOLUMES; do
+      ${pkgs.docker}/bin/docker volume rm "$volume" 2>/dev/null || true
+    done
+    
+    echo "Recreating volumes..."
+    for volume in $VOLUMES; do
+      ${pkgs.docker}/bin/docker volume create "$volume"
+    done
+
+    # copy (if remote) or direct extract (if local) recovery data
+    if [ "$EXTRACT_TO_TEMP" = true ]; then
+      echo "Moving data to final location..."
       for item in ${lib.concatStringsSep " " recoveryPlan.restoreItems}; do
-        VOLUME_NAME=$(basename "$item")
-        VOLUMES="$VOLUMES $VOLUME_NAME"
+        if [ ! -e "$TEMP_EXTRACT$item" ]; then
+          echo "ERROR: Extracted data not found at $TEMP_EXTRACT$item"
+          exit 1
+        fi
+        cp -av "$TEMP_EXTRACT$item"/. "$item/"
       done
-      
-      # remove existing volumes
-      echo "Removing existing volumes..."
-      for volume in $VOLUMES; do
-        echo "Removing volume: $volume"
-        ${pkgs.docker}/bin/docker volume rm "$volume" || true
-      done
-      
-      # recreate volumes
-      echo "Recreating volumes..."
-      for volume in $VOLUMES; do
-        echo "Creating volume: $volume"
-        ${pkgs.docker}/bin/docker volume create "$volume"
-      done
-
-      # extract data from archive
+      rm -rf "$TEMP_EXTRACT"
+      TEMP_EXTRACT=""
+    else
+      echo "Extracting data..."
       cd /
-      echo "Extracting data from $REPO::$ARCHIVE ..."
       ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
+    fi
 
-      # start services
-      for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
-        echo "Starting $svc ..."
-        systemctl start "$svc" || true
-      done
+    echo ""
+    echo "Starting services..."
+    for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
+      systemctl start "$svc" || true
+    done
 
-      echo "Recovery complete for ${serviceName}!"
-    '';
+    echo ""
+    echo "========================================"
+    echo "✓ Recovery complete: ${serviceName}"
+    echo "========================================"
+  '';
 
   nixServiceRecoveryScript = {
     serviceName,
@@ -241,90 +467,256 @@ let
     preSvcStartHook ? "", # custom commands before re-starting restored services
     postRestoreHook ? "", # custom commands after full restoration
   }: # function that generates a standardized recovery script for any nix module service
-    pkgs.writeShellScriptBin "recover${lib.strings.toUpper (lib.substring 0 1 serviceName)}${lib.substring 1 (-1) serviceName}" ''
-      #!/bin/bash
+  pkgs.writeShellScriptBin "recover${lib.strings.toUpper (lib.substring 0 1 serviceName)}${lib.substring 1 (-1) serviceName}" ''
+    #!/bin/bash
+   
+    set -euo pipefail
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
-      # track errors
-      set -euo pipefail
+    TEMP_MOUNT=""
+    TEMP_EXTRACT=""
+    EXTRACT_TO_TEMP=false
+    CLEANUP_MOUNT=false
 
-      # set borg passphrase environment variable
-      export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
-      export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
-
-      # repo selection
-      read -p "Use cloud repo? (y/N): " use_cloud
-      if [[ "$use_cloud" =~ ^[Yy]$ ]]; then
-        REPO="${recoveryPlan.cloudRestoreRepoPath}"
-        echo "Using cloud repo"
-      else
-        REPO="${recoveryPlan.localRestoreRepoPath}"
-        echo "Using local repo"
+    # cleanup function
+    cleanup() {
+      if [ "$CLEANUP_MOUNT" = true ] && [ -n "$TEMP_MOUNT" ] && [ -d "$TEMP_MOUNT" ]; then
+        echo "Cleaning up remote mount..."
+        if mountpoint -q "$TEMP_MOUNT" 2>/dev/null; then
+          fusermount -u "$TEMP_MOUNT" 2>/dev/null || umount "$TEMP_MOUNT" 2>/dev/null || true
+        fi
+        rmdir "$TEMP_MOUNT" 2>/dev/null || true
       fi
+      if [ -n "$TEMP_EXTRACT" ] && [ -d "$TEMP_EXTRACT" ]; then
+        echo "Cleaning up temp extraction..."
+        rm -rf "$TEMP_EXTRACT"
+      fi
+    }
 
-      # archive selection
-      echo "Available archives at $REPO:"
+    # register cleanup on exit
+    trap cleanup EXIT INT TERM
+
+    echo "========================================"
+    echo "Recovery: ${serviceName}"
+    echo "========================================"
+    echo ""
+
+    # repo source selection
+    echo "Select repository source:"
+    echo "  L) Local repository"
+    echo "  R) Remote repository (Backblaze B2)"
+    echo ""
+    read -p "Source [L]: " repo_type
+    repo_type=''${repo_type:-L}
+    
+    if [[ "$repo_type" =~ ^[Rr]$ ]]; then
+      HOSTS=(${lib.concatStringsSep " " (builtins.attrNames configVars.hosts)})
+      
       echo ""
-      archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
-      echo "$archives" | nl -w2 -s') '
+      echo "Available hosts:"
+      for i in "''${!HOSTS[@]}"; do
+        if [ "''${HOSTS[$i]}" = "${config.networking.hostName}" ]; then
+          echo "  $((i+1))) ''${HOSTS[$i]} (current host)"
+        else
+          echo "  $((i+1))) ''${HOSTS[$i]}"
+        fi
+      done
       echo ""
-      read -p "Enter number: " num
-      ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
-      if [ -z "$ARCHIVE" ]; then
+      
+      read -p "Select host [1]: " host_num
+      host_num=''${host_num:-1}
+      
+      if ! [[ "$host_num" =~ ^[0-9]+$ ]] || [ "$host_num" -lt 1 ] || [ "$host_num" -gt "''${#HOSTS[@]}" ]; then
         echo "Invalid selection"
         exit 1
       fi
-      echo "Selected: $ARCHIVE"
-    
-      # pre restore hook
-      ${preRestoreHook}
-    
-      # stop services
-      for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
-        echo "Stopping $svc ..."
-        systemctl stop "$svc" || true
-      done
+      
+      SOURCE_HOST="''${HOSTS[$((host_num-1))]}"
+      echo "Selected: $SOURCE_HOST"
+      
+      # mount remote
+      TEMP_MOUNT="/tmp/borg-mount-$$"
+      mkdir -p "$TEMP_MOUNT"
+      
+      echo ""
+      echo "Mounting remote backup from $SOURCE_HOST via Backblaze B2..."
+      echo "This may take a few moments..."
+      ${pkgs.rclone}/bin/rclone mount \
+        --config "${rcloneConf}" \
+        --vfs-cache-mode writes \
+        --allow-other \
+        --daemon \
+        backblaze-b2:$SOURCE_HOST-backup-dcbond "$TEMP_MOUNT"
+      
+      # wait for mount to be ready
+      sleep 5
+      
+      # verify mount succeeded
+      if ! mountpoint -q "$TEMP_MOUNT"; then
+        echo "ERROR: Failed to mount remote repository"
+        exit 1
+      fi
+      
+      REPO="$TEMP_MOUNT"
+      CLEANUP_MOUNT=true
+      EXTRACT_TO_TEMP=true
+      echo "Remote repository mounted"
+      
+    else
+      REPO="${config.backups.borgDir}/${config.networking.hostName}"
+      
+      # verify local repo exists
+      if [ ! -d "$REPO" ]; then
+        echo "ERROR: Local repository not found at $REPO"
+        exit 1
+      fi
+      
+      echo "Using local repository: $REPO"
+    fi
 
-      # post service stop hook
-      ${postSvcStopHook}
+    # archive selection
+    echo ""
+    echo "Fetching archives..."
+    archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
     
-      # extract data from archive and overwrite existing data
-      cd /
-      echo "Extracting data from $REPO::$ARCHIVE ..."
-      ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
+    if [ -z "$archives" ]; then
+      echo "ERROR: No archives found"
+      exit 1
+    fi
+    
+    echo ""
+    echo "Available archives:"
+    echo "$archives" | nl -w2 -s') '
+    echo ""
+    read -p "Select archive: " num
+    
+    if ! [[ "$num" =~ ^[0-9]+$ ]]; then
+      echo "Invalid selection"
+      exit 1
+    fi
+    
+    ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
+    
+    if [ -z "$ARCHIVE" ]; then
+      echo "Invalid selection"
+      exit 1
+    fi
+    
+    echo "Selected: $ARCHIVE"
+
+    # extract data before bringing services down (if remote)
+    if [ "$EXTRACT_TO_TEMP" = true ]; then
+      echo ""
+      echo "========================================"
+      echo "Phase 1: downloading data"
+      echo "========================================"
       
-      # drop and recreate database if postgres
-      ${lib.optionalString (dbType == "postgresql") ''
-        echo "Dropping and recreating PostgreSQL database ${recoveryPlan.db.name} ..."
-        su - postgres -c "dropdb --if-exists ${recoveryPlan.db.name}"
-        su - postgres -c "createdb -O ${recoveryPlan.db.user} ${recoveryPlan.db.name}"
-        echo "Restoring database from ${recoveryPlan.db.dump} ..."
-        gunzip -c ${recoveryPlan.db.dump} | su - postgres -c "psql ${recoveryPlan.db.name}"
-      ''}
+      TEMP_EXTRACT="/tmp/borg-extract-$$"
+      mkdir -p "$TEMP_EXTRACT"
       
-      # drop and recreate database if mysql
-      ${lib.optionalString (dbType == "mysql") ''
-        echo "Dropping and recreating MySQL database ${recoveryPlan.db.name} ..."
-        sudo -u mysql mysql -e "DROP DATABASE IF EXISTS ${recoveryPlan.db.name};"
-        sudo -u mysql mysql -e "CREATE DATABASE ${recoveryPlan.db.name};"
-        sudo -u mysql mysql -e "GRANT ALL PRIVILEGES ON ${recoveryPlan.db.name}.* TO '${recoveryPlan.db.user}'@'localhost';"
-        echo "Restoring database from ${recoveryPlan.db.dump} ..."
-        gunzip -c ${recoveryPlan.db.dump} | sudo -u mysql mysql ${recoveryPlan.db.name}
-      ''}
-    
-      # pre service start hook
-      ${preSvcStartHook}
-    
-      # start services
-      for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
-        echo "Starting $svc ..."
-        systemctl start "$svc" || true
+      echo ""
+      echo "Extracting to temp..."
+      
+      cd "$TEMP_EXTRACT"
+      if ! ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}; then
+        echo ""
+        echo "ERROR: Extraction failed. No changes made to services."
+        exit 1
+      fi
+      
+      echo ""
+      echo "✓ Data downloaded successfully"
+      
+      # unmount remote
+      fusermount -u "$TEMP_MOUNT" 2>/dev/null || true
+      rmdir "$TEMP_MOUNT" 2>/dev/null || true
+      CLEANUP_MOUNT=false
+    fi
+
+    echo ""
+    echo "========================================"
+    echo "Phase 2: applying recovery"
+    echo "========================================"
+    echo ""
+    echo "This will:"
+    echo "  Stop: ${lib.concatStringsSep ", " recoveryPlan.stopServices}"
+    echo "  Replace service data"
+    ${lib.optionalString (dbType != null) ''
+    echo "  Restore database"
+    ''}
+    echo ""
+    read -p "Proceed? (y/N): " confirm
+    if ! [[ "$confirm" =~ ^[Yy]$ ]]; then
+      echo "Aborted. No changes made."
+      exit 0
+    fi
+
+    ${preRestoreHook}
+
+    echo ""
+    echo "Stopping services..."
+    for svc in ${lib.concatStringsSep " " recoveryPlan.stopServices}; do
+      systemctl stop "$svc" || true
+    done
+
+    ${postSvcStopHook}
+
+    # copy (if remote) or direct extract (if local) recovery data
+    if [ "$EXTRACT_TO_TEMP" = true ]; then
+      echo "Moving data to final location..."
+      for item in ${lib.concatStringsSep " " recoveryPlan.restoreItems}; do
+        if [ ! -e "$TEMP_EXTRACT$item" ]; then
+          echo "ERROR: Extracted data not found at $TEMP_EXTRACT$item"
+          exit 1
+        fi
+        # remove old data and copy restore directory from /tmp
+        rm -rf "$item"
+        mkdir -p "$(dirname "$item")"
+        cp -av "$TEMP_EXTRACT$item" "$item"
       done
+      rm -rf "$TEMP_EXTRACT"
+      TEMP_EXTRACT=""
+    else
+      echo "Extracting data..."
+      cd /
+      ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
+    fi
     
-      # post restore hook
-      ${postRestoreHook}
+    # drop and recreate database if postgres
+    ${lib.optionalString (dbType == "postgresql") ''
+      echo "Dropping and recreating PostgreSQL database ${recoveryPlan.db.name} ..."
+      su - postgres -c "dropdb --if-exists ${recoveryPlan.db.name}"
+      su - postgres -c "createdb -O ${recoveryPlan.db.user} ${recoveryPlan.db.name}"
+      echo "Restoring database from ${recoveryPlan.db.dump} ..."
+      gunzip -c ${recoveryPlan.db.dump} | su - postgres -c "psql ${recoveryPlan.db.name}"
+    ''}
     
-      echo "Recovery complete!"
-    '';
+    # drop and recreate database if mysql
+    ${lib.optionalString (dbType == "mysql") ''
+      echo "Dropping and recreating MySQL database ${recoveryPlan.db.name} ..."
+      sudo -u mysql mysql -e "DROP DATABASE IF EXISTS ${recoveryPlan.db.name};"
+      sudo -u mysql mysql -e "CREATE DATABASE ${recoveryPlan.db.name};"
+      sudo -u mysql mysql -e "GRANT ALL PRIVILEGES ON ${recoveryPlan.db.name}.* TO '${recoveryPlan.db.user}'@'localhost';"
+      echo "Restoring database from ${recoveryPlan.db.dump} ..."
+      gunzip -c ${recoveryPlan.db.dump} | sudo -u mysql mysql ${recoveryPlan.db.name}
+    ''}
+
+    ${preSvcStartHook}
+
+    echo ""
+    echo "Starting services..."
+    for svc in ${lib.concatStringsSep " " recoveryPlan.startServices}; do
+      systemctl start "$svc" || true
+    done
+
+    ${postRestoreHook}
+
+    echo ""
+    echo "========================================"
+    echo "✓ Recovery complete: ${serviceName}"
+    echo "========================================"
+  '';
 
 in
 
@@ -335,11 +727,6 @@ in
       type = lib.types.path;
       default = "/var/lib/borgbackup"; # default, override with different directory in host-specific configuration.nix
       description = "path to the directory for borg backups";
-    };
-    borgCloudDir = lib.mkOption {
-      type = lib.types.path;
-      default = "${config.backups.borgDir}/cloud-restore";
-      description = "path to the directory for borg backups restored from cloud storage (e.g. backblaze)";
     };
     startTime = lib.mkOption {
       type = lib.types.str;
@@ -382,15 +769,14 @@ in
     
     environment.systemPackages = with pkgs; [ 
       initLocalRepoScript
-      listLocalArchivesScript
-      infoLocalArchivesScript
       cloudBackupScript
       backupFailureEmailScript
       backupSuccessEmailScript
-      cloudRestoreScript
-      listCloudArchivesScript
-      infoCloudArchivesScript
+      #cloudRestoreScript
+      inspectLocalBackupsScript
+      inspectRemoteBackupsScript
       rclone
+      fuse # needed for rclone mount
     ];
 
     _module.args = {

@@ -10,11 +10,7 @@
 let
 
   app = "n8n";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/docker/volumes/${app}"
       "/var/lib/docker/volumes/${app}-postgres"
@@ -43,7 +39,6 @@ in
   sops = {
     secrets = {
       n8nDbPasswd = {};
-      borgCryptPasswd = {};
     };
     templates = {
       "${app}-env".content = ''

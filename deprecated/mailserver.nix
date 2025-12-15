@@ -10,11 +10,7 @@
 let
 
   app = "authelia-${configVars.domain1Short}";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/${app}"
       "/var/lib/redis-${app}"
@@ -34,7 +30,6 @@ in
   imports = [ inputs.simple-nixos-mailserver.nixosModule ];
 
   sops.secrets = {
-    borgCryptPasswd = {};
     autheliaLdapUserPasswd1 = {
       owner = config.users.users."${app}".name;
       group = config.users.users."${app}".group;

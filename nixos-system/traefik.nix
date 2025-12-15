@@ -10,11 +10,7 @@
 let
 
   app = "traefik";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/${app}"
     ];
@@ -41,7 +37,6 @@ in
       group = config.users.users.${app}.group;
       mode = "0440";
     };
-    borgCryptPasswd = {};
   };
 
   systemd.services.${app} = {

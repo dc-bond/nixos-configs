@@ -9,11 +9,7 @@
 
 let
   app = "actual";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/docker/volumes/${app}"
     ];
@@ -36,8 +32,6 @@ in
   };
 
   services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
-  
-  sops.secrets.borgCryptPasswd = {};
   
   virtualisation.oci-containers.containers."${app}" = {
     image = "docker.io/actualbudget/${app}-server:25.10.0"; # https://hub.docker.com/r/actualbudget/actual-server/tags

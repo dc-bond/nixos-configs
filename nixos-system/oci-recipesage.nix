@@ -18,11 +18,7 @@ let
   app6 = "postgres"; # volume
   app7 = "browserless"; 
   app8 = "ingredient-instruction-classifier";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/docker/volumes/${app}-api"
       "/var/lib/docker/volumes/${app}-postgres"
@@ -62,7 +58,6 @@ in
   
   sops = {
     secrets = {
-      borgCryptPasswd = {};
       recipesageGripKey = {};
       recipesagePostgresDb = {};
       recipesagePostgresUser = {};
