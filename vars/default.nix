@@ -307,8 +307,11 @@
   finplannerSubnet = "172.21.18.0/25";
   finplannerIp = "172.21.18.2";
 
-  workoutTrackerSubnet = "172.21.19.0/25";
-  workoutTrackerIp = "172.21.19.2";
+  chrisWorkoutsSubnet = "172.21.19.0/25";
+  chrisWorkoutsIp = "172.21.19.2";
+
+  danielleWorkoutsSubnet = "172.21.20.0/25";
+  danielleWorkoutsIp = "172.21.20.2";
 
   users = {
 
