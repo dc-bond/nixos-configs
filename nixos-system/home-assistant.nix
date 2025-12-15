@@ -11,11 +11,7 @@
 let
 
   app = "home-assistant";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/hass"
       "/var/lib/mosquitto"
@@ -42,13 +38,8 @@ in
 
   sops = {
     secrets = {
-      borgCryptPasswd = {};
       mqttHassPasswd = {};
       chrisEmailPasswd = {};
-      #hassSecrets = {
-      #  owner = "hass";
-      #  path = "/var/lib/hass/secrets.yaml";
-      #};
     };
     templates = {
       "hass-secrets" = {

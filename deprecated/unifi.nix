@@ -10,7 +10,6 @@
 let
 
   app = "unifi";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   mongoShutdownWait = ''
     echo "Waiting for Unifi's MongoDB subprocess to shutdown completely ..."
 
@@ -51,9 +50,6 @@ let
     echo "Unifi MongoDB subprocess shutdown complete ..."
   '';
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/${app}"
     ];
@@ -70,8 +66,6 @@ in
 
 {
 
-  sops.secrets.borgCryptPasswd = {};
-  
   environment.systemPackages = with pkgs; [ recoverScript ];
 
   backups.serviceHooks = {

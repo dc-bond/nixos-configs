@@ -14,11 +14,7 @@ let
   app3 = "meilisearch"; # volume
   app4 = "vectordb"; # volume
   app5 = "rag_api";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/docker/volumes/${app}-${app1}-images"
       "/var/lib/docker/volumes/${app}-${app1}-logs"
@@ -115,7 +111,6 @@ in
 
   sops = {
     secrets = {
-      borgCryptPasswd = {};
       librechatOpenaiApiKey = {};
       anthropicApiKey = {};
       librechatMeiliMasterKey = {};

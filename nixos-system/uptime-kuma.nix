@@ -10,11 +10,7 @@
 let
 
   app = "uptime-kuma";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [ "/var/lib/private/${app}" ];
     stopServices = [ "${app}" ];
     startServices = [ "${app}" ];
@@ -28,8 +24,6 @@ in
 
 {
   
-  sops.secrets.borgCryptPasswd = {};
-
   environment.systemPackages = with pkgs; [ recoverScript ];
 
   backups.serviceHooks = {

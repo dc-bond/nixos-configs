@@ -13,11 +13,7 @@ let
 
   hostData = configVars.hosts.${config.networking.hostName};
   app = "matrix-synapse";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/${app}"
       "/var/lib/redis-${app}"
@@ -52,7 +48,6 @@ in
   sops = {
     secrets = {
       chrisEmailPasswd = {};
-      borgCryptPasswd = {};
       matrixSynapseRegistrationSharedSecret = {};
       matrixSynapseMacaroonSecretKey = {};
       coturnStaticAuthSecret = {

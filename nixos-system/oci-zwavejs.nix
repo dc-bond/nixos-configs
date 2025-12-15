@@ -9,11 +9,7 @@
 
 let
   app = "zwavejs";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/docker/volumes/${app}"
     ];
@@ -31,7 +27,6 @@ in
   sops = {
     secrets = {
       zwavejsSessionSecret = {};
-      borgCryptPasswd = {};
     };
     templates = {
       "${app}-env".content = ''

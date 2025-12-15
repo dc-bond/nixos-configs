@@ -13,10 +13,7 @@
 
 let
   app = "nextcloud"; # first-time install will fail, must delete /var/lib/nextcloud/config/config.php file and rebuild then should work
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/${app}"
       "/var/lib/redis-${app}"
@@ -53,7 +50,6 @@ in
   
   sops = {
     secrets = {
-      borgCryptPasswd = {};
       nextcloudAdminPasswd = {
         owner = "${config.users.users.${app}.name}";
         group = "${config.users.users.${app}.group}";

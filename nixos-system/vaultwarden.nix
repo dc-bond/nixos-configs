@@ -12,20 +12,16 @@ let
 
   app = "vaultwarden";
   appPort = 8222;
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/bitwarden_rs"
       "/var/backup/postgresql/vaultwarden.sql.gz"
     ];
     db = {
       type = "postgresql";
-      user = "vaultwarden";
-      name = "vaultwarden";
-      dump = "/var/backup/postgresql/vaultwarden.sql.gz";
+      user = app;
+      name = app;
+      dump = "/var/backup/postgresql/${app}.sql.gz";
     };
     stopServices = [ "${app}" ];
     startServices = [ "${app}" ];
@@ -42,7 +38,6 @@ in
 
   sops = {
     secrets = {
-      borgCryptPasswd = {};
       chrisEmailPasswd = {};
     };
     templates = {

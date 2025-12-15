@@ -10,13 +10,9 @@
 let
 
   app = "photoprism";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   hostData = configVars.hosts.${config.networking.hostName};
   storage = hostData.hardware.storageDrives.data;
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/private/${app}"
       "/var/backup/mysql/${app}.gz"
@@ -42,7 +38,6 @@ in
   
   sops.secrets = {
     photoprismAdminPasswd = {};
-    borgCryptPasswd = {};
   };
 
   environment.systemPackages = with pkgs; [ 

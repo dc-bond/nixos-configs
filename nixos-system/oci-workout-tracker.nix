@@ -12,11 +12,7 @@ let
   appPort = 8502;
   gitRepo = "/var/lib/nextcloud/data/Chris Bond/files/Personal/misc/${app}";
   repoDir = "/var/lib/${app}";
-  borgCryptPasswdFile = "/run/secrets/borgCryptPasswd";
   recoveryPlan = {
-    serviceName = "${app}";
-    localRestoreRepoPath = "${config.backups.borgDir}/${config.networking.hostName}";
-    cloudRestoreRepoPath = "${config.backups.borgCloudDir}/${config.networking.hostName}";
     restoreItems = [
       "/var/lib/docker/volumes/${app}"
     ];
