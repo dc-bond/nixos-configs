@@ -9,7 +9,6 @@
 
 let
 
-  hostData = configVars.hosts.${config.networking.hostName};
   app = "pihole";
   app2 = "unbound";
   recoveryPlan = {
@@ -46,7 +45,7 @@ in
       "${app}-env".content = ''
         TZ=America/New_York
         WEBPASSWORD=${config.sops.placeholder.piholeWebPasswd}
-        FTLCONF_LOCAL_IPV4=${hostData.networking.ipv4}
+        FTLCONF_LOCAL_IPV4=${configVars.hosts."${config.networking.hostName}".networking.ipv4}
         VIRTUAL_HOST=${app}.${configVars.domain2}
       '';
     };
@@ -55,18 +54,25 @@ in
   virtualisation.oci-containers.containers = {
 
     "${app}" = {
-      image = "docker.io/${app}/${app}:2024.07.0"; # https://hub.docker.com/r/pihole/pihole/tags
+      image = "docker.io/${app}/${app}:2024.07.0";
       autoStart = true;
       environmentFiles = [ config.sops.templates."${app}-env".path ];
       environment = {
         PIHOLE_DNS_ = "${configVars.unboundIp}#53"; # must be in environment and not environmentFile because of nix formatting issue
       };
       log-driver = "journald";
-      ports = [ # docker daemon automatically opens firewall ports
-        "53:53/tcp"
-        "53:53/udp"
+      ports = if config.networking.hostName == "juniper"
+        then [ # for juniper on VPS - only listen on tailscale interface
+          "${configVars.hosts."${config.networking.hostName}".networking.tailscaleIp}:53:53/tcp"
+          "${configVars.hosts."${config.networking.hostName}".networking.tailscaleIp}:53:53/udp"
+        ]
+        else [ # for aspen on LAN - bind to all interfaces for various devices to access (from LAN, from tailscale, etc.)
+          "0.0.0.0:53:53/tcp"
+          "0.0.0.0:53:53/udp"
+        ];
+      volumes = [ 
+        "${app}:/etc"
       ];
-      volumes = [ "${app}:/etc" ];
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.piholeIp}"
@@ -85,7 +91,7 @@ in
     };
 
     "${app2}" = {
-      image = "docker.io/mvance/${app2}:1.15.0"; # https://github.com/MatthewVance/unbound-docker
+      image = "docker.io/mvance/${app2}:1.22.0"; # https://github.com/MatthewVance/unbound-docker
       autoStart = true;
       log-driver = "journald";
       volumes = [ "${app2}:/opt/unbound/etc/unbound" ];
@@ -101,7 +107,6 @@ in
 
   systemd = {
     services = { 
-
       "docker-${app}" = {
         serviceConfig = {
           Restart = lib.mkOverride 500 "always";
@@ -110,12 +115,12 @@ in
           RestartSteps = lib.mkOverride 500 9;
         };
         after = [
-          "docker-network-${app}.service"
           "docker-volume-${app}.service"
+          "docker-${app2}.service"
         ];
         requires = [
-          "docker-network-${app}.service"
           "docker-volume-${app}.service"
+          "docker-${app2}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -149,7 +154,6 @@ in
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
       };
-      
       "docker-${app2}" = {
         serviceConfig = {
           Restart = lib.mkOverride 500 "always";
@@ -158,11 +162,11 @@ in
           RestartSteps = lib.mkOverride 500 9;
         };
         after = [
-          "docker-${app}.service"
+          "docker-network-${app}.service"
           "docker-volume-${app2}.service"
         ];
         requires = [
-          "docker-${app}.service"
+          "docker-network-${app}.service"
           "docker-volume-${app2}.service"
         ];
         partOf = [
@@ -184,7 +188,6 @@ in
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
       };
-
     };
     targets."docker-${app}-root" = {
       unitConfig = {

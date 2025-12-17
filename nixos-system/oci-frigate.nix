@@ -194,9 +194,9 @@ in
       log-driver = "journald";
       ports = [
         #"5000:5000/tcp" # main web view port
-        "8554:8554/tcp" # RTSP feeds
-        "8555:8555/tcp" # WebRTC over tcp
-        "8555:8555/udp" # WebRTC over udp
+        "${configVars.hosts."${config.networking.hostName}".networking.ipv4}:8554:8554/tcp" # RTSP feeds
+        "${configVars.hosts."${config.networking.hostName}".networking.ipv4}:8555:8555/tcp" # WebRTC over tcp
+        "${configVars.hosts."${config.networking.hostName}".networking.ipv4}:8555:8555/udp" # WebRTC over udp
       ];
       volumes = [ 
         "/etc/localtime:/etc/localtime:ro" 

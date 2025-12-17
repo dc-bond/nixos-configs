@@ -106,21 +106,20 @@ in
   virtualisation.oci-containers.containers = {
     "${app}" = {
       image = "lscr.io/linuxserver/unifi-network-application:9.0.114-ls77"; # https://github.com/linuxserver/docker-unifi-network-application/releases 
-      #image = "lscr.io/linuxserver/unifi-network-application:9.4.19-ls103"; # https://github.com/linuxserver/docker-unifi-network-application/releases 
       autoStart = true;
       log-driver = "journald";
       volumes = [ "${app}:/config" ];
       environmentFiles = [ config.sops.templates."${app}-env".path ];
-      ports = [ 
+      ports = [ # LAN interface only, not all interfaces
         #"3478:3478/udp" # STUN port
         #"1900:1900/udp" # required for 'make controller discoverable on L2 network' option
         #"5514:5514/udp" # remote syslog port
-        "10001:10001/udp" # AP discovery port
-        "8080:8080" # device communication port
+        "${configVars.hosts."${config.networking.hostName}".networking.ipv4}:10001:10001/udp" # AP discovery port
+        "${configVars.hosts."${config.networking.hostName}".networking.ipv4}:8080:8080" # device communication port
         #"8443:8443" # web admin port, add if not using traefik
-        "8843:8843" # guest portal https redirect port
-        "8880:8880" # guest portal http redirect port
-        "6789:6789" # mobile throughput test
+        "${configVars.hosts."${config.networking.hostName}".networking.ipv4}:8843:8843" # guest portal https redirect port
+        "${configVars.hosts."${config.networking.hostName}".networking.ipv4}:8880:8880" # guest portal http redirect port
+        "${configVars.hosts."${config.networking.hostName}".networking.ipv4}:6789:6789" # mobile throughput test
       ];
       extraOptions = [
         "--network=${app}"

@@ -616,7 +616,7 @@ let
       mkdir -p "$TEMP_EXTRACT"
       
       echo ""
-      echo "Extracting to temp..."
+      echo "Extracting to /tmp..."
       
       cd "$TEMP_EXTRACT"
       if ! ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}; then
