@@ -38,8 +38,9 @@
     } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {
       flakeupdate= "(cd $HOME/nextcloud-client/Personal/nixos/nixos-configs && nix flake update)";
       ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop --command codium . && cd ~";
-      finplanner = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/finplanner/ && nix develop";
-      workouttracker = "cd /home/chris/nextcloud-client/Personal/misc/workout-tracker/ && nix develop";
+      finplannerdev = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/finplanner/ && nix develop";
+      chrisworkoutdev = "cd /home/chris/nextcloud-client/Personal/misc/chris-workouts/ && nix develop";
+      danielleworkoutdev = "cd /home/chris/nextcloud-client/Personal/misc/danielle-workouts/ && nix develop";
       cloneconfigs = "cd ~ && git clone https://github.com/dc-bond/nixos-configs";
     } // lib.optionalAttrs (osConfig.networking.hostName == "cypress") {
       storage = "cd /storage/WD-WX21DC86RU3P ; ls";

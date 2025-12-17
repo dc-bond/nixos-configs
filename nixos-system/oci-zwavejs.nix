@@ -52,8 +52,7 @@ in
     environmentFiles = [ config.sops.templates."${app}-env".path ];
     log-driver = "journald";
     ports = [ 
-      #"8091:8091/tcp" # for browser interface
-      "3000:3000/tcp" # for websocket server # docker daemon automatically opens firewall port
+      "127.0.0.1:3000:3000/tcp" # for websocket server - localhost only for Home Assistant
     ];
     volumes = [ "${app}:/usr/src/app/store" ];
     extraOptions = [

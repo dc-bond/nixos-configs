@@ -11,7 +11,6 @@
 
 let
 
-  hostData = configVars.hosts.${config.networking.hostName};
   app = "matrix-synapse";
   recoveryPlan = {
     restoreItems = [
@@ -241,10 +240,10 @@ in
       no-udp = false;
       no-tcp-relay = true; # force UDP only
       no-udp-relay = false;
-      listening-ips = [ (hostData.networking.ipv4 or "127.0.0.1") ];
+      listening-ips = [ (configVars.hosts.${config.networking.hostName}.networking.ipv4 or "127.0.0.1") ];
       listening-port = 3478;
       tls-listening-port = 5349;
-      relay-ips = [ (hostData.networking.ipv4 or "127.0.0.1") ];
+      relay-ips = [ (configVars.hosts.${config.networking.hostName}.networking.ipv4 or "127.0.0.1") ];
       min-port = 50100;
       max-port = 50200; # only anticipate a handful of concurrent calls, so only opening 100 ports which should still be on the liberal side
       use-auth-secret = true;

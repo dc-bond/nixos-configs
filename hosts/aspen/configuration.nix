@@ -77,7 +77,8 @@ in
       "nixos-system/oci-containers.nix"
       "nixos-system/oci-fava.nix"
       "nixos-system/oci-frigate.nix" # requires nvidia.nix
-      "nixos-system/oci-pihole.nix"
+      #"nixos-system/oci-pihole.nix"
+      "nixos-system/oci-pihole-test.nix"
       "nixos-system/oci-actual.nix"
       "nixos-system/oci-zwavejs.nix"
       "nixos-system/oci-searxng.nix"
@@ -86,6 +87,7 @@ in
       "nixos-system/oci-unifi.nix"
       "nixos-system/oci-finplanner.nix"
       "nixos-system/oci-chris-workouts.nix"
+      "nixos-system/oci-danielle-workouts.nix"
       "nixos-system/oci-n8n.nix"
 
       "scripts/media-transfer.nix"
