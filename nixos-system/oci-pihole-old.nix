@@ -9,8 +9,8 @@
 
 let
 
-  app = "n8n";
-  app2 = "${app}-postgres";
+  app = "pihole";
+  app2 = "unbound";
   recoveryPlan = {
     restoreItems = [
       "/var/lib/docker/volumes/${app}"
@@ -39,35 +39,14 @@ in
 
   sops = {
     secrets = {
-      n8nDbPasswd = {};
+      piholeWebPasswd = {};
     };
     templates = {
       "${app}-env".content = ''
-        N8N_LOG_LEVEL=info
-        N8N_DIAGNOSTICS_ENABLED=false
-        N8N_VERSION_NOTIFICATIONS_ENABLED=false
-        N8N_TEMPLATES_ENABLED=false
-        DB_TYPE=postgresdb
-        DB_POSTGRESDB_DATABASE=${app}
-        DB_POSTGRESDB_HOST=${app2}
-        DB_POSTGRESDB_PORT=5432
-        DB_POSTGRESDB_USER=${app}
-        DB_POSTGRESDB_PASSWORD=${config.sops.placeholder.n8nDbPasswd}
-        N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS=true
-        DOMAIN_NAME=${configVars.domain2}
-        SUBDOMAIN=${app}
-        N8N_HOST=${app}.${configVars.domain2}
-        N8N_PORT=5678
-        N8N_PROTOCOL=https
-        N8N_RUNNERS_ENABLED=true
-        NODE_ENV=production
-        WEBHOOK_URL=https://${app}.${configVars.domain2}/
-        GENERIC_TIMEZONE=America/New_York
-      '';
-      "${app2}-env".content = ''
-        POSTGRES_USER=${app}
-        POSTGRES_PASSWORD=${config.sops.placeholder.n8nDbPasswd}
-        POSTGRES_DB=${app}
+        TZ=America/New_York
+        WEBPASSWORD=${config.sops.placeholder.piholeWebPasswd}
+        FTLCONF_LOCAL_IPV4=${configVars.hosts."${config.networking.hostName}".networking.ipv4}
+        VIRTUAL_HOST=${app}.${configVars.domain2}
       '';
     };
   };
@@ -75,11 +54,25 @@ in
   virtualisation.oci-containers.containers = {
 
     "${app}" = {
-      image = "docker.io/n8nio/n8n:2.0.1"; # https://hub.docker.com/r/n8nio/n8n
+      image = "docker.io/${app}/${app}:2024.07.0";
       autoStart = true;
       environmentFiles = [ config.sops.templates."${app}-env".path ];
+      environment = {
+        PIHOLE_DNS_ = "${configVars.containerServices.${app}.containers.${app2}.ipv4}#53"; # must be in environment and not environmentFile because of nix formatting issue
+      };
       log-driver = "journald";
-      volumes = [ "${app}:/home/node/.n8n" ];
+      ports = if config.networking.hostName == "juniper"
+        then [ # for juniper on VPS - only listen on tailscale interface
+          "${configVars.hosts."${config.networking.hostName}".networking.tailscaleIp}:53:53/tcp"
+          "${configVars.hosts."${config.networking.hostName}".networking.tailscaleIp}:53:53/udp"
+        ]
+        else [ # for aspen on LAN - bind to all interfaces for various devices to access (from LAN, from tailscale, etc.)
+          "0.0.0.0:53:53/tcp"
+          "0.0.0.0:53:53/udp"
+        ];
+      volumes = [ 
+        "${app}:/etc"
+      ];
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.containerServices.${app}.containers.${app}.ipv4}"
@@ -93,16 +86,15 @@ in
         "traefik.http.routers.${app}.tls" = "true";
         "traefik.http.routers.${app}.tls.options" = "tls-13@file";
         "traefik.http.routers.${app}.middlewares" = "trusted-allow@file,secure-headers@file";
-        "traefik.http.services.${app}.loadbalancer.server.port" = "5678";
+        "traefik.http.services.${app}.loadbalancer.server.port" = "80"; # port for browser interface
       };
     };
 
     "${app2}" = {
-      image = "docker.io/library/postgres:18.0"; # https://hub.docker.com/_/postgres
+      image = "docker.io/mvance/${app2}:1.22.0"; # https://github.com/MatthewVance/unbound-docker
       autoStart = true;
-      environmentFiles = [ config.sops.templates."${app2}-env".path ];
       log-driver = "journald";
-      volumes = [ "${app2}:/var/lib/postgresql" ];
+      volumes = [ "${app2}:/opt/unbound/etc/unbound" ];
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.containerServices.${app}.containers.${app2}.ipv4}"
@@ -115,7 +107,6 @@ in
 
   systemd = {
     services = { 
-
       "docker-${app}" = {
         serviceConfig = {
           Restart = lib.mkOverride 500 "always";
@@ -124,12 +115,10 @@ in
           RestartSteps = lib.mkOverride 500 9;
         };
         after = [
-          "docker-network-${app}.service"
           "docker-volume-${app}.service"
           "docker-${app2}.service"
         ];
         requires = [
-          "docker-network-${app}.service"
           "docker-volume-${app}.service"
           "docker-${app2}.service"
         ];
@@ -140,7 +129,6 @@ in
           "docker-${app}-root.target"
         ];
       };
-
       "docker-network-${app}" = {
         path = [pkgs.docker];
         serviceConfig = {
@@ -154,7 +142,6 @@ in
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
       };
-
       "docker-volume-${app}" = {
         path = [pkgs.docker];
         serviceConfig = {
@@ -167,7 +154,6 @@ in
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
       };
-      
       "docker-${app2}" = {
         serviceConfig = {
           Restart = lib.mkOverride 500 "always";
@@ -190,7 +176,6 @@ in
           "docker-${app}-root.target"
         ];
       };
-
       "docker-volume-${app2}" = {
         path = [pkgs.docker];
         serviceConfig = {
@@ -203,12 +188,10 @@ in
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
       };
-
     };
-    
     targets."docker-${app}-root" = {
       unitConfig = {
-        Description = "root target for docker-${app} and docker-${app}-postgres";
+        Description = "root target for docker-${app} and docker-${app2}";
       };
       wantedBy = ["multi-user.target"];
     };

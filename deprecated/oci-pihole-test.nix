@@ -8,8 +8,8 @@
 
 let
 
-  app = "pihole";
-  app2 = "unbound";
+  app = "pihole-test";
+  app2 = "unbound-test";
   
   # Generate all hostname mappings once from configVars
   allHostMappings = let
@@ -89,9 +89,9 @@ let
     "cname=librechat.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=n8n.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=photos.${configVars.domain2},aspen.${configVars.domain2}"
-    #"cname=pihole-test-aspen.${configVars.domain2},aspen.${configVars.domain2}"
+    "cname=pihole-test-aspen.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=pihole-aspen.${configVars.domain2},aspen.${configVars.domain2}"
-    #"cname=pihole.${configVars.domain2},aspen.${configVars.domain2}"
+    "cname=pihole.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=prowlarr.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=radarr.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=recipesage.${configVars.domain2},aspen.${configVars.domain2}"
@@ -107,7 +107,6 @@ let
     "cname=pihole-juniper.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
     "cname=traefik-juniper.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
     "cname=vaultwarden.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
-    "cname=pihole-juniper.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
   ];
   
   piholeAdlists = [
@@ -146,44 +145,96 @@ let
   # systemd post-start script to initialize Pi-hole adlists  
   piholeInitScript = pkgs.writeShellScriptBin "pihole-init" ''
     #!/bin/bash
-
-    CURRENT_TIME=$(date +%s)
-
-    echo "Allowing 10 seconds for container to start gracefully..." 
-    sleep 10 
-
-    echo "Installing sqlite3..."
+    
+    echo "Waiting for Pi-hole container to be ready..."
+    
+    timeout=60
+    while [ $timeout -gt 0 ]; do
+      if docker exec ${app} echo "ready" &>/dev/null; then
+        echo "Container is responsive"
+        break
+      fi
+      echo "Waiting for container... ($timeout seconds left)"
+      sleep 2
+      timeout=$((timeout - 2))
+    done
+    
+    if [ $timeout -le 0 ]; then
+      echo "ERROR: Container did not become ready within 60 seconds"
+      exit 1
+    fi
+    
+    echo "Installing sqlite3 if needed..."
     docker exec ${app} sh -c 'if ! command -v sqlite3 &> /dev/null; then apk add sqlite; fi'
+    
+    echo "Waiting for Pi-hole database initialization..."
+    timeout=120
+    while [ $timeout -gt 0 ]; do
+      if docker exec ${app} sqlite3 /etc/pihole/gravity.db "SELECT name FROM sqlite_master WHERE type='table' AND name='adlist';" 2>/dev/null | grep -q adlist; then
+        echo "Pi-hole database is ready"
+        break
+      fi
+      echo "Waiting for gravity database and tables... ($timeout seconds left)"
+      sleep 5
+      timeout=$((timeout - 5))
+    done
+    
+    if [ $timeout -le 0 ]; then
+      echo "ERROR: Pi-hole database did not initialize within 120 seconds"
+      exit 1
+    fi
+    
+    echo "Waiting for FTL to settle..."
+    sleep 10 
     
     echo "Temporarily disabling Pi-hole to avoid database locks..."
     docker exec ${app} pihole disable
     sleep 2
     
-    echo "Clearing existing database entries for declarative state..."
-    docker exec ${app} sqlite3 /etc/pihole/gravity.db "DELETE FROM adlist;"
-    docker exec ${app} sqlite3 /etc/pihole/gravity.db "DELETE FROM domainlist;"  
-    docker exec ${app} sqlite3 /etc/pihole/gravity.db "DELETE FROM client;"
-    
     echo "Populating ADLISTS from Nix configuration..."
+    
+    # clear Pi-hole's auto-created default adlists to ensure declarative state
+    docker exec ${app} sqlite3 /etc/pihole/gravity.db "DELETE FROM adlist;"
+    
+    # get current timestamp for date fields
+    CURRENT_TIME=$(date +%s)
+    
+    # add all adlists from Nix config with proper schema
     ${lib.concatMapStrings (url: ''
     docker exec ${app} sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, date_added, date_modified, comment, date_updated, number, invalid_domains, status) VALUES ('${url}', 1, $CURRENT_TIME, $CURRENT_TIME, 'Managed by Nix', 0, 0, 0, 0);"
     '') piholeAdlists}
+    
     echo "Added ${toString (lib.length piholeAdlists)} adlists to database"
     
+    echo "Running gravity update to download and process lists..."
+    docker exec ${app} pihole -g
+    
+    echo "Waiting for database to become fully writable..."
+    sleep 10
+    
     echo "Populating ALLOWLISTS from Nix configuration..."
+    
+    # clear Pi-hole's auto-created default allowlists to ensure declarative state  
+    docker exec ${app} sqlite3 /etc/pihole/gravity.db "DELETE FROM domainlist;"
+    
+    # add all allowed domains from Nix config
     ${lib.concatMapStrings (domain: ''
     docker exec ${app} sqlite3 /etc/pihole/gravity.db "INSERT INTO domainlist (domain, type, enabled, date_added, date_modified, comment) VALUES ('${domain}', 0, 1, $CURRENT_TIME, $CURRENT_TIME, 'Managed by Nix');"
     '') piholeAllowedDomains}
+    
     echo "Added ${toString (lib.length piholeAllowedDomains)} allowed domains to database"
 
     echo "Populating CLIENT MAPPINGS from Nix configuration..."
+    
+    # clear Pi-hole's auto-created default client mappings to ensure declarative state
+    docker exec ${app} sqlite3 /etc/pihole/gravity.db "DELETE FROM client;"
+    
+    # add all client mappings from Nix config
     ${lib.concatMapStrings (client: ''
     docker exec ${app} sqlite3 /etc/pihole/gravity.db "INSERT INTO client (ip, date_added, date_modified, comment) VALUES ('${client.ip}', $CURRENT_TIME, $CURRENT_TIME, '${client.comment}');"
     '') piholeClients}
-    echo "Added ${toString (lib.length piholeClients)} client mappings to database"
     
-    echo "Running gravity update to download and process all lists..."
-    docker exec ${app} pihole -g
+    echo "Added ${toString (lib.length piholeClients)} client mappings to database"
     
     echo "Re-enabling Pi-hole..."
     docker exec ${app} pihole enable
@@ -217,18 +268,19 @@ in
   virtualisation.oci-containers.containers = {
 
     "${app}" = {
-      image = "docker.io/${app}/${app}:2025.11.1"; # https://hub.docker.com/r/pihole/pihole/tags
+      image = "docker.io/pihole/pihole:2025.11.1"; # https://hub.docker.com/r/pihole/pihole/tags
+      #image = "docker.io/${app}/${app}:2025.11.1"; # https://hub.docker.com/r/pihole/pihole/tags
       autoStart = true;
       environmentFiles = [ config.sops.templates."${app}-env".path ];
       log-driver = "journald";
       ports = if config.networking.hostName == "juniper"
         then [ # for juniper on VPS - only listen on tailscale interface
-          "${configVars.hosts."${config.networking.hostName}".networking.tailscaleIp}:53:53/tcp"
-          "${configVars.hosts."${config.networking.hostName}".networking.tailscaleIp}:53:53/udp"
+          "${configVars.hosts."${config.networking.hostName}".networking.tailscaleIp}:58:58/tcp"
+          "${configVars.hosts."${config.networking.hostName}".networking.tailscaleIp}:58:58/udp"
         ]
         else [ # for aspen on LAN - bind to all interfaces for various devices to access (from LAN, from tailscale, etc.)
-          "0.0.0.0:53:53/tcp"
-          "0.0.0.0:53:53/udp"
+          "0.0.0.0:58:58/tcp"
+          "0.0.0.0:58:58/udp"
         ];
       volumes = [ 
         "${customDnsmasqConfig}:/etc/dnsmasq.d/99-custom-dns.conf:ro"
@@ -252,7 +304,8 @@ in
     };
 
     "${app2}" = {
-      image = "docker.io/mvance/${app2}:1.22.0"; # https://github.com/MatthewVance/unbound-docker
+      image = "docker.io/mvance/unbound:1.22.0"; # https://github.com/MatthewVance/unbound-docker
+      #image = "docker.io/mvance/${app2}:1.22.0"; # https://github.com/MatthewVance/unbound-docker
       autoStart = true;
       log-driver = "journald";
       volumes = [ ];
@@ -307,6 +360,7 @@ in
           RestartMaxDelaySec = lib.mkOverride 500 "1m";
           RestartSec = lib.mkOverride 500 "100ms";
           RestartSteps = lib.mkOverride 500 9;
+          ExecStartPost = "${piholeInitScript}/bin/pihole-init"; # run init script for adlists, allowlists, and client mappings
         };
         after = [
           "docker-${app2}.service"
@@ -320,19 +374,6 @@ in
         wantedBy = [
           "docker-${app}-root.target"
         ];
-      };
-      "docker-${app}-init" = {
-        description = "Pi-hole Declarative Configuration";
-        path = [ pkgs.docker ];
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${piholeInitScript}/bin/pihole-init";
-          RemainAfterExit = true;
-          TimeoutStartSec = "300s";
-        };
-        after = [ "docker-${app}.service" ];
-        requires = [ "docker-${app}.service" ];
-        wantedBy = [ "docker-${app}-root.target" ];
       };
     };
     targets."docker-${app}-root" = {

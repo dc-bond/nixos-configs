@@ -376,7 +376,7 @@ in
     };
     extraOptions = [
       "--network=traefik-certs-dumper"
-      "--ip=${configVars.traefikCertsIp}"
+      "--ip=${configVars.containerServices.traefikCerts.containers.certs.ipv4}"
       "--tty=true"
       "--stop-signal=SIGINT"
     ];
@@ -496,7 +496,7 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f traefik-certs-dumper";
         };
         script = ''
-          docker network inspect traefik-certs-dumper || docker network create --subnet ${configVars.traefikCertsSubnet} --driver bridge --scope local --attachable traefik-certs-dumper
+          docker network inspect traefik-certs-dumper || docker network create --subnet ${configVars.containerServices.traefikCerts.subnet} --driver bridge --scope local --attachable traefik-certs-dumper
         '';
         partOf = ["docker-traefik-certs-dumper-root.target"];
         wantedBy = ["docker-traefik-certs-dumper-root.target"];
