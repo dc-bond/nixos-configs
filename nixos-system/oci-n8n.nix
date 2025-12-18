@@ -10,10 +10,11 @@
 let
 
   app = "n8n";
+  app2 = "${app}-postgres";
   recoveryPlan = {
     restoreItems = [
       "/var/lib/docker/volumes/${app}"
-      "/var/lib/docker/volumes/${app}-postgres"
+      "/var/lib/docker/volumes/${app2}"
     ];
     stopServices = [ "docker-${app}-root.target" ];
     startServices = [ "docker-${app}-root.target" ];
@@ -48,7 +49,7 @@ in
         N8N_TEMPLATES_ENABLED=false
         DB_TYPE=postgresdb
         DB_POSTGRESDB_DATABASE=${app}
-        DB_POSTGRESDB_HOST=${app}-postgres
+        DB_POSTGRESDB_HOST=${app2}
         DB_POSTGRESDB_PORT=5432
         DB_POSTGRESDB_USER=${app}
         DB_POSTGRESDB_PASSWORD=${config.sops.placeholder.n8nDbPasswd}
@@ -63,7 +64,7 @@ in
         WEBHOOK_URL=https://${app}.${configVars.domain2}/
         GENERIC_TIMEZONE=America/New_York
       '';
-      "${app}-postgres-env".content = ''
+      "${app2}-env".content = ''
         POSTGRES_USER=${app}
         POSTGRES_PASSWORD=${config.sops.placeholder.n8nDbPasswd}
         POSTGRES_DB=${app}
@@ -81,7 +82,7 @@ in
       volumes = [ "${app}:/home/node/.n8n" ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.n8nIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -96,15 +97,15 @@ in
       };
     };
 
-    "${app}-postgres" = {
+    "${app2}" = {
       image = "docker.io/library/postgres:18.0"; # https://hub.docker.com/_/postgres
       autoStart = true;
-      environmentFiles = [ config.sops.templates."${app}-postgres-env".path ];
+      environmentFiles = [ config.sops.templates."${app2}-env".path ];
       log-driver = "journald";
-      volumes = [ "${app}-postgres:/var/lib/postgresql" ];
+      volumes = [ "${app2}:/var/lib/postgresql" ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.n8nPostgresIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app2}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -125,12 +126,12 @@ in
         after = [
           "docker-network-${app}.service"
           "docker-volume-${app}.service"
-          "docker-${app}-postgres.service"
+          "docker-${app2}.service"
         ];
         requires = [
           "docker-network-${app}.service"
           "docker-volume-${app}.service"
-          "docker-${app}-postgres.service"
+          "docker-${app2}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -148,7 +149,7 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
         };
         script = ''
-          docker network inspect ${app} || docker network create --subnet ${configVars.n8nSubnet} --driver bridge --scope local --attachable ${app}
+          docker network inspect ${app} || docker network create --subnet ${configVars.containerServices.${app}.subnet} --driver bridge --scope local --attachable ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
@@ -167,7 +168,7 @@ in
         wantedBy = ["docker-${app}-root.target"];
       };
       
-      "docker-${app}-postgres" = {
+      "docker-${app2}" = {
         serviceConfig = {
           Restart = lib.mkOverride 500 "always";
           RestartMaxDelaySec = lib.mkOverride 500 "1m";
@@ -176,11 +177,11 @@ in
         };
         after = [
           "docker-network-${app}.service"
-          "docker-volume-${app}-postgres.service"
+          "docker-volume-${app2}.service"
         ];
         requires = [
           "docker-network-${app}.service"
-          "docker-volume-${app}-postgres.service"
+          "docker-volume-${app2}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -190,14 +191,14 @@ in
         ];
       };
 
-      "docker-volume-${app}-postgres" = {
+      "docker-volume-${app2}" = {
         path = [pkgs.docker];
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
         };
         script = ''
-          docker volume inspect ${app}-postgres || docker volume create ${app}-postgres
+          docker volume inspect ${app2} || docker volume create ${app2}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];

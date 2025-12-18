@@ -114,7 +114,7 @@ in
       ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.recipesageProxyIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app1}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -135,7 +135,7 @@ in
       log-driver = "journald";
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.recipesageStaticIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app2}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -160,7 +160,7 @@ in
       volumes = [ "${app}-${app3}:/rs-media" ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.recipesageApiIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app3}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -179,7 +179,7 @@ in
       ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.recipesageTypesenseIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app4}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -197,7 +197,7 @@ in
       };
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.recipesagePushpinIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app5}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -211,7 +211,7 @@ in
       environmentFiles = [ config.sops.templates."${app6}-env".path ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.recipesagePostgresIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app6}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -227,7 +227,7 @@ in
       };
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.recipesageBrowserlessIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app7}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -243,7 +243,7 @@ in
       };
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.recipesageIngredientIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app8}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -489,7 +489,7 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
         };
         script = ''
-          docker network inspect ${app} || docker network create --subnet ${configVars.recipesageSubnet} --driver bridge --scope local --attachable ${app}
+          docker network inspect ${app} || docker network create --subnet ${configVars.containerServices.${app}.subnet} --driver bridge --scope local --attachable ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];

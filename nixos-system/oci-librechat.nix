@@ -348,7 +348,7 @@ in
       ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.librechatApiIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app1}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -374,7 +374,7 @@ in
       extraOptions = [
         "--tmpfs=/data/configdb"
         "--network=${app}"
-        "--ip=${configVars.librechatMongoIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app2}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -388,7 +388,7 @@ in
       volumes = [ "${app}-${app3}:/meili_data" ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.librechatMeiliIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app3}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -406,7 +406,7 @@ in
       volumes = [ "${app}-${app4}:/var/lib/postgresql/data" ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.librechatVectorIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app4}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -424,7 +424,7 @@ in
       };
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.librechatRagIp}"
+        "--ip=${configVars.containerServices.${app}.containers.${app5}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -675,7 +675,7 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
         };
         script = ''
-          docker network inspect ${app} || docker network create --subnet ${configVars.librechatSubnet} --driver bridge --scope local --attachable ${app}
+          docker network inspect ${app} || docker network create --subnet ${configVars.containerServices.${app}.subnet} --driver bridge --scope local --attachable ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];

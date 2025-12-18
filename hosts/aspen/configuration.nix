@@ -77,8 +77,8 @@ in
       "nixos-system/oci-containers.nix"
       "nixos-system/oci-fava.nix"
       "nixos-system/oci-frigate.nix" # requires nvidia.nix
-      #"nixos-system/oci-pihole.nix"
-      "nixos-system/oci-pihole-test.nix"
+      "nixos-system/oci-pihole.nix"
+      #"nixos-system/oci-pihole-old.nix"
       "nixos-system/oci-actual.nix"
       "nixos-system/oci-zwavejs.nix"
       "nixos-system/oci-searxng.nix"

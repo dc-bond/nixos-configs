@@ -22,7 +22,7 @@ in
     };
     extraOptions = [
       "--network=${app}"
-      "--ip=${configVars.favaIp}"
+      "--ip=${configVars.containerServices.${app}.containers.${app}.ipv4}"
       "--tty=true"
       "--stop-signal=SIGINT"
     ];
@@ -67,7 +67,7 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
         };
         script = ''
-          docker network inspect ${app} || docker network create --subnet ${configVars.favaSubnet} --driver bridge --scope local --attachable ${app}
+          docker network inspect ${app} || docker network create --subnet ${configVars.containerServices.${app}.subnet} --driver bridge --scope local --attachable ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];

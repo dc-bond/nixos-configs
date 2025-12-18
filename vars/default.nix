@@ -239,79 +239,164 @@
   domain3 = "professorbond.com";
   domain3Short = "professorbond";
 
-  piholeSubnet = "172.21.1.0/25";
-  piholeIp = "172.21.1.2";
-  unboundIp = "172.21.1.3";
+  containerServices = {
 
-  jellyseerrSubnet = "172.21.2.0/25";
-  jellyseerrIp = "172.21.2.2";
+    pihole = {
+      subnet = "172.21.1.0/25";
+      containers = {
+        pihole = { ipv4 = "172.21.1.2"; };
+        unbound = { ipv4 = "172.21.1.3"; };
+      };
+    };
+    
+    pihole-test = {
+      subnet = "172.21.2.0/25";
+      containers = {
+        pihole-test = { ipv4 = "172.21.2.2"; };
+        unbound-test = { ipv4 = "172.21.2.3"; };
+      };
+    };
+    
+    unifi = {
+      subnet = "172.21.3.0/25";
+      containers = {
+        controller = { ipv4 = "172.21.3.2"; };
+        mongodb = { ipv4 = "172.21.3.3"; };
+      };
+    };
+    
+    zwavejs = {
+      subnet = "172.21.4.0/25";
+      containers = {
+        zwavejs = { ipv4 = "172.21.4.2"; };
+      };
+    };
+    
+    actual = {
+      subnet = "172.21.5.0/25";
+      containers = {
+        actual = { ipv4 = "172.21.5.2"; };
+      };
+    };
+    
+    fava = {
+      subnet = "172.21.6.0/25";
+      containers = {
+        fava = { ipv4 = "172.21.6.2"; };
+      };
+    };
+    
+    recipesage = {
+      subnet = "172.21.7.0/25";
+      containers = {
+        proxy = { ipv4 = "172.21.7.2"; };
+        static = { ipv4 = "172.21.7.3"; };
+        api = { ipv4 = "172.21.7.4"; };
+        typesense = { ipv4 = "172.21.7.5"; };
+        pushpin = { ipv4 = "172.21.7.6"; };
+        postgres = { ipv4 = "172.21.7.7"; };
+        browserless = { ipv4 = "172.21.7.8"; };
+        ingredient-instruction-classifier = { ipv4 = "172.21.7.9"; };
+      };
+    };
+    
+    #null = {
+    #  subnet = "172.21.8.0/25";
+    #  containers = {
+    #    null = { ipv4 = "172.21.8.2"; };
+    #  };
+    #};
+    
+    #null = {
+    #  subnet = "172.21.9.0/25";
+    #  containers = {
+    #    null = { ipv4 = "172.21.9.2"; };
+    #  };
+    #};
+    
+    searxng = {
+      subnet = "172.21.10.0/25";
+      containers = {
+        searxng = { ipv4 = "172.21.10.2"; };
+      };
+    };
+    
+    traefikCerts = {
+      subnet = "172.21.11.0/25";
+      containers = {
+        certs = { ipv4 = "172.21.11.2"; };
+      };
+    };
+    
+    media-server = {
+      subnet = "172.21.12.0/25";
+      containers = {
+        media-server-vpn = { ipv4 = "172.21.12.2"; };
+      };
+    };
+    
+    frigate = {
+      subnet = "172.21.13.0/25";
+      containers = {
+        frigate = { ipv4 = "172.21.13.2"; };
+      };
+    };
+    
+    #null = {
+    #  subnet = "172.21.14.0/25";
+    #  containers = {
+    #    null = { ipv4 = "172.21.14.2"; };
+    #  };
+    #};
+    
+    #null = {
+    #  subnet = "172.21.15.0/25";
+    #  containers = {
+    #    null = { ipv4 = "172.21.15.2"; };
+    #  };
+    #};
+    
+    librechat = {
+      subnet = "172.21.16.0/25";
+      containers = {
+        api = { ipv4 = "172.21.16.2"; };
+        mongodb = { ipv4 = "172.21.16.3"; };
+        meilisearch = { ipv4 = "172.21.16.4"; };
+        vectordb = { ipv4 = "172.21.16.5"; };
+        rag_api = { ipv4 = "172.21.16.6"; };
+      };
+    };
+    
+    n8n = {
+      subnet = "172.21.17.0/25";
+      containers = {
+        n8n = { ipv4 = "172.21.17.2"; };
+        "n8n-postgres" = { ipv4 = "172.21.17.3"; };
+      };
+    };
+    
+    finplanner = {
+      subnet = "172.21.18.0/25";
+      containers = {
+        finplanner = { ipv4 = "172.21.18.2"; };
+      };
+    };
+    
+    chris-workouts = {
+      subnet = "172.21.19.0/25";
+      containers = {
+        chris-workouts = { ipv4 = "172.21.19.2"; };
+      };
+    };
+    
+    danielle-workouts = {
+      subnet = "172.21.20.0/25";
+      containers = {
+        danielle-workouts = { ipv4 = "172.21.20.2"; };
+      };
+    };
 
-  unifiSubnet = "172.21.3.0/25";
-  unifiControllerIp = "172.21.3.2";
-  unifiMongoIp = "172.21.3.3";
-
-  zwaveJsSubnet = "172.21.4.0/25";
-  zwaveJsIp = "172.21.4.2";
-
-  actualSubnet = "172.21.5.0/25";
-  actualIp = "172.21.5.2";
-
-  favaSubnet = "172.21.6.0/25";
-  favaIp = "172.21.6.2";
-
-  recipesageSubnet = "172.21.7.0/25";
-  recipesageProxyIp = "172.21.7.2";
-  recipesageStaticIp = "172.21.7.3";
-  recipesageApiIp = "172.21.7.4";
-  recipesageTypesenseIp = "172.21.7.5";
-  recipesagePushpinIp = "172.21.7.6";
-  recipesagePostgresIp = "172.21.7.7";
-  recipesageBrowserlessIp = "172.21.7.8";
-  recipesageIngredientIp = "172.21.7.9";
-
-  wordpressDcbondSubnet = "172.21.8.0/25";
-  wordpressDcbondIp = "172.21.8.2";
-  wordpressDcbondMysqlIp = "172.21.8.3";
-
-  chromiumSubnet = "172.21.9.0/25";
-  chromiumVpnIp = "172.21.9.2";
-
-  searxngSubnet = "172.21.10.0/25";
-  searxngIp = "172.21.10.2";
-
-  traefikCertsSubnet = "172.21.11.0/25";
-  traefikCertsIp = "172.21.11.2";
-
-  arrStackSubnet = "172.21.12.0/25";
-  arrVpnIp = "172.21.12.2";
-
-  frigateSubnet = "172.21.13.0/25";
-  frigateIp = "172.21.13.2";
-
-  kasmwebSubnet = "172.21.14.0/25";
-
-  kasmVpnSubnet = "172.21.15.0/25";
-  kasmVpnIp = "172.21.15.99";
-
-  librechatSubnet = "172.21.16.0/25";
-  librechatApiIp = "172.21.16.2";
-  librechatMongoIp = "172.21.16.3";
-  librechatMeiliIp = "172.21.16.4";
-  librechatVectorIp = "172.21.16.5";
-  librechatRagIp = "172.21.16.6";
-
-  n8nSubnet = "172.21.17.0/25";
-  n8nIp = "172.21.17.2";
-  n8nPostgresIp = "172.21.17.3";
-
-  finplannerSubnet = "172.21.18.0/25";
-  finplannerIp = "172.21.18.2";
-
-  chrisWorkoutsSubnet = "172.21.19.0/25";
-  chrisWorkoutsIp = "172.21.19.2";
-
-  danielleWorkoutsSubnet = "172.21.20.0/25";
-  danielleWorkoutsIp = "172.21.20.2";
+  };
 
   users = {
 
