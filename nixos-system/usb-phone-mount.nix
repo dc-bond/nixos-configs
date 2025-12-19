@@ -18,7 +18,6 @@
     # android support
     jmtpfs
     android-tools
-    android-udev-rules
   ];
 
   systemd.tmpfiles.rules = [

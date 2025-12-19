@@ -9,7 +9,7 @@
 
   home.packages = [
     (pkgs.writeShellScriptBin "rofiPowerMenu" ''
-      choice=$(printf "Lock\nSuspend\nLogout\nReboot\nShutdown" | ${pkgs.rofi-wayland}/bin/rofi -dmenu -i -p "Power Menu")
+      choice=$(printf "Lock\nSuspend\nLogout\nReboot\nShutdown" | ${pkgs.rofi}/bin/rofi -dmenu -i -p "Power Menu")
       
       case "$choice" in
         Lock)
@@ -40,7 +40,7 @@
   
   programs.rofi = {
     enable = true;
-    package = pkgs.rofi-wayland;
+    package = pkgs.rofi;
     terminal = "${pkgs.alacritty}/bin/alacritty";
     font = "SauceCodePro Nerd Font 10";
     theme = 

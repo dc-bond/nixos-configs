@@ -26,10 +26,9 @@ in
 
   services.greetd = {
     enable = true;
-    vt = 2; # move to vt 2 to avoid long-running boot messages glitching tuigreet
     settings = {
       default_session.command = ''
-        ${pkgs.greetd.tuigreet}/bin/tuigreet \
+        ${pkgs.tuigreet}/bin/tuigreet \
           --time \
           --time-format '%a, %d %b %Y • %H:%M' \
           --asterisks \
@@ -42,8 +41,6 @@ in
           --xsessions /dev/null \
           --cmd ${defaultCmd}
       '';
-          #--xsessions /run/current-system/sw/share/xsessions \
-          #--xsessions /dev/null \
     };
   };
 

@@ -83,7 +83,7 @@
     
     cypress = {
       system = "x86_64-linux";
-      nixpkgsVersion = "25.05";
+      nixpkgsVersion = "25.11";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = false;

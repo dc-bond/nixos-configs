@@ -10,7 +10,15 @@
 
   programs.ssh = {
     enable = true;
+    enableDefaultConfig = false;
     matchBlocks = {
+      "*" = {
+        extraOptions = {
+          ConnectTimeout = "10";
+          ServerAliveInterval = "5";
+        };
+        serverAliveCountMax = 3;
+      };
       "aspen" = {
         hostname = configVars.hosts.aspen.networking.ipv4;
         user = config.home.username;

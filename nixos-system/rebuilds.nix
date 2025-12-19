@@ -66,6 +66,9 @@
         fi
       fi
       
+      # show current branch
+      echo "→ Building from branch: $(git -C "$flake_dir" branch --show-current 2>/dev/null || echo 'unknown')"
+      
       # local rebuild
       if [ "$selected_host" = "$(hostname)" ]; then
         echo "→ Rebuilding local host $selected_host..."
@@ -100,7 +103,6 @@
       
       # remote rebuild
       echo "→ Rebuilding $selected_host..."
-      NIX_SSHOPTS="-o ConnectTimeout=10 -o ServerAliveInterval=5 -o ServerAliveCountMax=3" \
       nixos-rebuild switch \
         --flake "$flake_dir#$selected_host" \
         --target-host "$ssh_target" \

@@ -6,7 +6,7 @@
 }: 
 
 let
-  firefox-addons = inputs.firefox-addons.packages.${pkgs.system};
+  firefox-addons = inputs.firefox-addons.packages.${pkgs.stdenv.hostPlatform.system};
   username = builtins.baseNameOf ./.;
 in
 
