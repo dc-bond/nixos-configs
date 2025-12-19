@@ -62,7 +62,7 @@ in
               labels.host = "thinkpad";
             }
             {
-              targets = [ "${configVars.hosts.alder.networking.tailscaleIp}:9100" ];
+              targets = [ "${configVars.hosts.alder.networking.tailscaleIp}:9633" ];
               labels.host = "alder";
             }
           ];
