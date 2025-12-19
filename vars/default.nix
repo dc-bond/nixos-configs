@@ -129,7 +129,7 @@
       windowManager = null;
       networking = {
         sshPort = 28764;
-        useResolved = true;
+        useResolved = false; # runs pihole
         ethernetInterface = "enp1s0";
         wifiInterface = null;
         dockInterface = null;
@@ -192,43 +192,80 @@
   
   devices = {
     chrisIphone15 = {
+      ipv4 = "192.168.1.100";
       tailscaleIp = "100.123.43.13";
     };
     daniellePixel7a = {
+      ipv4 = "192.168.1.99";
       tailscaleIp = "100.91.224.34";
     };
     sydneyIphone6 = {
+      ipv4 = null;
       tailscaleIp = "100.122.145.11";
     };
     rokuGym = {
       ipv4 = "192.168.4.9";
+      tailscaleIp = null;
     };
     rokuLivingroom = {
       ipv4 = "192.168.4.10";
+      tailscaleIp = null;
     };
     unifiUsg = {
       ipv4 = "192.168.1.1";
+      tailscaleIp = null;
     };
     unifiSwitch8 = {
       ipv4 = "192.168.1.199";
+      tailscaleIp = null;
     };
     unifiSwitch8Lite = {
       ipv4 = "192.168.1.151";
+      tailscaleIp = null;
     };
     unifiUapGarage = {
       ipv4 = "192.168.1.191";
+      tailscaleIp = null;
     };
     unifiUapLivingRoom = {
       ipv4 = "192.168.1.6";
+      tailscaleIp = null;
     };
     frontCamera = {
       ipv4 = "192.168.1.132";
+      tailscaleIp = null;
     };
     garageCamera = {
       ipv4 = "192.168.1.131";
+      tailscaleIp = null;
     };
     gymCamera = {
       ipv4 = "192.168.1.30";
+      tailscaleIp = null;
+    };
+    hueBridge = {
+      ipv4 = "192.168.4.14";
+      tailscaleIp = null;
+    };
+    carrierThermostat = {
+      ipv4 = "192.168.4.2";
+      tailscaleIp = null;
+    };
+    teslaMegatron = {
+      ipv4 = "192.168.3.8";
+      tailscaleIp = null;
+    };
+    teslaWallCharger = {
+      ipv4 = "192.168.3.9";
+      tailscaleIp = null;
+    };
+    canonPrinter3rdFloor = {
+      ipv4 = "192.168.4.17";
+      tailscaleIp = null;
+    };
+    danielleSurfacePro = {
+      ipv4 = "192.168.1.19";
+      tailscaleIp = null;
     };
   };
 

@@ -65,7 +65,7 @@ in
       "nixos-system/mysql.nix"
       "nixos-system/photoprism.nix" # requires mysql.nix
       "nixos-system/lldap.nix" # requires postgresql.nix
-      "nixos-system/uptime-kuma.nix"
+      #"nixos-system/uptime-kuma.nix"
       "nixos-system/calibre.nix"
       "nixos-system/nginx-sites.nix"
       "nixos-system/nextcloud.nix" # requires postgresql.nix
