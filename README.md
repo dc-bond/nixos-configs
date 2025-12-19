@@ -10,9 +10,10 @@ This repository contains the declarative configuration for my NixOS systems.
 - 🏠 [home-manager](https://github.com/nix-community/home-manager) manages dotfiles and user-specific configurations
 - 🤫 [sops-nix](https://github.com/Mic92/sops-nix) manages secrets with age encryption
 - ☁️ Self-hosted services including Nextcloud, Authelia, Matrix, Photoprism, and 40+ others
-- 🔒  Automatic Let's Encrypt certificate registration and renewal with [Traefik](https://traefik.io/traefik) reverse proxy
+- 🔒  Automatic Let's Encrypt certificate registration and renewal with [Traefik](https://traefik.io/traefik) reverse proxy  
 - 🐳 Hybrid approach: native NixOS services + OCI [docker] containers for select applications where native nix modules either don't exist or are incomplete
 - 🧩 Modular architecture facilitates quick deployment of services across different hosts
+- 🌐 Dual Pi-hole + Unbound DNS setup with automatic failover via Tailscale
 - 💾 Declarative disk management with BTRFS and LUKS encryption
 - 🚀 Distributed builds leverage remote server for fast parallel compilation
 
@@ -52,7 +53,7 @@ nixos-configs/
 └── .sops.yaml                   # SOPS configuration
 ```
 
-## Architecture
+## Overall Architecture
 
 This configuration spans multiple machine types:
 - **Homelab servers**: Primary service hosts running self-hosted applications
@@ -62,6 +63,24 @@ This configuration spans multiple machine types:
 
 Each host is defined in `hosts/<hostname>/` and can selectively import service modules from `nixos-system/` as needed. User configurations are managed separately through home-manager, allowing different users to have distinct environments on the same machine.
 
-## Philosophy
+## DNS Architecture
 
-This configuration emphasizes reproducibility and modularity. Each service is defined as a self-contained module that can be easily enabled on any host. Secrets are managed securely with SOPS, and system state is version-controlled and declarative.
+### Dual Pihole + Unbound Setup
+
+**Goal**: High-availability DNS with ad blocking, privacy, and automatic failover.
+
+**Infrastructure**:
+- **aspen** LAN DNS server, ~90% uptime
+- **juniper** VPS DNS server, ~99% uptime
+- Both run identical stateless Pihole + Unbound via declarative Nix configuration
+
+### Client Resolution Scenarios
+
+**Tailscale-Enabled Devices**:
+1. **On LAN + Tailscale connected**: → juniper VPS via Tailscale override
+2. **On LAN + Tailscale disconnected**: → aspen LAN via DHCP fallback  
+3. **Remote + Tailscale connected**: → juniper via Tailscale
+4. **Automatic failover**: If juniper down → aspen via Tailscale
+
+**LAN-only Devices** (Roku, IoT, cameras):
+- **Always**: → aspen via UniFi DHCP

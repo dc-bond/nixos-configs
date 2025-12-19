@@ -11,33 +11,35 @@ let
   app = "pihole";
   app2 = "unbound";
   
-  # Generate all hostname mappings once from configVars
+  # generate hostname mappings from configVars
   allHostMappings = let
-    # NixOS hosts (LAN IPs)
-    lanHostEntries = lib.mapAttrsToList (name: host: {
-      ip = host.networking.ipv4;
-      hostname = name;
-    }) (lib.filterAttrs (_: host: host.networking.ipv4 != null) configVars.hosts);
+
+    hostEntries = lib.flatten (lib.mapAttrsToList (name: host:
+      let
+        lanEntry = lib.optional (host.networking.ipv4 != null) {
+          ip = host.networking.ipv4;
+          hostname = "${name}-lan";
+        };
+        tailscaleEntry = lib.optional (host.networking.tailscaleIp != null) {
+          ip = host.networking.tailscaleIp;
+          hostname = "${name}-tailscale";
+        };
+      in lanEntry ++ tailscaleEntry
+    ) configVars.hosts);
+
+    deviceEntries = lib.flatten (lib.mapAttrsToList (name: device: 
+      let
+        lanEntry = lib.optional (device.ipv4 != null) {
+          ip = device.ipv4;
+          hostname = if (device.tailscaleIp != null) then "${name}-lan" else name;
+        };
+        tailscaleEntry = lib.optional (device.tailscaleIp != null) {
+          ip = device.tailscaleIp;
+          hostname = "${name}-tailscale";
+        };
+      in lanEntry ++ tailscaleEntry
+    ) configVars.devices);
     
-    # NixOS hosts (Tailscale IPs)  
-    tailscaleHostEntries = lib.mapAttrsToList (name: host: {
-      ip = host.networking.tailscaleIp;
-      hostname = "${name}-tailscale";
-    }) (lib.filterAttrs (_: host: host.networking.tailscaleIp != null) configVars.hosts);
-    
-    # Mobile/other devices with Tailscale
-    mobileEntries = lib.mapAttrsToList (name: device: {
-      ip = device.tailscaleIp;
-      hostname = name;
-    }) (lib.filterAttrs (_: device: device ? tailscaleIp) configVars.devices);
-    
-    # Infrastructure devices
-    infraEntries = lib.mapAttrsToList (name: device: {
-      ip = device.ipv4;
-      hostname = name;
-    }) (lib.filterAttrs (_: device: device ? ipv4) configVars.devices);
-    
-    # Container services
     containerEntries = lib.flatten (lib.mapAttrsToList (serviceName: service:
       lib.mapAttrsToList (containerName: container: {
         ip = container.ipv4;
@@ -45,7 +47,7 @@ let
       }) service.containers
     ) configVars.containerServices);
     
-  in lanHostEntries ++ tailscaleHostEntries ++ mobileEntries ++ infraEntries ++ containerEntries;
+  in hostEntries ++ deviceEntries ++ containerEntries;
   
   # custom dnsmasq config file because all attempts at getting custom entries into the docker env file failed
   customDnsmasqConfig = pkgs.writeText "custom-dns.conf" ''
@@ -89,9 +91,7 @@ let
     "cname=librechat.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=n8n.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=photos.${configVars.domain2},aspen.${configVars.domain2}"
-    #"cname=pihole-test-aspen.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=pihole-aspen.${configVars.domain2},aspen.${configVars.domain2}"
-    #"cname=pihole.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=prowlarr.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=radarr.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=recipesage.${configVars.domain2},aspen.${configVars.domain2}"
@@ -101,13 +101,12 @@ let
     "cname=stirling-pdf.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=traefik-aspen.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=unifi.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=uptime-kuma.${configVars.domain2},aspen.${configVars.domain2}"
+    #"cname=uptime-kuma.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=weekly-recipes.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=zwavejs.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=pihole-juniper.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
     "cname=traefik-juniper.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
     "cname=vaultwarden.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
-    "cname=pihole-juniper.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
   ];
   
   piholeAdlists = [
@@ -137,27 +136,47 @@ let
     "geo.ddc.paypal.com" # paypal
   ];
 
-  # generate client mappings from configVars for human-readable log entries
+  # generate client mappings from configVars
   piholeClients = map (entry: {
     ip = entry.ip;
     comment = entry.hostname;
   }) allHostMappings;
 
-  # systemd post-start script to initialize Pi-hole adlists  
+  # systemd script to initialize pihole declaratively
   piholeInitScript = pkgs.writeShellScriptBin "pihole-init" ''
     #!/bin/bash
 
     CURRENT_TIME=$(date +%s)
 
-    echo "Allowing 10 seconds for container to start gracefully..." 
-    sleep 10 
+    echo "Waiting for Pi-hole container to be healthy..."
+    timeout=300  # 5 minutes max
+    while [ $timeout -gt 0 ]; do
+      health_status=$(docker inspect --format='{{.State.Health.Status}}' ${app} 2>/dev/null)
+      if [ "$health_status" = "healthy" ]; then
+        echo "Container is healthy, proceeding with configuration..."
+        break
+      elif [ "$health_status" = "unhealthy" ]; then
+        echo "Container is unhealthy, checking logs..."
+        docker logs --tail 10 ${app}
+        exit 1
+      else
+        echo "Container health status: $health_status, waiting... ($timeout seconds left)"
+        sleep 5
+        timeout=$((timeout - 5))
+      fi
+    done
+    
+    if [ $timeout -le 0 ]; then
+      echo "ERROR: Container did not become healthy within 5 minutes"
+      exit 1
+    fi
 
     echo "Installing sqlite3..."
     docker exec ${app} sh -c 'if ! command -v sqlite3 &> /dev/null; then apk add sqlite; fi'
     
     echo "Temporarily disabling Pi-hole to avoid database locks..."
     docker exec ${app} pihole disable
-    sleep 2
+    sleep 5 
     
     echo "Clearing existing database entries for declarative state..."
     docker exec ${app} sqlite3 /etc/pihole/gravity.db "DELETE FROM adlist;"
@@ -204,7 +223,7 @@ in
         TZ=America/New_York
         FTLCONF_webserver_api_password=${config.sops.placeholder.piholeWebPasswd}
         FTLCONF_dns_upstreams=${configVars.containerServices.${app}.containers.${app2}.ipv4}#53
-        FTLCONF_dns_port=58
+        FTLCONF_dns_port=53
         FTLCONF_webserver_port=80
         FTLCONF_webserver_interface_theme=default-dark
         FTLCONF_misc_etc_dnsmasq_d=true
@@ -322,7 +341,7 @@ in
         ];
       };
       "docker-${app}-init" = {
-        description = "Pi-hole Declarative Configuration";
+        description = "Pihole Declarative Configuration";
         path = [ pkgs.docker ];
         serviceConfig = {
           Type = "oneshot";

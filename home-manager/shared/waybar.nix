@@ -203,8 +203,8 @@ in
         "format" = "󰴳";
         "format-disconnected" = "󰦞";
         "format-linked" = "󰦞";
-        "tooltip-format" = "Tailscale IPv4 Private VPN Address: {ipaddr}";
-        "tooltip-format-disconnected" = "Tailscale: Disconnected";
+        "tooltip-format" = "Bond IPv4 Private VPN Address: {ipaddr}";
+        "tooltip-format-disconnected" = "Bond VPN: Disconnected";
         "on-click" = "${pkgs.alacritty}/bin/alacritty -e zsh -c 'sudo ${pkgs.tailscale}/bin/tailscale up --ssh --accept-routes --reset && ${pkgs.tailscale}/bin/tailscale status; echo; read -k 1 \"?Press any key to continue...\"; exec zsh'";
       };
     
