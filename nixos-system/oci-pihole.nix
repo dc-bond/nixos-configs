@@ -101,12 +101,12 @@ let
     "cname=stirling-pdf.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=traefik-aspen.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=unifi.${configVars.domain2},aspen.${configVars.domain2}"
-    #"cname=uptime-kuma.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=weekly-recipes.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=zwavejs.${configVars.domain2},aspen.${configVars.domain2}"
     "cname=pihole-juniper.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
     "cname=traefik-juniper.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
     "cname=vaultwarden.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
+    "cname=uptime-kuma.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
   ];
   
   piholeAdlists = [
