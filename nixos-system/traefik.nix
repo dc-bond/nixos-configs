@@ -41,7 +41,6 @@ in
 
   systemd.services.${app} = {
     serviceConfig = {
-      WorkingDirectory = "/var/lib/${app}/";
       LogsDirectory = "${app}"; # creates log directory at /var/log/traefik
     };
     environment = {
