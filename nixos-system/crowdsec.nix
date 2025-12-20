@@ -12,12 +12,6 @@ in
 
 {
 
-  # THIS ENTIRE MODULE IS BUGGY AND I GOT IT WORKING IMPERATIVELY BUT IT SHOULD BE REFACTORED AFTER IT MAKES IT INTO STABLE
-  imports = [ 
-    "${inputs.nixpkgs-unstable}/nixos/modules/services/security/crowdsec.nix" 
-    "${inputs.nixpkgs-unstable}/nixos/modules/services/security/crowdsec-firewall-bouncer.nix"
-  ];
-
   #sops.secrets.crowdsecConsoleToken = {
   #  owner = "crowdsec";
   #  group = "crowdsec";

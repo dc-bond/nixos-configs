@@ -3,9 +3,21 @@
   description = "Chris' NixOS Flake";
 
   inputs = {
+    # TODO: uncomment when all hosts migrated to 25.11
+    #nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    #nixpkgs-2605.url = "github:nixos/nixpkgs/nixos-26.05";
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     nixpkgs-2511.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    # TODO: uncomment when all hosts migrated to 25.11
+    #home-manager = {
+    #  url = "github:nix-community/home-manager/release-25.11";
+    #  inputs.nixpkgs.follows = "nixpkgs";
+    #};
+    #home-manager-2605 = {
+    #  url = "github:nix-community/home-manager/release-26.05";
+    #  inputs.nixpkgs.follows = "nixpkgs-2605";
+    #};
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -32,6 +44,11 @@
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    # TODO: uncomment when all hosts migrated to 25.11
+    #simple-nixos-mailserver = {
+    #  url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-25.11";
+    #  inputs.nixpkgs.follows = "nixpkgs";
+    #};
     simple-nixos-mailserver = {
       url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -43,13 +60,18 @@
     private.url = "git+file:../nixos-configs-private?ref=main";
   };
 
-  outputs = { 
+  outputs = {
     self,
+    # TODO: uncomment when all hosts migrated to 25.11
+    #nixpkgs,
+    #nixpkgs-2605,
+    #home-manager,
+    #home-manager-2605,
     nixpkgs,
     nixpkgs-2511,
     home-manager,
     home-manager-2511,
-    ... 
+    ...
   } @ inputs: # the @inputs makes all input modules available for the rest of the configuration, but still need nixpkgs, home-manager, etc. because referencing those in the flake here itself below for mkHost function
 
   let
@@ -57,11 +79,19 @@
     inherit (nixpkgs) lib;
     configVars = import ./vars { inherit inputs lib; };
     configLib = import ./lib { inherit lib; };
-    mkHost = hostname: 
+    mkHost = hostname:
       let
         hostConfig = configVars.hosts.${hostname};
         # select nixpkgs and home-manager based on host configuration
         # defaults to nixpkgs.url in inputs above if nixpkgsVersion not specified in configVars
+        # TODO: uncomment when all hosts migrated to 25.11
+        #nixpkgsVersion = hostConfig.nixpkgsVersion or "25.11";
+        #selectedNixpkgs = if nixpkgsVersion == "26.05"
+        #                  then nixpkgs-2605
+        #                  else nixpkgs;
+        #selectedHomeManager = if nixpkgsVersion == "26.05"
+        #                      then home-manager-2605
+        #                      else home-manager;
         nixpkgsVersion = hostConfig.nixpkgsVersion or "25.05";
         selectedNixpkgs = if nixpkgsVersion == "25.11"
                           then nixpkgs-2511

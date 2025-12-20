@@ -9,7 +9,7 @@
 
     aspen = {
       system = "x86_64-linux";
-      nixpkgsVersion = "25.05";
+      nixpkgsVersion = "25.11";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = true;
@@ -50,7 +50,7 @@
 
     thinkpad = {
       system = "x86_64-linux";
-      nixpkgsVersion = "25.05";
+      nixpkgsVersion = "25.11";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = false;
@@ -122,7 +122,7 @@
 
     juniper = {
       system = "x86_64-linux";
-      nixpkgsVersion = "25.05";
+      nixpkgsVersion = "25.11";
       users = [ "chris" ];
       bootLoader = "grub";
       isMonitoringServer = false;
@@ -200,7 +200,7 @@
       tailscaleIp = "100.91.224.34";
     };
     sydneyIphone6 = {
-      ipv4 = null;
+      ipv4 = "192.168.1.127";
       tailscaleIp = "100.122.145.11";
     };
     rokuGym = {
