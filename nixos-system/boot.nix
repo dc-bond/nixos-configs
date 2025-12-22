@@ -1,13 +1,13 @@
-{ 
-  pkgs, 
+{
+  pkgs,
   config,
   configVars,
   lib,
-  ... 
-}: 
+  ...
+}:
 
 let
-  hostData = configVars.hosts.${config.networking.hostName};
+  bootLoader = configVars.hosts.${config.networking.hostName}.bootLoader;
 in
 
 {
@@ -15,16 +15,16 @@ in
   boot = {
 
     loader = {
-      systemd-boot = lib.mkIf (hostData.bootLoader == "systemd-boot") {
+      systemd-boot = lib.mkIf (bootLoader == "systemd-boot") {
         enable = true;
         configurationLimit = 5; # only display last 5 generations
       };
-      grub = lib.mkIf (hostData.bootLoader == "grub") {
+      grub = lib.mkIf (bootLoader == "grub") {
         enable = true;
         efiSupport = false;
         configurationLimit = 5;
       };
-      efi.canTouchEfiVariables = hostData.bootLoader == "systemd-boot";
+      efi.canTouchEfiVariables = bootLoader == "systemd-boot";
     };
 
     supportedFilesystems = {
