@@ -387,7 +387,7 @@ in
 
       "${app}-postgres-init" = {
         description = "Initialize postgres database for ${app}";
-        after = [ "postgresql.service" ];
+        after = [ "postgresql.target" ];
         before = [ "${app}.service" ];
         wantedBy = [ "multi-user.target" ];
         path = [ config.services.postgresql.package ];
@@ -419,11 +419,11 @@ in
 
       "${app}" = {
         requires = [ 
-          "postgresql.service" 
+          "postgresql.target" 
           "${app}-postgres-init.service" 
         ];
         after = [ 
-          "postgresql.service" 
+          "postgresql.target" 
           "${app}-postgres-init.service" 
         ];
       };

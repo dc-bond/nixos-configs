@@ -256,6 +256,7 @@ in
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.containerServices.${app}.containers.${app}.ipv4}"
+        "--dns=${configVars.containerServices.${app}.containers.${app2}.ipv4}" # use unbound directly for container's own DNS needs
         "--tty=true"
         "--stop-signal=SIGINT"
       ];

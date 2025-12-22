@@ -66,8 +66,8 @@ in
   environment.systemPackages = with pkgs; [ recoverScript ];
 
   systemd.services."${app}" = {
-    requires = [ "postgresql.service" ];
-    after = [ "postgresql.service" ];
+    requires = [ "postgresql.target" ];
+    after = [ "postgresql.target" ];
   };
   
   backups.serviceHooks = {
