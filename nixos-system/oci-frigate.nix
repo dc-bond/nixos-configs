@@ -1,15 +1,14 @@
-{ 
+{
   config,
   lib,
-  pkgs, 
+  pkgs,
   configVars,
-  ... 
-}: 
+  ...
+}:
 
 let
   app = "frigate";
-  hostData = configVars.hosts.${config.networking.hostName};
-  storage = hostData.hardware.storageDrives.data;
+  storage = configVars.hosts.${config.networking.hostName}.hardware.storageDrives.data;
 in
 
 {

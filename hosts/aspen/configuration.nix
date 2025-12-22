@@ -1,17 +1,16 @@
-{ 
-  inputs, 
-  outputs, 
-  lib, 
+{
+  inputs,
+  outputs,
+  lib,
   configLib,
-  config, 
+  config,
   configVars,
-  pkgs, 
-  ... 
-}: 
+  pkgs,
+  ...
+}:
 
 let
-  hostData = configVars.hosts.${config.networking.hostName};
-  storage = hostData.hardware.storageDrives.data;
+  storage = configVars.hosts.${config.networking.hostName}.hardware.storageDrives.data;
 in
 
 {

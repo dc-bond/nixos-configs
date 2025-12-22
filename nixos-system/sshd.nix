@@ -1,20 +1,20 @@
-{ 
-  pkgs, 
+{
+  pkgs,
   lib,
   config,
   configVars,
-  ... 
-}: 
+  ...
+}:
 
 let
-  hostData = configVars.hosts.${config.networking.hostName};
+  sshPort = configVars.hosts.${config.networking.hostName}.networking.sshPort;
 in
 
 {
 
-  services.openssh = lib.mkIf (hostData.networking.sshPort != null) {
+  services.openssh = lib.mkIf (sshPort != null) {
     enable = true;
-    ports = [ hostData.networking.sshPort ];
+    ports = [ sshPort ];
     settings = {
       PasswordAuthentication = false;
       PermitRootLogin = "no";

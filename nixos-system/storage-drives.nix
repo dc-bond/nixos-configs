@@ -1,13 +1,9 @@
-{ 
-  config, 
-  configVars, 
-  lib, 
-  ... 
+{
+  config,
+  configVars,
+  lib,
+  ...
 }:
-
-let
-  hostData = configVars.hosts.${config.networking.hostName};
-in
 
 {
 
@@ -18,6 +14,6 @@ in
       fsType = drive.fsType;
       options = [ "defaults" ];
     };
-  }) hostData.hardware.storageDrives;
+  }) configVars.hosts.${config.networking.hostName}.hardware.storageDrives;
   
 }
