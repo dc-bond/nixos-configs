@@ -60,8 +60,8 @@ in
 
   systemd.services = {
     "${app}-setup" = {
-      requires = [ "postgresql.service" ];
-      after = [ "postgresql.service" ];
+      requires = [ "postgresql.target" ];
+      after = [ "postgresql.target" ];
     };
   };
 

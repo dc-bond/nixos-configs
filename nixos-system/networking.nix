@@ -21,10 +21,14 @@ in
   };
 
   environment.etc."resolv.conf" = lib.mkIf (!hostData.networking.useResolved) { # if not using systemd-resolved, than manually create resolv.conf
-    text = ''
-      nameserver 127.0.0.1
-      nameserver 1.1.1.1
-    '';
+    text =
+      if config.networking.hostName == "juniper" # juniper's pihole listens on tailscale interface only, aspen's pihole listens on all interfaces because behind NAT
+      then ''
+        nameserver ${hostData.networking.tailscaleIp}
+      ''
+      else ''
+        nameserver 127.0.0.1
+      '';
   };
 
   networking = {

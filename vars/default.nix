@@ -28,7 +28,7 @@
             "192.168.1.0/24" 
             "192.168.4.0/27" 
           ];
-          enableNAT = true;
+          enableNAT = true; # allow tailscale clients to access advertised subnets without needing to use the tailscale subnet-advertising host as an exit-node
           defaultExitNode = null;
         };
       };
@@ -265,6 +265,14 @@
     };
     danielleSurfacePro = {
       ipv4 = "192.168.1.19";
+      tailscaleIp = null;
+    };
+    chrisKindle = {
+      ipv4 = "192.168.1.91";
+      tailscaleIp = null;
+    };
+    danielleWorkLaptopWifi = {
+      ipv4 = "192.168.1.154";
       tailscaleIp = null;
     };
   };
