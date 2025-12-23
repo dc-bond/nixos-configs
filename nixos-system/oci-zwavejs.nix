@@ -33,6 +33,7 @@ in
         TZ=America/New_York
         SESSION_SECRET=${config.sops.placeholder.zwavejsSessionSecret}
         ZWAVEJS_EXTERNAL_CONFIG=/usr/src/app/store/.config-db
+        TRUST_PROXY=1
       '';
     };
   };
@@ -47,7 +48,8 @@ in
   services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
 
   virtualisation.oci-containers.containers."${app}" = {
-    image = "docker.io/${app}/zwave-js-ui:9.28.0"; # https://hub.docker.com/r/zwavejs/zwave-js-ui/tags
+    image = "docker.io/${app}/zwave-js-ui:11.9.1"; # https://hub.docker.com/r/zwavejs/zwave-js-ui/tags
+    #image = "docker.io/${app}/zwave-js-ui:9.28.0"; # https://hub.docker.com/r/zwavejs/zwave-js-ui/tags
     autoStart = true;
     environmentFiles = [ config.sops.templates."${app}-env".path ];
     log-driver = "journald";

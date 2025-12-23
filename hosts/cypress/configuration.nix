@@ -23,6 +23,7 @@
       dig # dns lookup tool
       wget # download tool
       rsync # sync tool
+      jq # json parser tool
       usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
       nix-tree # table view of package dependencies
       ethtool # network tools

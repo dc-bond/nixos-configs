@@ -1,9 +1,10 @@
-{ 
+{
   pkgs,
   lib,
   config,
-  configVars, 
-  ... 
+  configVars,
+  inputs,
+  ...
 }:
 
 {
@@ -12,6 +13,7 @@
     oci-containers.backend = "docker";
     docker = {
       enable = true;
+      package = inputs.nixpkgs-docker-pinned.legacyPackages.${pkgs.system}.docker;
       autoPrune.enable = true;
       storageDriver = "btrfs"; # support for btrfs
     };

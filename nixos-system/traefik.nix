@@ -1,10 +1,11 @@
-{ 
-  config, 
+{
+  config,
   lib,
-  pkgs, 
+  pkgs,
   configVars,
   nixServiceRecoveryScript,
-  ... 
+  inputs,
+  ...
 }: 
 
 let
@@ -66,6 +67,7 @@ in
 
     ${app} = {
       enable = true;
+      package = inputs.nixpkgs-traefik-pinned.legacyPackages.${pkgs.system}.traefik;
 
       staticConfigOptions = {
         api = {
@@ -159,6 +161,7 @@ in
           docker = {
             endpoint = "unix:///var/run/docker.sock";
             exposedByDefault = false;
+            allowEmptyServices = true;
           };
         };
       };
