@@ -106,7 +106,8 @@
       nixos-rebuild switch \
         --flake "$flake_dir#$selected_host" \
         --target-host "$ssh_target" \
-        --sudo
+        --sudo \
+        --ask-sudo-password
     }
   '';
 

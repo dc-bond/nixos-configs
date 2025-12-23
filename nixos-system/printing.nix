@@ -7,10 +7,9 @@
 
   services.printing = {
     enable = true; # automatically opens firewall port 661
-    browsing = true;
-    drivers = [ 
-      pkgs.canon-cups-ufr2 # canon printer drivers
-    ];
+    #browsing = false;
+    startWhenNeeded = false; # keep CUPS running as a daemon: prevents firefox freeze waiting for on-demand CUPS startup in 25.11
+    drivers = [ pkgs.canon-cups-ufr2 ]; # canon printer drivers
   };
 
   hardware.printers = {
