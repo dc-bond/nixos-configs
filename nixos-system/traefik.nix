@@ -67,7 +67,7 @@ in
 
     ${app} = {
       enable = true;
-      package = inputs.nixpkgs-traefik-pinned.legacyPackages.${pkgs.system}.traefik;
+      package = inputs.nixpkgs-traefik-pinned.legacyPackages.${pkgs.stdenv.hostPlatform.system}.traefik;
 
       staticConfigOptions = {
         api = {

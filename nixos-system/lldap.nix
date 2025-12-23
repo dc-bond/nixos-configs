@@ -4,6 +4,7 @@
   config,
   configVars,
   nixServiceRecoveryScript,
+  inputs,
   ...
 }: 
 
@@ -71,6 +72,7 @@ in
 
     ${app} = {
       enable = true;
+      package = inputs.nixpkgs-lldap-pinned.legacyPackages.${pkgs.stdenv.hostPlatform.system}.lldap;
       settings = {
         ldap_user_email = "${configVars.users.chris.email}";
         ldap_user_dn = "admin";
