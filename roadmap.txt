@@ -1,6 +1,9 @@
-backups
-fallback dns
-migrate services/tailscale routing
+media server
+lldap
+uptime-kuma
+printing
+
+
 vaultwarden
 mailserver
 drives/bcachefs

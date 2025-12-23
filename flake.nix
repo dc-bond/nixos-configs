@@ -9,6 +9,8 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     nixpkgs-2511.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-traefik-pinned.url = "github:nixos/nixpkgs/2b0d2b456e4e8452cf1c16d00118d145f31160f9"; # traefik 3.3.6 from 25.05
+    nixpkgs-docker-pinned.url = "github:nixos/nixpkgs/2b0d2b456e4e8452cf1c16d00118d145f31160f9"; # docker 27.5.1 from 25.05
     # TODO: uncomment when all hosts migrated to 25.11
     #home-manager = {
     #  url = "github:nix-community/home-manager/release-25.11";

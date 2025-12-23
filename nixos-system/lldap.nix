@@ -41,6 +41,8 @@ in
     };
     #templates = {
     #  "${app}-env".content = ''
+    #    LLDAP_JWT_SECRET=${config.sops.placeholder.lldapJwtSecret}
+    #    LLDAP_LDAP_USER_PASS=${config.sops.placeholder.lldapLdapUserPasswd}
     #    LLDAP_JWT_SECRET_FILE=${config.sops.placeholder.lldapJwtSecret}
     #    LLDAP_LDAP_USER_PASS_FILE=${config.sops.placeholder.lldapLdapUserPasswd}
     #  '';
@@ -72,8 +74,7 @@ in
       settings = {
         ldap_user_email = "${configVars.users.chris.email}";
         ldap_user_dn = "admin";
-        #ldap_user_pass_file = config.sops.templates."${app}-user-pass".path; # using template for DynamicUser compatibility (rendered at service start)
-        #ldap_user_pass_file = config.sops.secrets.lldapLdapUserPasswd.path; # doesn't work with DynamicUser (secret owned by root during activation)
+        ldap_user_pass_file = "${config.sops.secrets.lldapLdapUserPasswd.path}";
         force_ldap_user_pass_reset = "always";
         ldap_port = 3890;
         ldap_base_dn = "dc=${configVars.domain1Short},dc=com";
@@ -85,7 +86,7 @@ in
       #environmentFile = config.sops.templates."${app}-env".path;
       environment = {
         LLDAP_JWT_SECRET_FILE = "${config.sops.secrets.lldapJwtSecret.path}";
-        LLDAP_LDAP_USER_PASS_FILE = "${config.sops.secrets.lldapLdapUserPasswd.path}";
+        #LLDAP_LDAP_USER_PASS_FILE = "${config.sops.secrets.lldapLdapUserPasswd.path}";
       };
     };
 
