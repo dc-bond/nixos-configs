@@ -40,14 +40,14 @@ in
       lldapJwtSecret = {};
       lldapLdapUserPasswd = {};
     };
-    #templates = {
-    #  "${app}-env".content = ''
-    #    LLDAP_JWT_SECRET=${config.sops.placeholder.lldapJwtSecret}
-    #    LLDAP_LDAP_USER_PASS=${config.sops.placeholder.lldapLdapUserPasswd}
-    #    LLDAP_JWT_SECRET_FILE=${config.sops.placeholder.lldapJwtSecret}
-    #    LLDAP_LDAP_USER_PASS_FILE=${config.sops.placeholder.lldapLdapUserPasswd}
-    #  '';
-    #};
+    templates = {
+      "${app}-env".content = ''
+        LLDAP_JWT_SECRET=${config.sops.placeholder.lldapJwtSecret}
+        LLDAP_LDAP_USER_PASS=${config.sops.placeholder.lldapLdapUserPasswd}
+      '';
+        #LLDAP_JWT_SECRET_FILE=${config.sops.placeholder.lldapJwtSecret}
+        #LLDAP_LDAP_USER_PASS_FILE=${config.sops.placeholder.lldapLdapUserPasswd}
+    };
   };
 
   environment.systemPackages = with pkgs; [ recoverScript ];
@@ -76,8 +76,8 @@ in
       settings = {
         ldap_user_email = "${configVars.users.chris.email}";
         ldap_user_dn = "admin";
-        ldap_user_pass_file = "${config.sops.secrets.lldapLdapUserPasswd.path}";
-        force_ldap_user_pass_reset = "always";
+        #ldap_user_pass_file = "${config.sops.secrets.lldapLdapUserPasswd.path}";
+        #force_ldap_user_pass_reset = "always";
         ldap_port = 3890;
         ldap_base_dn = "dc=${configVars.domain1Short},dc=com";
         http_url = "https://${app}.${configVars.domain1}";
@@ -85,11 +85,11 @@ in
         http_host = "127.0.0.1";
         database_url = "postgres:///${app}";
       };
-      #environmentFile = config.sops.templates."${app}-env".path;
-      environment = {
-        LLDAP_JWT_SECRET_FILE = "${config.sops.secrets.lldapJwtSecret.path}";
-        #LLDAP_LDAP_USER_PASS_FILE = "${config.sops.secrets.lldapLdapUserPasswd.path}";
-      };
+      environmentFile = config.sops.templates."${app}-env".path;
+      #environment = {
+      #  LLDAP_JWT_SECRET_FILE = "${config.sops.secrets.lldapJwtSecret.path}";
+      #  #LLDAP_LDAP_USER_PASS_FILE = "${config.sops.secrets.lldapLdapUserPasswd.path}";
+      #};
     };
 
     postgresql = {

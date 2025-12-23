@@ -267,6 +267,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-lldap-pinned": {
+      "locked": {
+        "lastModified": 1766014764,
+        "narHash": "sha256-+73VffE5GP5fvbib6Hs1Su6LehG+9UV1Kzs90T2gBLA=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "2b0d2b456e4e8452cf1c16d00118d145f31160f9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "2b0d2b456e4e8452cf1c16d00118d145f31160f9",
+        "type": "github"
+      }
+    },
     "nixpkgs-traefik-pinned": {
       "locked": {
         "lastModified": 1766014764,
@@ -325,6 +341,7 @@
         "nixpkgs": "nixpkgs",
         "nixpkgs-2511": "nixpkgs-2511",
         "nixpkgs-docker-pinned": "nixpkgs-docker-pinned",
+        "nixpkgs-lldap-pinned": "nixpkgs-lldap-pinned",
         "nixpkgs-traefik-pinned": "nixpkgs-traefik-pinned",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "private": "private",
