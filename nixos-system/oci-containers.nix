@@ -1,9 +1,9 @@
-{ 
+{
   pkgs,
   lib,
   config,
-  configVars, 
-  ... 
+  configVars,
+  ...
 }:
 
 {

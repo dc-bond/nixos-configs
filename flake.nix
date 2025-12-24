@@ -3,23 +3,13 @@
   description = "Chris' NixOS Flake";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
-    nixpkgs-2511.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
+    nixpkgs-2505.url = "github:nixos/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.05";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    home-manager-2511 = {
-      url = "github:nix-community/home-manager/release-25.11";
-      inputs.nixpkgs.follows = "nixpkgs-2511";
-    };
-    #plasma-manager = {
-    #  #url = "github:nix-community/plasma-manager";
-    #  url = "github:nix-community/plasma-manager/6a7d78cebd9a0f84a508bec9bc47ac504c5f51f4";
-    #  inputs.nixpkgs.follows = "nixpkgs";
-    #  inputs.home-manager.follows = "home-manager";
-    #};
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -33,7 +23,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     simple-nixos-mailserver = {
-      url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-25.05";
+      url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     finplanner = {
@@ -43,13 +33,11 @@
     private.url = "git+file:../nixos-configs-private?ref=main";
   };
 
-  outputs = { 
+  outputs = {
     self,
     nixpkgs,
-    nixpkgs-2511,
     home-manager,
-    home-manager-2511,
-    ... 
+    ...
   } @ inputs: # the @inputs makes all input modules available for the rest of the configuration, but still need nixpkgs, home-manager, etc. because referencing those in the flake here itself below for mkHost function
 
   let
@@ -57,35 +45,26 @@
     inherit (nixpkgs) lib;
     configVars = import ./vars { inherit inputs lib; };
     configLib = import ./lib { inherit lib; };
-    mkHost = hostname: 
+    mkHost = hostname:
       let
         hostConfig = configVars.hosts.${hostname};
-        # select nixpkgs and home-manager based on host configuration
-        # defaults to nixpkgs.url in inputs above if nixpkgsVersion not specified in configVars
-        nixpkgsVersion = hostConfig.nixpkgsVersion or "25.05";
-        selectedNixpkgs = if nixpkgsVersion == "25.11"
-                          then nixpkgs-2511
-                          else nixpkgs;
-        selectedHomeManager = if nixpkgsVersion == "25.11"
-                              then home-manager-2511
-                              else home-manager;
         specialArgs = {
           inherit inputs configVars configLib;
-          nixpkgs = selectedNixpkgs;
+          nixpkgs = nixpkgs;
           outputs = self;
         };
       in
-      selectedNixpkgs.lib.nixosSystem {
+      nixpkgs.lib.nixosSystem {
         system = hostConfig.system;
         inherit specialArgs;
         modules = [
           ./hosts/${hostname}/configuration.nix
-          selectedHomeManager.nixosModules.home-manager
+          home-manager.nixosModules.home-manager
           {
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
-              users = lib.genAttrs 
+              users = lib.genAttrs
                 (hostConfig.users ++ ["root"]) # always include root user in hosts
                 (user: import ./hosts/${hostname}/${user}/home.nix); # include users defined in each host in configVars
               extraSpecialArgs = specialArgs; # passes flake inputs and outputs to home-manager module

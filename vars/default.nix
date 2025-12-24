@@ -9,7 +9,6 @@
 
     aspen = {
       system = "x86_64-linux";
-      nixpkgsVersion = "25.05";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = true;
@@ -28,7 +27,7 @@
             "192.168.1.0/24" 
             "192.168.4.0/27" 
           ];
-          enableNAT = true;
+          enableNAT = true; # allow tailscale clients to access advertised subnets without needing to use the tailscale subnet-advertising host as an exit-node
           defaultExitNode = null;
         };
       };
@@ -50,7 +49,6 @@
 
     thinkpad = {
       system = "x86_64-linux";
-      nixpkgsVersion = "25.05";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = false;
@@ -83,7 +81,6 @@
     
     cypress = {
       system = "x86_64-linux";
-      nixpkgsVersion = "25.05";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = false;
@@ -122,7 +119,6 @@
 
     juniper = {
       system = "x86_64-linux";
-      nixpkgsVersion = "25.05";
       users = [ "chris" ];
       bootLoader = "grub";
       isMonitoringServer = false;
@@ -155,10 +151,7 @@
     
     alder = {
       system = "x86_64-linux";
-      nixpkgsVersion = "25.05";
-      users = [ 
-        "eric" 
-      ];
+      users = [ "eric" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = false;
       windowManager = "labwc";
@@ -200,7 +193,7 @@
       tailscaleIp = "100.91.224.34";
     };
     sydneyIphone6 = {
-      ipv4 = null;
+      ipv4 = "192.168.1.127";
       tailscaleIp = "100.122.145.11";
     };
     rokuGym = {
@@ -265,6 +258,14 @@
     };
     danielleSurfacePro = {
       ipv4 = "192.168.1.19";
+      tailscaleIp = null;
+    };
+    chrisKindle = {
+      ipv4 = "192.168.1.91";
+      tailscaleIp = null;
+    };
+    danielleWorkLaptopWifi = {
+      ipv4 = "192.168.1.154";
       tailscaleIp = null;
     };
   };

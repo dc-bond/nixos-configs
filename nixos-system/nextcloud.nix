@@ -60,14 +60,9 @@ in
 
   systemd.services = {
     "${app}-setup" = {
-      requires = [ "postgresql.service" ];
-      after = [ "postgresql.service" ];
+      requires = [ "postgresql.target" ];
+      after = [ "postgresql.target" ];
     };
-    #"borgbackup-job-${config.networking.hostName}" = { # ensure borg can write to nextcloud directory for occ maintenance mode
-    #  serviceConfig.ReadWritePaths = [
-    #    "/var/lib/${app}" 
-    #  ];
-    #};
   };
 
   backups.serviceHooks = {
@@ -98,7 +93,7 @@ in
     ${app} = {
       enable = true;
       hostName = "nextcloud.${configVars.domain1}";
-      package = pkgs.nextcloud31; # manually increment with upgrades
+      package = pkgs.nextcloud32; # manually increment with upgrades
       database.createLocally = false; # enables postgres service if true, manual setup below
       configureRedis = true; # creates redis instance
       caching.redis = true; # load redis into nextcloud php

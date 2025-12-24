@@ -15,9 +15,7 @@ in
 
   # nixpkgs configuration
   nixpkgs = {
-    overlays = [
-      outputs.overlays.unstable-packages
-    ];
+    overlays = builtins.attrValues outputs.overlays; # pull in all overlays at overlays/default.nix
     config = {
       allowUnfree = true;
       allowBroken = true;
@@ -34,7 +32,7 @@ in
       nix-path = config.nix.nixPath; # workaround for https://github.com/NixOS/nix/issues/9574
     };
     channel.enable = false; # disable channels because using flake
-    registry = lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs; # make flake registry match flake inputs
+    registry = lib.mkForce (lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs); # make flake registry match flake inputs
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs; # make nix path match flake inputs
     gc = {
       automatic = true;
@@ -55,5 +53,5 @@ in
   };
 
   # system-wide resource limits
-  systemd.extraConfig = "DefaultLimitNOFILE=2048";
+  systemd.settings.Manager.DefaultLimitNOFILE = 2048;
 }

@@ -18,8 +18,8 @@ in
   systemd = {
     services = {
       "${app}-scheduler" = {
-        requires = [ "postgresql.service" ];
-        after = [ "postgresql.service" ];
+        requires = [ "postgresql.target" ];
+        after = [ "postgresql.target" ];
       };
     };
     tmpfiles.rules = [
