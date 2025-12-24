@@ -1,12 +1,12 @@
-{ 
+{
   inputs,
   config,
-  pkgs, 
-  ... 
-}: 
+  pkgs,
+  ...
+}:
 
 let
-  firefox-addons = inputs.firefox-addons.packages.${pkgs.system};
+  firefox-addons = inputs.firefox-addons.packages.${pkgs.stdenv.hostPlatform.system};
   username = builtins.baseNameOf ./.;
 in
 
@@ -14,7 +14,7 @@ in
 
   programs.firefox = {
     enable = true;
-    package = pkgs.firefox-esr;
+    package = pkgs.pkgs-2505.firefox-esr; # pinned to 25.05 because of bug
     profiles = {
       default = {
         id = 0;

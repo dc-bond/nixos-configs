@@ -5,13 +5,12 @@
   configVars,
   nixServiceRecoveryScript,
   ...
-}: 
+}:
 
 let
 
   app = "photoprism";
-  hostData = configVars.hosts.${config.networking.hostName};
-  storage = hostData.hardware.storageDrives.data;
+  storage = configVars.hosts.${config.networking.hostName}.hardware.storageDrives.data;
   recoveryPlan = {
     restoreItems = [
       "/var/lib/private/${app}"

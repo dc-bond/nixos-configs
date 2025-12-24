@@ -1,10 +1,10 @@
-{ 
-  config, 
+{
+  config,
   lib,
-  pkgs, 
+  pkgs,
   configVars,
   nixServiceRecoveryScript,
-  ... 
+  ...
 }: 
 
 let
@@ -41,7 +41,6 @@ in
 
   systemd.services.${app} = {
     serviceConfig = {
-      WorkingDirectory = "/var/lib/${app}/";
       LogsDirectory = "${app}"; # creates log directory at /var/log/traefik
     };
     environment = {
@@ -160,6 +159,7 @@ in
           docker = {
             endpoint = "unix:///var/run/docker.sock";
             exposedByDefault = false;
+            allowEmptyServices = true;
           };
         };
       };
@@ -193,7 +193,8 @@ in
             trusted-allow = {
               ipAllowList = {
                 sourceRange = [
-                  "192.168.1.0/24" # home LAN including aspen services (e.g. uptime kuma)
+                  "192.168.1.0/24" # home LAN
+                  "${configVars.hosts.juniper.networking.tailscaleIp}" # allow uptime-kuma to access allowList services
                   "${configVars.hosts.thinkpad.networking.tailscaleIp}"
                   "${configVars.hosts.cypress.networking.tailscaleIp}"
                   "${configVars.hosts.alder.networking.tailscaleIp}"

@@ -4,13 +4,12 @@
   config,
   configVars,
   ...
-}: 
+}:
 
 let
   #app = "calibre-server";
   app2 = "calibre-web";
-  hostData = configVars.hosts.${config.networking.hostName};
-  storage = hostData.hardware.storageDrives.data;
+  storage = configVars.hosts.${config.networking.hostName}.hardware.storageDrives.data;
 in
 
 {

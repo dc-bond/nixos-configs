@@ -1,17 +1,16 @@
-{ 
-  inputs, 
-  outputs, 
-  lib, 
+{
+  inputs,
+  outputs,
+  lib,
   configLib,
-  config, 
+  config,
   configVars,
-  pkgs, 
-  ... 
-}: 
+  pkgs,
+  ...
+}:
 
 let
-  hostData = configVars.hosts.${config.networking.hostName};
-  storage = hostData.hardware.storageDrives.data;
+  storage = configVars.hosts.${config.networking.hostName}.hardware.storageDrives.data;
 in
 
 {
@@ -65,7 +64,6 @@ in
       "nixos-system/mysql.nix"
       "nixos-system/photoprism.nix" # requires mysql.nix
       "nixos-system/lldap.nix" # requires postgresql.nix
-      #"nixos-system/uptime-kuma.nix"
       "nixos-system/calibre.nix"
       "nixos-system/nginx-sites.nix"
       "nixos-system/nextcloud.nix" # requires postgresql.nix
@@ -78,14 +76,13 @@ in
       "nixos-system/oci-fava.nix"
       "nixos-system/oci-frigate.nix" # requires nvidia.nix
       "nixos-system/oci-pihole.nix"
-      #"nixos-system/oci-pihole-old.nix"
       "nixos-system/oci-actual.nix"
       "nixos-system/oci-zwavejs.nix"
       "nixos-system/oci-searxng.nix"
       "nixos-system/oci-recipesage.nix"
       "nixos-system/oci-librechat.nix"
       "nixos-system/oci-unifi.nix"
-      "nixos-system/oci-finplanner.nix"
+      #"nixos-system/oci-finplanner.nix" # requires authelia-dcbond.nix
       "nixos-system/oci-chris-workouts.nix"
       "nixos-system/oci-danielle-workouts.nix"
       "nixos-system/oci-n8n.nix"

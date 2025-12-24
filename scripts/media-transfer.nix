@@ -1,16 +1,15 @@
-{ 
-  pkgs, 
+{
+  pkgs,
   lib,
   configVars,
   config,
-  ... 
+  ...
 }:
 
 let
 
   chrisEmailPasswd = "/run/secrets/chrisEmailPasswd";
-  hostData = configVars.hosts.${config.networking.hostName};
-  storage = hostData.hardware.storageDrives.data;
+  storage = configVars.hosts.${config.networking.hostName}.hardware.storageDrives.data;
 
   mediaTransferScript = pkgs.writeShellScriptBin "mediaTransfer" ''
     #!/bin/bash
