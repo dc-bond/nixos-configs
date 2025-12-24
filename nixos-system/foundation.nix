@@ -15,9 +15,7 @@ in
 
   # nixpkgs configuration
   nixpkgs = {
-    overlays = [
-      outputs.overlays.unstable-packages
-    ];
+    overlays = builtins.attrValues outputs.overlays; # pull in all overlays at overlays/default.nix
     config = {
       allowUnfree = true;
       allowBroken = true;
