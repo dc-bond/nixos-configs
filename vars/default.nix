@@ -9,7 +9,6 @@
 
     aspen = {
       system = "x86_64-linux";
-      nixpkgsVersion = "25.11";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = true;
@@ -50,7 +49,6 @@
 
     thinkpad = {
       system = "x86_64-linux";
-      nixpkgsVersion = "25.11";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = false;
@@ -83,7 +81,6 @@
     
     cypress = {
       system = "x86_64-linux";
-      nixpkgsVersion = "25.11";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = false;
@@ -122,7 +119,6 @@
 
     juniper = {
       system = "x86_64-linux";
-      nixpkgsVersion = "25.11";
       users = [ "chris" ];
       bootLoader = "grub";
       isMonitoringServer = false;
@@ -155,10 +151,7 @@
     
     alder = {
       system = "x86_64-linux";
-      nixpkgsVersion = "25.05";
-      users = [ 
-        "eric" 
-      ];
+      users = [ "eric" ];
       bootLoader = "systemd-boot";
       isMonitoringServer = false;
       windowManager = "labwc";

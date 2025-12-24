@@ -1,9 +1,10 @@
-media server
-lldap
-uptime-kuma
-printing
-
-
+dashboard w/monitoring
 vaultwarden
 mailserver
 drives/bcachefs
+
+Bug checks 25.11 - 
+
+firefox/cups issue
+lldap
+docker labels media-server

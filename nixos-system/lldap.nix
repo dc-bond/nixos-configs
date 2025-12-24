@@ -4,7 +4,6 @@
   config,
   configVars,
   nixServiceRecoveryScript,
-  inputs,
   ...
 }: 
 
@@ -35,19 +34,9 @@ in
 
 {
 
-  sops = {
-    secrets = {
-      lldapJwtSecret = {};
-      lldapLdapUserPasswd = {};
-    };
-    templates = {
-      "${app}-env".content = ''
-        LLDAP_JWT_SECRET=${config.sops.placeholder.lldapJwtSecret}
-        LLDAP_LDAP_USER_PASS=${config.sops.placeholder.lldapLdapUserPasswd}
-      '';
-        #LLDAP_JWT_SECRET_FILE=${config.sops.placeholder.lldapJwtSecret}
-        #LLDAP_LDAP_USER_PASS_FILE=${config.sops.placeholder.lldapLdapUserPasswd}
-    };
+  sops.secrets = {
+    lldapJwtSecret = {};
+    lldapLdapUserPasswd = {};
   };
 
   environment.systemPackages = with pkgs; [ recoverScript ];
@@ -55,6 +44,12 @@ in
   systemd.services."${app}" = {
     requires = [ "postgresql.target" ];
     after = [ "postgresql.target" ];
+    serviceConfig = { # shit needed because broken settings for passwords and env permissions
+      LoadCredential = [
+        "jwt_secret:${config.sops.secrets.lldapJwtSecret.path}"
+        "ldap_user_pass:${config.sops.secrets.lldapLdapUserPasswd.path}"
+      ];
+    };
   };
 
   backups.serviceHooks = {
@@ -72,12 +67,12 @@ in
 
     ${app} = {
       enable = true;
-      package = inputs.nixpkgs-lldap-pinned.legacyPackages.${pkgs.stdenv.hostPlatform.system}.lldap;
       settings = {
         ldap_user_email = "${configVars.users.chris.email}";
         ldap_user_dn = "admin";
-        #ldap_user_pass_file = "${config.sops.secrets.lldapLdapUserPasswd.path}";
-        #force_ldap_user_pass_reset = "always";
+        #ldap_user_pass_file = config.sops.secrets.lldapLdapUserPasswd.path; # shit broken in 25.11
+        force_ldap_user_pass_reset = "always";
+        #jwt_secret_file = config.sops.secrets.lldapJwtSecret.path; # shit broken in 25.11
         ldap_port = 3890;
         ldap_base_dn = "dc=${configVars.domain1Short},dc=com";
         http_url = "https://${app}.${configVars.domain1}";
@@ -85,11 +80,11 @@ in
         http_host = "127.0.0.1";
         database_url = "postgres:///${app}";
       };
-      environmentFile = config.sops.templates."${app}-env".path;
-      #environment = {
-      #  LLDAP_JWT_SECRET_FILE = "${config.sops.secrets.lldapJwtSecret.path}";
-      #  #LLDAP_LDAP_USER_PASS_FILE = "${config.sops.secrets.lldapLdapUserPasswd.path}";
-      #};
+      silenceForceUserPassResetWarning = true;
+      environment = {
+        LLDAP_JWT_SECRET_FILE = "%d/jwt_secret";
+        LLDAP_LDAP_USER_PASS_FILE = "%d/ldap_user_pass";
+      };
     };
 
     postgresql = {
@@ -134,16 +129,16 @@ in
       };
     };
 
-    authelia.instances."${configVars.domain1Short}".settings.access_control.rules = [
-      {
-        domain = [ "${app}.${configVars.domain1}" ];
-        subject = [ # only allow the following users to access lldap and only require one factor
-          "user:admin"
-          "user:danielle-bond"
-        ];
-        policy = "one_factor";
-      }
-    ];
+    #authelia.instances."${configVars.domain1Short}".settings.access_control.rules = [
+    #  {
+    #    domain = [ "${app}.${configVars.domain1}" ];
+    #    subject = [ # only allow the following users to access lldap and only require one factor
+    #      "user:admin"
+    #      "user:danielle-bond"
+    #    ];
+    #    policy = "one_factor";
+    #  }
+    #];
 
   };
 
