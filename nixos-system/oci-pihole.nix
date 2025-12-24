@@ -106,7 +106,7 @@ let
     "cname=pihole-juniper.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
     "cname=traefik-juniper.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
     "cname=vaultwarden.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
-    "cname=uptime-kuma.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
+    "cname=homepage.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
   ];
   
   piholeAdlists = [

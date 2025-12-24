@@ -48,7 +48,7 @@
       "nixos-system/traefik.nix"
       "nixos-system/matrix-synapse.nix"
       "nixos-system/vaultwarden.nix"
-      "nixos-system/uptime-kuma.nix"
+      "nixos-system/homepage.nix"
     ])
   ];
 
