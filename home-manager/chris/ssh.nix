@@ -69,6 +69,11 @@
         user = "eric";
         port = 22;
       };
+      "kauri-tailscale" = {
+        hostname = configVars.hosts.kauri.networking.tailscaleIp;
+        user = "danielle";
+        port = 22;
+      };
       "unifi-usg" = {
         hostname = configVars.devices.unifiUsg.ipv4;
         user = "dcbond";
