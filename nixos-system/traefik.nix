@@ -243,8 +243,10 @@ in
               minVersion = "VersionTLS13";
               sniStrict = true;
               curvePreferences = [
-                "CurveP521" 
-                "CurveP384"
+                "X25519"      # modern, fast, preferred by most devices
+                "CurveP256"   # widely supported, required by some devices
+                "CurveP384"   # high security
+                "CurveP521"   # highest security
               ];
             };
           };

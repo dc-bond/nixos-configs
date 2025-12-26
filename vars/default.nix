@@ -23,11 +23,10 @@
         tailscaleIp = "100.68.250.108";
         tailscale = {
           role = "exit-node";
-          advertiseRoutes = [ 
-            "192.168.1.0/24" 
-            "192.168.4.0/27" 
+          advertiseRoutes = [
+            "192.168.1.0/24"
+            "192.168.4.0/27"
           ];
-          enableNAT = true; # allow tailscale clients to access advertised subnets without needing to use the tailscale subnet-advertising host as an exit-node
           defaultExitNode = null;
         };
       };
@@ -63,9 +62,37 @@
         tailscaleIp = "100.66.143.66";
         tailscale = {
           role = "client";
-          #advertiseRoutes = [ 
-          #];
-          enableNAT = false;
+          advertiseRoutes = null;
+          defaultExitNode = "aspen";
+        };
+      };
+      hardware = {
+        diskEncryption = true;
+        enableSmartMonitoring = true;
+        storageDrives = {};
+        hasBattery = true;
+        hasBluetooth = true;
+        hasBacklight = true;
+      };
+    };
+
+    kauri = {
+      system = "x86_64-linux";
+      users = [ "danielle" ];
+      bootLoader = "systemd-boot";
+      isMonitoringServer = false;
+      windowManager = "labwc";
+      networking = {
+        sshPort = null; # only use tailscale ssh
+        useResolved = true;
+        ethernetInterface = "enp0s31f6";
+        wifiInterface = "wlan0";
+        dockInterface = null;
+        ipv4 = "192.168.1.164";
+        tailscaleIp = "100.62.143.68";
+        tailscale = {
+          role = "client";
+          advertiseRoutes = null;
           defaultExitNode = "aspen";
         };
       };
@@ -95,10 +122,8 @@
         tailscaleIp = "100.84.248.69";
         tailscale = {
           role = "client";
-          #advertiseRoutes = [ 
-          #];
-          enableNAT = false;
-          defaultExitNode = "aspen";
+          advertiseRoutes = null;
+          defaultExitNode = null;
         };
       };
       hardware = {
@@ -133,9 +158,7 @@
         tailscaleIp = "100.70.221.14";
         tailscale = {
           role = "exit-node";
-          #advertiseRoutes = [ 
-          #];
-          enableNAT = false;
+          advertiseRoutes = null;
           defaultExitNode = null;
         };
       };
@@ -165,9 +188,7 @@
         tailscaleIp = "100.68.185.99";
         tailscale = {
           role = "client";
-          #advertiseRoutes = [ 
-          #];
-          enableNAT = false;
+          advertiseRoutes = null;
           defaultExitNode = "aspen";
         };
       };
@@ -266,6 +287,10 @@
     };
     danielleWorkLaptopWifi = {
       ipv4 = "192.168.1.154";
+      tailscaleIp = null;
+    };
+    sydneyAmazonTablet = {
+      ipv4 = "192.168.4.7";
       tailscaleIp = null;
     };
   };
@@ -541,6 +566,19 @@
 
     eric = {
       uid = 1001;
+      fullName = null;
+      email = null;
+      shell = "zsh";
+      sudoNoPasswd = true;
+      sshKeys = [
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDesi3Wba5w6/ZV0kgO4hCcG+n7cDwMuSGca/pCqW4zNlCA95Yd9enkQIAtJfUuXbMjZI7DPezcCptDMySUIBU+Lc3WKScJUsaAUjQCSAEv8E1mq6/qg2p2/0GSyl9NONE1iMlASiq8M/q04CL9E7SD6XJCKtqdAOP4mPi5+xzUJ85tvBlyeF8fTsDGQeUSkMm/N31zuymx9lIgf7KQ7bbV0L5Z5R7cSoGs2NrZDnhMpqFYVCh4LA/hhHg7ed8DE96xSJ6GUnulGVa1C8kCVa/fbU1tNBXfOBCooh7yL1MDGAyseAQC4g2ThwWR9Fpyy23Mn9hrr6tuoZ9lwji5RpthuHOYFey82kaDa50yop2BWwN3yXDZjnWJB6Eo8VrGql9o/WytjRh7YvMCC30jAEHEH8IVYGIT14zO9bC5CCCoP6wonkGjhlhdYJFKPQPKZ6X+bESXaC6+3FXY7CsiI/mWxjc5fdJVQRXZDrZaPwhvt292aSZCTY0sDcFwn8HeOO8= openpgp:0xE5DCB627"
+      ];
+      gpgKeyFingerprint = null;
+      gpgPubKeyBlock = null; 
+    };
+
+    danielle = {
+      uid = 1002;
       fullName = null;
       email = null;
       shell = "zsh";

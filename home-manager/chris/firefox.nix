@@ -118,7 +118,8 @@ in
         Locked = true;
       };
       Preferences = {
-        "browser.startup.homepage" = "https://search.opticon.dev";
+        "browser.startup.page" = 1; # 0 = blank, 1 = home, 3 = restore previous session
+        "browser.startup.homepage" = "https://homepage.opticon.dev";
         "browser.urlbar.suggest.quicksuggest.sponsored" = false;
         "browser.urlbar.suggest.openpage" = false;
         "browser.urlbar.suggest.recentsearches" = false;

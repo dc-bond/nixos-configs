@@ -51,6 +51,7 @@
       "hosts/thinkpad/hardware-configuration.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
+      "nixos-system/rebuilds.nix"
       "nixos-system/networking.nix"
       "nixos-system/tailscale.nix"
       "nixos-system/users.nix"

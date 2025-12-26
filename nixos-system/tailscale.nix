@@ -17,10 +17,10 @@ let
   else null;
   upFlags = [
     "--ssh"
-  ] 
+  ]
   ++ lib.optionals isExitNode [ "--advertise-exit-node" ]
-  ++ lib.optionals isClient [ "--accept-routes" ]
-  ++ lib.optional (tsConfig ? advertiseRoutes) 
+  ++ lib.optionals (tsConfig.advertiseRoutes == null) [ "--accept-routes" ]
+  ++ lib.optional (tsConfig.advertiseRoutes != null)
       "--advertise-routes=${lib.concatStringsSep "," tsConfig.advertiseRoutes}"
   ++ lib.optional (defaultExitNodeIp != null)
       "--exit-node=${defaultExitNodeIp}";
@@ -37,7 +37,7 @@ in
 
   networking = {
     firewall.trustedInterfaces = [ "tailscale0" ]; # allow all ports open on tailscale interface
-    nat = lib.mkIf (tsConfig.enableNAT or false) { # allow clients to access advertised subnets without needing to use the subnet-advertising host as an exit-node
+    nat = lib.mkIf (tsConfig.advertiseRoutes != null) { # allow clients to access advertised subnets without needing to use the subnet-advertising host as an exit-node
       enable = true;
       internalInterfaces = [ "tailscale0" ];
       externalInterface = hostData.networking.ethernetInterface;
