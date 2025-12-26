@@ -11,7 +11,6 @@
 # first time wifi and tailscale connection
 # tailscale disable expiry in console
 # first time bluetooth devices setup
-# firefox setup (activate extensions, etc.)
 
 { 
   inputs, 
@@ -49,20 +48,20 @@
     i2c-tools # hardware interface tools required by ddcutil
   ];
 
-  #backups.startTime = "*-*-* 01:05:00"; # everyday at 1:05am
-  #services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.users.users.chris.home}/email" ];
+  #backups.startTime = "*-*-* 01:25:00"; # everyday at 1:25am
+  #services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.users.users.danielle.home}/email" ];
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
-  services.logind.lidSwitch = "ignore"; # disable suspend on laptop lid close
+  services.logind.settings.Login.HandleLidSwitch = "ignore"; # disable suspend on laptop lid close
 
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "25.11";
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/alder/disk-config-btrfs-luks.nix"
-      "hosts/alder/hardware-configuration.nix"
+      "hosts/kauri/disk-config-btrfs-luks.nix"
+      "hosts/kauri/hardware-configuration.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
       "nixos-system/networking.nix"

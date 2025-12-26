@@ -32,7 +32,7 @@
                 type = "luks";
                 name = "crypted";
                 settings = {
-                  allowDiscards = true;
+                  allowDiscards = false;
                 };
                 passwordFile = "/tmp/crypt-passwd.txt"; # interactive login
                 content = {

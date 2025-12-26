@@ -256,9 +256,9 @@ in
           }
           {
             "Matrix" = {
-              href = "https://matrix.${configVars.domain2}/";
+              href = "https://matrix.${configVars.domain1}/";
               description = "Chat Server";
-              ping = "https://matrix.${configVars.domain2}";
+              ping = "https://matrix.${configVars.domain1}";
             };
           }
         ];
