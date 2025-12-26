@@ -50,11 +50,11 @@
   ];
 
   #backups.startTime = "*-*-* 01:05:00"; # everyday at 1:05am
-  #services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.users.users.chris.home}/email" ];
+  #services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.users.users.eric.home}/email" ];
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
-  services.logind.lidSwitch = "ignore"; # disable suspend on laptop lid close
+  services.logind.settings.Login.HandleLidSwitch = "ignore"; # disable suspend on laptop lid close
 
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "25.05";
