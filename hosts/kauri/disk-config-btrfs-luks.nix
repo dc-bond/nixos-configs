@@ -53,7 +53,7 @@
                     };
                     "/swap" = {
                       mountpoint = "/swap";
-                      swap.swapfile.size = "16G"; # double system memory
+                      swap.swapfile.size = "32G"; # double system memory
                     };
                   };
                 };

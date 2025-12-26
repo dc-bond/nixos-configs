@@ -44,6 +44,10 @@ in
               targets = [ "${configVars.hosts.alder.networking.tailscaleIp}:9100" ];
               labels.host = "alder";
             }
+            {
+              targets = [ "${configVars.hosts.kauri.networking.tailscaleIp}:9100" ];
+              labels.host = "kauri";
+            }
           ];
         }
         {
@@ -64,6 +68,10 @@ in
             {
               targets = [ "${configVars.hosts.alder.networking.tailscaleIp}:9633" ];
               labels.host = "alder";
+            }
+            {
+              targets = [ "${configVars.hosts.kauri.networking.tailscaleIp}:9633" ];
+              labels.host = "kauri";
             }
           ];
         }
@@ -99,6 +107,10 @@ in
             {
               targets = [ "127.0.0.1:7541" ];
               labels.host = config.networking.hostName;
+            }
+            {
+              targets = [ "${configVars.hosts.juniper.networking.tailscaleIp}:7541" ];
+              labels.host = "juniper";
             }
           ];
         }

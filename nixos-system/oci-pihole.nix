@@ -70,43 +70,48 @@ let
   '';
 
   customDnsEntries = [
+    # aspen base hostnames
     "address=/aspen.${configVars.domain1}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/aspen.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    # juniper base hostname
     "address=/juniper-tailscale.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
-  ]; 
-  
+    # aspen services - use direct a records instead of CNAMEs for better resolver compatibility
+    "address=/lldap.${configVars.domain1}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/actual.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/bond-ledger.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/calibre-web.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/chris-workouts.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/danielle-workouts.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/finplanner.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/frigate.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/grafana.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/home-assistant.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/jellyfin.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/jellyseerr.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/librechat.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/n8n.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/photos.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/pihole-aspen.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/prowlarr.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/radarr.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/recipesage.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/sabnzbd.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/search.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/sonarr.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/stirling-pdf.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/traefik-aspen.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/unifi.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/weekly-recipes.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/zwavejs.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    # juniper services
+    "address=/pihole-juniper.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
+    "address=/traefik-juniper.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
+    "address=/vaultwarden.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
+    "address=/homepage.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
+  ];
+
   customCnameEntries = [
-    "cname=lldap.${configVars.domain1},aspen.${configVars.domain1}"
-    "cname=actual.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=bond-ledger.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=calibre-web.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=chris-workouts.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=danielle-workouts.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=finplanner.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=frigate.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=grafana.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=home-assistant.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=jellyfin.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=jellyseerr.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=librechat.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=n8n.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=photos.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=pihole-aspen.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=prowlarr.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=radarr.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=recipesage.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=sabnzbd.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=search.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=sonarr.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=stirling-pdf.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=traefik-aspen.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=unifi.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=weekly-recipes.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=zwavejs.${configVars.domain2},aspen.${configVars.domain2}"
-    "cname=pihole-juniper.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
-    "cname=traefik-juniper.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
-    "cname=vaultwarden.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
-    "cname=homepage.${configVars.domain2},juniper-tailscale.${configVars.domain2}"
+    # No CNAMEs needed - using direct A records above for better compatibility
   ];
   
   piholeAdlists = [

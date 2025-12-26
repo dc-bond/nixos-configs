@@ -682,7 +682,10 @@ let
       cd /
       ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
     fi
-    
+
+    # ensure we're in a valid directory for database operations
+    cd /
+
     # drop and recreate database if postgres
     ${lib.optionalString (dbType == "postgresql") ''
       echo "Dropping and recreating PostgreSQL database ${recoveryPlan.db.name} ..."

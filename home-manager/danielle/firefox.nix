@@ -1,9 +1,9 @@
-{
+{ 
   inputs,
   config,
-  pkgs,
-  ...
-}:
+  pkgs, 
+  ... 
+}: 
 
 let
   firefox-addons = inputs.firefox-addons.packages.${pkgs.stdenv.hostPlatform.system};
@@ -14,7 +14,7 @@ in
 
   programs.firefox = {
     enable = true;
-    package = pkgs.pkgs-2505.firefox-esr; # pinned to 25.05 because of bug
+    package = pkgs.firefox-esr;
     profiles = {
       default = {
         id = 0;
@@ -118,8 +118,7 @@ in
         Locked = true;
       };
       Preferences = {
-        "browser.startup.page" = 1; # 0 = blank, 1 = home, 3 = restore previous session
-        "browser.startup.homepage" = "https://homepage.opticon.dev";
+        "browser.startup.homepage" = "https://search.opticon.dev";
         "browser.urlbar.suggest.quicksuggest.sponsored" = false;
         "browser.urlbar.suggest.openpage" = false;
         "browser.urlbar.suggest.recentsearches" = false;

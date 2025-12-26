@@ -18,6 +18,7 @@ let
     thinkpad = "Hyprland";
     cypress = "Hyprland";
     alder = "labwc";
+    kauri = "labwc";
   };
   defaultCmd = defaultCmdByHost.${config.networking.hostName} or "zsh";
 in
