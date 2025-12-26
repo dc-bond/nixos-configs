@@ -44,7 +44,7 @@ let
       ${userAgeSetup}
       
       # move to host directory
-      cd "$HOME/nixos-configs/hosts/${hostname}"
+      cd "$HOME/nextcloud-client/Personal/nixos/nixos-configs/hosts/${hostname}"
       
       # build the nixos-anywhere command
       nix run github:nix-community/nixos-anywhere -- \

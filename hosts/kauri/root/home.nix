@@ -32,6 +32,6 @@ in
   };
 
 # original home state version - defines the first version of home-manager installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
-  home.stateVersion = "25.15";
+  home.stateVersion = "25.11";
 
 }
