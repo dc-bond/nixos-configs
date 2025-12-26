@@ -231,6 +231,9 @@ in
           <item label="File Manager">
             <action name="Execute" command="thunar" />
           </item>
+          <item label="Office Suite">
+            <action name="Execute" command="libreoffice" />
+          </item>
           <separator />
           <item label="Reload Wallpaper">
             <action name="Execute" command="desktopReload" />
@@ -265,6 +268,8 @@ in
         swww-daemon &
         sleep 1
         desktopReload
+        sleep 1
+        nextcloud
       '';
       executable = true;
     }; 
