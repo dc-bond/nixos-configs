@@ -101,6 +101,11 @@ in
       HttpsOnlyMode = "force_enabled";
       DontCheckDefaultBrowser = true;
       HardwareAcceleration = true; # enabling exposes points for fingerprinting?
+      Homepage = {
+        URL = "https://homepage.opticon.dev";
+        Locked = true;
+        StartPage = "homepage";
+      };
       OfferToSaveLogins = false;
       AutofillAddressEnabled = false;
       AutofillCreditCardEnabled = false;
@@ -120,6 +125,8 @@ in
       Preferences = {
         "browser.startup.page" = 1; # 0 = blank, 1 = home, 3 = restore previous session
         "browser.startup.homepage" = "https://homepage.opticon.dev";
+        "browser.newtabpage.enabled" = true;
+        "browser.startup.homepage_override.mstone" = "ignore"; # Prevent "What's New" page overrides
         "browser.urlbar.suggest.quicksuggest.sponsored" = false;
         "browser.urlbar.suggest.openpage" = false;
         "browser.urlbar.suggest.recentsearches" = false;
