@@ -312,13 +312,13 @@
       };
     };
     
-    pihole-test = {
-      subnet = "172.21.2.0/25";
-      containers = {
-        pihole-test = { ipv4 = "172.21.2.2"; };
-        unbound-test = { ipv4 = "172.21.2.3"; };
-      };
-    };
+    #null = {
+    #  subnet = "172.21.2.0/25";
+    #  containers = {
+    #    null = { ipv4 = "172.21.2.2"; };
+    #    null = { ipv4 = "172.21.2.3"; };
+    #  };
+    #};
     
     unifi = {
       subnet = "172.21.3.0/25";

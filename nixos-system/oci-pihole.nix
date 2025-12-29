@@ -75,7 +75,7 @@ let
     "address=/aspen.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     # juniper base hostname
     "address=/juniper-tailscale.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
-    # aspen services - use direct a records instead of CNAMEs for better resolver compatibility
+    # aspen services - use direct A records instead of CNAMEs for better resolver compatibility
     "address=/lldap.${configVars.domain1}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/actual.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/bond-ledger.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
