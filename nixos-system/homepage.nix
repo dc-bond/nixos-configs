@@ -22,10 +22,16 @@ in
       favicon = "https://gethomepage.dev/img/favicon.ico";
       headerStyle = "boxed";
       statusStyle = "basic";
+      theme = "dark";
+      color = "slate";
+      hideVersion = true;
+      disableCollapse = false;
+      hideThemeToggle = true;
+      hideReload = true;
       layout = {
         "Services" = {
           style = "row";
-          columns = 4;
+          columns = 5;
         };
       };
     };
@@ -127,14 +133,14 @@ in
           {
             "Sabnzbd" = {
               href = "https://sabnzbd.${configVars.domain2}/";
-              description = "Usenet Downloader";
+              description = "Downloader";
               ping = "https://sabnzbd.${configVars.domain2}";
             };
           }
           {
             "Prowlarr" = {
               href = "https://prowlarr.${configVars.domain2}/";
-              description = "Indexer Manager";
+              description = "Indexer Management";
               ping = "https://prowlarr.${configVars.domain2}";
             };
           }
@@ -254,155 +260,6 @@ in
       }
     ];
 
-    bookmarks = [
-      {
-        "Development & Tech" = [
-          {
-            "GitHub" = [
-              {
-                href = "https://github.com";
-              }
-            ];
-          }
-        ];
-      }
-      {
-        "NixOS Resources" = [
-          {
-            "Package Search" = [
-              {
-                href = "https://search.nixos.org/packages";
-              }
-            ];
-          }
-          {
-            "Home Manager Options" = [
-              {
-                href = "https://home-manager-options.extranix.com/";
-              }
-            ];
-          }
-          {
-            "Nix Versions" = [
-              {
-                href = "https://lazamar.co.uk/nix-versions/";
-              }
-            ];
-          }
-          {
-            "NixOS Manual" = [
-              {
-                href = "https://nixos.org/manual/nixos/stable/";
-              }
-            ];
-          }
-        ];
-      }
-      {
-        "Tools & Security" = [
-          {
-            "IP Leak" = [
-              {
-                href = "https://ipleak.net/";
-              }
-            ];
-          }
-          {
-            "Mozilla Observatory" = [
-              {
-                href = "https://observatory.mozilla.org/";
-              }
-            ];
-          }
-          {
-            "MX Toolbox" = [
-              {
-                href = "https://mxtoolbox.com/";
-              }
-            ];
-          }
-        ];
-      }
-      {
-        "Shopping" = [
-          {
-            "Amazon" = [
-              {
-                href = "https://www.amazon.com/";
-              }
-            ];
-          }
-          {
-            "eBay" = [
-              {
-                href = "https://www.ebay.com/";
-              }
-            ];
-          }
-        ];
-      }
-      {
-        "Financial" = [
-          {
-            "Capital One" = [
-              {
-                href = "https://verified.capitalone.com/sic-ui/#/esignin?Product=360Bank";
-              }
-            ];
-          }
-          {
-            "PNC Bank" = [
-              {
-                href = "https://www.pnc.com/en/personal-banking/banking/online-and-mobile-banking/online-banking.html";
-              }
-            ];
-          }
-          {
-            "Chase" = [
-              {
-                href = "https://secure01b.chase.com/web/auth/?fromOrigin=https://secure01b.chase.com#/logon/logon/chaseOnline";
-              }
-            ];
-          }
-          {
-            "Vanguard" = [
-              {
-                href = "https://investor.vanguard.com/home";
-              }
-            ];
-          }
-          {
-            "Empower (401k)" = [
-              {
-                href = "https://leidos.empower-retirement.com/participant/#/sfd-login?accu=Leidos";
-              }
-            ];
-          }
-          {
-            "Treasury Direct" = [
-              {
-                href = "https://www.treasurydirect.gov/indiv/myaccount/myaccount.htm";
-              }
-            ];
-          }
-          {
-            "Inspira HSA" = [
-              {
-                href = "https://www.mypayflex.com/SignIn/SignIn/Index/Member";
-              }
-            ];
-          }
-          {
-            "Optum Bank HSA" = [
-              {
-                href = "https://www.optumbank.com/";
-              }
-            ];
-          }
-        ];
-      }
-    ];
-
     widgets = [
       {
         greeting = {
@@ -412,19 +269,12 @@ in
       }
       {
         datetime = {
-          text_size = "lg";
+          text_size = "sm";
           format = {
             dateStyle = "full";
             timeStyle = "short";
             hour12 = true;
           };
-        };
-      }
-      {
-        search = {
-          provider = "custom";
-          target = "_blank";
-          url = "https://search.${configVars.domain2}/?q=";
         };
       }
     ];
@@ -436,8 +286,193 @@ in
     #  };
     #};
 
-    # customCSS = "";
-    # customJS = "";
+    customCSS = ''
+      :root {
+        --nord-polar-night-1: #2e3440;
+        --nord-polar-night-2: #3b4252;
+        --nord-polar-night-3: #434c5e;
+        --nord-polar-night-4: #4c566a;
+        --nord-snow-storm-1: #d8dee9;
+        --nord-snow-storm-2: #e5e9f0;
+        --nord-snow-storm-3: #eceff4;
+        --nord-frost-1: #8fbcbb;
+        --nord-frost-2: #88c0d0;
+        --nord-frost-3: #81a1c1;
+        --nord-frost-4: #5e81ac;
+        --nord-aurora-red: #bf616a;
+        --nord-aurora-orange: #d08770;
+        --nord-aurora-yellow: #ebcb8b;
+        --nord-aurora-green: #a3be8c;
+        --nord-aurora-purple: #b48ead;
+      }
+
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: var(--nord-polar-night-1);
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--nord-polar-night-4);
+        border-radius: 4px;
+        transition: background 0.3s ease;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--nord-frost-3);
+      }
+
+      /* Hide Services header */
+      .services-group h2 {
+        display: none !important;
+      }
+
+      /* Widgets */
+      .widget {
+        background: rgba(67, 76, 94, 0.5) !important;
+      }
+
+      /* Service Links */
+      .service a {
+        color: var(--nord-snow-storm-1) !important;
+        text-decoration: none !important;
+      }
+
+      .service-title {
+        font-weight: 500 !important;
+        color: var(--nord-snow-storm-2) !important;
+        transition: color 0.2s ease !important;
+      }
+
+      .service:hover .service-title {
+        color: var(--nord-frost-2) !important;
+      }
+
+      .service-description {
+        color: var(--nord-snow-storm-1) !important;
+        opacity: 0.6 !important;
+      }
+
+      /* Status Indicators with pulse */
+      .service-ping {
+        transition: all 0.3s ease !important;
+      }
+
+      .service-ping.online {
+        background: var(--nord-aurora-green) !important;
+        animation: pulse-green 2s ease-in-out infinite !important;
+      }
+
+      .service-ping.offline {
+        background: var(--nord-aurora-red) !important;
+      }
+
+      @keyframes pulse-green {
+        0%, 100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+        50% {
+          opacity: 0.7;
+          transform: scale(1.1);
+        }
+      }
+
+
+      /* Overall page subtle background */
+      body {
+        background: var(--nord-polar-night-1) !important;
+      }
+
+      /* Smooth transitions */
+      * {
+        transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1) !important;
+      }
+
+      /* Hide reload button */
+      button[aria-label="Refresh"],
+      button[title="Refresh"],
+      .refresh-button,
+      button[class*="refresh"],
+      button[class*="reload"],
+      [aria-label*="eload"],
+      [title*="eload"],
+      .fixed.bottom-0.right-0,
+      .fixed.bottom-2.right-2,
+      .fixed.bottom-4.right-4 {
+        display: none !important;
+      }
+
+      /* Matrix Rain Canvas */
+      #matrix-rain {
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        z-index: -1 !important;
+        pointer-events: none !important;
+      }
+    '';
+
+    customJS = ''
+      // Minimal Matrix Rain Effect
+      (function() {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'matrix-rain';
+        document.body.appendChild(canvas);
+
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        const fontSize = 14;
+        const columns = Math.floor(canvas.width / fontSize);
+        const drops = Array(columns).fill(1);
+
+        // Characters to use (mix of alphanumeric and some symbols)
+        const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+
+        function draw() {
+          // Semi-transparent black to create fade effect
+          ctx.fillStyle = 'rgba(46, 52, 64, 0.05)'; // Very subtle fade using Nord Polar Night
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+          // Set text style - using Nord Frost-2 color
+          ctx.fillStyle = 'rgba(136, 192, 208, 0.15)'; // Very low opacity for subtlety
+          ctx.font = fontSize + 'px monospace';
+
+          for (let i = 0; i < drops.length; i++) {
+            // Random character
+            const text = chars[Math.floor(Math.random() * chars.length)];
+            const x = i * fontSize;
+            const y = drops[i] * fontSize;
+
+            ctx.fillText(text, x, y);
+
+            // Reset drop randomly or when it reaches bottom
+            if (y > canvas.height && Math.random() > 0.975) {
+              drops[i] = 0;
+            }
+
+            drops[i]++;
+          }
+        }
+
+        // Slower animation for minimal effect (every 50ms instead of every frame)
+        setInterval(draw, 50);
+      })();
+    '';
+
     # environmentFile = null;
     allowedHosts = "homepage.${configVars.domain2}";
   };

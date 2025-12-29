@@ -39,7 +39,6 @@ in
   };
 
   imports = lib.flatten [
-    inputs.private.nixosModules.module-1
     (map configLib.relativeToRoot [
       "hosts/aspen/disk-config-btrfs.nix"
       "hosts/aspen/hardware-configuration.nix"
@@ -86,6 +85,7 @@ in
       "nixos-system/oci-chris-workouts.nix"
       "nixos-system/oci-danielle-workouts.nix"
       "nixos-system/oci-n8n.nix"
+      "nixos-system/oci-media-server.nix"
 
       "scripts/media-transfer.nix"
     ])
