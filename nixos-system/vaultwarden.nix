@@ -14,8 +14,8 @@ let
   appPort = 8222;
   recoveryPlan = {
     restoreItems = [
-      "/var/lib/bitwarden_rs"
-      "/var/backup/postgresql/vaultwarden.sql.gz"
+      "/var/lib/${app}"
+      "/var/backup/postgresql/${app}.sql.gz"
     ];
     db = {
       type = "postgresql";
@@ -46,11 +46,11 @@ in
         ROCKET_ADDRESS=127.0.0.1
         ROCKET_PORT=${toString appPort}
         ROCKET_LOG=critical
-        DATABASE_URL=postgresql://vaultwarden@/vaultwarden
+        DATABASE_URL=postgresql://${app}@/${app}
         SIGNUPS_ALLOWED=false
         SMTP_HOST=${configVars.mailservers.namecheap.smtpHost}
         SMTP_FROM=${configVars.users.chris.email}
-        SMTP_FROM_NAME=vaultwarden
+        SMTP_FROM_NAME=${app}
         SMTP_SECURITY=starttls
         SMTP_PORT=${toString configVars.mailservers.namecheap.smtpPort}
         SMTP_USERNAME=${configVars.users.chris.email}
@@ -74,7 +74,7 @@ in
     preHook = lib.mkAfter [
       "systemctl stop ${app}.service"
       "sleep 2"
-      "systemctl start postgresqlBackup-vaultwarden.service"
+      "systemctl start postgresqlBackup-${app}.service"
     ];
     postHook = lib.mkAfter [
       "systemctl start ${app}.service"
@@ -91,16 +91,16 @@ in
     };
 
     postgresql = {
-      ensureDatabases = [ "vaultwarden" ];
+      ensureDatabases = [ "${app}" ];
       ensureUsers = [
         {
-          name = "vaultwarden";
+          name = "${app}";
           ensureDBOwnership = true;
         }
       ];
     };
 
-    postgresqlBackup.databases = [ "vaultwarden" ];
+    postgresqlBackup.databases = [ "${app}" ];
     
     borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
     
