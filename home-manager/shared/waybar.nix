@@ -13,6 +13,20 @@ let
   hasWifi = hostData.networking.wifiInterface != null;
   hasDock = hostData.networking.dockInterface != null;
   hasEthernet = hostData.networking.ethernetInterface != null;
+
+  weatherScript = pkgs.writeShellScript "waybar-weather" ''
+    CACHE_FILE="''${XDG_CACHE_HOME:-$HOME/.cache}/waybar-weather.txt"
+    CACHE_MAX_AGE=3600  # consider cache stale after 1 hour
+    WEATHER=$(${pkgs.curl}/bin/curl -s --max-time 5 --retry 2 --retry-delay 1 'wttr.in/?format=%c+%t&u' 2>/dev/null)
+    if [ -n "$WEATHER" ] && [ "$WEATHER" != "Unknown location; please try ~"* ]; then
+      echo "$WEATHER" > "$CACHE_FILE"
+      echo "$WEATHER"
+    elif [ -f "$CACHE_FILE" ]; then
+      cat "$CACHE_FILE"
+    else
+      echo "?"
+    fi
+  '';
 in
 
 {
@@ -101,7 +115,7 @@ in
       "custom/weather" = {
         "format" = "{} ";
         "interval" = 1800;  # update every 30 minutes
-        "exec" = "${pkgs.curl}/bin/curl -s --max-time 5 --retry 3 --retry-delay 2 'wttr.in/?format=%c+%t' || echo '?'";
+        "exec" = "${weatherScript}";
         "return-type" = "";
         "on-click" = "${pkgs.alacritty}/bin/alacritty -e zsh -c 'curl wttr.in; read -k 1 \"?Press any key to continue...\"; exec zsh'";
         "tooltip-format" = "Outside Weather";
@@ -491,12 +505,25 @@ in
           background: linear-gradient(135deg, rgba(0, 255, 0, 0.15) 0%, rgba(0, 255, 0, 0.05) 100%);
           border: 1px solid rgba(0, 255, 0, 0.3);
       }
-      
+
+      #bluetooth.connected:hover {
+          background: linear-gradient(135deg, @color11 0%, @color1 100%);
+          border: 1px solid @color11;
+          box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+      }
+
       #bluetooth.off,
       #bluetooth.disabled {
           color: #77767b;
           background: linear-gradient(135deg, rgba(119, 118, 123, 0.08) 0%, rgba(119, 118, 123, 0.04) 100%);
           border: 1px solid rgba(119, 118, 123, 0.2);
+      }
+
+      #bluetooth.off:hover,
+      #bluetooth.disabled:hover {
+          background: linear-gradient(135deg, @color11 0%, @color1 100%);
+          border: 1px solid @color11;
+          box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
       }
       
       /* ===== NETWORK ===== */

@@ -1,10 +1,9 @@
-dashboard w/monitoring
 vaultwarden
 mailserver
 drives/bcachefs
 
-Bug checks 25.11 - 
+Bug checks 25.11 - Feb 2026
 
-firefox/cups issue
-lldap
-docker labels media-server
+firefox/cups issue - see if cups version fixed
+lldap - env vars broken
+docker labels media-server - busted to all hell

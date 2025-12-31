@@ -25,9 +25,16 @@ let
   ++ lib.optional (defaultExitNodeIp != null)
       "--exit-node=${defaultExitNodeIp}";
   tailscaleUpScript = pkgs.writeShellScript "tailscale-up" ''
-    ${pkgs.systemd}/bin/systemctl restart tailscaled.service
-    sleep 2
-    ${pkgs.tailscale}/bin/tailscale up ${lib.concatStringsSep " " upFlags}
+    STATUS=$(${pkgs.tailscale}/bin/tailscale status --json 2>/dev/null | ${pkgs.jq}/bin/jq -r '.BackendState // "Stopped"')
+    if [[ "$STATUS" == "NeedsLogin" ]] || [[ "$STATUS" == "NeedsMachineAuth" ]] || [[ "$STATUS" == "Stopped" ]]; then
+      echo "Tailscale needs authentication (State: $STATUS), restarting and authenticating..."
+      ${pkgs.systemd}/bin/systemctl restart tailscaled.service
+      sleep 2
+      ${pkgs.tailscale}/bin/tailscale up --auth-key="$(cat ${config.sops.secrets."${config.networking.hostName}TailscaleAuthKey".path})" ${lib.concatStringsSep " " upFlags}
+    else
+      echo "Tailscale already running (State: $STATUS), updating configuration..."
+      ${pkgs.tailscale}/bin/tailscale up ${lib.concatStringsSep " " upFlags}
+    fi
   '';
 in
 
@@ -46,7 +53,7 @@ in
 
   services.tailscale = {
     enable = true;
-    authKeyFile = config.sops.secrets."${config.networking.hostName}TailscaleAuthKey".path;
+    #authKeyFile = config.sops.secrets."${config.networking.hostName}TailscaleAuthKey".path; # remove to prevent autoconnect service from being created
     useRoutingFeatures = if isExitNode then "server" else "client";
     extraDaemonFlags = [ "--no-logs-no-support" ];
     extraUpFlags = upFlags;

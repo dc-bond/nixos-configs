@@ -46,10 +46,9 @@ in
     };
   };
 
-  systemd.services.systemd-networkd-wait-online.enable = lib.mkForce false;
-  
   systemd.network = {
     enable = true;
+    wait-online.enable = false; # disables network-online.target; nothing seems to depend on it...
     networks = {
       "05-loopback" = {
         matchConfig.Name = "lo";
