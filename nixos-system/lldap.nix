@@ -129,16 +129,15 @@ in
       };
     };
 
-    #authelia.instances."${configVars.domain1Short}".settings.access_control.rules = [
-    #  {
-    #    domain = [ "${app}.${configVars.domain1}" ];
-    #    subject = [ # only allow the following users to access lldap and only require one factor
-    #      "user:admin"
-    #      "user:danielle-bond"
-    #    ];
-    #    policy = "one_factor";
-    #  }
-    #];
+    authelia.instances."${configVars.domain1Short}".settings.access_control.rules = [
+      {
+        domain = [ "${app}.${configVars.domain1}" ];
+        subject = [ # only allow the following users to access lldap and only require one factor
+          "user:admin"
+        ];
+        policy = "one_factor";
+      }
+    ];
 
   };
 

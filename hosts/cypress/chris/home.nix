@@ -19,10 +19,10 @@ in
       "home-manager/shared/sops.nix"
       "home-manager/shared/starship.nix"
       "home-manager/shared/neovim.nix"
-      "home-manager/shared/pass.nix"
       "home-manager/shared/zsh.nix"
 
       "home-manager/${username}/git.nix"
+      "home-manager/${username}/pass.nix"
       "home-manager/${username}/gnupg.nix"
       "home-manager/${username}/ssh.nix"
       "home-manager/${username}/zsh.nix"
@@ -30,9 +30,9 @@ in
     ])
   ];
   
-  home.packages = with pkgs; [
-    (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
-  ];
+  #home.packages = with pkgs; [
+  #  (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
+  #];
 
   programs.home-manager.enable = true; # enable home manager
 
