@@ -12,7 +12,7 @@
 {
   
   config = {
-    
+
     networking.hostName = "thinkpad";
 
     environment.systemPackages = with pkgs; [
@@ -49,6 +49,7 @@
     (map configLib.relativeToRoot [
       "hosts/thinkpad/disk-config-btrfs-luks.nix"
       "hosts/thinkpad/hardware-configuration.nix"
+      #"hosts/thinkpad/impermanence.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
       "nixos-system/rebuilds.nix"
