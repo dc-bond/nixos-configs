@@ -30,10 +30,7 @@
       url = "github:dc-bond/finplanner";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    impermanence = {
-      url = "github:nix-community/impermanence";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    impermanence.url = "github:nix-community/impermanence";
     private.url = "git+file:../nixos-configs-private?ref=main";
   };
 

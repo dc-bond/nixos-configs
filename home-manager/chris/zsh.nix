@@ -17,6 +17,14 @@
         echo "launching LibreWolf..."
         librewolf --private-window "https://ipleak.net" "$@"
       }
+      ssh-temp() {
+        if [ -z "$1" ]; then
+          echo "Usage: ssh-temp [user@]host"
+          echo "Temporarily SSH to a host, bypassing declarative known_hosts"
+          return 1
+        fi
+        ssh -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "$@"
+      }
     '';
     shellAliases = {
     } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {

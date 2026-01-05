@@ -35,20 +35,21 @@
   };
   
   # rb() - rebuild any host's configuration, available to all users in interactive zsh shells
+  # rbl() - rebuild local (no distributed builds) for when tailscale is down
   programs.zsh.interactiveShellInit = ''
     rb() {
       local selected_host
       local available_hosts
       local flake_dir="$HOME/nextcloud-client/Personal/nixos/nixos-configs"
-      
+
       # get list of hosts from flake
       available_hosts=($(nix eval "$flake_dir#nixosConfigurations" --apply 'builtins.attrNames' --json 2>/dev/null | ${pkgs.jq}/bin/jq -r '.[]'))
-      
+
       if [ ''${#available_hosts[@]} -eq 0 ]; then
         echo "Error: Could not find any hosts in flake"
         return 1
       fi
-      
+
       # select host (interactive or argument)
       if [ $# -eq 0 ]; then
         echo "Available hosts:"
@@ -65,27 +66,27 @@
           return 1
         fi
       fi
-      
+
       # show current branch
       echo "→ Building from branch: $(git -C "$flake_dir" branch --show-current 2>/dev/null || echo 'unknown')"
-      
+
       # local rebuild
       if [ "$selected_host" = "$(hostname)" ]; then
         echo "→ Rebuilding local host $selected_host..."
         sudo nixos-rebuild switch --flake "$flake_dir#$selected_host"
         return $?
       fi
-      
+
       # find connection for remote host
       local ssh_target=""
-      
+
       echo "→ Attempting Tailscale connection ($selected_host-tailscale)..."
       if ssh -o ConnectTimeout=5 -o BatchMode=yes "$selected_host-tailscale" exit 2>/dev/null; then
         ssh_target="$selected_host-tailscale"
         echo "✓ Connected via Tailscale"
       else
         local ssh_port=$(nix eval "$flake_dir#configVars.hosts.$selected_host.networking.sshPort" 2>/dev/null)
-        
+
         if [ "$ssh_port" != "null" ] && [ -n "$ssh_port" ]; then
           echo "→ Tailscale failed, trying regular SSH ($selected_host:$ssh_port)..."
           if ssh -o ConnectTimeout=5 -o BatchMode=yes "$selected_host" exit 2>/dev/null; then
@@ -100,7 +101,7 @@
           return 1
         fi
       fi
-      
+
       # remote rebuild
       echo "→ Rebuilding $selected_host..."
       nixos-rebuild switch \
@@ -108,6 +109,14 @@
         --target-host "$ssh_target" \
         --sudo \
         --ask-sudo-password
+    }
+
+    rbl() {
+      local flake_dir="$HOME/nextcloud-client/Personal/nixos/nixos-configs"
+      local current_host="$(hostname)"
+      echo "→ Building from branch: $(git -C "$flake_dir" branch --show-current 2>/dev/null || echo 'unknown')"
+      echo "→ Rebuilding local host $current_host (no distributed builds)..."
+      sudo nixos-rebuild switch --flake "$flake_dir#$current_host" --option builders ""
     }
   '';
 

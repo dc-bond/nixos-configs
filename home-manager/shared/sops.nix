@@ -1,9 +1,9 @@
-{ 
-  config, 
+{
+  config,
   configLib,
   configVars,
-  ... 
-}: 
+  ...
+}:
 
 {
 

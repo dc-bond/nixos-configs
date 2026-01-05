@@ -16,13 +16,17 @@ let
       users = hostConfig.users;
       ipv4 = hostConfig.networking.ipv4;
       useDiskEncryption = hostConfig.hardware.diskEncryption or false;
-      
+      usesImpermanence = hostConfig.usesImpermanence or false;
+
+      # paths depend on whether host uses impermanence to ensure age keys are deployed to persistent storage on installation; bind mounts (early and via impermanence module tooling) in impermanence.nix make keys available where sops expects them at runtime
+      etcAgePath = if usesImpermanence then "persist/etc/age" else "etc/age";
+      homeBasePath = if usesImpermanence then "persist/home" else "home";
+
       # generate age key setup commands for all users
       userAgeSetup = lib.concatMapStringsSep "\n" (user: ''
-        # Setup age key for ${user}
-        install -d -m700 "$temp/home/${user}/.config/age"
-        pass users/${user}/age/private > "$temp/home/${user}/.config/age/${user}-age.key"
-        chmod 600 "$temp/home/${user}/.config/age/${user}-age.key"
+        install -d -m700 "$temp/${homeBasePath}/${user}/.config/age"
+        pass users/${user}/age/private > "$temp/${homeBasePath}/${user}/.config/age/${user}-age.key"
+        chmod 600 "$temp/${homeBasePath}/${user}/.config/age/${user}-age.key"
       '') users;
       
     in pkgs.writeShellScriptBin "deploy-${hostname}" ''
@@ -31,29 +35,34 @@ let
       
       echo "Deploying ${hostname} to ${ipv4}..."
       ${lib.optionalString useDiskEncryption ''echo "Using disk encryption for this host..."''}
-      
+      ${lib.optionalString usesImpermanence ''echo "Using impermanence architecture for this host..."''}
+
       # create a temporary directory
       temp=$(mktemp -d)
       trap "rm -rf $temp" EXIT
-      
+
       # setup system age key
-      install -d -m755 "$temp/etc/age"
-      pass hosts/${hostname}/age/private > "$temp/etc/age/${hostname}-age.key"
-      chmod 600 "$temp/etc/age/${hostname}-age.key"
-      
+      install -d -m755 "$temp/${etcAgePath}"
+      pass hosts/${hostname}/age/private > "$temp/${etcAgePath}/${hostname}-age.key"
+      chmod 600 "$temp/${etcAgePath}/${hostname}-age.key"
+
+      # setup user age key(s)
       ${userAgeSetup}
       
       # move to host directory
       cd "$HOME/nextcloud-client/Personal/nixos/nixos-configs/hosts/${hostname}"
       
-      # build the nixos-anywhere command
+      # build the nixos-anywhere command, bypass declarative knownHosts to allow deployment to fresh installation ISOs
       nix run github:nix-community/nixos-anywhere -- \
         --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
         ${lib.optionalString useDiskEncryption ''--disk-encryption-keys /tmp/crypt-passwd.txt <(pass hosts/${hostname}/disk-encryption-passwd) \''}
         --extra-files "$temp" \
-        ${lib.concatMapStringsSep " \\\n  " (user: 
-          ''--chown /home/${user} ${toString configVars.users.${user}.uid}:100''
+        ${lib.concatMapStringsSep " \\\n  " (user:
+          ''--chown /${homeBasePath}/${user} ${toString configVars.users.${user}.uid}:100''
         ) users} \
+        --ssh-option StrictHostKeyChecking=no \
+        --ssh-option UserKnownHostsFile=/dev/null \
+        --ssh-option GlobalKnownHostsFile=/dev/null \
         --flake '.#${hostname}' \
         root@${ipv4}
       

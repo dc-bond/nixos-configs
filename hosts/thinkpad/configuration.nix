@@ -21,6 +21,7 @@
       dig # dns lookup tool
       wget # download tool
       rsync # sync tool
+      jq # json parser tool
       usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
       nix-tree # table view of package dependencies
       ethtool # network tools
@@ -41,7 +42,7 @@
     services.logind.settings.Login.HandleLidSwitch = "ignore"; # disable suspend on laptop lid close
 
     # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
-    system.stateVersion = "23.11";
+    system.stateVersion = "25.11";
 
   };
 
@@ -49,7 +50,7 @@
     (map configLib.relativeToRoot [
       "hosts/thinkpad/disk-config-btrfs-luks.nix"
       "hosts/thinkpad/hardware-configuration.nix"
-      #"hosts/thinkpad/impermanence.nix"
+      "hosts/thinkpad/impermanence.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
       "nixos-system/rebuilds.nix"

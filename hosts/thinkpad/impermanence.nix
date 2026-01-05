@@ -1,41 +1,30 @@
-{ 
-  inputs, 
-  config, 
+{
+  inputs,
+  config,
   lib,
-  ... 
-}: 
+  ...
+}:
 
 {
 
   imports = [ inputs.impermanence.nixosModules.impermanence ];
 
-  # wipe / on boot, keep snapshots for 30 days
-  boot.initrd.postDeviceCommands = lib.mkAfter ''
-    mkdir /btrfs_tmp
-    mount -o subvol=/ /dev/mapper/crypted /btrfs_tmp
-    if [[ -e /btrfs_tmp/root ]]; then
-        mkdir -p /btrfs_tmp/old_roots
-        timestamp=$(date --date="@$(stat -c %Y /btrfs_tmp/root)" "+%Y-%m-%d_%H:%M:%S")
-        mv /btrfs_tmp/root "/btrfs_tmp/old_roots/$timestamp"
-    fi
-
-    delete_subvolume_recursively() {
-        IFS=$'\n'
-        for i in $(btrfs subvolume list -o "$1" | cut -f 9- -d ' '); do
-            delete_subvolume_recursively "/btrfs_tmp/$i"
-        done
-        btrfs subvolume delete "$1"
-    }
-
-    for i in $(find /btrfs_tmp/old_roots/ -maxdepth 1 -mtime +30); do
-        delete_subvolume_recursively "$i"
-    done
-
-    btrfs subvolume create /btrfs_tmp/root
-    umount /btrfs_tmp
-  '';
+  # tmpfs root - ephemeral in ram, automatically cleared on boot
+  fileSystems."/" = {
+    device = "none";
+    fsType = "tmpfs";
+    options = [ "defaults" "size=2G" "mode=755" ];
+  };
 
   fileSystems."/persist".neededForBoot = true;
+
+  # early bind mount for system age key - must happen before SOPS activation so we do this manually here instead of via impermanence module tooling below (which occurs after sops needs age decryption keys later in boot sequence)
+  fileSystems."/etc/age" = {
+    device = "/persist/etc/age";
+    options = [ "bind" ];
+    neededForBoot = true;
+    depends = [ "/persist" ];
+  };
 
   environment.persistence."/persist" = {
 
@@ -43,37 +32,31 @@
 
     # system-level persistence
     directories = [
-      "/var/lib/nixos" # ensures UID/GID mappings stay stable across reboots
+      "/var/lib/nixos" # UID/GID mappings to prevent permissions issues on reboot
       "/var/lib/iwd" # wifi networks & passwords
-      "/var/lib/tailscale" # tailscale auth state
       "/var/lib/bluetooth"  # bluetooth pairings
-    ];
-    files = [
-      "/etc/machine-id" # stable machine ID required by systemd, journald, etc.
-      "/etc/age/thinkpad-age.key" # SOPS encryption key
-      "/etc/ssh/ssh_host_ed25519_key" # SSH server private key - stable identity for remote clients
-      "/etc/ssh/ssh_host_ed25519_key.pub" # SSH server public key (derived from private key)
+      "/var/lib/tailscale"  # tailscale node identity at /var/lib/tailscale/tailscaled.state after first tailnet connection using one-time authKey
     ];
 
     # user-level persistence
     users.chris = {
       directories = [
         { directory = ".local/share/keyrings"; mode = "0700"; } # gnome keyring secrets like nextcloud client login, etc.
-        { directory = ".config/age"; mode = "0700"; }
+        { directory = ".config/age"; mode = "0700"; } # user age key for home-manager SOPS
         "nextcloud-client" # local nextcloud directory
         ".mozilla" # firefox profiles
         ".config/Element" # matrix e2e keys
         ".config/Nextcloud" # nextcloud sync state
         ".config/VSCodium" # codium editor state, incl. manually-installed extensions not available in nixpkgs
       ];
-    };'
+    };
 
   };
 
   # create parent directories with correct permissions
   systemd.tmpfiles.rules = [
-    "d /persist/home/chris 0700 chris users -"
-    "d /persist/etc/age 0755 root root -"
+    "d /persist/home/chris 0700 chris users -" # tmpfiles ensures directory exists before impermanence tooling bind-mounts /persist/home/{user}/.config/age directory
+    #"d /persist/etc/age 0755 root root -" # since early bind mounting /etc/age manually (i.e. not using impermanence tooling bind mounts) due to sops needing age keys for user creation prior to impermanence bind mounts, tmpfiles not needed here (/etc/age created by deploy script initially)
   ];
   
 }

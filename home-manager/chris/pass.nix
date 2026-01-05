@@ -25,12 +25,12 @@
               ${pkgs.git}/bin/git clone git@github.com:dc-bond/.password-store.git "$PASS_DIR"
 
               # Set up post-commit hook for auto-sync
-              cat > "$PASS_DIR/.git/hooks/post-commit" << "HOOK_END"
-              #!/bin/sh
-              set -x
-              ${pkgs.git}/bin/git pull --rebase # get edits by other hosts
-              ${pkgs.git}/bin/git push # push the latest commit
-              HOOK_END
+              cat > "$PASS_DIR/.git/hooks/post-commit" <<- "HOOK_END"
+		#!/bin/sh
+		set -x
+		${pkgs.git}/bin/git pull --rebase # get edits by other hosts
+		${pkgs.git}/bin/git push # push the latest commit
+		HOOK_END
               chmod +x "$PASS_DIR/.git/hooks/post-commit"
               echo "Password-store cloned and configured successfully"
             fi

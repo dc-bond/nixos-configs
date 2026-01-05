@@ -48,7 +48,13 @@ in
 
   systemd.network = {
     enable = true;
-    wait-online.enable = false; # disables network-online.target; nothing seems to depend on it...
+    wait-online.enable = false; # disables network-online.target; can block boot entirely if no network connections exist at boot
+    #wait-online = {
+    #  enable = true;
+    #  anyInterface = true;  # only wait for any one interface, not all
+    #  timeout = 0;  # no timeout - wait indefinitely for at least one interface
+    #  ignoredInterfaces = [ "tailscale0" ];  # don't wait for tailscale interface
+    #};
     networks = {
       "05-loopback" = {
         matchConfig.Name = "lo";

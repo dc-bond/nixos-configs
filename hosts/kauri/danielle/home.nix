@@ -40,6 +40,11 @@ in
     documents = "${config.home.homeDirectory}/documents";
     desktop = null;
   };
+  
+  # ensure nextcloud-client directory exists
+  systemd.user.tmpfiles.rules = [
+    "d %h/nextcloud-client 0755 - - -"
+  ];
 
 # start/re-start services after system rebuild
   systemd.user.startServices = "sd-switch";
