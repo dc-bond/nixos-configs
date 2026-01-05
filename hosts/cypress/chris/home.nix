@@ -30,10 +30,6 @@ in
     ])
   ];
   
-  #home.packages = with pkgs; [
-  #  (import (configLib.relativeToRoot "scripts/get-pass-repo.nix") { inherit pkgs config; })
-  #];
-
   programs.home-manager.enable = true; # enable home manager
 
 # define username and home directory

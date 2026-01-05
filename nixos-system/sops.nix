@@ -1,11 +1,11 @@
-{ 
-  inputs, 
-  config, 
+{
+  inputs,
+  config,
   configLib,
   configVars,
   pkgs,
-  ... 
-}: 
+  ...
+}:
 
 {
 

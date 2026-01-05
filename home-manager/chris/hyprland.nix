@@ -98,6 +98,16 @@ in
     };
   };
 
+  # override element desktop entry to specify keyring backend
+  xdg.desktopEntries.element-desktop = {
+    name = "Element";
+    exec = "element-desktop --password-store=gnome-libsecret %u";
+    icon = "element";
+    type = "Application";
+    categories = [ "Network" "InstantMessaging" "Chat" ];
+    mimeType = [ "x-scheme-handler/element" ];
+  };
+
   systemd.user = {
     services.desktopReload = {
       Unit = {
