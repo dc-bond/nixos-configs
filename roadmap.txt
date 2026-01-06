@@ -1,6 +1,5 @@
-vaultwarden
 mailserver
-drives/bcachefs
+drives
 
 Bug checks 25.11 - Feb 2026
 

@@ -89,7 +89,7 @@
       usesImpermanence = false;
       networking = {
         sshPort = null; # only use tailscale ssh
-        sshPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHCzrXOgJLsYhDB+NQAK313SXvcVj8V0B4hmIjHX1b3s";
+        sshPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDKwzO4ZLlKqo8gjamhghmo9ZRIzQirrnw2LRbq94qNt root@kauri";
         useResolved = true;
         ethernetInterface = "enp0s31f6";
         wifiInterface = "wlan0";

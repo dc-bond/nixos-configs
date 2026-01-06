@@ -165,6 +165,8 @@ in
         "format" = "{percent}% {icon}";
         "format-icons" = ["󰛨"];
         "tooltip-format" = "Screen Brightness: {percent}%";
+        "on-scroll-up" = "${pkgs.brightnessctl}/bin/brightnessctl set +5%";
+        "on-scroll-down" = "${pkgs.brightnessctl}/bin/brightnessctl set 5%-";
       };
 
       "battery" = {

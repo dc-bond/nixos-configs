@@ -182,11 +182,11 @@ in
             <action name="Execute" command="rfkill toggle wlan" />
           </keybind>
 
-          <keybind key="A-F11">
+          <keybind key="F5">
             <action name="Execute" command="brightnessctl set 10%-" />
           </keybind>
-          
-          <keybind key="A-F12">
+
+          <keybind key="F6">
             <action name="Execute" command="brightnessctl set +10%" />
           </keybind>
           
