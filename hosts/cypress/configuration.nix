@@ -50,6 +50,7 @@
     (map configLib.relativeToRoot [
       "hosts/cypress/disk-config-btrfs.nix"
       "hosts/cypress/hardware-configuration.nix"
+      "hosts/cypress/impermanence.nix"
       "nixos-system/storage-drives.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"

@@ -118,7 +118,7 @@
       bootLoader = "systemd-boot";
       isMonitoringServer = false;
       windowManager = "hyprland";
-      usesImpermanence = false;
+      usesImpermanence = true;
       networking = {
         sshPort = null; # only use tailscale ssh
         sshPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAzRulWkTODGo7qfcwMt8jP3h9kwApc7aEoFiwTQstCL";
