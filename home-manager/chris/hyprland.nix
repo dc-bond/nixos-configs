@@ -68,8 +68,6 @@ in
       hyprshot # screenshot tool
       pwvucontrol # pipewire audio volume control app
       claude-code # terminal-based agentic coding assistant
-      rofi-pass # rofi integration for pass password manager
-      rofi-bluetooth # rofi bluetooth manager
     ];
     pointerCursor = {
       enable = true;
@@ -150,7 +148,6 @@ in
       bind = [
         "$mod, RETURN, exec, alacritty"
 	      "$mod, d, exec, rofi -show drun"
-        "$mod, p, exec, rofi-pass"
         "$mod, c, exec, rofi -show calc -modi calc -no-show-match -no-sort"
         "$mod, b, exec, rofi-bluetooth"
         "$mod, s, exec, ddcutil -d 1 setvcp D6 05 && systemctl suspend"

@@ -67,7 +67,6 @@ in
       nextcloud-client # nextcloud local syncronization client
       hyprshot # screenshot tool
       pwvucontrol # pipewire audio volume control app
-      rofi-bluetooth # rofi bluetooth manager
     ];
     pointerCursor = {
       enable = true;
