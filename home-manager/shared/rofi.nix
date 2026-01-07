@@ -8,6 +8,7 @@
 {
 
   home.packages = [
+    rofi-bluetooth # rofi bluetooth manager
     (pkgs.writeShellScriptBin "rofiPowerMenu" ''
       choice=$(printf "Lock\nSuspend\nLogout\nReboot\nShutdown" | ${pkgs.rofi}/bin/rofi -dmenu -i -p "Power Menu")
       
@@ -93,8 +94,8 @@
     };
     extraConfig = {
       #display-combi = "Combination Mode";
-      display-run = "Launch";
-      #display-drun = "Applications";
+      display-run = "Run Scripts";
+      display-drun = "Applications";
       display-ssh = "SSH";
     };
   };

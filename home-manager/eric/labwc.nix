@@ -62,12 +62,8 @@ in
       gnome-calculator # calculator
       loupe # image viewer
       zathura # barebones pdf viewer
-      #libreoffice-still # office suite
-      #element-desktop # matrix chat app
-      #nextcloud-client # nextcloud local syncronization client
       hyprshot # screenshot tool
       pwvucontrol # pipewire audio volume control app
-      rofi-bluetooth # rofi bluetooth manager
     ];
     pointerCursor = {
       enable = true;
