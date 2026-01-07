@@ -40,7 +40,9 @@
   
   programs.rofi = {
     enable = true;
-    package = pkgs.rofi;
+    package = pkgs.rofi.override {
+      plugins = [ pkgs.rofi-calc ];
+    };
     terminal = "${pkgs.alacritty}/bin/alacritty";
     font = "SauceCodePro Nerd Font 10";
     theme = 

@@ -53,18 +53,35 @@ let
       cd "$HOME/nextcloud-client/Personal/nixos/nixos-configs/hosts/${hostname}"
       
       # build the nixos-anywhere command, bypass declarative knownHosts to allow deployment to fresh installation ISOs
-      nix run github:nix-community/nixos-anywhere -- \
-        --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
-        ${lib.optionalString useDiskEncryption ''--disk-encryption-keys /tmp/crypt-passwd.txt <(pass hosts/${hostname}/disk-encryption-passwd) \''}
-        --extra-files "$temp" \
-        ${lib.concatMapStringsSep " \\\n  " (user:
-          ''--chown /${homeBasePath}/${user} ${toString configVars.users.${user}.uid}:100''
-        ) users} \
-        --ssh-option StrictHostKeyChecking=no \
-        --ssh-option UserKnownHostsFile=/dev/null \
-        --ssh-option GlobalKnownHostsFile=/dev/null \
-        --flake '.#${hostname}' \
-        root@${ipv4}
+      ${if useDiskEncryption
+        then ''
+          nix run github:nix-community/nixos-anywhere -- \
+            --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
+            --disk-encryption-keys /tmp/crypt-passwd.txt <(pass hosts/${hostname}/disk-encryption-passwd) \
+            --extra-files "$temp" \
+            ${lib.concatMapStringsSep " \\\n    " (user:
+              ''--chown /${homeBasePath}/${user} ${toString configVars.users.${user}.uid}:100''
+            ) users} \
+            --ssh-option StrictHostKeyChecking=no \
+            --ssh-option UserKnownHostsFile=/dev/null \
+            --ssh-option GlobalKnownHostsFile=/dev/null \
+            --flake '.#${hostname}' \
+            root@${ipv4}
+        ''
+        else ''
+          nix run github:nix-community/nixos-anywhere -- \
+            --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
+            --extra-files "$temp" \
+            ${lib.concatMapStringsSep " \\\n    " (user:
+              ''--chown /${homeBasePath}/${user} ${toString configVars.users.${user}.uid}:100''
+            ) users} \
+            --ssh-option StrictHostKeyChecking=no \
+            --ssh-option UserKnownHostsFile=/dev/null \
+            --ssh-option GlobalKnownHostsFile=/dev/null \
+            --flake '.#${hostname}' \
+            root@${ipv4}
+        ''
+      }
       
       echo "Deployment of ${hostname} complete!"
     '';
