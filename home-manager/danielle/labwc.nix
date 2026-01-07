@@ -67,6 +67,7 @@ in
       nextcloud-client # nextcloud local syncronization client
       hyprshot # screenshot tool
       pwvucontrol # pipewire audio volume control app
+      rofi-bluetooth # rofi bluetooth manager
     ];
     pointerCursor = {
       enable = true;
@@ -163,9 +164,17 @@ in
           </keybind>
           
           <keybind key="A-d">
-            <action name="Execute" command="rofi -modes run,ssh -show run" />
+            <action name="Execute" command="rofi -show drun" />
           </keybind>
-          
+
+          <keybind key="A-b">
+            <action name="Execute" command="rofi-bluetooth" />
+          </keybind>
+
+          <keybind key="A-c">
+            <action name="Execute" command="rofi -show calc -modi calc -no-show-match -no-sort" />
+          </keybind>
+
           <keybind key="A-q">
             <action name="Close" />
           </keybind>
