@@ -78,6 +78,7 @@
       
       "nixos-system/greetd.nix"
       "nixos-system/labwc.nix"
+      "nixos-system/wayvnc.nix"
     ])
   ];
 

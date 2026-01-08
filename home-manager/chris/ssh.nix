@@ -65,6 +65,16 @@
         user = "danielle";
         port = 22;
       };
+      "kauri-vnc" = {
+        hostname = configVars.hosts.kauri.networking.tailscaleIp;
+        user = "danielle";
+        port = 22;
+        localForwards = [{
+          bind.port = 5900;
+          host.address = "127.0.0.1";
+          host.port = 5900;
+        }];
+      };
       "unifi-usg" = {
         hostname = configVars.devices.unifiUsg.ipv4;
         user = "dcbond";

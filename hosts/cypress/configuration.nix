@@ -34,7 +34,6 @@
       brightnessctl # screen brightness application
       ddcutil # query and change monitor settings using DDC/CI and USB
       i2c-tools # hardware interface tools required by ddcutil
-      #remmina # remote desktop tool
     ];
     
     hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality

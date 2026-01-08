@@ -25,6 +25,16 @@
         fi
         ssh -o GlobalKnownHostsFile=/dev/null -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no "$@"
       }
+      kauri-desktop() {
+        echo "Connecting to kauri's desktop via VNC..."
+        echo "Opening SSH tunnel to kauri (port 5900)..."
+        ssh -f -N kauri-vnc && \
+        sleep 1 && \
+        echo "Launching VNC viewer..." && \
+        vncviewer localhost:5900
+        # Kill the SSH tunnel after VNC session ends
+        pkill -f "ssh.*kauri-vnc"
+      }
     '';
     shellAliases = {
     } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {
