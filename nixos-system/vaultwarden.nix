@@ -42,12 +42,13 @@ in
     };
     templates = {
       "${app}-env".content = ''
-        DOMAIN=https://${app}.${configVars.domain2}
+        DOMAIN=https://${app}.${configVars.domain1}
         ROCKET_ADDRESS=127.0.0.1
         ROCKET_PORT=${toString appPort}
         ROCKET_LOG=critical
         DATABASE_URL=postgresql://${app}@/${app}
         SIGNUPS_ALLOWED=false
+        WEBSOCKET_ENABLED=true
         SMTP_HOST=${configVars.mailservers.namecheap.smtpHost}
         SMTP_FROM=${configVars.users.chris.email}
         SMTP_FROM_NAME=${app}
@@ -58,8 +59,8 @@ in
         SMTP_TIMEOUT=15
         SMTP_EMBED_IMAGES=true
         SMTP_AUTH_MECHANISM=Login
-        ADMIN_TOKEN=$argon2id$v=19$m=65540,t=3,p=4$TkZqT1Zpb3dnQ0hKcG10RjZOUFZHWTZFOVhlTFk3bVNNYlM0bFdHb3kzZz0$fzWizVbndJKOqEeuQ9GKNyorXZVe7rloQBKn4VEKiu4
       '';
+        #ADMIN_TOKEN=$argon2id$v=19$m=65540,t=3,p=4$TkZqT1Zpb3dnQ0hKcG10RjZOUFZHWTZFOVhlTFk3bVNNYlM0bFdHb3kzZz0$fzWizVbndJKOqEeuQ9GKNyorXZVe7rloQBKn4VEKiu4
     };
   };
 
@@ -105,19 +106,51 @@ in
     borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
     
     traefik.dynamicConfigOptions.http = {
+      # main router - public access for API and web vault
       routers.${app} = {
         entrypoints = ["websecure"];
-        rule = "Host(`${app}.${configVars.domain2}`)";
+        rule = "Host(`${app}.${configVars.domain1}`) && !PathPrefix(`/admin`)";
         service = "${app}";
         middlewares = [
-          "trusted-allow"
-          "secure-headers"
+          "${app}-headers"
         ];
         tls = {
           certResolver = "cloudflareDns";
           options = "tls-13@file";
         };
       };
+      # admin-only router - restricted to trusted IPs
+      routers."${app}-admin" = {
+        entrypoints = ["websecure"];
+        rule = "Host(`${app}.${configVars.domain1}`) && PathPrefix(`/admin`)";
+        service = "${app}";
+        middlewares = [
+          "trusted-allow"
+          "${app}-headers"
+        ];
+        tls = {
+          certResolver = "cloudflareDns";
+          options = "tls-13@file";
+        };
+        priority = 100;
+      };
+      # vaultwarden-specific middleware without CSP and frameDeny (vaultwarden needs iframes for WebAuthn)
+      middlewares."${app}-headers" = {
+        headers = {
+          sslRedirect = true;
+          accessControlMaxAge = "100";
+          stsSeconds = "31536000";
+          stsIncludeSubdomains = true;
+          stsPreload = true;
+          forceSTSHeader = true;
+          contentTypeNosniff = true;
+          browserXssFilter = true;
+          referrerPolicy = "same-origin";
+          addVaryHeader = true;
+          customFrameOptionsValue = "SAMEORIGIN";
+        };
+      };
+      # single service definition shared by both routers
       services.${app} = {
         loadBalancer = {
           passHostHeader = true;

@@ -68,6 +68,7 @@ in
       hyprshot # screenshot tool
       pwvucontrol # pipewire audio volume control app
       claude-code # terminal-based agentic coding assistant
+      tigervnc # vnc client app
     ];
     pointerCursor = {
       enable = true;
