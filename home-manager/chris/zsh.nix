@@ -30,10 +30,28 @@
         echo "Opening SSH tunnel to kauri (port 5900)..."
         ssh -f -N kauri-vnc && \
         sleep 1 && \
-        echo "Launching VNC viewer..." && \
-        vncviewer localhost:5900
-        # Kill the SSH tunnel after VNC session ends
+        echo "Launching VNC viewer (press F8 for menu)..." && \
+        vncviewer localhost:5900 \
+          ViewOnly=0 \
+          AcceptClipboard=1 \
+          SendClipboard=1 \
+          MenuKey=F8
+        # kill the SSH tunnel after VNC session ends
         pkill -f "ssh.*kauri-vnc"
+      }
+      alder-desktop() {
+        echo "Connecting to alder's desktop via VNC..."
+        echo "Opening SSH tunnel to alder (port 5901)..."
+        ssh -f -N alder-vnc && \
+        sleep 1 && \
+        echo "Launching VNC viewer (press F8 for menu)..." && \
+        vncviewer localhost:5901 \
+          ViewOnly=0 \
+          AcceptClipboard=1 \
+          SendClipboard=1 \
+          MenuKey=F8
+        # kill the SSH tunnel after VNC session ends
+        pkill -f "ssh.*alder-vnc"
       }
     '';
     shellAliases = {
