@@ -16,6 +16,7 @@
 
   programs = {
     labwc.enable = true;
+    wayvnc.enable = true; # wayland vnc server
     thunar = {
       enable = true;
       plugins = with pkgs.xfce; [

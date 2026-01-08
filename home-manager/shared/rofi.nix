@@ -8,7 +8,7 @@
 {
 
   home.packages = [
-    rofi-bluetooth # rofi bluetooth manager
+    pkgs.rofi-bluetooth # rofi bluetooth manager
     (pkgs.writeShellScriptBin "rofiPowerMenu" ''
       choice=$(printf "Lock\nSuspend\nLogout\nReboot\nShutdown" | ${pkgs.rofi}/bin/rofi -dmenu -i -p "Power Menu")
       

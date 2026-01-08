@@ -60,6 +60,16 @@
         user = "eric";
         port = 22;
       };
+      "alder-vnc" = {
+        hostname = configVars.hosts.alder.networking.tailscaleIp;
+        user = "eric";
+        port = 22;
+        localForwards = [{
+          bind.port = 5901;
+          host.address = "127.0.0.1";
+          host.port = 5900;
+        }];
+      };
       "kauri-tailscale" = {
         hostname = configVars.hosts.kauri.networking.tailscaleIp;
         user = "danielle";

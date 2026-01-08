@@ -93,7 +93,7 @@
         useResolved = true;
         ethernetInterface = "enp0s31f6";
         wifiInterface = "wlan0";
-        dockInterface = null;
+        dockInterface = "enp0s20f0u4u1i5";
         ipv4 = "192.168.1.164";
         tailscaleIp = "100.88.226.2";
         tailscale = {

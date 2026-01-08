@@ -277,6 +277,7 @@ in
         #!/bin/sh
         systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE PATH
         dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP XDG_SESSION_TYPE PATH
+        systemctl --user start wayvnc.service
         swww-daemon &
         sleep 1
         desktopReload
