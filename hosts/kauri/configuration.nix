@@ -47,7 +47,6 @@
     ddcutil # query and change monitor settings using DDC/CI and USB
     i2c-tools # hardware interface tools required by ddcutil
     wlr-randr # wayland display configuration tool for wlroots compositors
-    #displaylink # video drivers for usb dock displays
   ];
 
   #backups.startTime = "*-*-* 01:25:00"; # everyday at 1:25am
@@ -57,13 +56,11 @@
 
   services = {
     xserver.videoDrivers = [ # enable displaylink for USB dock displays
-      "displaylink"
+      "displaylink" # should pull pinned version from overlay automatically
       "modesetting"
     ];
     logind.settings.Login.HandleLidSwitch = "ignore"; # disable suspend on laptop lid close
   };
-
-  #systemd.services.dlm.wantedBy = [ "multi-user.target" ]; # enable displaylink service for usb dock
 
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "25.11";

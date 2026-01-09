@@ -608,7 +608,7 @@
     namecheap = {
       smtpHost = "mail.privateemail.com";
       smtpPort = 587; # STARTTLS
-      imapPort = 993;
+      imapPort = 993; # TLS
     };
   };
   

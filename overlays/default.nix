@@ -30,7 +30,7 @@
 # to upgrade: update version + url below, run nix-prefetch-url to get new hash, then rebuild
   displaylink-pinned = final: prev: {
     linuxPackages = prev.linuxPackages // {
-      displaylink = prev.linuxPackages.displaylink.overrideAttrs (old: {
+      displaylink = prev.linuxPackages.displaylink.overrideAttrs (old: { # overrides default so no need to explicitly specify
         version = "6.2";
         src = final.requireFile {
           name = "displaylink-620.zip";
