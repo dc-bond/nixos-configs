@@ -4,6 +4,6 @@ drives
 
 Bug checks 25.11 - Feb 2026
 
-firefox/cups issue - see if cups version fixed
+firefox/cups issue - see if cups version fixed (remove 25.05 overlay from printing.nix, firefox.nix, chromium.nix)
 lldap - env vars broken
 docker labels media-server - busted to all hell

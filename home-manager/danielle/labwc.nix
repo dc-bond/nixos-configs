@@ -243,6 +243,9 @@ in
           <item label="Web Browser">
             <action name="Execute" command="chromium" />
           </item>
+          <item label="Secure Messaging">
+            <action name="Execute" command="element-desktop --password-store=gnome-libsecret" />
+          </item>
           <item label="Calculator">
             <action name="Execute" command="gnome-calculator" />
           </item>
