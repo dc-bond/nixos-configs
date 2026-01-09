@@ -324,13 +324,12 @@
       };
     };
     
-    #null = {
-    #  subnet = "172.21.2.0/25";
-    #  containers = {
-    #    null = { ipv4 = "172.21.2.2"; };
-    #    null = { ipv4 = "172.21.2.3"; };
-    #  };
-    #};
+    matrix-webhook = {
+      subnet = "172.21.2.0/25";
+      containers = {
+        matrix-webhook = { ipv4 = "172.21.2.2"; };
+      };
+    };
     
     unifi = {
       subnet = "172.21.3.0/25";
