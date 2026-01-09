@@ -7,7 +7,23 @@
   ... 
 }: 
 
-# CREATE NEW USERS WITH 'nix-shell -p matrix-synapse --run "register_new_matrix_user -k "shared-secret" http://127.0.0.1:8008"'
+# MATRIX USER MANAGEMENT
+#
+# CREATE NEW USERS:
+#   Get the registration shared secret: sudo cat /run/secrets/rendered/matrix-extra-conf | grep registration_shared_secret
+#   Then run: nix-shell -p matrix-synapse --run "register_new_matrix_user -k '<shared-secret>' http://127.0.0.1:8008"
+#
+# MAKE BOT USERS JOIN ROOMS (after inviting them in Element):
+#   1. Get bot's access token by logging in:
+#      curl -X POST https://matrix.dcbond.com/_matrix/client/v3/login \
+#        -H 'Content-Type: application/json' \
+#        -d '{"type": "m.login.password", "user": "bot-username", "password": "bot-password"}'
+#
+#   2. Make bot join the room (use room ID from Element → Room Settings → Advanced):
+#      curl -X POST 'https://matrix.dcbond.com/_matrix/client/r0/join/!roomID:dcbond.com' \
+#        -H 'Authorization: Bearer <bot-access-token>' \
+#        -H 'Content-Type: application/json' \
+#        -d '{}'
 
 let
 

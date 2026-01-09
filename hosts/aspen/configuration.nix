@@ -85,6 +85,7 @@ in
       "nixos-system/oci-chris-workouts.nix"
       "nixos-system/oci-danielle-workouts.nix"
       "nixos-system/oci-n8n.nix"
+      "nixos-system/oci-matrix-webhook.nix"
       "nixos-system/oci-media-server.nix"
 
       "scripts/media-transfer.nix"
