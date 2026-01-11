@@ -374,12 +374,13 @@
       };
     };
     
-    #null = {
-    #  subnet = "172.21.8.0/25";
-    #  containers = {
-    #    null = { ipv4 = "172.21.8.2"; };
-    #  };
-    #};
+    matrix-hookshot = {
+      subnet = "172.21.8.0/25";
+      containers = {
+        matrix-hookshot = { ipv4 = "172.21.8.2"; };
+        redis = { ipv4 = "172.21.8.3"; };
+      };
+    };
     
     #null = {
     #  subnet = "172.21.9.0/25";
