@@ -20,7 +20,7 @@
 #        -d '{"type": "m.login.password", "user": "bot-username", "password": "bot-password"}'
 #
 #   2. Make bot join the room (use room ID from Element → Room Settings → Advanced):
-#      curl -X POST 'https://matrix.dcbond.com/_matrix/client/r0/join/!roomID:dcbond.com' \
+#      curl -X POST 'https://matrix.dcbond.com/_matrix/client/r0/join/<room-id>' \
 #        -H 'Authorization: Bearer <bot-access-token>' \
 #        -H 'Content-Type: application/json' \
 #        -d '{}'
@@ -76,13 +76,13 @@ in
         content = ''
           registration_shared_secret: ${config.sops.placeholder.matrixSynapseRegistrationSharedSecret}
           macaroon_secret_key: ${config.sops.placeholder.matrixSynapseMacaroonSecretKey}
-          retention: 
+          retention:
             enabled: true
             default_policy:
-              min_lifetime: 1d 
-              max_lifetime: 1d
+              min_lifetime: 1d
+              max_lifetime: 30d
             allowed_lifetime_min: 1d
-            allowed_lifetime_max: 1d
+            allowed_lifetime_max: 30d
             purge_jobs:
               - interval: 12h
           email:
@@ -213,6 +213,9 @@ in
         public_baseurl = "https://matrix.${configVars.domain1}";
         enable_registration = false;
         enable_metrics = false;
+        app_service_config_files = [
+          config.sops.templates."matrix-hookshot-registration".path # requires oci-matrix-hookshot.nix module
+        ];
         database = {
           name = "psycopg2";
           args = {
