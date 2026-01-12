@@ -76,6 +76,7 @@ in
         content = ''
           registration_shared_secret: ${config.sops.placeholder.matrixSynapseRegistrationSharedSecret}
           macaroon_secret_key: ${config.sops.placeholder.matrixSynapseMacaroonSecretKey}
+          suppress_key_server_warning: true
           retention:
             enabled: true
             default_policy:
@@ -109,13 +110,13 @@ in
   };
 
   networking.firewall = {
-    allowedUDPPorts = [ 
-      3478 
-      5349 
+    allowedUDPPorts = [
+      3478
+      5349
     ];
-    allowedTCPPorts = [ 
-      3478 
-      5349 
+    allowedTCPPorts = [
+      3478
+      5349
     ];
     allowedUDPPortRanges = let
       range = with config.services.coturn; [
@@ -125,6 +126,9 @@ in
         }
       ];
     in range;
+    #trustedInterfaces = [
+    #  "br-+"  # trust all docker bridge networks (for matrix-hookshot and other containers to reach nix bare-metal services on host)
+    #];
   };
 
   environment.systemPackages = with pkgs; [ 
@@ -213,9 +217,15 @@ in
         public_baseurl = "https://matrix.${configVars.domain1}";
         enable_registration = false;
         enable_metrics = false;
-        app_service_config_files = [
-          config.sops.templates."matrix-hookshot-registration".path # requires oci-matrix-hookshot.nix module
-        ];
+        #experimental_features = {
+        #  # required for appservice E2EE support (matrix-hookshot)
+        #  msc3202_device_masquerading = true;
+        #  msc3202_transaction_extensions = true;
+        #  msc2409_to_device_messages_enabled = true;
+        #};
+        #app_service_config_files = [
+        #  config.sops.templates."matrix-hookshot-registration.yml".path # requires oci-matrix-hookshot.nix module
+        #];
         database = {
           name = "psycopg2";
           args = {
@@ -224,19 +234,22 @@ in
           };
         };
         listeners = [
-          { 
+          {
             port = 8008;
-            bind_addresses = [ "127.0.0.1" ];
+            bind_addresses = [
+              "127.0.0.1"
+              #"172.21.8.1"  # docker bridge gateway for matrix-hookshot container access
+            ];
             type = "http";
             tls = false;
             x_forwarded = true;
-            resources = [ 
+            resources = [
               {
-                names = [ 
-                  "client" 
+                names = [
+                  "client"
                 ];
                 compress = true;
-              } 
+              }
             ];
           }
         ];
@@ -437,13 +450,15 @@ in
       };
 
       "${app}" = {
-        requires = [ 
-          "postgresql.target" 
-          "${app}-postgres-init.service" 
+        requires = [
+          "postgresql.target"
+          "${app}-postgres-init.service"
+          #"docker-network-matrix-hookshot.service" # must wait for matrix-hookshot.nix network to start before binding to it
         ];
-        after = [ 
-          "postgresql.target" 
-          "${app}-postgres-init.service" 
+        after = [
+          "postgresql.target"
+          "${app}-postgres-init.service"
+          #"docker-network-matrix-hookshot.service"
         ];
       };
 

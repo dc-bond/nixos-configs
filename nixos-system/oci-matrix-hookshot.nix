@@ -52,7 +52,7 @@ in
       "${app}-config.yml".content = ''
         bridge:
           domain: ${configVars.domain1}
-          url: http://host.docker.internal:8008
+          url: http://172.21.8.1:8008
           mediaUrl: https://matrix.${configVars.domain1}
           port: 9993
           bindAddress: 0.0.0.0
@@ -67,10 +67,6 @@ in
             bindAddress: 0.0.0.0
             resources:
               - webhooks
-          - port: 9001
-            bindAddress: 127.0.0.1
-            resources:
-              - metrics
         cache:
           redisUri: redis://${app2}:6379
         encryption:
@@ -88,31 +84,38 @@ in
           allowJsTransformationFunctions: false
           waitForComplete: false
         bot:
-          displayname: Bond-Bot 
+          displayname: Bond-Bot
           avatar: mxc://matrix.org/xxx
-        metrics:
-          enabled: true
       '';
 
-      "${app}-registration.yml".content = ''
-        id: matrix-hookshot
-        url: http://${configVars.containerServices.${app}.containers.${app}.ipv4}:9993
-        as_token: ${config.sops.placeholder.matrixHookshotAsToken}
-        hs_token: ${config.sops.placeholder.matrixHookshotHsToken}
-        sender_localpart: hookshot
-        rate_limited: false
-        namespaces:
-          users:
-            - regex: '@_hookshot_.*:${configVars.domain1}'
-              exclusive: true
-            - regex: '@hookshot:${configVars.domain1}'
-              exclusive: true
-          aliases: []
-          rooms: []
-      '';
+      "${app}-registration.yml" = {
+        content = ''
+          id: matrix-hookshot
+          url: http://${configVars.containerServices.${app}.containers.${app}.ipv4}:9993
+          as_token: ${config.sops.placeholder.matrixHookshotAsToken}
+          hs_token: ${config.sops.placeholder.matrixHookshotHsToken}
+          sender_localpart: hookshot
+          rate_limited: false
+          namespaces:
+            users:
+              - regex: '@_hookshot_.*:${configVars.domain1}'
+                exclusive: true
+              - regex: '@hookshot:${configVars.domain1}'
+                exclusive: true
+            aliases: []
+            rooms: []
+          # Enable encryption support (requires Synapse experimental_features MSCs)
+          de.sorunome.msc2409.push_ephemeral: true
+          push_ephemeral: true
+          org.matrix.msc3202: true
+        '';
+        owner = "matrix-synapse";
+        group = "matrix-synapse";
+        mode = "0440";
+      };
 
       "${app}-passkey.pem".content = ''
-        ${config.sops.placeholder.matrixHookshotPasskey}
+${config.sops.placeholder.matrixHookshotPasskey}
       '';
       
     };
