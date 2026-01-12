@@ -44,10 +44,10 @@
       "nixos-system/monitoring-client.nix"
       "nixos-system/oci-containers.nix"
       "nixos-system/oci-pihole.nix"
-      "nixos-system/oci-matrix-hookshot.nix"
       "nixos-system/postgresql.nix"
       "nixos-system/traefik.nix"
-      "nixos-system/matrix-synapse.nix"
+      "nixos-system/matrix.nix"
+      #"nixos-system/matrix-synapse.nix"
       "nixos-system/vaultwarden.nix"
       "nixos-system/homepage.nix"
     ])

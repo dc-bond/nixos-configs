@@ -1,11 +1,11 @@
-{ 
+{
   pkgs,
   config,
-  configVars, 
+  configVars,
   lib,
   nixServiceRecoveryScript,
-  ... 
-}: 
+  ...
+}:
 
 # MATRIX USER MANAGEMENT
 #
@@ -28,10 +28,13 @@
 let
 
   app = "matrix-synapse";
+  app2 = "matrix-hookshot";
   recoveryPlan = {
     restoreItems = [
       "/var/lib/${app}"
       "/var/lib/redis-${app}"
+      "/var/lib/${app2}"
+      "/var/lib/redis-${app2}"
       "/var/backup/postgresql/${app}.sql.gz"
     ];
     db = {
@@ -40,8 +43,8 @@ let
       name = "${app}";
       dump = "/var/backup/postgresql/${app}.sql.gz";
     };
-    stopServices = [ "${app}" "redis-${app}" ];
-    startServices = [ "redis-${app}" "${app}" ];
+    stopServices = [ "${app}" "redis-${app}" "${app2}" "redis-${app2}" ];
+    startServices = [ "redis-${app2}" "redis-${app}" "${app}" "${app2}" ];
   };
   recoverScript = nixServiceRecoveryScript {
     serviceName = app;
@@ -56,7 +59,7 @@ let
    '';
   };
 
-in 
+in
 
 {
 
@@ -65,6 +68,9 @@ in
       chrisEmailPasswd = {};
       matrixSynapseRegistrationSharedSecret = {};
       matrixSynapseMacaroonSecretKey = {};
+      matrixHookshotAsToken = {};
+      matrixHookshotHsToken = {};
+      matrixHookshotPasskey = {};
       coturnStaticAuthSecret = {
         owner = "${config.users.users.turnserver.name}";
         group = "${config.users.users.turnserver.group}";
@@ -106,6 +112,41 @@ in
         group = "${config.users.users.${app}.group}";
         mode = "0440";
       };
+
+      "${app2}-registration.yml" = {
+        content = ''
+          id: matrix-hookshot
+          url: http://127.0.0.1:9993
+          as_token: ${config.sops.placeholder.matrixHookshotAsToken}
+          hs_token: ${config.sops.placeholder.matrixHookshotHsToken}
+          sender_localpart: hookshot
+          rate_limited: false
+          namespaces:
+            users:
+              - regex: '@_hookshot_.*:${configVars.domain1}'
+                exclusive: true
+              - regex: '@hookshot:${configVars.domain1}'
+                exclusive: true
+            aliases: []
+            rooms: []
+          # Enable encryption support (requires Synapse experimental_features MSCs)
+          de.sorunome.msc2409.push_ephemeral: true
+          push_ephemeral: true
+          org.matrix.msc3202: true
+        '';
+        owner = "${config.users.users.${app}.name}";
+        group = "${config.users.users.${app}.group}";
+        mode = "0440";
+      };
+
+      "${app2}-passkey.pem" = {
+        content = ''
+${config.sops.placeholder.matrixHookshotPasskey}
+        '';
+        owner = "${app2}";
+        group = "${app2}";
+        mode = "0440";
+      };
     };
   };
 
@@ -126,29 +167,30 @@ in
         }
       ];
     in range;
-    #trustedInterfaces = [
-    #  "br-+"  # trust all docker bridge networks (for matrix-hookshot and other containers to reach nix bare-metal services on host)
-    #];
   };
 
-  environment.systemPackages = with pkgs; [ 
+  environment.systemPackages = with pkgs; [
     recoverScript
-    openssl 
+    openssl
   ];
-  
+
   backups.serviceHooks = {
     preHook = lib.mkAfter [
       "systemctl stop ${app}.service"
+      "systemctl stop ${app2}.service"
       "systemctl stop redis-${app}.service"
+      "systemctl stop redis-${app2}.service"
       "sleep 2"
       "systemctl start postgresqlBackup-${app}.service"
     ];
     postHook = lib.mkAfter [
+      "systemctl start redis-${app2}.service"
       "systemctl start redis-${app}.service"
       "systemctl start ${app}.service"
+      "systemctl start ${app2}.service"
     ];
   };
-  
+
   services = {
 
     #postgresql = {
@@ -160,6 +202,14 @@ in
     #};
 
     postgresqlBackup.databases = [ "${app}" ];
+
+    redis.servers."${app2}" = {
+      enable = true;
+      user = "${app2}";
+      port = 0;
+      unixSocket = "/run/redis-${app2}/redis.sock";
+      unixSocketPerm = 660;
+    };
 
     borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
 
@@ -179,7 +229,7 @@ in
           };
           listen = [
             {
-              addr = "127.0.0.1"; 
+              addr = "127.0.0.1";
               port = 8078;
             }
           ];
@@ -217,15 +267,15 @@ in
         public_baseurl = "https://matrix.${configVars.domain1}";
         enable_registration = false;
         enable_metrics = false;
-        #experimental_features = {
-        #  # required for appservice E2EE support (matrix-hookshot)
-        #  msc3202_device_masquerading = true;
-        #  msc3202_transaction_extensions = true;
-        #  msc2409_to_device_messages_enabled = true;
-        #};
-        #app_service_config_files = [
-        #  config.sops.templates."matrix-hookshot-registration.yml".path # requires oci-matrix-hookshot.nix module
-        #];
+        experimental_features = {
+          # required for appservice E2EE support (matrix-hookshot)
+          msc3202_device_masquerading = true;
+          msc3202_transaction_extensions = true;
+          msc2409_to_device_messages_enabled = true;
+        };
+        app_service_config_files = [
+          config.sops.templates."${app2}-registration.yml".path
+        ];
         database = {
           name = "psycopg2";
           args = {
@@ -238,7 +288,6 @@ in
             port = 8008;
             bind_addresses = [
               "127.0.0.1"
-              #"172.21.8.1"  # docker bridge gateway for matrix-hookshot container access
             ];
             type = "http";
             tls = false;
@@ -255,14 +304,71 @@ in
         ];
         turn_uris = [
           #"turn:turn.${configVars.domain1}:3478?transport=tcp" # coturn is only listening on UDP, so commented out to not provide TCP option
-          "turn:turn.${configVars.domain1}:3478?transport=udp" 
+          "turn:turn.${configVars.domain1}:3478?transport=udp"
           #"turns:turn.${configVars.domain1}:5349?transport=tcp" # coturn is only listening on UDP, so commented out to not provide TCP option
-          "turns:turn.${configVars.domain1}:5349?transport=udp" 
+          "turns:turn.${configVars.domain1}:5349?transport=udp"
         ];
         turn_user_lifetime = "1h";
         turn_allow_guests = false;
       };
       extraConfigFiles = [ "/run/secrets/rendered/matrix-extra-conf" ];
+    };
+
+    ${app2} = {
+      enable = true;
+      registrationFile = config.sops.templates."${app2}-registration.yml".path;
+      settings = {
+        passFile = config.sops.templates."${app2}-passkey.pem".path;
+        bridge = {
+          domain = configVars.domain1;
+          url = "http://127.0.0.1:8008";
+          mediaUrl = "https://matrix.${configVars.domain1}";
+          port = 9993;
+          bindAddress = "127.0.0.1";
+        };
+        logging = {
+          level = "info";
+          colorize = true;
+          json = false;
+          timestampFormat = "HH:mm:ss:SSS";
+        };
+        listeners = [
+          {
+            port = 9000;
+            bindAddress = "127.0.0.1";
+            resources = [ "webhooks" ];
+          }
+        ];
+        cache = {
+          redisUri = "unix:///run/redis-${app2}/redis.sock";
+        };
+        encryption = {
+          storagePath = "/var/lib/${app2}/cryptostore";
+        };
+        permissions = [
+          {
+            actor = configVars.domain1;
+            services = [
+              {
+                service = "webhooks";
+                level = "manageConnections";
+              }
+            ];
+          }
+        ];
+        generic = {
+          enabled = true;
+          outbound = false;
+          urlPrefix = "https://webhooks.${configVars.domain2}/";
+          userIdPrefix = "_hookshot_";
+          allowJsTransformationFunctions = false;
+          waitForComplete = false;
+        };
+        bot = {
+          displayname = "Bond-Bot";
+          avatar = "mxc://matrix.org/xxx";
+        };
+      };
     };
 
     coturn = rec {
@@ -291,26 +397,26 @@ in
         total-quota=4800
         udp-self-balance
         cipher-list=TLS_AES_256_GCM_SHA384:TLS_CHACHA20_POLY1305_SHA256:TLS_AES_128_GCM_SHA256 dh2066
-        denied-peer-ip=10.0.0.0-10.255.255.255    
-        denied-peer-ip=172.16.0.0-172.31.255.255  
-        denied-peer-ip=0.0.0.0-0.255.255.255       
-        denied-peer-ip=127.0.0.0-127.255.255.255   
-        denied-peer-ip=169.254.0.0-169.254.255.255 
-        denied-peer-ip=192.0.0.0-192.0.0.255       
-        denied-peer-ip=192.0.2.0-192.0.2.255       
-        denied-peer-ip=192.88.99.0-192.88.99.255   
-        denied-peer-ip=198.18.0.0-198.19.255.255   
-        denied-peer-ip=198.51.100.0-198.51.100.255 
-        denied-peer-ip=203.0.113.0-203.0.113.255   
-        denied-peer-ip=240.0.0.0-255.255.255.255   
-        denied-peer-ip=::1                         
+        denied-peer-ip=10.0.0.0-10.255.255.255
+        denied-peer-ip=172.16.0.0-172.31.255.255
+        denied-peer-ip=0.0.0.0-0.255.255.255
+        denied-peer-ip=127.0.0.0-127.255.255.255
+        denied-peer-ip=169.254.0.0-169.254.255.255
+        denied-peer-ip=192.0.0.0-192.0.0.255
+        denied-peer-ip=192.0.2.0-192.0.2.255
+        denied-peer-ip=192.88.99.0-192.88.99.255
+        denied-peer-ip=198.18.0.0-198.19.255.255
+        denied-peer-ip=198.51.100.0-198.51.100.255
+        denied-peer-ip=203.0.113.0-203.0.113.255
+        denied-peer-ip=240.0.0.0-255.255.255.255
+        denied-peer-ip=::1
         denied-peer-ip=fc00::-fdff:ffff:ffff:ffff:ffff:ffff:ffff:ffff
         denied-peer-ip=fe80::-febf:ffff:ffff:ffff:ffff:ffff:ffff:ffff
         #denied-peer-ip=192.168.0.0-192.168.255.255 # commented out to allow VOIP while on LAN
         #denied-peer-ip=100.64.0.0-100.127.255.255 # commented out to allow VOIP while on tailscale
       '';
     };
-        
+
     traefik = {
 
       dynamicConfigOptions.http = {
@@ -353,6 +459,18 @@ in
               options = "tls-13@file";
             };
           };
+          "${app2}-webhooks" = {
+            entrypoints = ["websecure"];
+            rule = "Host(`webhooks.${configVars.domain2}`)";
+            service = "${app2}-webhooks";
+            middlewares = [
+              "webhooks-allow"
+            ];
+            tls = {
+              certResolver = "cloudflareDns";
+              options = "tls-13@file";
+            };
+          };
         };
         middlewares = {
           matrix-body-limit.buffering = {
@@ -364,6 +482,9 @@ in
               "X-Forwarded-Proto" = "https";
             };
           };
+          webhooks-allow.ipAllowList.sourceRange = [
+            "${configVars.hosts.aspen.networking.tailscaleIp}"
+          ];
         };
         services = {
           "${app}" = {
@@ -386,6 +507,16 @@ in
               ];
             };
           };
+          "${app2}-webhooks" = {
+            loadBalancer = {
+              passHostHeader = true;
+              servers = [
+                {
+                  url = "http://127.0.0.1:9000";
+                }
+              ];
+            };
+          };
         };
       };
     };
@@ -396,12 +527,12 @@ in
     image = "ghcr.io/kereis/traefik-certs-dumper:latest"; # https://github.com/kereis/traefik-certs-dumper/releases/tag/v1.7.0
     autoStart = true;
     log-driver = "journald";
-    volumes = [ 
-      "/var/lib/traefik:/traefik:ro" 
-      "/etc/turnserver:/output:rw" 
+    volumes = [
+      "/var/lib/traefik:/traefik:ro"
+      "/etc/turnserver:/output:rw"
       "traefik-certs-dumper:/var/lib/docker:rw" # not needed for backup
     ];
-    environment = { 
+    environment = {
       DOMAIN = "${configVars.domain1}";
       OVERRIDE_UID = "249"; # turnserver user
       OVERRIDE_GID = "249"; # turnserver group
@@ -415,7 +546,7 @@ in
   };
 
   systemd = {
-    services = { 
+    services = {
 
       "${app}-postgres-init" = {
         description = "Initialize postgres database for ${app}";
@@ -434,7 +565,7 @@ in
             # database exists, check if it has correct settings
             ENCODING=$(psql -d "${app}" -t -c "SELECT pg_encoding_to_char(encoding) FROM pg_database WHERE datname = '${app}';")
             COLLATE=$(psql -d "${app}" -t -c "SELECT datcollate FROM pg_database WHERE datname = '${app}';")
-            
+
             if [[ "$ENCODING" != " UTF8" ]] || [[ "$COLLATE" != " C" ]]; then
               echo "database exists but has wrong settings, recreating..."
               dropdb "${app}" || true
@@ -453,12 +584,10 @@ in
         requires = [
           "postgresql.target"
           "${app}-postgres-init.service"
-          #"docker-network-matrix-hookshot.service" # must wait for matrix-hookshot.nix network to start before binding to it
         ];
         after = [
           "postgresql.target"
           "${app}-postgres-init.service"
-          #"docker-network-matrix-hookshot.service"
         ];
       };
 
@@ -542,6 +671,6 @@ in
       };
       wantedBy = ["multi-user.target"];
     };
-  }; 
+  };
 
 }
