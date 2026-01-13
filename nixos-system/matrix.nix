@@ -43,8 +43,18 @@ let
       name = "${app}";
       dump = "/var/backup/postgresql/${app}.sql.gz";
     };
-    stopServices = [ "${app}" "redis-${app}" "${app2}" "redis-${app2}" ];
-    startServices = [ "redis-${app2}" "redis-${app}" "${app}" "${app2}" ];
+    stopServices = [ 
+      "${app2}" 
+      "${app}" 
+      "redis-${app2}" 
+      "redis-${app}" 
+    ];
+    startServices = [ 
+      "redis-${app}" 
+      "redis-${app2}" 
+      "${app}" 
+      "${app2}" 
+    ];
   };
   recoverScript = nixServiceRecoveryScript {
     serviceName = app;
@@ -112,7 +122,6 @@ in
         group = "${config.users.users.${app}.group}";
         mode = "0440";
       };
-
       "${app2}-registration.yml" = {
         content = ''
           id: matrix-hookshot
@@ -129,7 +138,7 @@ in
                 exclusive: true
             aliases: []
             rooms: []
-          # Enable encryption support (requires Synapse experimental_features MSCs)
+          # enable encryption support (requires synapse experimental_features MSCs)
           de.sorunome.msc2409.push_ephemeral: true
           push_ephemeral: true
           org.matrix.msc3202: true
@@ -138,7 +147,6 @@ in
         group = "${config.users.users.${app}.group}";
         mode = "0440";
       };
-
       "${app2}-passkey.pem" = {
         content = ''
 ${config.sops.placeholder.matrixHookshotPasskey}
@@ -148,6 +156,15 @@ ${config.sops.placeholder.matrixHookshotPasskey}
         mode = "0440";
       };
     };
+  };
+
+  users = {
+    users.${app2} = {
+      isSystemUser = true;
+      group = app2;
+      extraGroups = [ app ];  # add to matrix-synapse group for registration file access, which is owned by matrix-synapse
+    };
+    groups.${app2} = {};
   };
 
   networking.firewall = {
@@ -239,7 +256,7 @@ ${config.sops.placeholder.matrixHookshotPasskey}
 
     ${app} = {
       enable = true;
-      configureRedisLocally = true;
+      configureRedisLocally = true; # automatically creates redis-matrix-synapse instance; see manual invocation for redis-matrix-hookshot in redis.servers above
       log = {
         disable_existing_loggers = false;
         formatters = {
@@ -589,6 +606,28 @@ ${config.sops.placeholder.matrixHookshotPasskey}
           "postgresql.target"
           "${app}-postgres-init.service"
         ];
+      };
+
+      ${app2} = {
+        requires = [ 
+          "${app}.service"
+          "redis-${app2}.service" 
+        ];
+        after = [ 
+          "${app}.service"
+          "redis-${app2}.service" 
+        ];
+        serviceConfig = {
+          User = app2;
+          Group = app2;
+          StateDirectory = app2;  # creates /var/lib/matrix-hookshot with correct ownership
+        };
+      };
+
+      "redis-${app2}" = {
+        serviceConfig = {
+          StateDirectory = "redis-${app2}";  # ensures /var/lib/redis-matrix-hookshot is created with correct ownership
+        };
       };
 
       "generate-dhparam" = {
