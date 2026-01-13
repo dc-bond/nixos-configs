@@ -364,10 +364,10 @@ ${config.sops.placeholder.matrixHookshotPasskey}
         };
         permissions = [
           {
-            actor = configVars.domain1;
+            actor = "@chris:dcbond.com";
             services = [
               {
-                service = "webhooks";
+                service = "*";
                 level = "manageConnections";
               }
             ];
@@ -501,6 +501,7 @@ ${config.sops.placeholder.matrixHookshotPasskey}
           };
           webhooks-allow.ipAllowList.sourceRange = [
             "${configVars.hosts.aspen.networking.tailscaleIp}"
+            "${configVars.hosts.juniper.networking.tailscaleIp}"
           ];
         };
         services = {
