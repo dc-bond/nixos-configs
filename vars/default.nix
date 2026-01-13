@@ -611,5 +611,9 @@
       imapPort = 993; # TLS
     };
   };
-  
+
+  webhooks = {
+    matrixBackupNotifications = "https://webhooks.opticon.dev/a41ac35c-139c-4d9b-bdeb-0bf4221586d2";
+  };
+
 }

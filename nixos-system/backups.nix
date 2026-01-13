@@ -46,9 +46,24 @@ let
     echo "cloud backup completed successfully"
   '';
 
+  backupSuccessWebhookScript = pkgs.writeShellScriptBin "backupSuccessWebhook" ''
+    #!/bin/bash
+
+    TIMESTAMP="$(date "+%Y-%m-%d %H:%M:%S")"
+
+    ${pkgs.curl}/bin/curl -X POST \
+      -H "Content-Type: application/json" \
+      -d @- \
+      "${configVars.webhooks.matrixBackupNotifications}" <<EOF
+    {
+      "text": "✅ **Backup Success - ${config.networking.hostName}**\n\nTime: $TIMESTAMP\n\nLocal backup and cloud sync completed successfully."
+    }
+    EOF
+  '';
+
   backupSuccessEmailScript = pkgs.writeShellScriptBin "backupSuccessEmail" ''
     #!/bin/bash
-    
+
     {
       echo "Subject: Nightly Backup SUCCESS - ${config.networking.hostName}"
       echo "To: ${configVars.users.chris.email}"
@@ -67,11 +82,27 @@ let
       -t
   '';
 
+  backupFailureWebhookScript = pkgs.writeShellScriptBin "backupFailureWebhook" ''
+    #!/bin/bash
+
+    EXIT_CODE=$(systemctl show cloudBackup.service --property=ExecMainStatus --value)
+    TIMESTAMP="$(date "+%Y-%m-%d %H:%M:%S")"
+
+    ${pkgs.curl}/bin/curl -X POST \
+      -H "Content-Type: application/json" \
+      -d @- \
+      "${configVars.webhooks.matrixBackupNotifications}" <<EOF
+    {
+      "text": "🚨 **BACKUP FAILED - ${config.networking.hostName}**\n\n⚠️ IMMEDIATE ACTION REQUIRED!\n\n**Exit Code**: $EXIT_CODE\n\n**Possible Causes**:\n- Local backup failure\n- Repository corruption\n- Low archive count\n- Network/Backblaze issues\n- Service configuration problems\n\n**Time**: $TIMESTAMP\n\n**Action**: Check logs with \`jlogs cloudBackup\`"
+    }
+    EOF
+  '';
+
   backupFailureEmailScript = pkgs.writeShellScriptBin "backupFailureEmail" ''
     #!/bin/bash
-    
+
     EXIT_CODE=$(systemctl show cloudBackup.service --property=ExecMainStatus --value)
-    
+
     {
       echo "Subject: Nightly Backup FAILED - ${config.networking.hostName}"
       echo "To: ${configVars.users.chris.email}"
@@ -770,12 +801,13 @@ in
       };
     };
     
-    environment.systemPackages = with pkgs; [ 
+    environment.systemPackages = with pkgs; [
       initLocalRepoScript
       cloudBackupScript
       backupFailureEmailScript
       backupSuccessEmailScript
-      #cloudRestoreScript
+      backupFailureWebhookScript
+      backupSuccessWebhookScript
       inspectLocalBackupsScript
       inspectRemoteBackupsScript
       rclone
@@ -839,7 +871,7 @@ in
           wantedBy = lib.mkForce []; # do not automatically start service on system rebuild/reboot
           unitConfig = {
             OnSuccess = "cloudBackup.service";
-            OnFailure = "backupFailureEmail.service";
+            OnFailure = "backupFailureEmail.service backupFailureWebhook.service";
           };
         };
 
@@ -854,8 +886,8 @@ in
             EnvironmentFile = "${rcloneConf}";
           };
           unitConfig = {
-            OnSuccess = "backupSuccessEmail.service";
-            OnFailure = "backupFailureEmail.service";
+            OnSuccess = "backupSuccessEmail.service backupSuccessWebhook.service";
+            OnFailure = "backupFailureEmail.service backupFailureWebhook.service";
           };
         };
 
@@ -867,13 +899,31 @@ in
             ExecStart = "${backupSuccessEmailScript}/bin/backupSuccessEmail";
           };
         };
-        
+
         "backupFailureEmail" = {
           description = "send backup failure notification";
           wantedBy = lib.mkForce [];
           serviceConfig = {
             Type = "oneshot";
             ExecStart = "${backupFailureEmailScript}/bin/backupFailureEmail";
+          };
+        };
+
+        "backupSuccessWebhook" = {
+          description = "send backup success webhook notification to matrix";
+          wantedBy = lib.mkForce [];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${backupSuccessWebhookScript}/bin/backupSuccessWebhook";
+          };
+        };
+
+        "backupFailureWebhook" = {
+          description = "send backup failure webhook notification to matrix";
+          wantedBy = lib.mkForce [];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = "${backupFailureWebhookScript}/bin/backupFailureWebhook";
           };
         };
         
