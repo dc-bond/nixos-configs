@@ -886,7 +886,7 @@ in
             EnvironmentFile = "${rcloneConf}";
           };
           unitConfig = {
-            OnSuccess = "backupSuccessEmail.service backupSuccessWebhook.service";
+            OnSuccess = "backupSuccessWebhook.service";
             OnFailure = "backupFailureEmail.service backupFailureWebhook.service";
           };
         };
