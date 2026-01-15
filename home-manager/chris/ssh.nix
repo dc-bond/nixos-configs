@@ -13,13 +13,13 @@
     enableDefaultConfig = false;
 
     matchBlocks = {
-      "*" = {
-        extraOptions = {
-          ConnectTimeout = "10";
-          ServerAliveInterval = "5";
-        };
-        serverAliveCountMax = 3;
-      };
+      #"*" = {
+      #  extraOptions = {
+      #    ConnectTimeout = "10";
+      #    ServerAliveInterval = "5";
+      #  };
+      #  serverAliveCountMax = 3;
+      #};
       "aspen" = {
         hostname = configVars.hosts.aspen.networking.ipv4;
         user = config.home.username;

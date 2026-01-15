@@ -140,6 +140,7 @@ in
 
         <core>
           <decoration>server</decoration>
+          <windowSwitcher show="yes" preview="yes" outlines="yes" />
         </core>
         
         <theme>
@@ -172,6 +173,14 @@ in
 
           <keybind key="A-c">
             <action name="Execute" command="rofi -show calc -modi calc -no-show-match -no-sort" />
+          </keybind>
+
+          <keybind key="A-Tab">
+            <action name="PreviousWindow" />
+          </keybind>
+
+          <keybind key="A-backslash">
+            <action name="NextWindow" />
           </keybind>
 
           <keybind key="A-q">

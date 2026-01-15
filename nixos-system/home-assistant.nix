@@ -1,11 +1,12 @@
-{ 
+{
   config,
   lib,
   configLib,
   configVars,
-  pkgs, 
+  pkgs,
+  inputs,
   nixServiceRecoveryScript,
-  ... 
+  ...
 }: 
 
 let
@@ -36,10 +37,15 @@ in
 
 {
 
+  imports = [
+    inputs.private.nixosModules.home-assistant-automations
+  ];
+
   sops = {
     secrets = {
       mqttHassPasswd = {};
       chrisEmailPasswd = {};
+      familyNotificationsWebhookUrl = {};
     };
     templates = {
       "hass-secrets" = {
@@ -48,9 +54,10 @@ in
           notifySenderAlias: ${configVars.users.chris.email}
           notifyDefaultRecipient: ${configVars.users.chris.email}
           notifyEmailServer: ${configVars.mailservers.namecheap.smtpHost}
-          notifyEmailUsername: ${configVars.users.chris.email} 
+          notifyEmailUsername: ${configVars.users.chris.email}
           notifyEmailPasswd: ${config.sops.placeholder.chrisEmailPasswd}
           notifyEmailPort: ${toString configVars.mailservers.namecheap.smtpPort}
+          familyNotificationsWebhookUrl: ${config.sops.placeholder.familyNotificationsWebhookUrl}
         '';
         path = "/var/lib/hass/secrets.yaml";
         owner = "${config.users.users.hass.name}";
@@ -107,7 +114,8 @@ in
           ];
         };
         recorder.db_url = "postgresql://@/hass";
-        automation = "!include automations.yaml";
+        "automation ui" = "!include automations.yaml";
+        #"automation nixos" defined in private repo via inputs.private.nixosModules.home-assistant-automations, merged in with ui-generated automations
         mobile_app = "";
         notify = {
           name = "email";
@@ -122,6 +130,19 @@ in
           password = "!secret notifyEmailPasswd";
           encryption = "starttls"; # for port 587
           #encryption = "tls"; # for port 465
+        };
+        rest_command = {
+          matrix_notify = {
+            url = "!secret familyNotificationsWebhookUrl";
+            method = "POST";
+            content_type = "application/json";
+            payload = ''
+              {
+                "text": "{{ message }}",
+                "msgtype": "m.text"
+              }
+            '';
+          };
         };
       };
     };

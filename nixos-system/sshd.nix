@@ -45,6 +45,14 @@ in
     })
   ];
 
+  # system-wide ssh client configuration (applies to all users including root for remote builds)
+  programs.ssh.extraConfig = ''
+    Host *
+      ServerAliveInterval 30
+      ServerAliveCountMax 3
+      ConnectTimeout 10
+  '';
+
   programs.ssh.knownHosts =
     # auto-generate for all hosts from configVars
     lib.mapAttrs (hostname: hostConfig:
