@@ -752,6 +752,210 @@ let
     echo "========================================"
   '';
 
+  recoverDataDirectoryScript = pkgs.writeShellScriptBin "recoverDataDirectory" ''
+    #!/bin/bash
+
+    set -euo pipefail
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+    TEMP_MOUNT=""
+
+    # cleanup function
+    cleanup() {
+      if [ -n "$TEMP_MOUNT" ] && [ -d "$TEMP_MOUNT" ] && mountpoint -q "$TEMP_MOUNT" 2>/dev/null; then
+        echo "Cleaning up remote mount..."
+        fusermount -u "$TEMP_MOUNT" 2>/dev/null || umount "$TEMP_MOUNT" 2>/dev/null || true
+        rmdir "$TEMP_MOUNT" 2>/dev/null || true
+      fi
+    }
+
+    trap cleanup EXIT INT TERM
+
+    echo "========================================"
+    echo "Data Directory Recovery"
+    echo "========================================"
+    echo ""
+
+    # repo source selection
+    echo "Select repository source:"
+    echo "  L) Local repository"
+    echo "  R) Remote repository (Backblaze B2)"
+    echo ""
+    read -p "Source [L]: " repo_type
+    repo_type=''${repo_type:-L}
+
+    if [[ "$repo_type" =~ ^[Rr]$ ]]; then
+      HOSTS=(${lib.concatStringsSep " " (builtins.attrNames configVars.hosts)})
+
+      echo ""
+      echo "Available hosts:"
+      for i in "''${!HOSTS[@]}"; do
+        if [ "''${HOSTS[$i]}" = "${config.networking.hostName}" ]; then
+          echo "  $((i+1))) ''${HOSTS[$i]} (current host)"
+        else
+          echo "  $((i+1))) ''${HOSTS[$i]}"
+        fi
+      done
+      echo ""
+
+      read -p "Select host [1]: " host_num
+      host_num=''${host_num:-1}
+
+      if ! [[ "$host_num" =~ ^[0-9]+$ ]] || [ "$host_num" -lt 1 ] || [ "$host_num" -gt "''${#HOSTS[@]}" ]; then
+        echo "Invalid selection"
+        exit 1
+      fi
+
+      SOURCE_HOST="''${HOSTS[$((host_num-1))]}"
+      echo "Selected: $SOURCE_HOST"
+
+      TEMP_MOUNT="/tmp/borg-mount-$$"
+      mkdir -p "$TEMP_MOUNT"
+
+      echo ""
+      echo "Mounting remote backup..."
+      ${pkgs.rclone}/bin/rclone mount \
+        --config "${rcloneConf}" \
+        --vfs-cache-mode writes \
+        --allow-other \
+        --daemon \
+        backblaze-b2:$SOURCE_HOST-backup-dcbond "$TEMP_MOUNT"
+
+      sleep 5
+
+      if ! mountpoint -q "$TEMP_MOUNT"; then
+        echo "ERROR: Failed to mount remote repository"
+        exit 1
+      fi
+
+      REPO="$TEMP_MOUNT"
+    else
+      REPO="${config.backups.borgDir}/${config.networking.hostName}"
+
+      if [ ! -d "$REPO" ]; then
+        echo "ERROR: Local repository not found at $REPO"
+        exit 1
+      fi
+
+      echo "Using local repository: $REPO"
+    fi
+
+    # archive selection
+    echo ""
+    echo "Fetching archives..."
+    archives=$(${pkgs.borgbackup}/bin/borg list --short "$REPO")
+
+    if [ -z "$archives" ]; then
+      echo "ERROR: No archives found"
+      exit 1
+    fi
+
+    echo ""
+    echo "Available archives:"
+    echo "$archives" | nl -w2 -s') '
+    echo ""
+    read -p "Select archive: " num
+
+    if ! [[ "$num" =~ ^[0-9]+$ ]]; then
+      echo "Invalid selection"
+      exit 1
+    fi
+
+    ARCHIVE=$(echo "$archives" | sed -n "''${num}p")
+
+    if [ -z "$ARCHIVE" ]; then
+      echo "Invalid selection"
+      exit 1
+    fi
+
+    echo "Selected: $ARCHIVE"
+
+    # path selection from configured standalone data directories
+    DATA_DIRS=(${lib.concatStringsSep " " (map (dir: ''"${dir}"'') config.backups.standaloneData)})
+
+    if [ ''${#DATA_DIRS[@]} -eq 0 ]; then
+      echo ""
+      echo "No standalone data directories configured in backups.standaloneData"
+      echo "Configure standalone backup directories in your host's configuration.nix:"
+      echo "  backups.standaloneData = [ \"/path/to/data\" ];"
+      exit 1
+    fi
+
+    echo ""
+    echo "Available data directories:"
+    for i in "''${!DATA_DIRS[@]}"; do
+      echo "  $((i+1))) ''${DATA_DIRS[$i]}"
+    done
+    echo ""
+
+    read -p "Select directory [1]: " dir_num
+    dir_num=''${dir_num:-1}
+
+    if ! [[ "$dir_num" =~ ^[0-9]+$ ]] || [ "$dir_num" -lt 1 ] || [ "$dir_num" -gt "''${#DATA_DIRS[@]}" ]; then
+      echo "Invalid selection"
+      exit 1
+    fi
+
+    RESTORE_PATH="''${DATA_DIRS[$((dir_num-1))]}"
+    echo "Selected: $RESTORE_PATH"
+
+    # calculate number of path components to strip (count leading slashes)
+    # e.g., /mnt/media/media/family-media has 4 components to strip
+    STRIP_COUNT=$(echo "$RESTORE_PATH" | tr -cd '/' | wc -c)
+
+    # generate recovery directory in same parent as original
+    TIMESTAMP=$(date +%Y%m%d-%H%M%S)
+    RECOVERY_DIR="$RESTORE_PATH-recovery-$TIMESTAMP"
+
+    if [ -e "$RECOVERY_DIR" ]; then
+      echo "ERROR: Recovery directory already exists: $RECOVERY_DIR"
+      exit 1
+    fi
+
+    echo ""
+    echo "========================================"
+    echo "Extracting Data"
+    echo "========================================"
+    echo ""
+    echo "From: $ARCHIVE"
+    echo "Path: $RESTORE_PATH"
+    echo "To:   $RECOVERY_DIR"
+    echo ""
+    echo "SAFE MODE: Your existing data will NOT be touched."
+    echo ""
+    read -p "Proceed? (y/N): " confirm
+    if ! [[ "$confirm" =~ ^[Yy]$ ]]; then
+      echo "Aborted."
+      exit 0
+    fi
+
+    mkdir -p "$RECOVERY_DIR"
+
+    echo ""
+    echo "Extracting..."
+    cd "$RECOVERY_DIR"
+    if ! ${pkgs.borgbackup}/bin/borg extract --verbose --list --strip-components=$STRIP_COUNT "$REPO"::"$ARCHIVE" "$RESTORE_PATH"; then
+      echo "ERROR: extraction failed"
+      cd /
+      rm -rf "$RECOVERY_DIR"
+      exit 1
+    fi
+
+    echo ""
+    echo "========================================"
+    echo "✓ Recovery Complete"
+    echo "========================================"
+    echo ""
+    echo "Data extracted to: $RECOVERY_DIR"
+    echo ""
+    echo "Next steps:"
+    echo "  1. Verify: ls $RECOVERY_DIR"
+    echo "  2. If correct, restore: rsync -av $RECOVERY_DIR/ $RESTORE_PATH/"
+    echo "  3. Clean up: rm -rf $RECOVERY_DIR"
+    echo ""
+  '';
+
 in
 
 {
@@ -766,6 +970,12 @@ in
       type = lib.types.str;
       default = "*-*-* 03:35:00"; # default everyday at 3:35am, override with alternate time in host-specific configuration.nix
       description = "when to start the backup (systemd timer format)";
+    };
+    standaloneData = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+      description = "standalone data directories to backup (not associated with any service)";
+      example = [ "/mnt/media/media/family-media" "/var/lib/custom-data" ];
     };
     serviceHooks = {
       preHook = lib.mkOption {
@@ -810,6 +1020,7 @@ in
       backupSuccessWebhookScript
       inspectLocalBackupsScript
       inspectRemoteBackupsScript
+      recoverDataDirectoryScript
       rclone
       fuse # needed for rclone mount
     ];
@@ -848,7 +1059,7 @@ in
           echo "spinning up services"
           ${lib.concatStringsSep "\n" config.backups.serviceHooks.postHook}
         '';
-        paths = lib.mkDefault [];
+        paths = lib.mkDefault config.backups.standaloneData;
         prune.keep = {
           daily = 30; # keep the last thirty daily archives
           weekly = 4; # keep the last four weekly archives (following exhaustion of the daily archives)

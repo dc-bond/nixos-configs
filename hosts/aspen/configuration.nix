@@ -22,13 +22,18 @@ in
     backups = {
       borgDir = "${storage.mountPoint}/borgbackup"; # host-specific borg backup directory override on backups.nix
       startTime = "*-*-* 02:05:00"; # everyday at 2:05am
+      standaloneData = [
+        "${storage.mountPoint}/media/family-media"
+      ];
     };
 
-    services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${storage.mountPoint}/media/family-media" ]; # backup media directory outside of any individual service backup context
+    # old pattern - now handled by backups.standaloneData above
+    #services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${storage.mountPoint}/media/family-media" ];
 
     environment.systemPackages = with pkgs; [
       wget # download tool
       usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
+      smartmontools # provides smartctl command for disk health monitoring
       rsync # sync tool
       btop # system monitor
     ];
