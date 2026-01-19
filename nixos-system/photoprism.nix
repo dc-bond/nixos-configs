@@ -49,6 +49,13 @@ in
     after = [ "mysql.service" ];
   };
 
+  #serviceHealth.${app} = {
+  #  enable = true;
+  #  checkCommand = "${pkgs.curl}/bin/curl -f http://127.0.0.1:2342/api/v1/status";
+  #  checkInterval = "5min";
+  #  initialDelay = "2min"; # give photoprism time to start up after boot
+  #};
+
   backups.serviceHooks = {
     preHook = lib.mkAfter [
       "systemctl stop ${app}.service"

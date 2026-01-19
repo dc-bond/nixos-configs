@@ -11,7 +11,6 @@
       system = "x86_64-linux";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
-      isMonitoringServer = true;
       windowManager = null;
       usesImpermanence = false;
       networking = {
@@ -52,7 +51,6 @@
       system = "x86_64-linux";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
-      isMonitoringServer = false;
       windowManager = "hyprland";
       usesImpermanence = true;
       networking = {
@@ -84,7 +82,6 @@
       system = "x86_64-linux";
       users = [ "danielle" ];
       bootLoader = "systemd-boot";
-      isMonitoringServer = false;
       windowManager = "labwc";
       usesImpermanence = false;
       networking = {
@@ -116,7 +113,6 @@
       system = "x86_64-linux";
       users = [ "chris" ];
       bootLoader = "systemd-boot";
-      isMonitoringServer = false;
       windowManager = "hyprland";
       usesImpermanence = true;
       networking = {
@@ -154,7 +150,6 @@
       system = "x86_64-linux";
       users = [ "chris" ];
       bootLoader = "grub";
-      isMonitoringServer = false;
       windowManager = null;
       usesImpermanence = false;
       networking = {
@@ -186,7 +181,6 @@
       system = "x86_64-linux";
       users = [ "eric" ];
       bootLoader = "systemd-boot";
-      isMonitoringServer = false;
       windowManager = "labwc";
       usesImpermanence = false;
       networking = {

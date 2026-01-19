@@ -84,7 +84,6 @@ let
     "address=/danielle-workouts.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/finplanner.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/frigate.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
-    "address=/grafana.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/home-assistant.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/jellyfin.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/jellyseerr.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
@@ -105,10 +104,12 @@ let
     "address=/weekly-recipes.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/zwavejs.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     # juniper services
-    "address=/pihole-juniper.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
-    "address=/traefik-juniper.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
-    "address=/vaultwarden.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
+    "address=/alertmanager.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
+    "address=/grafana.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
     "address=/homepage.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
+    "address=/pihole-juniper.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
+    "address=/prometheus.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
+    "address=/traefik-juniper.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
     "address=/webhooks.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
   ];
 
