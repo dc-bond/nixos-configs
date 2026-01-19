@@ -194,6 +194,8 @@ in
               ipAllowList = {
                 sourceRange = [
                   "192.168.1.0/24" # home LAN
+                  "${configVars.hosts.aspen.networking.tailscaleIp}" # server - for blackbox monitoring
+                  "${configVars.hosts.juniper.networking.tailscaleIp}" # server - for blackbox monitoring
                   "${configVars.hosts.thinkpad.networking.tailscaleIp}"
                   "${configVars.hosts.cypress.networking.tailscaleIp}"
                   "${configVars.hosts.alder.networking.tailscaleIp}"

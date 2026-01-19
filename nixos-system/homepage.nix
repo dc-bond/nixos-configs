@@ -29,7 +29,11 @@ in
       hideThemeToggle = true;
       hideReload = true;
       layout = {
-        "Services" = {
+        "Public Services" = {
+          style = "row";
+          columns = 5;
+        };
+        "Internal Services - Tailscale VPN Connection Only" = {
           style = "row";
           columns = 5;
         };
@@ -38,7 +42,46 @@ in
 
     services = [
       {
-        "Services" = [
+        "Public Services" = [
+          {
+            "Nextcloud" = {
+              href = "https://nextcloud.${configVars.domain1}/";
+              description = "Private Cloud";
+              ping = "https://nextcloud.${configVars.domain1}";
+            };
+          }
+          {
+            "Matrix" = {
+              href = "https://matrix.${configVars.domain1}/";
+              description = "Chat Server";
+              ping = "https://matrix.${configVars.domain1}";
+            };
+          }
+          {
+            "Vaultwarden" = {
+              href = "https://vaultwarden.${configVars.domain1}/";
+              description = "Password Manager";
+              ping = "https://vaultwarden.${configVars.domain1}";
+            };
+          }
+          {
+            "Authelia" = {
+              href = "https://identity.${configVars.domain1}/";
+              description = "SSO Authentication Portal";
+              ping = "https://identity.${configVars.domain1}";
+            };
+          }
+          {
+            "Gatlinburg TN 2026 Trip Itinerary" = {
+              href = "https://gatlinburg2026.dcbond.com";
+              description = "Trip Planning";
+              ping = "https://gatlinburg2026.dcbond.com";
+            };
+          }
+        ];
+      }
+      {
+        "Internal Services - Tailscale VPN Connection Only" = [
           {
             "Traefik-Aspen" = {
               href = "https://traefik-aspen.${configVars.domain2}/dashboard/#/";
@@ -82,10 +125,17 @@ in
             };
           }
           {
-            "Authelia" = {
-              href = "https://identity.${configVars.domain1}/";
-              description = "SSO Authentication Portal";
-              ping = "https://identity.${configVars.domain1}";
+            "Prometheus" = {
+              href = "https://prometheus.${configVars.domain2}/";
+              description = "Metrics Collection";
+              ping = "https://prometheus.${configVars.domain2}";
+            };
+          }
+          {
+            "Alertmanager" = {
+              href = "https://alertmanager.${configVars.domain2}/";
+              description = "Alert Routing";
+              ping = "https://alertmanager.${configVars.domain2}";
             };
           }
           {
@@ -93,13 +143,6 @@ in
               href = "https://lldap.${configVars.domain1}/";
               description = "Lightweight LDAP";
               ping = "https://lldap.${configVars.domain1}";
-            };
-          }
-          {
-            "Vaultwarden" = {
-              href = "https://vaultwarden.${configVars.domain2}/";
-              description = "Password Manager";
-              ping = "https://vaultwarden.${configVars.domain2}";
             };
           }
           {
@@ -156,20 +199,6 @@ in
               href = "https://sonarr.${configVars.domain2}/";
               description = "TV Show Management";
               ping = "https://sonarr.${configVars.domain2}";
-            };
-          }
-          {
-            "Nextcloud" = {
-              href = "https://nextcloud.${configVars.domain1}/";
-              description = "Private Cloud";
-              ping = "https://nextcloud.${configVars.domain1}";
-            };
-          }
-          {
-            "LibreChat" = {
-              href = "https://librechat.${configVars.domain2}/";
-              description = "AI Chat Interface";
-              ping = "https://librechat.${configVars.domain2}";
             };
           }
           {
@@ -233,13 +262,6 @@ in
               href = "https://frigate.${configVars.domain2}/";
               description = "NVR Camera System";
               ping = "https://frigate.${configVars.domain2}";
-            };
-          }
-          {
-            "Matrix" = {
-              href = "https://matrix.${configVars.domain1}/";
-              description = "Chat Server";
-              ping = "https://matrix.${configVars.domain1}";
             };
           }
           {
@@ -326,9 +348,14 @@ in
         background: var(--nord-frost-3);
       }
 
-      /* Hide Services header */
+      /* Style section headers */
       .services-group h2 {
-        display: none !important;
+        color: var(--nord-snow-storm-2) !important;
+        font-size: 1.25rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 1rem !important;
+        padding-bottom: 0.5rem !important;
+        border-bottom: 2px solid var(--nord-frost-3) !important;
       }
 
       /* Widgets */
@@ -406,72 +433,9 @@ in
       .fixed.bottom-4.right-4 {
         display: none !important;
       }
-
-      /* Matrix Rain Canvas */
-      #matrix-rain {
-        position: fixed !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        z-index: -1 !important;
-        pointer-events: none !important;
-      }
     '';
 
-    customJS = ''
-      // Minimal Matrix Rain Effect
-      (function() {
-        const canvas = document.createElement('canvas');
-        canvas.id = 'matrix-rain';
-        document.body.appendChild(canvas);
-
-        const ctx = canvas.getContext('2d');
-
-        function resizeCanvas() {
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
-        }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        const fontSize = 14;
-        const columns = Math.floor(canvas.width / fontSize);
-        const drops = Array(columns).fill(1);
-
-        // Characters to use (mix of alphanumeric and some symbols)
-        const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-
-        function draw() {
-          // Semi-transparent black to create fade effect
-          ctx.fillStyle = 'rgba(46, 52, 64, 0.05)'; // Very subtle fade using Nord Polar Night
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-          // Set text style - using Nord Frost-2 color
-          ctx.fillStyle = 'rgba(136, 192, 208, 0.15)'; // Very low opacity for subtlety
-          ctx.font = fontSize + 'px monospace';
-
-          for (let i = 0; i < drops.length; i++) {
-            // Random character
-            const text = chars[Math.floor(Math.random() * chars.length)];
-            const x = i * fontSize;
-            const y = drops[i] * fontSize;
-
-            ctx.fillText(text, x, y);
-
-            // Reset drop randomly or when it reaches bottom
-            if (y > canvas.height && Math.random() > 0.975) {
-              drops[i] = 0;
-            }
-
-            drops[i]++;
-          }
-        }
-
-        // Slower animation for minimal effect (every 50ms instead of every frame)
-        setInterval(draw, 50);
-      })();
-    '';
+    customJS = "";
 
     # environmentFile = null;
     allowedHosts = "homepage.${configVars.domain2}";

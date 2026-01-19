@@ -378,7 +378,7 @@ ${config.sops.placeholder.matrixHookshotPasskey}
           outbound = false;
           urlPrefix = "https://webhooks.${configVars.domain2}/";
           userIdPrefix = "_hookshot_";
-          allowJsTransformationFunctions = false;
+          allowJsTransformationFunctions = true; # enable JS transforms for alertmanager formatting
           waitForComplete = false;
         };
         bot = {

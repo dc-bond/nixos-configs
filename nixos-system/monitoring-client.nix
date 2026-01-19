@@ -4,44 +4,15 @@
   lib,
   configVars,
   ...
-}: 
+}:
 
 let
   hostData = configVars.hosts.${config.networking.hostName};
-  monitoringServer = lib.findFirst 
-    (h: h.isMonitoringServer) 
-    null 
-    (lib.attrValues configVars.hosts);
 in
 
 {
 
   services = {
-    
-    prometheus.exporters = {
-      node = {
-        enable = true;
-        port = 9100;
-        listenAddress = if hostData.isMonitoringServer
-          then "127.0.0.1" # local scraping on monitoring server
-          else "0.0.0.0"; # remote scraping from monitoring server
-        enabledCollectors = [ 
-          "systemd" # service states and health
-          "processes" # process count, states, forks
-          "interrupts" # irq statistics
-          "tcpstat"  # tcp connection states
-          "buddyinfo"  # memory fragmentation
-        ];
-      };
-      smartctl = lib.mkIf (hostData.hardware.enableSmartMonitoring or false) {
-        enable = true;
-        port = 9633;
-        listenAddress = if hostData.isMonitoringServer
-          then "127.0.0.1"
-          else "0.0.0.0";
-        maxInterval = "60s";
-      };
-    };
 
     smartd = lib.mkIf (hostData.hardware.enableSmartMonitoring or false) {
       enable = true;
@@ -52,9 +23,28 @@ in
     cadvisor = lib.mkIf (config.virtualisation.oci-containers.containers != {}) {
       enable = true;
       port = 7541;
-      listenAddress = if hostData.isMonitoringServer
-        then "127.0.0.1"
-        else "0.0.0.0";
+      listenAddress = hostData.networking.tailscaleIp;
+    };
+
+    prometheus.exporters = {
+      node = {
+        enable = true;
+        port = 9100;
+        listenAddress = hostData.networking.tailscaleIp; # bind to tailscale interface for secure remote scraping
+        enabledCollectors = [
+          "systemd" # service states and health
+          "processes" # process count, states, forks
+          "interrupts" # irq statistics
+          "tcpstat"  # tcp connection states
+          "buddyinfo"  # memory fragmentation
+        ];
+      };
+      smartctl = lib.mkIf (hostData.hardware.enableSmartMonitoring or false) {
+        enable = true;
+        port = 9633;
+        listenAddress = hostData.networking.tailscaleIp;
+        maxInterval = "60s";
+      };
     };
 
     promtail = {
@@ -65,9 +55,7 @@ in
           grpc_listen_port = 0;
         };
         clients = [{
-          url = if hostData.isMonitoringServer
-            then "http://127.0.0.1:3030/loki/api/v1/push"
-            else "http://${monitoringServer.networking.tailscaleIp}:3030/loki/api/v1/push";
+          url = "http://${configVars.hosts.juniper.networking.tailscaleIp}:3030/loki/api/v1/push";
         }];
         scrape_configs = [
           {

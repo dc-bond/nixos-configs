@@ -62,7 +62,6 @@ in
       "nixos-system/samba.nix"
 
       "nixos-system/postgresql.nix"
-      "nixos-system/monitoring-server.nix"
       "nixos-system/monitoring-client.nix"
       "nixos-system/traefik.nix"
       "nixos-system/mysql.nix"
@@ -84,7 +83,6 @@ in
       "nixos-system/oci-zwavejs.nix"
       "nixos-system/oci-searxng.nix"
       "nixos-system/oci-recipesage.nix"
-      "nixos-system/oci-librechat.nix"
       "nixos-system/oci-unifi.nix"
       #"nixos-system/oci-finplanner.nix" # requires authelia-dcbond.nix
       "nixos-system/oci-chris-workouts.nix"
