@@ -29,6 +29,7 @@
       nix-tree # table view of package dependencies
       ethtool # network tools
       inetutils # more network tools like telnet
+      zip # zip compression utility
       unzip # utility to unzip directories
       btop # system monitor
       nmap # network scanning

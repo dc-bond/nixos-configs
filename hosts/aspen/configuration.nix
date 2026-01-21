@@ -21,14 +21,11 @@ in
 
     backups = {
       borgDir = "${storage.mountPoint}/borgbackup"; # host-specific borg backup directory override on backups.nix
-      startTime = "*-*-* 02:05:00"; # everyday at 2:05am
+      #startTime = "*-*-* 02:05:00"; # everyday at 2:05am
       standaloneData = [
         "${storage.mountPoint}/media/family-media"
       ];
     };
-
-    # old pattern - now handled by backups.standaloneData above
-    #services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${storage.mountPoint}/media/family-media" ];
 
     environment.systemPackages = with pkgs; [
       wget # download tool

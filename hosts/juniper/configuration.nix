@@ -20,8 +20,6 @@
       btop # system monitor
     ];
 
-    backups.startTime = "*-*-* 01:35:00"; # everyday at 1:35am
-
     # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
     system.stateVersion = "24.11";
 

@@ -26,6 +26,206 @@ let
     recoveryPlan = recoveryPlan;
   };
 
+  # weekly disk health report generator
+  weeklyDiskHealthScript = pkgs.writeText "weekly-disk-health.py" ''
+    #!/usr/bin/env python3
+    import json
+    import urllib.request
+    import urllib.error
+    import os
+    from datetime import datetime
+
+    PROMETHEUS_URL = "http://127.0.0.1:9090"
+    WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")
+
+    def query_prometheus(query):
+        """Query Prometheus and return results"""
+        url = f"{PROMETHEUS_URL}/api/v1/query?query={urllib.parse.quote(query)}"
+        try:
+            with urllib.request.urlopen(url, timeout=10) as response:
+                data = json.loads(response.read().decode("utf-8"))
+                if data["status"] == "success":
+                    return data["data"]["result"]
+        except Exception as e:
+            print(f"Error querying Prometheus: {e}")
+        return []
+
+    def format_hours(hours):
+        """Convert hours to years, months, days"""
+        years = int(hours / 8760)
+        remaining = hours % 8760
+        months = int(remaining / 730)
+        days = int((remaining % 730) / 24)
+
+        parts = []
+        if years > 0:
+            parts.append(f"{years}y")
+        if months > 0:
+            parts.append(f"{months}m")
+        if days > 0:
+            parts.append(f"{days}d")
+        return " ".join(parts) if parts else "0d"
+
+    def get_disk_inventory():
+        """Get list of all disks and basic info"""
+        results = query_prometheus('smartctl_device')
+        disks = {}
+        for result in results:
+            labels = result["metric"]
+            device = labels.get("device", "unknown")
+            host = labels.get("host", "unknown")
+            key = f"{host}:{device}"
+            disks[key] = {
+                "host": host,
+                "device": device,
+                "model": labels.get("model_name", "unknown"),
+                "serial": labels.get("serial_number", "unknown"),
+                "interface": labels.get("interface", "unknown"),
+            }
+        return disks
+
+    def get_smart_status(host, device):
+        """Get overall SMART status"""
+        results = query_prometheus(f'smartctl_device_smart_status{{host="{host}",device="{device}"}}')
+        if results:
+            return "PASSED" if int(results[0]["value"][1]) == 1 else "FAILED"
+        return "UNKNOWN"
+
+    def get_temperature(host, device):
+        """Get current temperature"""
+        results = query_prometheus(f'smartctl_device_temperature{{host="{host}",device="{device}",temperature_type="current"}}')
+        if results:
+            return int(results[0]["value"][1])
+        return None
+
+    def get_attribute_value(host, device, attr_name):
+        """Get raw value of a SMART attribute"""
+        results = query_prometheus(
+            f'smartctl_device_attribute{{host="{host}",device="{device}",attribute_name="{attr_name}",attribute_value_type="raw"}}'
+        )
+        if results:
+            return int(float(results[0]["value"][1]))
+        return None
+
+    def generate_report():
+        """Generate comprehensive disk health report"""
+        disks = get_disk_inventory()
+
+        if not disks:
+            return "⚠️ No disks found in monitoring system"
+
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Header
+        report = f"📊 **Weekly Disk Health Report**\\n\\n"
+        report += f"**Generated**: {timestamp}\\n"
+        report += f"**Total Disks**: {len(disks)}\\n\\n"
+
+        # Overall health summary
+        failed_disks = []
+        warning_disks = []
+
+        for key, disk in disks.items():
+            status = get_smart_status(disk["host"], disk["device"])
+            if status == "FAILED":
+                failed_disks.append(f"{disk['host']}:{disk['device']}")
+
+            # Check for warning conditions
+            reallocated = get_attribute_value(disk["host"], disk["device"], "Reallocated_Sector_Ct")
+            pending = get_attribute_value(disk["host"], disk["device"], "Current_Pending_Sector")
+            temp = get_temperature(disk["host"], disk["device"])
+
+            if (reallocated and reallocated > 0) or (pending and pending > 0) or (temp and temp > 50):
+                warning_disks.append(f"{disk['host']}:{disk['device']}")
+
+        if failed_disks:
+            report += f"🔴 **CRITICAL**: {len(failed_disks)} disk(s) with FAILED SMART status\\n"
+            for disk in failed_disks:
+                report += f"   • {disk}\\n"
+            report += "\\n"
+
+        if warning_disks:
+            report += f"⚠️ **WARNING**: {len(warning_disks)} disk(s) with warning conditions\\n"
+            for disk in warning_disks:
+                report += f"   • {disk}\\n"
+            report += "\\n"
+
+        if not failed_disks and not warning_disks:
+            report += "✅ **All disks healthy**\\n\\n"
+
+        report += "---\\n\\n"
+
+        # Detailed per-disk report
+        for key, disk in sorted(disks.items()):
+            host = disk["host"]
+            device = disk["device"]
+
+            report += f"**{host} - {device}**\\n"
+            report += f"Model: {disk['model'][:40]}\\n"
+
+            # SMART status
+            status = get_smart_status(host, device)
+            status_emoji = "✅" if status == "PASSED" else "🔴"
+            report += f"Status: {status_emoji} {status}\\n"
+
+            # Temperature
+            temp = get_temperature(host, device)
+            if temp is not None:
+                temp_emoji = "🌡️" if temp <= 50 else "🔥"
+                report += f"Temp: {temp_emoji} {temp}°C\\n"
+
+            # Power-on hours
+            hours = get_attribute_value(host, device, "Power_On_Hours")
+            if hours is not None:
+                runtime = format_hours(hours)
+                report += f"Runtime: {runtime} ({hours:,} hours)\\n"
+
+            # Critical attributes
+            reallocated = get_attribute_value(host, device, "Reallocated_Sector_Ct")
+            pending = get_attribute_value(host, device, "Current_Pending_Sector")
+            uncorrectable = get_attribute_value(host, device, "Offline_Uncorrectable")
+
+            if reallocated is not None and reallocated > 0:
+                report += f"⚠️ Reallocated Sectors: {reallocated}\\n"
+            if pending is not None and pending > 0:
+                report += f"🔴 Pending Sectors: {pending}\\n"
+            if uncorrectable is not None and uncorrectable > 0:
+                report += f"🔴 Uncorrectable Sectors: {uncorrectable}\\n"
+
+            report += "\\n"
+
+        return report
+
+    def send_webhook(message):
+        """Send report to Matrix via webhook"""
+        if not WEBHOOK_URL:
+            print("ERROR: WEBHOOK_URL not set")
+            return False
+
+        payload = json.dumps({"text": message}).encode("utf-8")
+        req = urllib.request.Request(
+            WEBHOOK_URL,
+            data=payload,
+            headers={"Content-Type": "application/json"}
+        )
+
+        try:
+            with urllib.request.urlopen(req, timeout=10) as response:
+                return response.status == 200
+        except Exception as e:
+            print(f"Error sending webhook: {e}")
+            return False
+
+    if __name__ == "__main__":
+        report = generate_report()
+        print(report)
+
+        if send_webhook(report):
+            print("\\nReport sent successfully")
+        else:
+            print("\\nFailed to send report")
+  '';
+
   # transformer service that converts alertmanager webhooks to matrix hookshot format
   transformerScript = pkgs.writeText "alertmanager-transformer.py" ''
     #!/usr/bin/env python3
@@ -39,17 +239,14 @@ let
     PORT = int(os.environ.get("PORT", "9099"))
 
     def format_alert(alert):
-        severity = alert.get("labels", {}).get("severity", "unknown")
         alertname = alert.get("labels", {}).get("alertname", "Unknown Alert")
-        instance = alert.get("labels", {}).get("instance") or alert.get("labels", {}).get("host", "unknown")
-        description = alert.get("annotations", {}).get("description") or alert.get("annotations", {}).get("summary", "No description")
+        # Use host label for node alerts, fall back to instance for endpoint alerts
+        identifier = alert.get("labels", {}).get("host") or alert.get("labels", {}).get("instance", "unknown")
 
-        emoji = "🔴" if severity == "critical" else "⚠️"
-        return f"{emoji} **{alertname}** ({severity})\n📍 {instance}\n{description}"
+        return f"**{alertname}** ({identifier})"
 
     class AlertmanagerHandler(BaseHTTPRequestHandler):
         def log_message(self, format, *args):
-            # Log to stdout for journald
             print(f"{self.address_string()} - {format % args}")
 
         def do_POST(self):
@@ -58,7 +255,6 @@ let
                 body = self.rfile.read(content_length)
                 data = json.loads(body.decode("utf-8"))
 
-                # Transform Alertmanager payload to Hookshot format
                 status = "🔴 **FIRING**" if data.get("status") == "firing" else "✅ **RESOLVED**"
                 alert_count = len(data.get("alerts", []))
 
@@ -67,7 +263,6 @@ let
 
                 message = f"{status} - {alert_count} alert(s)\n\n{alerts_text}"
 
-                # Send to Hookshot
                 hookshot_payload = json.dumps({"text": message}).encode("utf-8")
                 req = urllib.request.Request(
                     HOOKSHOT_URL,
@@ -104,81 +299,145 @@ let
         interval: 30s
         rules:
 
-          - alert: PublicEndpointDown
+          - alert: publicEndpointDown
             expr: probe_success{job="blackbox-http"} == 0
-            for: 3m
-            labels:
-              severity: critical
-            annotations:
-              summary: "Public endpoint {{ $labels.instance }} is unreachable"
-              description: "HTTP(S) probe to {{ $labels.instance }} has been failing for more than 3 minutes."
-
-          - alert: SSLCertificateExpiringSoon
-            expr: (probe_ssl_earliest_cert_expiry - time()) / 86400 < 14
-            for: 1h
-            labels:
-              severity: warning
-            annotations:
-              summary: "SSL certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}"
-              description: "SSL certificate for {{ $labels.instance }} will expire in less than 14 days."
-
-          - alert: SSLCertificateExpired
-            expr: probe_ssl_earliest_cert_expiry - time() < 0
             for: 1m
             labels:
               severity: critical
             annotations:
-              summary: "SSL certificate for {{ $labels.instance }} has expired"
-              description: "SSL certificate for {{ $labels.instance }} is expired."
+              summary: "{{ $labels.instance }} is down (probe failed)"
+
+          - alert: sslCertificateExpiringSoon
+            expr: (probe_ssl_earliest_cert_expiry - time()) / 86400 < 14
+            for: 1h
+            labels:
+              severity: warning
+
+          - alert: sslCertificateExpired
+            expr: probe_ssl_earliest_cert_expiry - time() < 0
+            for: 1m
+            labels:
+              severity: critical
 
       - name: host_health_alerts
         interval: 30s
         rules:
 
-          - alert: HostDown
-            expr: up{job="node"} == 0
-            for: 3m
+          - alert: hostDown
+            expr: up{job="node", host=~"aspen|juniper|cypress|kauri"} == 0
+            for: 2m
             labels:
               severity: critical
-            annotations:
-              summary: "Host {{ $labels.host }} is unreachable"
-              description: "Prometheus cannot scrape metrics from {{ $labels.host }} for more than 3 minutes."
 
-          - alert: HighCPUUsage
+          - alert: hostUp
+            expr: up{job="node", host=~"thinkpad|alder"} == 1 and up{job="node", host=~"thinkpad|alder"} offset 5m == 0
+            for: 1m
+            labels:
+              severity: info
+
+          - alert: highCpuUsage
             expr: 100 - (avg by (host) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
             for: 10m
             labels:
               severity: warning
-            annotations:
-              summary: "High CPU usage on {{ $labels.host }}"
-              description: "CPU usage on {{ $labels.host }} has been above 90% for more than 10 minutes."
 
-          - alert: HighMemoryUsage
+          - alert: highMemoryUsage
             expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
             for: 5m
             labels:
               severity: warning
-            annotations:
-              summary: "High memory usage on {{ $labels.host }}"
-              description: "Memory usage on {{ $labels.host }} has been above 90% for more than 5 minutes."
 
-          - alert: DiskSpaceLow
+          - alert: diskSpaceLow
             expr: (node_filesystem_avail_bytes{fstype=~"ext4|btrfs|xfs"} / node_filesystem_size_bytes{fstype=~"ext4|btrfs|xfs"}) * 100 < 10
             for: 5m
             labels:
               severity: warning
-            annotations:
-              summary: "Disk space low on {{ $labels.host }}:{{ $labels.mountpoint }}"
-              description: "Filesystem {{ $labels.mountpoint }} on {{ $labels.host }} has less than 10% free space remaining."
 
-          - alert: DiskSpaceCritical
+          - alert: diskSpaceCritical
             expr: (node_filesystem_avail_bytes{fstype=~"ext4|btrfs|xfs"} / node_filesystem_size_bytes{fstype=~"ext4|btrfs|xfs"}) * 100 < 5
             for: 2m
             labels:
               severity: critical
+
+      - name: backup_health_alerts
+        interval: 30s
+        rules:
+
+          - alert: backupNotRunRecently
+            expr: time() - node_systemd_unit_start_time_seconds{name=~"borgbackup-job-.*", host=~"aspen|juniper"} > 90000
+            for: 30m
+            labels:
+              severity: critical
             annotations:
-              summary: "Disk space critical on {{ $labels.host }}:{{ $labels.mountpoint }}"
-              description: "Filesystem {{ $labels.mountpoint }} on {{ $labels.host }} has less than 5% free space remaining."
+              summary: "Backup has not run on {{ $labels.host }} in over 25 hours"
+
+          - alert: backupServiceFailed
+            expr: node_systemd_unit_state{name=~"borgbackup-job-.*|cloudBackup.service", state="failed", host=~"aspen|juniper"} == 1
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Backup service {{ $labels.name }} failed on {{ $labels.host }}"
+
+          - alert: cloudBackupStale
+            expr: time() - node_systemd_unit_start_time_seconds{name="cloudBackup.service", host=~"aspen|juniper"} > 90000
+            for: 30m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Cloud backup has not synced on {{ $labels.host }} in over 25 hours"
+
+      - name: disk_health_alerts
+        interval: 60s
+        rules:
+
+          - alert: smartStatusFailed
+            expr: smartctl_device_smart_status == 0
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "SMART status FAILED on {{ $labels.device }} ({{ $labels.host }})"
+
+          - alert: diskReallocatedSectors
+            expr: smartctl_device_attribute{attribute_name="Reallocated_Sector_Ct", attribute_value_type="raw"} > 0
+            for: 1h
+            labels:
+              severity: warning
+            annotations:
+              summary: "{{ $labels.device }} on {{ $labels.host }} has {{ $value }} reallocated sectors"
+
+          - alert: diskPendingSectors
+            expr: smartctl_device_attribute{attribute_name="Current_Pending_Sector", attribute_value_type="raw"} > 0
+            for: 30m
+            labels:
+              severity: critical
+            annotations:
+              summary: "{{ $labels.device }} on {{ $labels.host }} has {{ $value }} pending sectors (potential failure)"
+
+          - alert: diskUncorrectableSectors
+            expr: smartctl_device_attribute{attribute_name="Offline_Uncorrectable", attribute_value_type="raw"} > 0
+            for: 30m
+            labels:
+              severity: critical
+            annotations:
+              summary: "{{ $labels.device }} on {{ $labels.host }} has {{ $value }} uncorrectable sectors (DATA LOSS RISK)"
+
+          - alert: diskTemperatureHigh
+            expr: smartctl_device_temperature{temperature_type="current"} > 55
+            for: 15m
+            labels:
+              severity: warning
+            annotations:
+              summary: "{{ $labels.device }} on {{ $labels.host }} temperature {{ $value }}°C (threshold: 55°C)"
+
+          - alert: diskTemperatureCritical
+            expr: smartctl_device_temperature{temperature_type="current"} > 65
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "{{ $labels.device }} on {{ $labels.host }} temperature {{ $value }}°C (CRITICAL - risk of thermal damage)"
   '';
 
 in
@@ -197,6 +456,9 @@ in
     secrets.chrisNotificationsWebhookUrl = {};
     templates."alertmanager-hookshot-env".content = ''
       HOOKSHOT_URL=${config.sops.placeholder.chrisNotificationsWebhookUrl}
+    '';
+    templates."weekly-disk-health-env".content = ''
+      WEBHOOK_URL=${config.sops.placeholder.chrisNotificationsWebhookUrl}
     '';
   };
 
@@ -227,6 +489,42 @@ in
       RestrictRealtime = true;
       RestrictSUIDSGID = true;
       PrivateMounts = true;
+    };
+  };
+
+  systemd.services.weekly-disk-health = {
+    description = "Weekly Disk Health Report Generator";
+    after = [ "network-online.target" "prometheus.service" ];
+    wants = [ "network-online.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.python3}/bin/python3 ${weeklyDiskHealthScript}";
+      EnvironmentFile = config.sops.templates."weekly-disk-health-env".path;
+      DynamicUser = true;
+      NoNewPrivileges = true;
+      PrivateTmp = true;
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      ProtectKernelTunels = true;
+      ProtectKernelModules = true;
+      ProtectControlGroups = true;
+      RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
+      RestrictNamespaces = true;
+      LockPersonality = true;
+      MemoryDenyWriteExecute = true;
+      RestrictRealtime = true;
+      RestrictSUIDSGID = true;
+      PrivateMounts = true;
+    };
+  };
+
+  systemd.timers.weekly-disk-health = {
+    description = "Weekly Disk Health Report Timer";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "Sun 08:00:00";
+      Persistent = true;  # run on next boot if missed
+      RandomizedDelaySec = "30m";  # randomize within 30 minutes to avoid load spikes
     };
   };
 
@@ -405,14 +703,43 @@ in
           static_configs = [
             {
               targets = [
-                # aspen services
+                # aspen services - domain1
                 "https://nextcloud.${configVars.domain1}"
                 "https://identity.${configVars.domain1}"
-                # juniper services
+                # aspen services - domain2
+                "https://actual.${configVars.domain2}"
+                "https://bond-ledger.${configVars.domain2}"
+                "https://calibre-web.${configVars.domain2}"
+                "https://chris-workouts.${configVars.domain2}"
+                "https://danielle-workouts.${configVars.domain2}"
+                "https://frigate.${configVars.domain2}"
+                "https://home-assistant.${configVars.domain2}"
+                "https://jellyfin.${configVars.domain2}"
+                "https://jellyseerr.${configVars.domain2}"
+                "https://n8n.${configVars.domain2}"
+                "https://photos.${configVars.domain2}"
+                "https://pihole-aspen.${configVars.domain2}/admin/login"
+                "https://prowlarr.${configVars.domain2}"
+                "https://radarr.${configVars.domain2}"
+                "https://recipesage.${configVars.domain2}"
+                "https://sabnzbd.${configVars.domain2}"
+                "https://search.${configVars.domain2}"
+                "https://sonarr.${configVars.domain2}"
+                "https://stirling-pdf.${configVars.domain2}"
+                "https://traefik-aspen.${configVars.domain2}"
+                "https://unifi.${configVars.domain2}"
+                "https://weekly-recipes.${configVars.domain2}"
+                "https://zwavejs.${configVars.domain2}"
+                # juniper services - domain1
                 "https://matrix.${configVars.domain1}"
                 "https://vaultwarden.${configVars.domain1}"
+                # juniper services - domain2
+                "https://alertmanager.${configVars.domain2}"
                 "https://grafana.${configVars.domain2}"
                 "https://homepage.${configVars.domain2}"
+                "https://pihole-juniper.${configVars.domain2}/admin/login"
+                "https://prometheus.${configVars.domain2}"
+                "https://traefik-juniper.${configVars.domain2}"
               ];
             }
           ];
@@ -503,7 +830,41 @@ in
             group_wait = "30s";
             group_interval = "5m";
             repeat_interval = "4h";
+            routes = [
+              {
+                matchers = [ "alertname=~hostDown|hostUp" ];
+                receiver = "matrix-webhook";
+                repeat_interval = "876000h"; # ~100 years = effectively never
+                group_wait = "30s";
+                group_interval = "5m";
+              }
+              # Mute endpoint alerts during nightly backup window
+              {
+                matchers = [ "alertname=publicEndpointDown" ];
+                receiver = "matrix-webhook";
+                mute_time_intervals = [ "nightly-backup-window" ];
+              }
+            ];
           };
+          mute_time_intervals = [
+            {
+              name = "nightly-backup-window";
+              time_intervals = [
+                # all hosts backup at 02:30 EST/EDT (06:30-07:30 UTC depending on DST)
+                # services are stopped, local borg backup runs (few minutes), services restart
+                # 90-minute window covers local backup downtime + DST variation
+                {
+                  times = [
+                    {
+                      start_time = "06:25";
+                      end_time = "07:45";
+                    }
+                  ];
+                  # applies to all days (omitting weekdays field means every day)
+                }
+              ];
+            }
+          ];
           receivers = [
             {
               name = "matrix-webhook";
@@ -527,8 +888,8 @@ in
             }
             # inhibit endpoint down if host is down
             {
-              source_matchers = [ "alertname=HostDown" ];
-              target_matchers = [ "alertname=PublicEndpointDown" ];
+              source_matchers = [ "alertname=hostDown" ];
+              target_matchers = [ "alertname=publicEndpointDown" ];
               equal = [ "host" ];
             }
           ];
