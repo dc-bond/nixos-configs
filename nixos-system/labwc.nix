@@ -11,7 +11,7 @@
   environment.systemPackages = with pkgs; [
     wl-clipboard # command-line copy/paste utilities for wayland
     libsecret # secrets library for gnome keyring
-    xarchiver # gui archive tool (unzip, rar, etc.)
+    file-roller # archive manager
   ];
 
   programs = {
