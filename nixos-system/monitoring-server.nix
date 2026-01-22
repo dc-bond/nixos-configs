@@ -26,7 +26,6 @@ let
     recoveryPlan = recoveryPlan;
   };
 
-  # weekly disk health report generator
   weeklyDiskHealthScript = pkgs.writeText "weekly-disk-health.py" ''
     #!/usr/bin/env python3
     import json
@@ -105,6 +104,39 @@ let
         )
         if results:
             return int(float(results[0]["value"][1]))
+        return None
+
+    def get_btrfs_scrub_status():
+        """Get btrfs scrub status for all hosts"""
+        results = query_prometheus('btrfs_scrub_status')
+        scrubs = {}
+        for result in results:
+            labels = result["metric"]
+            host = labels.get("host", "unknown")
+            mountpoint = labels.get("mountpoint", "unknown")
+            key = f"{host}:{mountpoint}"
+            status_code = int(result["value"][1])
+            scrubs[key] = {
+                "host": host,
+                "mountpoint": mountpoint,
+                "status_code": status_code,
+            }
+        return scrubs
+
+    def get_btrfs_scrub_errors(host, mountpoint):
+        """Get btrfs scrub error counts"""
+        results = query_prometheus(f'btrfs_scrub_uncorrectable_errors_total{{host="{host}",mountpoint="{mountpoint}"}}')
+        errors = {}
+        for result in results:
+            error_type = result["metric"].get("type", "unknown")
+            errors[error_type] = int(result["value"][1])
+        return errors
+
+    def get_btrfs_scrub_timestamp(host, mountpoint):
+        """Get last scrub completion timestamp"""
+        results = query_prometheus(f'btrfs_scrub_last_completion_timestamp{{host="{host}",mountpoint="{mountpoint}"}}')
+        if results:
+            return int(results[0]["value"][1])
         return None
 
     def generate_report():
@@ -193,6 +225,88 @@ let
                 report += f"🔴 Uncorrectable Sectors: {uncorrectable}\\n"
 
             report += "\\n"
+
+        # Btrfs scrub status section
+        report += "---\\n\\n"
+        report += "**BTRFS Filesystem Scrub Status**\\n\\n"
+
+        scrubs = get_btrfs_scrub_status()
+        if not scrubs:
+            report += "No btrfs filesystems found\\n\\n"
+        else:
+            scrub_failed = []
+            scrub_errors = []
+            scrub_ok = []
+
+            for key, scrub in scrubs.items():
+                host = scrub["host"]
+                mountpoint = scrub["mountpoint"]
+                status_code = scrub["status_code"]
+
+                # Check for errors
+                errors = get_btrfs_scrub_errors(host, mountpoint)
+                total_errors = sum(errors.values())
+
+                if total_errors > 0:
+                    scrub_errors.append(f"{host}:{mountpoint} ({total_errors} errors)")
+                elif status_code == 0:
+                    scrub_failed.append(f"{host}:{mountpoint}")
+                elif status_code == 1:
+                    scrub_ok.append(f"{host}:{mountpoint}")
+
+            # Summary
+            if scrub_errors:
+                report += f"🔴 **CRITICAL**: {len(scrub_errors)} filesystem(s) with data corruption\\n"
+                for item in scrub_errors:
+                    report += f"   • {item}\\n"
+                report += "\\n"
+
+            if scrub_failed:
+                report += f"⚠️ **WARNING**: {len(scrub_failed)} filesystem(s) with failed scrubs\\n"
+                for item in scrub_failed:
+                    report += f"   • {item}\\n"
+                report += "\\n"
+
+            if not scrub_errors and not scrub_failed:
+                report += f"✅ **All filesystems scrubbed successfully** ({len(scrub_ok)} filesystem(s))\\n\\n"
+
+            # Detailed per-filesystem report
+            for key, scrub in sorted(scrubs.items()):
+                host = scrub["host"]
+                mountpoint = scrub["mountpoint"]
+                status_code = scrub["status_code"]
+
+                report += f"**{host}:{mountpoint}**\\n"
+
+                # Status
+                status_map = {
+                    0: "🔴 Failed",
+                    1: "✅ Success",
+                    2: "🔄 Running",
+                    3: "⚠️ Never Run"
+                }
+                status = status_map.get(status_code, "❓ Unknown")
+                report += f"Status: {status}\\n"
+
+                # Error counts
+                errors = get_btrfs_scrub_errors(host, mountpoint)
+                if errors:
+                    data_errors = errors.get("data", 0)
+                    tree_errors = errors.get("tree", 0)
+                    if data_errors > 0:
+                        report += f"🔴 Data Errors: {data_errors}\\n"
+                    if tree_errors > 0:
+                        report += f"🔴 Tree Errors: {tree_errors}\\n"
+
+                # Last run timestamp
+                timestamp = get_btrfs_scrub_timestamp(host, mountpoint)
+                if timestamp:
+                    from datetime import datetime
+                    last_run = datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
+                    days_ago = (datetime.now().timestamp() - timestamp) / 86400
+                    report += f"Last Run: {last_run} ({days_ago:.1f} days ago)\\n"
+
+                report += "\\n"
 
         return report
 
@@ -438,6 +552,42 @@ let
               severity: critical
             annotations:
               summary: "{{ $labels.device }} on {{ $labels.host }} temperature {{ $value }}°C (CRITICAL - risk of thermal damage)"
+
+      - name: btrfs_scrub_alerts
+        interval: 60s
+        rules:
+
+          - alert: btrfsDataCorruption
+            expr: btrfs_scrub_uncorrectable_errors_total > 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "BTRFS DATA CORRUPTION detected on {{ $labels.mountpoint }} ({{ $labels.host }}) - {{ $value }} {{ $labels.type }} errors found"
+
+          - alert: btrfsScrubNotRunning
+            expr: time() - btrfs_scrub_last_completion_timestamp > 604800
+            for: 30m
+            labels:
+              severity: warning
+            annotations:
+              summary: "BTRFS scrub has not completed on {{ $labels.mountpoint }} ({{ $labels.host }}) in over 7 days"
+
+          - alert: btrfsScrubFailed
+            expr: btrfs_scrub_status == 0
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "BTRFS scrub failed on {{ $labels.mountpoint }} ({{ $labels.host }})"
+
+          - alert: btrfsScrubNeverRun
+            expr: btrfs_scrub_status == 3
+            for: 1h
+            labels:
+              severity: warning
+            annotations:
+              summary: "BTRFS scrub has never run on {{ $labels.mountpoint }} ({{ $labels.host }})"
   '';
 
 in
@@ -462,69 +612,73 @@ in
     '';
   };
 
-  systemd.services.alertmanager-to-hookshot = {
-    description = "Alertmanager to Matrix Hookshot Transformer";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.python3}/bin/python3 ${transformerScript}";
-      Restart = "on-failure";
-      RestartSec = "10s";
-      EnvironmentFile = config.sops.templates."alertmanager-hookshot-env".path;
-      Environment = [ "PORT=9099" ];
-      DynamicUser = true;
-      NoNewPrivileges = true;
-      PrivateTmp = true;
-      ProtectSystem = "strict";
-      ProtectHome = true;
-      ProtectKernelTunels = true;
-      ProtectKernelModules = true;
-      ProtectControlGroups = true;
-      RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
-      RestrictNamespaces = true;
-      LockPersonality = true;
-      MemoryDenyWriteExecute = true;
-      RestrictRealtime = true;
-      RestrictSUIDSGID = true;
-      PrivateMounts = true;
+  systemd = {
+    services = {
+      alertmanager-to-hookshot = {
+        description = "Alertmanager to Matrix Hookshot Transformer";
+        wantedBy = [ "multi-user.target" ];
+        after = [ "network-online.target" ];
+        wants = [ "network-online.target" ];
+        serviceConfig = {
+          Type = "simple";
+          ExecStart = "${pkgs.python3}/bin/python3 ${transformerScript}";
+          Restart = "on-failure";
+          RestartSec = "10s";
+          EnvironmentFile = config.sops.templates."alertmanager-hookshot-env".path;
+          Environment = [ "PORT=9099" ];
+          DynamicUser = true;
+          NoNewPrivileges = true;
+          PrivateTmp = true;
+          ProtectSystem = "strict";
+          ProtectHome = true;
+          ProtectKernelTunels = true;
+          ProtectKernelModules = true;
+          ProtectControlGroups = true;
+          RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
+          RestrictNamespaces = true;
+          LockPersonality = true;
+          MemoryDenyWriteExecute = true;
+          RestrictRealtime = true;
+          RestrictSUIDSGID = true;
+          PrivateMounts = true;
+        };
+      };
+      weekly-disk-health = {
+        description = "Weekly Disk Health Report Generator";
+        after = [ "network-online.target" "prometheus.service" ];
+        wants = [ "network-online.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.python3}/bin/python3 ${weeklyDiskHealthScript}";
+          EnvironmentFile = config.sops.templates."weekly-disk-health-env".path;
+          DynamicUser = true;
+          NoNewPrivileges = true;
+          PrivateTmp = true;
+          ProtectSystem = "strict";
+          ProtectHome = true;
+          ProtectKernelTunels = true;
+          ProtectKernelModules = true;
+          ProtectControlGroups = true;
+          RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
+          RestrictNamespaces = true;
+          LockPersonality = true;
+          MemoryDenyWriteExecute = true;
+          RestrictRealtime = true;
+          RestrictSUIDSGID = true;
+          PrivateMounts = true;
+        };
+      };
     };
-  };
-
-  systemd.services.weekly-disk-health = {
-    description = "Weekly Disk Health Report Generator";
-    after = [ "network-online.target" "prometheus.service" ];
-    wants = [ "network-online.target" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.python3}/bin/python3 ${weeklyDiskHealthScript}";
-      EnvironmentFile = config.sops.templates."weekly-disk-health-env".path;
-      DynamicUser = true;
-      NoNewPrivileges = true;
-      PrivateTmp = true;
-      ProtectSystem = "strict";
-      ProtectHome = true;
-      ProtectKernelTunels = true;
-      ProtectKernelModules = true;
-      ProtectControlGroups = true;
-      RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
-      RestrictNamespaces = true;
-      LockPersonality = true;
-      MemoryDenyWriteExecute = true;
-      RestrictRealtime = true;
-      RestrictSUIDSGID = true;
-      PrivateMounts = true;
-    };
-  };
-
-  systemd.timers.weekly-disk-health = {
-    description = "Weekly Disk Health Report Timer";
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnCalendar = "Sun 08:00:00";
-      Persistent = true;  # run on next boot if missed
-      RandomizedDelaySec = "30m";  # randomize within 30 minutes to avoid load spikes
+    timers = {
+      weekly-disk-health = {
+        description = "Weekly Disk Health Report Timer";
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          OnCalendar = "Sun 08:00:00";
+          Persistent = true;  # run on next boot if missed
+          RandomizedDelaySec = "30m";  # randomize within 30 minutes to avoid load spikes
+        };
+      };
     };
   };
 

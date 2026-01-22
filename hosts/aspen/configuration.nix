@@ -35,6 +35,13 @@ in
       btop # system monitor
     ];
 
+    # weekly btrfs scrubbing for data integrity
+    services.btrfs.autoScrub = {
+      enable = true;
+      interval = "weekly";
+      fileSystems = [ "/" ];
+    };
+
     # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
     system.stateVersion = "24.11";
 
