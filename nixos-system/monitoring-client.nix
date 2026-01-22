@@ -8,6 +8,68 @@
 
 let
   hostData = configVars.hosts.${config.networking.hostName};
+
+  btrfsScrubExporter = pkgs.writeShellScript "btrfs-scrub-exporter.sh" ''
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    TEXTFILE_DIR="/var/lib/prometheus/node-exporter-text-files"
+    METRICS_FILE="$TEXTFILE_DIR/btrfs_scrub.prom.$$"
+    FINAL_FILE="$TEXTFILE_DIR/btrfs_scrub.prom"
+
+    mkdir -p "$TEXTFILE_DIR"
+
+    # Find all btrfs filesystems
+    for mountpoint in $(${pkgs.util-linux}/bin/findmnt -t btrfs -o TARGET -n | sort -u); do
+      # Escape mountpoint for label (replace / with _)
+      label=$(echo "$mountpoint" | sed 's/\//_/g' | sed 's/^_/root/')
+
+      # Get scrub status
+      scrub_status=$(${pkgs.btrfs-progs}/bin/btrfs scrub status "$mountpoint" 2>/dev/null || echo "")
+
+      if echo "$scrub_status" | grep -q "scrub started"; then
+        # Scrub is currently running
+        echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 2"
+      elif echo "$scrub_status" | grep -q "finished after"; then
+        # Scrub completed successfully
+        echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 1"
+
+        # Extract error counts
+        data_errors=$(echo "$scrub_status" | grep -oP 'data_extents_scrubbed.*?(\d+) errors' | grep -oP '\d+(?= errors)' | head -1 || echo "0")
+        tree_errors=$(echo "$scrub_status" | grep -oP 'tree_extents_scrubbed.*?(\d+) errors' | grep -oP '\d+(?= errors)' | head -1 || echo "0")
+
+        echo "btrfs_scrub_uncorrectable_errors_total{mountpoint=\"$mountpoint\",type=\"data\"} $data_errors"
+        echo "btrfs_scrub_uncorrectable_errors_total{mountpoint=\"$mountpoint\",type=\"tree\"} $tree_errors"
+
+        # Extract duration (format: HH:MM:SS)
+        duration=$(echo "$scrub_status" | grep -oP 'finished after \K[0-9:]+' | head -1 || echo "00:00:00")
+        duration_seconds=$(echo "$duration" | ${pkgs.gawk}/bin/awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }')
+        echo "btrfs_scrub_duration_seconds{mountpoint=\"$mountpoint\"} $duration_seconds"
+
+        # Get timestamp from systemd unit (best effort)
+        unit_name="btrfs-scrub@$(${pkgs.systemd}/bin/systemd-escape --path "$mountpoint").service"
+        last_run=$(${pkgs.systemd}/bin/systemctl show "$unit_name" --property=ExecMainExitTimestamp --value 2>/dev/null || echo "")
+        if [ -n "$last_run" ] && [ "$last_run" != "n/a" ]; then
+          timestamp=$(date -d "$last_run" +%s 2>/dev/null || echo "0")
+          echo "btrfs_scrub_last_completion_timestamp{mountpoint=\"$mountpoint\"} $timestamp"
+        fi
+
+        # Get bytes scrubbed
+        data_bytes=$(echo "$scrub_status" | grep -oP 'data_bytes_scrubbed: \K\d+' | head -1 || echo "0")
+        echo "btrfs_scrub_bytes_scrubbed{mountpoint=\"$mountpoint\"} $data_bytes"
+      elif echo "$scrub_status" | grep -q "no stats"; then
+        # Never run
+        echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 3"
+      else
+        # Failed or unknown
+        echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 0"
+      fi
+    done > "$METRICS_FILE"
+
+    # Atomic move to prevent partial reads
+    mv "$METRICS_FILE" "$FINAL_FILE"
+  '';
+
 in
 
 {
@@ -38,6 +100,7 @@ in
           "tcpstat"  # tcp connection states
           "buddyinfo"  # memory fragmentation
         ];
+        extraFlags = [ "--collector.textfile.directory=/var/lib/prometheus/node-exporter-text-files" ];
       };
       smartctl = lib.mkIf (hostData.hardware.enableSmartMonitoring or false) {
         enable = true;
@@ -92,6 +155,12 @@ in
       };
     };
 
+  };
+
+  systemd.services."btrfs-scrub@" = lib.mkIf config.services.btrfs.autoScrub.enable {
+    serviceConfig = {
+      ExecStartPost = "${btrfsScrubExporter}";
+    };
   };
 
 }
