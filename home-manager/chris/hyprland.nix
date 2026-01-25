@@ -31,8 +31,8 @@ let
     # set the new wallpaper
     ${pkgs.swww}/bin/swww img $wallpaper --transition-step 20 --transition-fps=20
     
-    # reload waybar
-    ${pkgs.systemd}/bin/systemctl --user restart waybar.service
+    # reload waybar (restart if running, start if not)
+    ${pkgs.systemd}/bin/systemctl --user restart waybar.service 2>/dev/null || ${pkgs.systemd}/bin/systemctl --user start waybar.service
     
     # send notification
     #${pkgs.dunst}/bin/dunstify "Wallpaper and Taskbar Reloaded"
@@ -109,15 +109,25 @@ in
     mimeType = [ "x-scheme-handler/element" ];
   };
 
+  #1. Hyprland starts → triggers graphical-session.target
+  #2. Waybar starts via systemd (may initially fail to load colors properly since desktopReload has not run yet)
+  #3. desktopReload service starts automatically after waybar
+  #4. 2-second delay ensures everything is settled
+  #5. desktopReload runs → creates colors and restarts waybar
+  #6. Waybar reloads with proper colors
   systemd.user = {
     services.desktopReload = {
       Unit = {
         Description = "Reload desktop theme and wallpaper";
-        After = [ "graphical-session.target" ];
+        After = [ "graphical-session.target" "waybar.service" ];
       };
       Service = {
         Type = "oneshot";
+        ExecStartPre = "${pkgs.coreutils}/bin/sleep 2";
         ExecStart = "${desktopReloadScript}/bin/desktopReload";
+      };
+      Install = {
+        WantedBy = [ "graphical-session.target" ];
       };
     };
     timers.desktopReload = {
@@ -141,9 +151,10 @@ in
       exec-once = [
         "swww-daemon"
         "dunst"
-        "[workspace 1 silent] firefox-esr"
-        "[workspace 2 silent] alacritty"
-        "sleep 0.5 && desktopReload"
+        "firefox-esr"
+        "alacritty"
+        "codium"
+        "element-desktop"
         "sleep 1 && nextcloud"
       ];
       bind = [
@@ -209,7 +220,7 @@ in
         ", switch:off:Lid Switch,exec,hyprctl keyword monitor desc:Chimei Innolux Corporation 0x14D4, 1920x1080@60, auto-right, 1"
       ];
       monitor = [
-        "desc:ASUSTek COMPUTER INC ASUS VG32V 0x0001618C, 2560x1440@100, 0x0, 1"
+        "desc:ASUSTek COMPUTER INC ASUS VG32V 0x0001618C, 2560x1440@144, 0x0, 1"
       ] ++ lib.optional (osConfig.networking.hostName == "thinkpad") "desc:Chimei Innolux Corporation 0x14D4, 1920x1080@60, auto-right, 1";
       env = [
         "SSH_AUTH_SOCK,/run/user/1000/gnupg/S.gpg-agent.ssh" # workaround to ensure ssh_auth_sock variable inherited by all applications instead of just interactive shell when using gpg-agent to serve ssh
@@ -217,6 +228,10 @@ in
       windowrulev2 = [
         "size 1154 706, class:(com.saivert.pwvucontrol)"
         "size 451 607, class:(org.gnome.Calculator)"
+        "workspace 1 silent, class:^(firefox-esr)$"
+        "workspace 2 silent, class:^(Alacritty)$"
+        "workspace 3 silent, class:^(VSCodium)$"
+        "workspace 10 silent, class:^(Element)$"
       ];
       windowrule = [
         "float, class:^(com.saivert.pwvucontrol)$"

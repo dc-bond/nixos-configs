@@ -123,7 +123,7 @@
         wifiInterface = null;
         dockInterface = null;
         ipv4 = "192.168.1.89";
-        tailscaleIp = "100.125.174.12";
+        tailscaleIp = "100.77.201.60";
         tailscale = {
           role = "client";
           advertiseRoutes = null;
@@ -134,11 +134,11 @@
         diskEncryption = false;
         enableSmartMonitoring = true;
         storageDrives = {
-          data = {
-            mountPoint = "/storage/WD-WX21DC86RU3P";
-            uuid = "f3fb53cc-52fa-48e3-8cac-b69d85a8aff1";
-            fsType = "ext4";
-          };
+          # data = {
+          #   mountPoint = "/storage/WD-WX21DC86RU3P";
+          #   uuid = "f3fb53cc-52fa-48e3-8cac-b69d85a8aff1";
+          #   fsType = "ext4";
+          # };
         };
         hasBattery = false;
         hasBluetooth = true;
