@@ -21,10 +21,10 @@
           ;;
         Logout)
           # Detect which compositor is running and exit appropriately
-          if pgrep -x "labwc" > /dev/null; then
-            ${pkgs.labwc}/bin/labwc --exit
-          elif pgrep -x "Hyprland" > /dev/null; then
+          if [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; then
             ${pkgs.hyprland}/bin/hyprctl dispatch exit
+          elif pgrep -x "labwc" > /dev/null; then
+            ${pkgs.labwc}/bin/labwc --exit
           fi
           ;;
         Reboot)

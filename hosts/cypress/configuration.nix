@@ -40,6 +40,13 @@
     
     hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
+    # weekly btrfs scrubbing for data integrity
+    services.btrfs.autoScrub = {
+      enable = true;
+      interval = "weekly";
+      fileSystems = [ "/" ];
+    };
+
     #backups.startTime = "*-*-* 01:30:00"; # everyday at 1:30am
 
     # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated

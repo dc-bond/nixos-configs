@@ -35,6 +35,7 @@
       "/var/lib/nixos" # UID/GID mappings to prevent permissions issues on reboot
       "/var/lib/bluetooth"  # bluetooth pairings
       "/var/lib/tailscale"  # tailscale node identity at /var/lib/tailscale/tailscaled.state after first tailnet connection using one-time authKey
+      "/var/lib/prometheus/node-exporter-text-files"  # persist btrfs scrub metrics between weekly scrubs
     ];
 
     # user-level persistence

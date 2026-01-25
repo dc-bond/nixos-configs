@@ -17,8 +17,7 @@ let
     METRICS_FILE="$TEXTFILE_DIR/btrfs_scrub.prom.$$"
     FINAL_FILE="$TEXTFILE_DIR/btrfs_scrub.prom"
 
-    mkdir -p "$TEXTFILE_DIR"
-
+    # Directory is created by systemd.tmpfiles.rules at boot
     # Find all btrfs filesystems
     for mountpoint in $(${pkgs.util-linux}/bin/findmnt -t btrfs -o TARGET -n | sort -u); do
       # Escape mountpoint for label (replace / with _)
@@ -157,9 +156,58 @@ in
 
   };
 
-  systemd.services."btrfs-scrub@" = lib.mkIf config.services.btrfs.autoScrub.enable {
-    serviceConfig = {
-      ExecStartPost = "${btrfsScrubExporter}";
+  # create textfile collector directory for node_exporter at boot
+  # needed for hosts with impermanence where /var is ephemeral
+  systemd.tmpfiles.rules = [
+    "d /var/lib/prometheus/node-exporter-text-files 0755 root root -"
+  ];
+
+  systemd.services = {
+    "btrfs-scrub@" = lib.mkIf config.services.btrfs.autoScrub.enable {
+      serviceConfig = {
+        ExecStartPost = "${btrfsScrubExporter}";
+      };
+    };
+
+    # wait for tailscale interface to have IP assigned before starting monitoring services
+    tailscale-ready = {
+      description = "Wait for Tailscale interface to have IP assigned";
+      after = [ "tailscaled.service" ];
+      wants = [ "tailscaled.service" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = pkgs.writeShellScript "wait-for-tailscale-ip" ''
+          set -euo pipefail
+
+          # wait up to 30 seconds for tailscale interface to have IP assigned
+          for i in {1..30}; do
+            if ${pkgs.iproute2}/bin/ip -4 addr show tailscale0 2>/dev/null | ${pkgs.gnugrep}/bin/grep -q "inet ${hostData.networking.tailscaleIp}"; then
+              echo "Tailscale IP ${hostData.networking.tailscaleIp} is assigned"
+              exit 0
+            fi
+            sleep 1
+          done
+
+          echo "Timeout waiting for Tailscale IP assignment"
+          exit 1
+        '';
+      };
+    };
+
+    # ensure monitoring services wait for tailscale interface to have IP assigned before binding
+    prometheus-node-exporter = {
+      after = [ "tailscale-ready.service" ];
+      wants = [ "tailscale-ready.service" ];
+    };
+    prometheus-smartctl-exporter = lib.mkIf (hostData.hardware.enableSmartMonitoring or false) {
+      after = [ "tailscale-ready.service" ];
+      wants = [ "tailscale-ready.service" ];
+    };
+    cadvisor = lib.mkIf (config.virtualisation.oci-containers.containers != {}) {
+      after = [ "tailscale-ready.service" ];
+      wants = [ "tailscale-ready.service" ];
     };
   };
 
