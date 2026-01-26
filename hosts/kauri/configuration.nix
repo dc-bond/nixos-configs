@@ -70,7 +70,6 @@
     (map configLib.relativeToRoot [
       "hosts/kauri/disk-config.nix"
       "hosts/kauri/hardware-configuration.nix"
-      "nixos-system/data-pool.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
       "nixos-system/networking.nix"

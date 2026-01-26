@@ -16,10 +16,9 @@
     networking.hostName = "aspen";
 
     backups = {
-      borgDir = "${config.dataPool.path}/borgbackup"; # host-specific borg backup directory override on backups.nix
-      #startTime = "*-*-* 02:05:00"; # everyday at 2:05am
+      borgDir = "${config.bulkStorage.path}/borgbackup"; # host-specific borg backup directory override on backups.nix
       standaloneData = [
-        "${config.dataPool.path}/media/family-media"
+        "${config.bulkStorage.path}/media/family-media"
       ];
     };
 
@@ -47,7 +46,6 @@
     (map configLib.relativeToRoot [
       "hosts/aspen/disk-config.nix"
       "hosts/aspen/hardware-configuration.nix"
-      "nixos-system/data-pool.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
       "nixos-system/networking.nix"

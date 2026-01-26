@@ -65,17 +65,17 @@
   # ============================================
   # Data Pool (ext4 HDD, will become ZFS mirror)
   # ============================================
-  dataPool.path = "/data-pool-hdd";
+  bulkStorage.path = "/storage";
 
-  fileSystems."/data-pool-hdd" = {
-    device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb";
+  fileSystems."/storage" = {
+    device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb"; # western digital 4tb hdd
     fsType = "ext4";
     options = [ "defaults" ];
   };
 
   # After ZFS migration, change above to:
-  # fileSystems."/data-pool-hdd" = {
-  #   device = "data-pool-hdd";
+  # fileSystems."/storage" = {
+  #   device = "storage";
   #   fsType = "zfs";
   # };
 

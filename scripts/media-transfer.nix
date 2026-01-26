@@ -15,9 +15,9 @@ let
 
     # Configuration
     DIR_A="/var/lib/nextcloud/data/Chris Bond/files/Bond Family/media-transfer"  # Directory containing original files to be processed
-    DIR_B="${config.dataPool.path}/media/media-transfer-review"  # Directory for manual review after processing
-    DIR_C="${config.dataPool.path}/media/family-media"  # Directory for final disposition of processed photos and videos
-    EMAIL_CONTENT_FILE="${config.dataPool.path}/media/email_content.txt"
+    DIR_B="${config.bulkStorage.path}/media/media-transfer-review"  # Directory for manual review after processing
+    DIR_C="${config.bulkStorage.path}/media/family-media"  # Directory for final disposition of processed photos and videos
+    EMAIL_CONTENT_FILE="${config.bulkStorage.path}/media/email_content.txt"
     > "$EMAIL_CONTENT_FILE"  # Clear email content file
 
     # Logging functions (for email summary)

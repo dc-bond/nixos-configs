@@ -24,7 +24,7 @@
           "map to guest" = "never";
         };
         "media-uploads" = {
-          "path" = "${config.dataPool.path}/samba/media-uploads";
+          "path" = "${config.bulkStorage.path}/samba/media-uploads";
           "browseable" = "yes";
           "writable" = "yes";
           "guest ok" = "no";
@@ -35,7 +35,7 @@
           "force group" = "users";
         };
         "general-uploads" = {
-          "path" = "${config.dataPool.path}/samba/general-uploads";
+          "path" = "${config.bulkStorage.path}/samba/general-uploads";
           "browseable" = "yes";
           "writable" = "yes";
           "guest ok" = "no";
@@ -52,9 +52,9 @@
   systemd = {
 
     tmpfiles.rules = [
-      "d ${config.dataPool.path}/samba 0755 chris users -"
-      "d ${config.dataPool.path}/samba/media-uploads 0755 chris users -"
-      "d ${config.dataPool.path}/samba/general-uploads 0755 chris users -"
+      "d ${config.bulkStorage.path}/samba 0755 chris users -"
+      "d ${config.bulkStorage.path}/samba/media-uploads 0755 chris users -"
+      "d ${config.bulkStorage.path}/samba/general-uploads 0755 chris users -"
     ];
 
     services.samba-setup-password = {
