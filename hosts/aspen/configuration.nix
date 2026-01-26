@@ -9,10 +9,6 @@
   ...
 }:
 
-let
-  storage = configVars.hosts.${config.networking.hostName}.hardware.storageDrives.data;
-in
-
 {
 
   config = {
@@ -20,10 +16,10 @@ in
     networking.hostName = "aspen";
 
     backups = {
-      borgDir = "${storage.mountPoint}/borgbackup"; # host-specific borg backup directory override on backups.nix
+      borgDir = "${config.dataPool.path}/borgbackup"; # host-specific borg backup directory override on backups.nix
       #startTime = "*-*-* 02:05:00"; # everyday at 2:05am
       standaloneData = [
-        "${storage.mountPoint}/media/family-media"
+        "${config.dataPool.path}/media/family-media"
       ];
     };
 
@@ -49,9 +45,9 @@ in
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/aspen/disk-config-btrfs.nix"
+      "hosts/aspen/disk-config.nix"
       "hosts/aspen/hardware-configuration.nix"
-      "nixos-system/storage-drives.nix"
+      "nixos-system/data-pool.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
       "nixos-system/networking.nix"

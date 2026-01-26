@@ -64,9 +64,9 @@
       configs = "cd $HOME/nextcloud-client/Personal/nixos/nixos-configs";
       flakeupdate= "(cd $HOME/nextcloud-client/Personal/nixos/nixos-configs && nix flake update)";
     # } // lib.optionalAttrs (osConfig.networking.hostName == "cypress") {
-    #   storage = "cd /storage/WD-WX21DC86RU3P ; ls";
+    #   storage = "cd /data-pool-hdd ; ls";
     } // lib.optionalAttrs (osConfig.networking.hostName == "aspen") {
-      storage = "cd /storage/WD-WCC7K4RU947F ; ls";
+      storage = "cd /data-pool-hdd ; ls";
     };
   };
 

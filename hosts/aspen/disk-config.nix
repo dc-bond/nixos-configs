@@ -14,7 +14,7 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/sda";
+        device = "/dev/nvme0n1";
         content = {
           type = "gpt";
           partitions = {
@@ -36,17 +36,21 @@
                 type = "btrfs";
                 extraArgs = [ "-f" ];
                 subvolumes = {
+                  "/root" = {
+                    mountpoint = "/";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                  "/home" = {
+                    mountpoint = "/home";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
                   "/nix" = {
                     mountpoint = "/nix";
                     mountOptions = [ "compress=zstd" "noatime" ];
                   };
-                  "/persist" = {
-                    mountpoint = "/persist";
-                    mountOptions = [ "compress=zstd" "noatime" ];
-                  };
                   "/swap" = {
                     mountpoint = "/swap";
-                    swap.swapfile.size = "32G"; # double system memory
+                    swap.swapfile.size = "16G";
                   };
                 };
               };
@@ -57,5 +61,22 @@
       };
     };
   };
+
+  # ============================================
+  # Data Pool (ext4 HDD, will become ZFS mirror)
+  # ============================================
+  dataPool.path = "/data-pool-hdd";
+
+  fileSystems."/data-pool-hdd" = {
+    device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb";
+    fsType = "ext4";
+    options = [ "defaults" ];
+  };
+
+  # After ZFS migration, change above to:
+  # fileSystems."/data-pool-hdd" = {
+  #   device = "data-pool-hdd";
+  #   fsType = "zfs";
+  # };
 
 }
