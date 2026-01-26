@@ -54,4 +54,11 @@ in
 
   # system-wide resource limits
   systemd.settings.Manager.DefaultLimitNOFILE = 2048;
+
+  # bulk storage configuration
+  options.bulkStorage.path = lib.mkOption {
+    type = lib.types.nullOr lib.types.path;
+    default = null;
+    description = "Path to this host's bulk storage (media, backups, NVR recordings)";
+  };
 }

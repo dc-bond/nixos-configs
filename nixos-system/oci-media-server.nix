@@ -143,7 +143,7 @@ in
       autoStart = true;
       volumes = [
         "${app2}:/config"
-        "${config.dataPool.path}/media/usenet:/media/usenet:rw" # bind mount for downloads
+        "${config.bulkStorage.path}/media/usenet:/media/usenet:rw" # bind mount for downloads
       ];
       environment = {
         PUID = "0";
@@ -164,7 +164,7 @@ in
       autoStart = true;
       volumes = [
         "${app3}:/config"
-        "${config.dataPool.path}/media:/media:rw" # bind mount for media access
+        "${config.bulkStorage.path}/media:/media:rw" # bind mount for media access
       ];
       environment = {
         PUID = "0";
@@ -185,7 +185,7 @@ in
       autoStart = true;
       volumes = [
         "${app4}:/config"
-        "${config.dataPool.path}/media:/media:rw" # bind mount for media access
+        "${config.bulkStorage.path}/media:/media:rw" # bind mount for media access
       ];
       environment = {
         PUID = "0";
@@ -238,10 +238,10 @@ in
       environment = { NVIDIA_VISIBLE_DEVICES = "all"; }; # enable GPU utilization
       volumes = [
         "${app7}:/config"
-        "${config.dataPool.path}/media/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
-        "${config.dataPool.path}/media/movies:/data/movies:ro" # ditto for movies
-        "${config.dataPool.path}/media/music:/data/music:ro" # ditto for music
-        "${config.dataPool.path}/media/yt-downloads:/data/yt-downloads:ro" # ditto for youtube downloads
+        "${config.bulkStorage.path}/media/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
+        "${config.bulkStorage.path}/media/movies:/data/movies:ro" # ditto for movies
+        "${config.bulkStorage.path}/media/music:/data/music:ro" # ditto for music
+        "${config.bulkStorage.path}/media/yt-downloads:/data/yt-downloads:ro" # ditto for youtube downloads
       ];
       log-driver = "journald";
       dependsOn = ["${app1}"];

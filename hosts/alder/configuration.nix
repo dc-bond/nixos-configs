@@ -26,8 +26,10 @@
 
 {
 
-  systemd.services.tailscaled.restartIfChanged = false;
-  systemd.services.iwd.restartIfChanged = false;
+  systemd.services = {
+    tailscaled.restartIfChanged = false;
+    systemd.services.iwd.restartIfChanged = false;
+  };
   
   networking.hostName = "alder";
 
@@ -50,9 +52,6 @@
     i2c-tools # hardware interface tools required by ddcutil
   ];
 
-  #backups.startTime = "*-*-* 01:05:00"; # everyday at 1:05am
-  #services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.users.users.eric.home}/email" ];
-
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
   services.logind.settings.Login.HandleLidSwitch = "ignore"; # disable suspend on laptop lid close
@@ -64,7 +63,6 @@
     (map configLib.relativeToRoot [
       "hosts/alder/disk-config.nix"
       "hosts/alder/hardware-configuration.nix"
-      "nixos-system/data-pool.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
       "nixos-system/networking.nix"
@@ -73,8 +71,6 @@
       "nixos-system/sshd.nix"
       "nixos-system/audio.nix"
       "nixos-system/zsh.nix"
-      #"nixos-system/printing.nix"
-      #"nixos-system/backups.nix"
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"

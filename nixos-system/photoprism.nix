@@ -71,7 +71,7 @@ in
     ${app} = {
       enable = true;
       address = "127.0.0.1";
-      originalsPath = "${config.dataPool.path}/media/family-media";
+      originalsPath = "${config.bulkStorage.path}/media/family-media";
       passwordFile = "${config.sops.secrets.photoprismAdminPasswd.path}";
       settings = {
         PHOTOPRISM_AUTH_MODE = "public";                                                        # authentication mode (public, password)

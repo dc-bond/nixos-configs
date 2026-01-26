@@ -31,7 +31,7 @@ in
       };
       options = {
         reverseProxyAuth.enable = true;
-        calibreLibrary = "${config.dataPool.path}/media/ebooks/calibre/";
+        calibreLibrary = "${config.bulkStorage.path}/media/ebooks/calibre/";
         enableBookUploading = true;
       };
     };

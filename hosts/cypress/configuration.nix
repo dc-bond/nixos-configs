@@ -59,7 +59,6 @@
       "hosts/cypress/disk-config.nix"
       "hosts/cypress/hardware-configuration.nix"
       "hosts/cypress/impermanence.nix"
-      "nixos-system/data-pool.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
       "nixos-system/rebuilds.nix"

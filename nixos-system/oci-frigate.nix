@@ -199,7 +199,7 @@ in
       volumes = [
         "/etc/localtime:/etc/localtime:ro"
         "/etc/${app}.yml:/config/config.yml:ro"
-        "${config.dataPool.path}/media/security-cameras:/media/frigate"
+        "${config.bulkStorage.path}/media/security-cameras:/media/frigate"
         "${app}:/sqlite"
       ]; 
       extraOptions = [
