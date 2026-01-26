@@ -17,7 +17,6 @@ let
   app6 = "jellyseerr";
   app7 = "jellyfin";
   hostData = configVars.hosts.${config.networking.hostName};
-  storage = hostData.hardware.storageDrives.data;
   recoveryPlan = {
     restoreItems = [
       "/var/lib/docker/volumes/${app2}"
@@ -142,9 +141,9 @@ in
     "${app2}" = {
       image = "lscr.io/linuxserver/${app2}:4.4.1-ls202"; # https://github.com/linuxserver/docker-sabnzbd/releases
       autoStart = true;
-      volumes = [ 
-        "${app2}:/config" 
-        "${storage.mountPoint}/media/usenet:/media/usenet:rw" # bind mount for downloads
+      volumes = [
+        "${app2}:/config"
+        "${config.dataPool.path}/media/usenet:/media/usenet:rw" # bind mount for downloads
       ];
       environment = {
         PUID = "0";
@@ -163,9 +162,9 @@ in
     "${app3}" = {
       image = "lscr.io/linuxserver/${app3}:4.0.13.2932-ls271"; # https://github.com/linuxserver/docker-sonarr/releases
       autoStart = true;
-      volumes = [ 
-        "${app3}:/config" 
-        "${storage.mountPoint}/media:/media:rw" # bind mount for media access
+      volumes = [
+        "${app3}:/config"
+        "${config.dataPool.path}/media:/media:rw" # bind mount for media access
       ];
       environment = {
         PUID = "0";
@@ -184,9 +183,9 @@ in
     "${app4}" = {
       image = "lscr.io/linuxserver/${app4}:5.18.4.9674-ls260"; # https://github.com/linuxserver/docker-radarr/releases
       autoStart = true;
-      volumes = [ 
-        "${app4}:/config" 
-        "${storage.mountPoint}/media:/media:rw" # bind mount for media access
+      volumes = [
+        "${app4}:/config"
+        "${config.dataPool.path}/media:/media:rw" # bind mount for media access
       ];
       environment = {
         PUID = "0";
@@ -237,12 +236,12 @@ in
       image = "lscr.io/linuxserver/${app7}:10.10.6ubu2404-ls53"; # https://github.com/linuxserver/docker-jellyfin/releases
       autoStart = true;
       environment = { NVIDIA_VISIBLE_DEVICES = "all"; }; # enable GPU utilization
-      volumes = [ 
-        "${app7}:/config" 
-        "${storage.mountPoint}/media/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
-        "${storage.mountPoint}/media/movies:/data/movies:ro" # ditto for movies
-        "${storage.mountPoint}/media/music:/data/music:ro" # ditto for music
-        "${storage.mountPoint}/media/yt-downloads:/data/yt-downloads:ro" # ditto for youtube downloads
+      volumes = [
+        "${app7}:/config"
+        "${config.dataPool.path}/media/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
+        "${config.dataPool.path}/media/movies:/data/movies:ro" # ditto for movies
+        "${config.dataPool.path}/media/music:/data/music:ro" # ditto for music
+        "${config.dataPool.path}/media/yt-downloads:/data/yt-downloads:ro" # ditto for youtube downloads
       ];
       log-driver = "journald";
       dependsOn = ["${app1}"];

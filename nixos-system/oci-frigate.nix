@@ -8,7 +8,6 @@
 
 let
   app = "frigate";
-  storage = configVars.hosts.${config.networking.hostName}.hardware.storageDrives.data;
 in
 
 {
@@ -197,10 +196,10 @@ in
         "${configVars.hosts."${config.networking.hostName}".networking.ipv4}:8555:8555/tcp" # WebRTC over tcp
         "${configVars.hosts."${config.networking.hostName}".networking.ipv4}:8555:8555/udp" # WebRTC over udp
       ];
-      volumes = [ 
-        "/etc/localtime:/etc/localtime:ro" 
+      volumes = [
+        "/etc/localtime:/etc/localtime:ro"
         "/etc/${app}.yml:/config/config.yml:ro"
-        "${storage.mountPoint}/media/security-cameras:/media/frigate"
+        "${config.dataPool.path}/media/security-cameras:/media/frigate"
         "${app}:/sqlite"
       ]; 
       extraOptions = [

@@ -27,7 +27,7 @@ nixos-configs/
 │   ├── <hostname>/
 │   │   ├── configuration.nix
 │   │   ├── hardware-configuration.nix
-│   │   ├── disk-config-*.nix    # Optional declarative disk layouts
+│   │   ├── disk-config.nix      # Declarative disk layouts (OS + data storage)
 │   │   └── <user>/home.nix
 │
 ├── nixos-system/                # Reusable system-level service modules
