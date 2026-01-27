@@ -4,6 +4,7 @@
   lib,
   configVars,
   nixServiceRecoveryScript,
+  utils,
   ...
 }:
 
@@ -26,35 +27,109 @@ let
     recoveryPlan = recoveryPlan;
   };
 
-  weeklyDiskHealthScript = pkgs.writeText "weekly-disk-health.py" ''
+  # get the first configured scrub mountpoint (most hosts only have one)
+  scrubMountpoint = if config.services.btrfs.autoScrub.enable
+    then builtins.head config.services.btrfs.autoScrub.fileSystems
+    else "/";
+
+  btrfsScrubExporter = pkgs.writeShellScript "btrfs-scrub-exporter.sh" ''
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    TEXTFILE_DIR="/var/lib/prometheus/node-exporter-text-files"
+    METRICS_FILE="$TEXTFILE_DIR/btrfs_scrub.prom.$$"
+    FINAL_FILE="$TEXTFILE_DIR/btrfs_scrub.prom"
+
+    # check scrub status for configured filesystem
+    mountpoint="${scrubMountpoint}"
+    scrub_status=$(${pkgs.btrfs-progs}/bin/btrfs scrub status "$mountpoint" 2>/dev/null || echo "")
+
+    if grep -q "Status:.*running" <<< "$scrub_status"; then
+      # scrub is currently running
+      echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 2"
+    elif grep -q "Status:.*finished" <<< "$scrub_status"; then
+      # scrub completed successfully
+      echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 1"
+
+      # extract error count - use default 0 if not found
+      errors=$(grep -oP 'Error summary:\s+\K\d+' <<< "$scrub_status" || echo "0")
+      echo "btrfs_scrub_errors_total{mountpoint=\"$mountpoint\"} $errors"
+
+      # extract duration and convert to seconds
+      duration=$(grep -oP 'Duration:\s+\K[0-9:]+' <<< "$scrub_status" || echo "0:00:00")
+      # handle formats: HH:MM:SS, H:MM:SS, or MM:SS
+      IFS=: read -r h m s <<< "$duration"
+      # if only 2 fields (MM:SS), treat first as minutes
+      if [ -z "$s" ]; then s=$m; m=$h; h=0; fi
+      duration_seconds=$(( (h * 3600) + (m * 60) + s ))
+      echo "btrfs_scrub_duration_seconds{mountpoint=\"$mountpoint\"} $duration_seconds"
+
+      # get timestamp from systemd service
+      service_name="btrfs-scrub-$(${pkgs.systemd}/bin/systemd-escape --path "$mountpoint").service"
+      last_run=$(${pkgs.systemd}/bin/systemctl show "$service_name" --property=ExecMainExitTimestamp --value 2>/dev/null || echo "")
+      if [ -n "$last_run" ] && [ "$last_run" != "n/a" ]; then
+        timestamp=$(date -d "$last_run" +%s 2>/dev/null || echo "0")
+        if [ "$timestamp" != "0" ]; then
+          echo "btrfs_scrub_last_completion_timestamp{mountpoint=\"$mountpoint\"} $timestamp"
+        fi
+      fi
+
+      # extract total bytes with unit handling
+      size_line=$(grep "Total to scrub:" <<< "$scrub_status" || echo "")
+      if [ -n "$size_line" ]; then
+        size_value=$(grep -oP 'Total to scrub:\s+\K[\d.]+' <<< "$size_line")
+        case "$size_line" in
+          *TiB*) multiplier=1099511627776 ;;  # 1024^4
+          *GiB*) multiplier=1073741824 ;;     # 1024^3
+          *MiB*) multiplier=1048576 ;;        # 1024^2
+          *KiB*) multiplier=1024 ;;           # 1024^1
+          *)     multiplier=1 ;;              # assume bytes
+        esac
+        total_bytes=$(${pkgs.gawk}/bin/awk -v val="$size_value" -v mult="$multiplier" 'BEGIN { printf "%.0f", val * mult }')
+        echo "btrfs_scrub_total_bytes{mountpoint=\"$mountpoint\"} $total_bytes"
+      fi
+    elif grep -q "no stats" <<< "$scrub_status"; then
+      # never run
+      echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 3"
+    else
+      # failed or unknown
+      echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 0"
+    fi > "$METRICS_FILE"
+
+    # atomic move to prevent partial reads
+    mv "$METRICS_FILE" "$FINAL_FILE"
+  '';
+
+  smartHealthScript = pkgs.writeText "smart-health.py" ''
     #!/usr/bin/env python3
     import json
     import urllib.request
     import urllib.error
     import os
+    import re
     from datetime import datetime
 
     PROMETHEUS_URL = "http://127.0.0.1:9090"
     WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")
 
     def query_prometheus(query):
-        """Query Prometheus and return results"""
+        """query prometheus and return results"""
         url = f"{PROMETHEUS_URL}/api/v1/query?query={urllib.parse.quote(query)}"
         try:
             with urllib.request.urlopen(url, timeout=10) as response:
                 data = json.loads(response.read().decode("utf-8"))
-                if data["status"] == "success":
-                    return data["data"]["result"]
+                if data.get("status") == "success":
+                    return data.get("data", {}).get("result", [])
         except Exception as e:
-            print(f"Error querying Prometheus: {e}")
+            print(f"error querying prometheus: {e}")
         return []
 
     def format_hours(hours):
-        """Convert hours to years, months, days"""
-        years = int(hours / 8760)
+        """convert hours to years, months, days (approximate)"""
+        years = hours // 8760  # 365 * 24
         remaining = hours % 8760
-        months = int(remaining / 730)
-        days = int((remaining % 730) / 24)
+        months = remaining // 730  # approximate: 30.4 days/month * 24
+        days = (remaining % 730) // 24
 
         parts = []
         if years > 0:
@@ -65,10 +140,12 @@ let
             parts.append(f"{days}d")
         return " ".join(parts) if parts else "0d"
 
-    def get_disk_inventory():
-        """Get list of all disks and basic info"""
-        results = query_prometheus('smartctl_device')
+    def get_disk_data():
+        """get all disk data in one batch to avoid duplicate queries"""
         disks = {}
+
+        # get disk inventory
+        results = query_prometheus('smartctl_device')
         for result in results:
             labels = result["metric"]
             device = labels.get("device", "unknown")
@@ -81,94 +158,89 @@ let
                 "serial": labels.get("serial_number", "unknown"),
                 "interface": labels.get("interface", "unknown"),
             }
+
+        # batch query all SMART statuses
+        smart_results = query_prometheus('smartctl_device_smart_status')
+        for result in smart_results:
+            labels = result["metric"]
+            key = f"{labels.get('host')}:{labels.get('device')}"
+            if key in disks:
+                value = int(result["value"][1])
+                disks[key]["smart_status"] = "PASSED" if value == 1 else "FAILED"
+
+        # batch query all temperatures
+        temp_results = query_prometheus('smartctl_device_temperature{temperature_type="current"}')
+        for result in temp_results:
+            labels = result["metric"]
+            key = f"{labels.get('host')}:{labels.get('device')}"
+            if key in disks:
+                disks[key]["temperature"] = int(result["value"][1])
+
+        # batch query all power-on hours
+        hours_results = query_prometheus('smartctl_device_attribute{attribute_name="Power_On_Hours",attribute_value_type="raw"}')
+        for result in hours_results:
+            labels = result["metric"]
+            key = f"{labels.get('host')}:{labels.get('device')}"
+            if key in disks:
+                disks[key]["power_on_hours"] = int(float(result["value"][1]))
+
+        # batch query reallocated sectors
+        realloc_results = query_prometheus('smartctl_device_attribute{attribute_name="Reallocated_Sector_Ct",attribute_value_type="raw"}')
+        for result in realloc_results:
+            labels = result["metric"]
+            key = f"{labels.get('host')}:{labels.get('device')}"
+            if key in disks:
+                disks[key]["reallocated_sectors"] = int(float(result["value"][1]))
+
+        # batch query pending sectors
+        pending_results = query_prometheus('smartctl_device_attribute{attribute_name="Current_Pending_Sector",attribute_value_type="raw"}')
+        for result in pending_results:
+            labels = result["metric"]
+            key = f"{labels.get('host')}:{labels.get('device')}"
+            if key in disks:
+                disks[key]["pending_sectors"] = int(float(result["value"][1]))
+
+        # batch query uncorrectable sectors
+        uncorr_results = query_prometheus('smartctl_device_attribute{attribute_name="Offline_Uncorrectable",attribute_value_type="raw"}')
+        for result in uncorr_results:
+            labels = result["metric"]
+            key = f"{labels.get('host')}:{labels.get('device')}"
+            if key in disks:
+                disks[key]["uncorrectable_sectors"] = int(float(result["value"][1]))
+
         return disks
 
-    def get_smart_status(host, device):
-        """Get overall SMART status"""
-        results = query_prometheus(f'smartctl_device_smart_status{{host="{host}",device="{device}"}}')
-        if results:
-            return "PASSED" if int(results[0]["value"][1]) == 1 else "FAILED"
-        return "UNKNOWN"
-
-    def get_temperature(host, device):
-        """Get current temperature"""
-        results = query_prometheus(f'smartctl_device_temperature{{host="{host}",device="{device}",temperature_type="current"}}')
-        if results:
-            return int(results[0]["value"][1])
-        return None
-
-    def get_attribute_value(host, device, attr_name):
-        """Get raw value of a SMART attribute"""
-        results = query_prometheus(
-            f'smartctl_device_attribute{{host="{host}",device="{device}",attribute_name="{attr_name}",attribute_value_type="raw"}}'
-        )
-        if results:
-            return int(float(results[0]["value"][1]))
-        return None
-
-    def get_btrfs_scrub_status():
-        """Get btrfs scrub status for all hosts"""
-        results = query_prometheus('btrfs_scrub_status')
-        scrubs = {}
-        for result in results:
-            labels = result["metric"]
-            host = labels.get("host", "unknown")
-            mountpoint = labels.get("mountpoint", "unknown")
-            key = f"{host}:{mountpoint}"
-            status_code = int(result["value"][1])
-            scrubs[key] = {
-                "host": host,
-                "mountpoint": mountpoint,
-                "status_code": status_code,
-            }
-        return scrubs
-
-    def get_btrfs_scrub_errors(host, mountpoint):
-        """Get btrfs scrub error counts"""
-        results = query_prometheus(f'btrfs_scrub_uncorrectable_errors_total{{host="{host}",mountpoint="{mountpoint}"}}')
-        errors = {}
-        for result in results:
-            error_type = result["metric"].get("type", "unknown")
-            errors[error_type] = int(result["value"][1])
-        return errors
-
-    def get_btrfs_scrub_timestamp(host, mountpoint):
-        """Get last scrub completion timestamp"""
-        results = query_prometheus(f'btrfs_scrub_last_completion_timestamp{{host="{host}",mountpoint="{mountpoint}"}}')
-        if results:
-            return int(results[0]["value"][1])
-        return None
-
     def generate_report():
-        """Generate comprehensive disk health report"""
-        disks = get_disk_inventory()
+        """generate comprehensive smart disk health report"""
+        # batch query all data once
+        disks = get_disk_data()
 
         if not disks:
-            return "⚠️ No disks found in monitoring system"
+            return "⚠️ no disks found in monitoring system"
 
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
-        # Header
-        report = f"📊 **Weekly Disk Health Report**\\n\\n"
+        # header
+        report = f"📊 **Weekly SMART Disk Health Report**\\n\\n"
         report += f"**Generated**: {timestamp}\\n"
         report += f"**Total Disks**: {len(disks)}\\n\\n"
 
-        # Overall health summary
+        # overall health summary
         failed_disks = []
         warning_disks = []
 
         for key, disk in disks.items():
-            status = get_smart_status(disk["host"], disk["device"])
+            status = disk.get("smart_status", "UNKNOWN")
             if status == "FAILED":
-                failed_disks.append(f"{disk['host']}:{disk['device']}")
+                failed_disks.append(key)
 
-            # Check for warning conditions
-            reallocated = get_attribute_value(disk["host"], disk["device"], "Reallocated_Sector_Ct")
-            pending = get_attribute_value(disk["host"], disk["device"], "Current_Pending_Sector")
-            temp = get_temperature(disk["host"], disk["device"])
+            # check for warning conditions
+            reallocated = disk.get("reallocated_sectors", 0)
+            pending = disk.get("pending_sectors", 0)
+            temp = disk.get("temperature")
 
-            if (reallocated and reallocated > 0) or (pending and pending > 0) or (temp and temp > 50):
-                warning_disks.append(f"{disk['host']}:{disk['device']}")
+            if reallocated > 0 or pending > 0 or (temp and temp > 50):
+                warning_disks.append(key)
 
         if failed_disks:
             report += f"🔴 **CRITICAL**: {len(failed_disks)} disk(s) with FAILED SMART status\\n"
@@ -187,136 +259,60 @@ let
 
         report += "---\\n\\n"
 
-        # Detailed per-disk report
+        # detailed per-disk report
         for key, disk in sorted(disks.items()):
-            host = disk["host"]
-            device = disk["device"]
-
-            report += f"**{host} - {device}**\\n"
+            report += f"**{disk['host']} - {disk['device']}**\\n"
             report += f"Model: {disk['model'][:40]}\\n"
 
-            # SMART status
-            status = get_smart_status(host, device)
+            # smart status
+            status = disk.get("smart_status", "UNKNOWN")
             status_emoji = "✅" if status == "PASSED" else "🔴"
             report += f"Status: {status_emoji} {status}\\n"
 
-            # Temperature
-            temp = get_temperature(host, device)
+            # temperature
+            temp = disk.get("temperature")
             if temp is not None:
                 temp_emoji = "🌡️" if temp <= 50 else "🔥"
                 report += f"Temp: {temp_emoji} {temp}°C\\n"
 
-            # Power-on hours
-            hours = get_attribute_value(host, device, "Power_On_Hours")
+            # power-on hours
+            hours = disk.get("power_on_hours")
             if hours is not None:
                 runtime = format_hours(hours)
                 report += f"Runtime: {runtime} ({hours:,} hours)\\n"
 
-            # Critical attributes
-            reallocated = get_attribute_value(host, device, "Reallocated_Sector_Ct")
-            pending = get_attribute_value(host, device, "Current_Pending_Sector")
-            uncorrectable = get_attribute_value(host, device, "Offline_Uncorrectable")
+            # critical attributes
+            reallocated = disk.get("reallocated_sectors", 0)
+            pending = disk.get("pending_sectors", 0)
+            uncorrectable = disk.get("uncorrectable_sectors", 0)
 
-            if reallocated is not None and reallocated > 0:
+            if reallocated > 0:
                 report += f"⚠️ Reallocated Sectors: {reallocated}\\n"
-            if pending is not None and pending > 0:
+            if pending > 0:
                 report += f"🔴 Pending Sectors: {pending}\\n"
-            if uncorrectable is not None and uncorrectable > 0:
+            if uncorrectable > 0:
                 report += f"🔴 Uncorrectable Sectors: {uncorrectable}\\n"
 
             report += "\\n"
 
-        # Btrfs scrub status section
-        report += "---\\n\\n"
-        report += "**BTRFS Filesystem Scrub Status**\\n\\n"
-
-        scrubs = get_btrfs_scrub_status()
-        if not scrubs:
-            report += "No btrfs filesystems found\\n\\n"
-        else:
-            scrub_failed = []
-            scrub_errors = []
-            scrub_ok = []
-
-            for key, scrub in scrubs.items():
-                host = scrub["host"]
-                mountpoint = scrub["mountpoint"]
-                status_code = scrub["status_code"]
-
-                # Check for errors
-                errors = get_btrfs_scrub_errors(host, mountpoint)
-                total_errors = sum(errors.values())
-
-                if total_errors > 0:
-                    scrub_errors.append(f"{host}:{mountpoint} ({total_errors} errors)")
-                elif status_code == 0:
-                    scrub_failed.append(f"{host}:{mountpoint}")
-                elif status_code == 1:
-                    scrub_ok.append(f"{host}:{mountpoint}")
-
-            # Summary
-            if scrub_errors:
-                report += f"🔴 **CRITICAL**: {len(scrub_errors)} filesystem(s) with data corruption\\n"
-                for item in scrub_errors:
-                    report += f"   • {item}\\n"
-                report += "\\n"
-
-            if scrub_failed:
-                report += f"⚠️ **WARNING**: {len(scrub_failed)} filesystem(s) with failed scrubs\\n"
-                for item in scrub_failed:
-                    report += f"   • {item}\\n"
-                report += "\\n"
-
-            if not scrub_errors and not scrub_failed:
-                report += f"✅ **All filesystems scrubbed successfully** ({len(scrub_ok)} filesystem(s))\\n\\n"
-
-            # Detailed per-filesystem report
-            for key, scrub in sorted(scrubs.items()):
-                host = scrub["host"]
-                mountpoint = scrub["mountpoint"]
-                status_code = scrub["status_code"]
-
-                report += f"**{host}:{mountpoint}**\\n"
-
-                # Status
-                status_map = {
-                    0: "🔴 Failed",
-                    1: "✅ Success",
-                    2: "🔄 Running",
-                    3: "⚠️ Never Run"
-                }
-                status = status_map.get(status_code, "❓ Unknown")
-                report += f"Status: {status}\\n"
-
-                # Error counts
-                errors = get_btrfs_scrub_errors(host, mountpoint)
-                if errors:
-                    data_errors = errors.get("data", 0)
-                    tree_errors = errors.get("tree", 0)
-                    if data_errors > 0:
-                        report += f"🔴 Data Errors: {data_errors}\\n"
-                    if tree_errors > 0:
-                        report += f"🔴 Tree Errors: {tree_errors}\\n"
-
-                # Last run timestamp
-                timestamp = get_btrfs_scrub_timestamp(host, mountpoint)
-                if timestamp:
-                    from datetime import datetime
-                    last_run = datetime.fromtimestamp(timestamp).strftime("%Y-%m-%d %H:%M:%S")
-                    days_ago = (datetime.now().timestamp() - timestamp) / 86400
-                    report += f"Last Run: {last_run} ({days_ago:.1f} days ago)\\n"
-
-                report += "\\n"
-
         return report
 
     def send_webhook(message):
-        """Send report to Matrix via webhook"""
+        """send report to matrix via webhook"""
         if not WEBHOOK_URL:
             print("ERROR: WEBHOOK_URL not set")
             return False
 
-        payload = json.dumps({"text": message}).encode("utf-8")
+        # convert markdown to html for matrix
+        html_message = message.replace("\\n", "<br/>")
+        # replace **text** with <b>text</b> using regex
+        html_message = re.sub(r'\*\*([^*]+)\*\*', r'<b>\1</b>', html_message)
+
+        payload = json.dumps({
+            "text": re.sub(r'\*\*([^*]+)\*\*', r'\1', message),  # plain text fallback (strip markdown)
+            "html": html_message,
+            "format": "org.matrix.custom.html"
+        }).encode("utf-8")
         req = urllib.request.Request(
             WEBHOOK_URL,
             data=payload,
@@ -325,9 +321,240 @@ let
 
         try:
             with urllib.request.urlopen(req, timeout=10) as response:
-                return response.status == 200
+                # accept any 2xx status code as success
+                return 200 <= response.status < 300
         except Exception as e:
-            print(f"Error sending webhook: {e}")
+            print(f"error sending webhook: {e}")
+            return False
+
+    if __name__ == "__main__":
+        report = generate_report()
+        print(report)
+
+        if send_webhook(report):
+            print("\\nReport sent successfully")
+        else:
+            print("\\nFailed to send report")
+  '';
+
+  btrfsHealthScript = pkgs.writeText "btrfs-health.py" ''
+    #!/usr/bin/env python3
+    import json
+    import urllib.request
+    import urllib.error
+    import os
+    import re
+    from datetime import datetime
+
+    PROMETHEUS_URL = "http://127.0.0.1:9090"
+    WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")
+
+    # status code constants
+    SCRUB_FAILED = 0
+    SCRUB_SUCCESS = 1
+    SCRUB_RUNNING = 2
+    SCRUB_NEVER_RUN = 3
+
+    STATUS_MAP = {
+        SCRUB_FAILED: "🔴 Failed",
+        SCRUB_SUCCESS: "✅ Success",
+        SCRUB_RUNNING: "🔄 Running",
+        SCRUB_NEVER_RUN: "⚠️ Never Run"
+    }
+
+    def query_prometheus(query):
+        """query prometheus and return results"""
+        url = f"{PROMETHEUS_URL}/api/v1/query?query={urllib.parse.quote(query)}"
+        try:
+            with urllib.request.urlopen(url, timeout=10) as response:
+                data = json.loads(response.read().decode("utf-8"))
+                if data.get("status") == "success":
+                    return data.get("data", {}).get("result", [])
+        except Exception as e:
+            print(f"error querying prometheus: {e}")
+        return []
+
+    def get_btrfs_data():
+        """get all btrfs scrub data in one batch"""
+        scrubs = {}
+
+        # batch query all scrub statuses
+        results = query_prometheus('btrfs_scrub_status')
+        for result in results:
+            labels = result["metric"]
+            host = labels.get("host", "unknown")
+            mountpoint = labels.get("mountpoint", "unknown")
+            key = f"{host}:{mountpoint}"
+            scrubs[key] = {
+                "host": host,
+                "mountpoint": mountpoint,
+                "status_code": int(result["value"][1]),
+            }
+
+        # batch query all error counts
+        error_results = query_prometheus('btrfs_scrub_errors_total')
+        for result in error_results:
+            labels = result["metric"]
+            key = f"{labels.get('host')}:{labels.get('mountpoint')}"
+            if key in scrubs:
+                scrubs[key]["errors"] = int(result["value"][1])
+
+        # batch query all timestamps
+        timestamp_results = query_prometheus('btrfs_scrub_last_completion_timestamp')
+        for result in timestamp_results:
+            labels = result["metric"]
+            key = f"{labels.get('host')}:{labels.get('mountpoint')}"
+            if key in scrubs:
+                scrubs[key]["last_run"] = int(result["value"][1])
+
+        # batch query all durations
+        duration_results = query_prometheus('btrfs_scrub_duration_seconds')
+        for result in duration_results:
+            labels = result["metric"]
+            key = f"{labels.get('host')}:{labels.get('mountpoint')}"
+            if key in scrubs:
+                scrubs[key]["duration"] = int(result["value"][1])
+
+        # batch query all total bytes
+        bytes_results = query_prometheus('btrfs_scrub_total_bytes')
+        for result in bytes_results:
+            labels = result["metric"]
+            key = f"{labels.get('host')}:{labels.get('mountpoint')}"
+            if key in scrubs:
+                scrubs[key]["total_bytes"] = int(result["value"][1])
+
+        return scrubs
+
+    def format_duration(seconds):
+        """convert seconds to human readable duration"""
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        secs = seconds % 60
+        return f"{hours}h {minutes}m {secs}s"
+
+    def format_bytes(total_bytes):
+        """convert bytes to human readable size"""
+        if total_bytes == 0:
+            return "unknown"
+        gb = total_bytes / 1073741824  # 1024^3
+        return f"{gb:.2f} GiB"
+
+    def generate_report():
+        """generate comprehensive btrfs scrub health report"""
+        scrubs = get_btrfs_data()
+
+        if not scrubs:
+            return "⚠️ no btrfs filesystems found in monitoring system"
+
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # header
+        report = f"🔍 **Weekly BTRFS Scrub Report**\\n\\n"
+        report += f"**Generated**: {timestamp}\\n"
+        report += f"**Total Filesystems**: {len(scrubs)}\\n\\n"
+
+        # overall health summary
+        scrub_failed = []
+        scrub_errors = []
+        scrub_ok = []
+
+        for key, scrub in scrubs.items():
+            status_code = scrub["status_code"]
+            errors = scrub.get("errors", 0)
+
+            if errors > 0:
+                scrub_errors.append(f"{key} ({errors} errors)")
+            elif status_code == SCRUB_FAILED:
+                scrub_failed.append(key)
+            elif status_code == SCRUB_SUCCESS:
+                scrub_ok.append(key)
+
+        # summary
+        if scrub_errors:
+            report += f"🔴 **CRITICAL**: {len(scrub_errors)} filesystem(s) with data corruption\\n"
+            for item in scrub_errors:
+                report += f"   • {item}\\n"
+            report += "\\n"
+
+        if scrub_failed:
+            report += f"⚠️ **WARNING**: {len(scrub_failed)} filesystem(s) with failed scrubs\\n"
+            for item in scrub_failed:
+                report += f"   • {item}\\n"
+            report += "\\n"
+
+        if not scrub_errors and not scrub_failed:
+            report += f"✅ **All filesystems scrubbed successfully** ({len(scrub_ok)} filesystem(s))\\n\\n"
+
+        report += "---\\n\\n"
+
+        # detailed per-filesystem report
+        for key, scrub in sorted(scrubs.items()):
+            host = scrub["host"]
+            mountpoint = scrub["mountpoint"]
+            status_code = scrub["status_code"]
+
+            report += f"**{host}:{mountpoint}**\\n"
+
+            # status
+            status = STATUS_MAP.get(status_code, "❓ Unknown")
+            report += f"Status: {status}\\n"
+
+            # duration
+            duration = scrub.get("duration", 0)
+            if duration > 0:
+                report += f"Duration: {format_duration(duration)}\\n"
+
+            # size scrubbed
+            total_bytes = scrub.get("total_bytes", 0)
+            if total_bytes > 0:
+                report += f"Size Scrubbed: {format_bytes(total_bytes)}\\n"
+
+            # error count
+            errors = scrub.get("errors", 0)
+            if errors > 0:
+                report += f"🔴 Errors: {errors}\\n"
+            else:
+                report += f"Errors: 0 (all data verified)\\n"
+
+            # last run timestamp
+            last_run_timestamp = scrub.get("last_run")
+            if last_run_timestamp:
+                last_run = datetime.fromtimestamp(last_run_timestamp).strftime("%Y-%m-%d %H:%M:%S")
+                days_ago = (datetime.now().timestamp() - last_run_timestamp) / 86400
+                report += f"Last Run: {last_run} ({days_ago:.1f} days ago)\\n"
+
+            report += "\\n"
+
+        return report
+
+    def send_webhook(message):
+        """send report to matrix via webhook"""
+        if not WEBHOOK_URL:
+            print("ERROR: WEBHOOK_URL not set")
+            return False
+
+        # convert markdown to html for matrix
+        html_message = message.replace("\\n", "<br/>")
+        # replace **text** with <b>text</b> using regex
+        html_message = re.sub(r'\*\*([^*]+)\*\*', r'<b>\1</b>', html_message)
+
+        payload = json.dumps({
+            "text": re.sub(r'\*\*([^*]+)\*\*', r'\1', message),  # plain text fallback (strip markdown)
+            "html": html_message,
+            "format": "org.matrix.custom.html"
+        }).encode("utf-8")
+        req = urllib.request.Request(
+            WEBHOOK_URL,
+            data=payload,
+            headers={"Content-Type": "application/json"}
+        )
+
+        try:
+            with urllib.request.urlopen(req, timeout=10) as response:
+                # accept any 2xx status code as success
+                return 200 <= response.status < 300
+        except Exception as e:
+            print(f"error sending webhook: {e}")
             return False
 
     if __name__ == "__main__":
@@ -558,7 +785,7 @@ let
         rules:
 
           - alert: btrfsDataCorruption
-            expr: btrfs_scrub_uncorrectable_errors_total > 0
+            expr: btrfs_scrub_errors_total > 0
             for: 1m
             labels:
               severity: critical
@@ -588,6 +815,14 @@ let
               severity: warning
             annotations:
               summary: "BTRFS scrub has never run on {{ $labels.mountpoint }} ({{ $labels.host }})"
+
+          - alert: btrfsScrubMetricsStale
+            expr: time() - btrfs_scrub_last_completion_timestamp > 691200
+            for: 1h
+            labels:
+              severity: warning
+            annotations:
+              summary: "BTRFS scrub metrics on {{ $labels.mountpoint }} ({{ $labels.host }}) haven't updated in over 8 days (monitoring may be broken)"
   '';
 
 in
@@ -607,13 +842,30 @@ in
     templates."alertmanager-hookshot-env".content = ''
       HOOKSHOT_URL=${config.sops.placeholder.chrisNotificationsWebhookUrl}
     '';
-    templates."weekly-disk-health-env".content = ''
+    templates."smart-health-env".content = ''
+      WEBHOOK_URL=${config.sops.placeholder.chrisNotificationsWebhookUrl}
+    '';
+    templates."btrfs-health-env".content = ''
       WEBHOOK_URL=${config.sops.placeholder.chrisNotificationsWebhookUrl}
     '';
   };
 
+  # create textfile collector directory for node_exporter at boot
+  # needed for hosts with impermanence where /var is ephemeral
+  systemd.tmpfiles.rules = [
+    "d /var/lib/prometheus/node-exporter-text-files 0755 root root -"
+  ];
+
   systemd = {
     services = {
+      # export btrfs scrub metrics after each scrub completes
+      # dynamically generate service name based on configured mountpoint
+      "btrfs-scrub-${utils.escapeSystemdPath scrubMountpoint}" = lib.mkIf config.services.btrfs.autoScrub.enable {
+        serviceConfig = {
+          Type = lib.mkForce "oneshot";
+          ExecStartPost = "${btrfsScrubExporter}";
+        };
+      };
       alertmanager-to-hookshot = {
         description = "Alertmanager to Matrix Hookshot Transformer";
         wantedBy = [ "multi-user.target" ];
@@ -631,7 +883,7 @@ in
           PrivateTmp = true;
           ProtectSystem = "strict";
           ProtectHome = true;
-          ProtectKernelTunels = true;
+          ProtectKernelTunnels = true;
           ProtectKernelModules = true;
           ProtectControlGroups = true;
           RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
@@ -643,20 +895,45 @@ in
           PrivateMounts = true;
         };
       };
-      weekly-disk-health = {
-        description = "Weekly Disk Health Report Generator";
+      smart-health = {
+        description = "Weekly SMART Disk Health Report Generator";
         after = [ "network-online.target" "prometheus.service" ];
         wants = [ "network-online.target" ];
         serviceConfig = {
           Type = "oneshot";
-          ExecStart = "${pkgs.python3}/bin/python3 ${weeklyDiskHealthScript}";
-          EnvironmentFile = config.sops.templates."weekly-disk-health-env".path;
+          ExecStart = "${pkgs.python3}/bin/python3 ${smartHealthScript}";
+          EnvironmentFile = config.sops.templates."smart-health-env".path;
           DynamicUser = true;
           NoNewPrivileges = true;
           PrivateTmp = true;
           ProtectSystem = "strict";
           ProtectHome = true;
-          ProtectKernelTunels = true;
+          ProtectKernelTunnels = true;
+          ProtectKernelModules = true;
+          ProtectControlGroups = true;
+          RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
+          RestrictNamespaces = true;
+          LockPersonality = true;
+          MemoryDenyWriteExecute = true;
+          RestrictRealtime = true;
+          RestrictSUIDSGID = true;
+          PrivateMounts = true;
+        };
+      };
+      btrfs-health = {
+        description = "Weekly BTRFS Scrub Health Report Generator";
+        after = [ "network-online.target" "prometheus.service" ];
+        wants = [ "network-online.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.python3}/bin/python3 ${btrfsHealthScript}";
+          EnvironmentFile = config.sops.templates."btrfs-health-env".path;
+          DynamicUser = true;
+          NoNewPrivileges = true;
+          PrivateTmp = true;
+          ProtectSystem = "strict";
+          ProtectHome = true;
+          ProtectKernelTunnels = true;
           ProtectKernelModules = true;
           ProtectControlGroups = true;
           RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
@@ -670,13 +947,22 @@ in
       };
     };
     timers = {
-      weekly-disk-health = {
-        description = "Weekly Disk Health Report Timer";
+      smart-health = {
+        description = "Weekly SMART Disk Health Report Timer";
         wantedBy = [ "timers.target" ];
         timerConfig = {
-          OnCalendar = "Sun 08:00:00";
+          OnCalendar = "Sun 05:00:00";  # sunday 05:00 (after 04:00 btrfs scrub)
           Persistent = true;  # run on next boot if missed
-          RandomizedDelaySec = "30m";  # randomize within 30 minutes to avoid load spikes
+          RandomizedDelaySec = "5m";  # randomize within 5 minutes to avoid load spikes
+        };
+      };
+      btrfs-health = {
+        description = "Weekly BTRFS Scrub Health Report Timer";
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          OnCalendar = "Sun 04:30:00";  # sunday 04:30 (30 min after 04:00 scrub starts)
+          Persistent = true;  # run on next boot if missed
+          RandomizedDelaySec = "5m";  # randomize within 5 minutes to avoid load spikes
         };
       };
     };
@@ -927,6 +1213,7 @@ in
             "tcpstat"
             "buddyinfo"
           ];
+          extraFlags = [ "--collector.textfile.directory=/var/lib/prometheus/node-exporter-text-files" ];
         };
         smartctl = lib.mkIf (configVars.hosts.${config.networking.hostName}.hardware.enableSmartMonitoring or false) {
           enable = true;

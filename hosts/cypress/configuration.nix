@@ -43,8 +43,8 @@
     # weekly btrfs scrubbing for data integrity
     services.btrfs.autoScrub = {
       enable = true;
-      interval = "weekly";
-      fileSystems = [ "/" ];
+      interval = "Sun *-*-* 04:00:00";
+      fileSystems = [ "/persist" ]; # cypress uses impermanence - root is tmpfs
     };
 
     #backups.startTime = "*-*-* 01:30:00"; # everyday at 1:30am

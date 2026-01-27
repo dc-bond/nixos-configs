@@ -62,21 +62,13 @@
     };
   };
 
-  # ============================================
-  # Data Pool (ext4 HDD, will become ZFS mirror)
-  # ============================================
+  # Western Digital 4TB SATA HDD Serial WD-WCC7K4RU947F
   bulkStorage.path = "/storage";
 
   fileSystems."/storage" = {
-    device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb"; # western digital 4tb hdd
+    device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb";
     fsType = "ext4";
     options = [ "defaults" ];
   };
-
-  # After ZFS migration, change above to:
-  # fileSystems."/storage" = {
-  #   device = "storage";
-  #   fsType = "zfs";
-  # };
 
 }
