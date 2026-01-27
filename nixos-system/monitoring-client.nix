@@ -3,11 +3,17 @@
   config,
   lib,
   configVars,
+  utils,
   ...
 }:
 
 let
   hostData = configVars.hosts.${config.networking.hostName};
+
+  # get the first configured scrub mountpoint (most hosts only have one)
+  scrubMountpoint = if config.services.btrfs.autoScrub.enable
+    then builtins.head config.services.btrfs.autoScrub.fileSystems
+    else "/";
 
   btrfsScrubExporter = pkgs.writeShellScript "btrfs-scrub-exporter.sh" ''
     #!/usr/bin/env bash
@@ -17,55 +23,63 @@ let
     METRICS_FILE="$TEXTFILE_DIR/btrfs_scrub.prom.$$"
     FINAL_FILE="$TEXTFILE_DIR/btrfs_scrub.prom"
 
-    # Directory is created by systemd.tmpfiles.rules at boot
-    # Find all btrfs filesystems
-    for mountpoint in $(${pkgs.util-linux}/bin/findmnt -t btrfs -o TARGET -n | sort -u); do
-      # Escape mountpoint for label (replace / with _)
-      label=$(echo "$mountpoint" | sed 's/\//_/g' | sed 's/^_/root/')
+    # check scrub status for configured filesystem
+    mountpoint="${scrubMountpoint}"
+    scrub_status=$(${pkgs.btrfs-progs}/bin/btrfs scrub status "$mountpoint" 2>/dev/null || echo "")
 
-      # Get scrub status
-      scrub_status=$(${pkgs.btrfs-progs}/bin/btrfs scrub status "$mountpoint" 2>/dev/null || echo "")
+    if grep -q "Status:.*running" <<< "$scrub_status"; then
+      # scrub is currently running
+      echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 2"
+    elif grep -q "Status:.*finished" <<< "$scrub_status"; then
+      # scrub completed successfully
+      echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 1"
 
-      if echo "$scrub_status" | grep -q "scrub started"; then
-        # Scrub is currently running
-        echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 2"
-      elif echo "$scrub_status" | grep -q "finished after"; then
-        # Scrub completed successfully
-        echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 1"
+      # extract error count - use default 0 if not found
+      errors=$(grep -oP 'Error summary:\s+\K\d+' <<< "$scrub_status" || echo "0")
+      echo "btrfs_scrub_errors_total{mountpoint=\"$mountpoint\"} $errors"
 
-        # Extract error counts
-        data_errors=$(echo "$scrub_status" | grep -oP 'data_extents_scrubbed.*?(\d+) errors' | grep -oP '\d+(?= errors)' | head -1 || echo "0")
-        tree_errors=$(echo "$scrub_status" | grep -oP 'tree_extents_scrubbed.*?(\d+) errors' | grep -oP '\d+(?= errors)' | head -1 || echo "0")
+      # extract duration and convert to seconds
+      duration=$(grep -oP 'Duration:\s+\K[0-9:]+' <<< "$scrub_status" || echo "0:00:00")
+      # handle formats: HH:MM:SS, H:MM:SS, or MM:SS
+      IFS=: read -r h m s <<< "$duration"
+      # if only 2 fields (MM:SS), treat first as minutes
+      if [ -z "$s" ]; then s=$m; m=$h; h=0; fi
+      duration_seconds=$(( (h * 3600) + (m * 60) + s ))
+      echo "btrfs_scrub_duration_seconds{mountpoint=\"$mountpoint\"} $duration_seconds"
 
-        echo "btrfs_scrub_uncorrectable_errors_total{mountpoint=\"$mountpoint\",type=\"data\"} $data_errors"
-        echo "btrfs_scrub_uncorrectable_errors_total{mountpoint=\"$mountpoint\",type=\"tree\"} $tree_errors"
-
-        # Extract duration (format: HH:MM:SS)
-        duration=$(echo "$scrub_status" | grep -oP 'finished after \K[0-9:]+' | head -1 || echo "00:00:00")
-        duration_seconds=$(echo "$duration" | ${pkgs.gawk}/bin/awk -F: '{ print ($1 * 3600) + ($2 * 60) + $3 }')
-        echo "btrfs_scrub_duration_seconds{mountpoint=\"$mountpoint\"} $duration_seconds"
-
-        # Get timestamp from systemd unit (best effort)
-        unit_name="btrfs-scrub@$(${pkgs.systemd}/bin/systemd-escape --path "$mountpoint").service"
-        last_run=$(${pkgs.systemd}/bin/systemctl show "$unit_name" --property=ExecMainExitTimestamp --value 2>/dev/null || echo "")
-        if [ -n "$last_run" ] && [ "$last_run" != "n/a" ]; then
-          timestamp=$(date -d "$last_run" +%s 2>/dev/null || echo "0")
+      # get timestamp from systemd service
+      service_name="btrfs-scrub-$(${pkgs.systemd}/bin/systemd-escape --path "$mountpoint").service"
+      last_run=$(${pkgs.systemd}/bin/systemctl show "$service_name" --property=ExecMainExitTimestamp --value 2>/dev/null || echo "")
+      if [ -n "$last_run" ] && [ "$last_run" != "n/a" ]; then
+        timestamp=$(date -d "$last_run" +%s 2>/dev/null || echo "0")
+        if [ "$timestamp" != "0" ]; then
           echo "btrfs_scrub_last_completion_timestamp{mountpoint=\"$mountpoint\"} $timestamp"
         fi
-
-        # Get bytes scrubbed
-        data_bytes=$(echo "$scrub_status" | grep -oP 'data_bytes_scrubbed: \K\d+' | head -1 || echo "0")
-        echo "btrfs_scrub_bytes_scrubbed{mountpoint=\"$mountpoint\"} $data_bytes"
-      elif echo "$scrub_status" | grep -q "no stats"; then
-        # Never run
-        echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 3"
-      else
-        # Failed or unknown
-        echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 0"
       fi
-    done > "$METRICS_FILE"
 
-    # Atomic move to prevent partial reads
+      # extract total bytes with unit handling
+      size_line=$(grep "Total to scrub:" <<< "$scrub_status" || echo "")
+      if [ -n "$size_line" ]; then
+        size_value=$(grep -oP 'Total to scrub:\s+\K[\d.]+' <<< "$size_line")
+        case "$size_line" in
+          *TiB*) multiplier=1099511627776 ;;  # 1024^4
+          *GiB*) multiplier=1073741824 ;;     # 1024^3
+          *MiB*) multiplier=1048576 ;;        # 1024^2
+          *KiB*) multiplier=1024 ;;           # 1024^1
+          *)     multiplier=1 ;;              # assume bytes
+        esac
+        total_bytes=$(${pkgs.gawk}/bin/awk -v val="$size_value" -v mult="$multiplier" 'BEGIN { printf "%.0f", val * mult }')
+        echo "btrfs_scrub_total_bytes{mountpoint=\"$mountpoint\"} $total_bytes"
+      fi
+    elif grep -q "no stats" <<< "$scrub_status"; then
+      # never run
+      echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 3"
+    else
+      # failed or unknown
+      echo "btrfs_scrub_status{mountpoint=\"$mountpoint\"} 0"
+    fi > "$METRICS_FILE"
+
+    # atomic move to prevent partial reads
     mv "$METRICS_FILE" "$FINAL_FILE"
   '';
 
@@ -163,8 +177,11 @@ in
   ];
 
   systemd.services = {
-    "btrfs-scrub@" = lib.mkIf config.services.btrfs.autoScrub.enable {
+    # export btrfs scrub metrics after each scrub completes
+    # dynamically generate service name based on configured mountpoint
+    "btrfs-scrub-${utils.escapeSystemdPath scrubMountpoint}" = lib.mkIf config.services.btrfs.autoScrub.enable {
       serviceConfig = {
+        Type = lib.mkForce "oneshot";
         ExecStartPost = "${btrfsScrubExporter}";
       };
     };

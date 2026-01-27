@@ -23,7 +23,7 @@
     # weekly btrfs scrubbing for data integrity
     services.btrfs.autoScrub = {
       enable = true;
-      interval = "weekly";
+      interval = "Sun *-*-* 04:00:00";
       fileSystems = [ "/" ];
     };
 

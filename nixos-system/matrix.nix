@@ -508,6 +508,10 @@ ${config.sops.placeholder.matrixHookshotPasskey}
           "${app}" = {
             loadBalancer = {
               passHostHeader = true;
+              responseForwarding = {
+                flushInterval = "1s";
+              };
+              serversTransport = "matrix-transport";
               servers = [
                 {
                   url = "http://127.0.0.1:8008";
@@ -533,6 +537,14 @@ ${config.sops.placeholder.matrixHookshotPasskey}
                   url = "http://127.0.0.1:9000";
                 }
               ];
+            };
+          };
+        };
+        serversTransports = {
+          matrix-transport = {
+            forwardingTimeouts = {
+              responseHeaderTimeout = "0s";  # no timeout for Matrix long-polling /sync
+              idleConnTimeout = "90s";        # keep connections alive for 90s
             };
           };
         };
