@@ -19,7 +19,12 @@
       borgDir = "${config.bulkStorage.path}/borgbackup"; # host-specific borg backup directory override on backups.nix
       standaloneData = [
         "${config.bulkStorage.path}/media/family-media"
+        # to enable recovery snapshots (requires uncommenting btrbk config in disk-config.nix):
+        # "/snapshots"
       ];
+      # to enable recovery snapshots, add:
+      # serviceHooks.preHook = lib.mkOrder 2000 [ "systemctl start btrbk-recovery.service" ]; # priority 2000 ensures this runs after all lib.mkAfter (1500) service stops
+      # exclude = [ "/snapshots/hourly-*" ]; # if hourly snapshots are also enabled
     };
 
     environment.systemPackages = with pkgs; [
@@ -29,13 +34,6 @@
       rsync # sync tool
       btop # system monitor
     ];
-
-    # weekly btrfs scrubbing for data integrity
-    services.btrfs.autoScrub = {
-      enable = true;
-      interval = "Sun *-*-* 04:00:00";
-      fileSystems = [ "/" ];
-    };
 
     # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
     system.stateVersion = "24.11";

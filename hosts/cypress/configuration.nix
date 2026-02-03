@@ -40,14 +40,13 @@
     
     hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
-    # weekly btrfs scrubbing for data integrity
-    services.btrfs.autoScrub = {
-      enable = true;
-      interval = "Sun *-*-* 04:00:00";
-      fileSystems = [ "/persist" ]; # cypress uses impermanence - root is tmpfs
+    backups = {
+      borgDir = "/persist/borgbackup"; # use persistent storage for borg repo on impermanence hosts
+      #serviceHooks.preHook = lib.mkOrder 2000 [ "systemctl start btrbk-recovery.service" ]; # requires: /snapshots subvolume (uncomment on next fresh installation)
+      #standaloneData = [ "/snapshots" ]; # requires: /snapshots subvolume (uncomment on next fresh installation)
+      #exclude = [ "/snapshots/hourly-persist.*" ]; # exclude hourly snapshots, only backup recovery-persist.* snapshot
+      prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
     };
-
-    #backups.startTime = "*-*-* 01:30:00"; # everyday at 1:30am
 
     # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
     system.stateVersion = "23.11";
@@ -70,7 +69,7 @@
       "nixos-system/zsh.nix"
       "nixos-system/yubikey.nix"
       "nixos-system/printing.nix"
-      #"nixos-system/backups.nix"
+      "nixos-system/backups.nix"
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"

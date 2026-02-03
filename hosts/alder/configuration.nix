@@ -54,6 +54,13 @@
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
+  backups = {
+    #serviceHooks.preHook = lib.mkOrder 2000 [ "systemctl start btrbk-recovery.service" ]; # requires: /snapshots subvolume (uncomment on next fresh installation)
+    #standaloneData = [ "/snapshots" ]; # requires: /snapshots subvolume (uncomment on next fresh installation)
+    #exclude = [ "/snapshots/hourly-root.*" ]; # exclude hourly snapshots, only backup recovery-root.* snapshot
+    prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
+  };
+
   services.logind.settings.Login.HandleLidSwitch = "ignore"; # disable suspend on laptop lid close
 
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
@@ -71,6 +78,7 @@
       "nixos-system/sshd.nix"
       "nixos-system/audio.nix"
       "nixos-system/zsh.nix"
+      "nixos-system/backups.nix"
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"

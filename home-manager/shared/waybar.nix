@@ -33,10 +33,7 @@ in
 
   programs.waybar = {
     enable = true;
-    systemd = {
-      enable = true;
-      target = "graphical-session.target";
-    };
+    systemd.enable = false; # desktopReload owns waybar lifecycle (generates colors first, then starts waybar)
     settings = [{
       
       "position" = "bottom";

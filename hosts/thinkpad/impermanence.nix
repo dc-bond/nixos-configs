@@ -36,6 +36,7 @@
       "/var/lib/iwd" # wifi networks & passwords
       "/var/lib/bluetooth"  # bluetooth pairings
       "/var/lib/tailscale"  # tailscale node identity at /var/lib/tailscale/tailscaled.state after first tailnet connection using one-time authKey
+      "/var/lib/prometheus/node-exporter-text-files"  # persist btrfs scrub metrics between weekly scrubs
     ];
 
     # user-level persistence

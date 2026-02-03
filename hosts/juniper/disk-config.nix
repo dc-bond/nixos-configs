@@ -14,7 +14,8 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/sda";
+        device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_103227147"; # virtual disk id
+        #device = "/dev/sda";  # virtual disk path
         content = {
           type = "gpt";
           partitions = {

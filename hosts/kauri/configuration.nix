@@ -50,8 +50,12 @@
     wlr-randr # wayland display configuration tool for wlroots compositors
   ];
 
-  #backups.startTime = "*-*-* 01:25:00"; # everyday at 1:25am
-  #services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "${config.users.users.danielle.home}/email" ];
+  backups = {
+    #serviceHooks.preHook = lib.mkOrder 2000 [ "systemctl start btrbk-recovery.service" ]; # requires: /snapshots subvolume (uncomment on next fresh installation)
+    #standaloneData = [ "/snapshots" ]; # requires: /snapshots subvolume (uncomment on next fresh installation)
+    #exclude = [ "/snapshots/hourly-root.*" ]; # exclude hourly snapshots, only backup recovery-root.* snapshot
+    prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
+  };
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
@@ -79,7 +83,7 @@
       "nixos-system/audio.nix"
       "nixos-system/zsh.nix"
       "nixos-system/printing.nix"
-      #"nixos-system/backups.nix"
+      "nixos-system/backups.nix"
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"

@@ -37,7 +37,7 @@ let
       ${lib.optionalString useDiskEncryption ''echo "Using disk encryption for this host..."''}
       ${lib.optionalString usesImpermanence ''echo "Using impermanence architecture for this host..."''}
 
-      # create a temporary directory
+      # create a temporary directory for age keys
       temp=$(mktemp -d)
       trap "rm -rf $temp" EXIT
 
@@ -52,7 +52,7 @@ let
       # move to host directory
       cd "$HOME/nextcloud-client/Personal/nixos/nixos-configs/hosts/${hostname}"
       
-      # build the nixos-anywhere command, bypass declarative knownHosts to allow deployment to fresh installation ISOs
+      # run nixos-anywhere, bypass declarative knownHosts to allow deployment to fresh installation ISOs
       ${if useDiskEncryption
         then ''
           nix run github:nix-community/nixos-anywhere -- \
@@ -86,7 +86,7 @@ let
       echo "Deployment of ${hostname} complete!"
     '';
 
-  # Generate all deployment scripts
+  # generate deployment scripts for all hosts
   deployScripts = lib.mapAttrsToList mkDeployScript configVars.hosts;
   
 in

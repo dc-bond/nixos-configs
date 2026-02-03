@@ -482,8 +482,8 @@ let
                 report += f"   • {item}\\n"
             report += "\\n"
 
-        if not scrub_errors and not scrub_failed:
-            report += f"✅ **All filesystems scrubbed successfully** ({len(scrub_ok)} filesystem(s))\\n\\n"
+        # only show summary if there are errors or failures
+        # omit the "all successful" line when everything is OK
 
         report += "---\\n\\n"
 
@@ -493,7 +493,7 @@ let
             mountpoint = scrub["mountpoint"]
             status_code = scrub["status_code"]
 
-            report += f"**{host}:{mountpoint}**\\n"
+            report += f"**{host}: {mountpoint}**\\n"
 
             # status
             status = STATUS_MAP.get(status_code, "❓ Unknown")

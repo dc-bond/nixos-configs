@@ -16,6 +16,14 @@ let
   initLocalRepoScript = pkgs.writeShellScriptBin "initLocalRepo" ''
     #!/bin/bash
     set -euo pipefail
+
+    # check for root
+    if [ "$(id -u)" -ne 0 ]; then
+      echo "ERROR: This script must be run as root"
+      echo "Usage: sudo initLocalRepo"
+      exit 1
+    fi
+
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
     mkdir -p ${config.backups.borgDir}/${config.networking.hostName}
@@ -138,6 +146,14 @@ let
   inspectLocalBackupsScript = pkgs.writeShellScriptBin "inspectLocalBackups" ''
     #!/bin/bash
     set -euo pipefail
+
+    # check for root
+    if [ "$(id -u)" -ne 0 ]; then
+      echo "ERROR: This script must be run as root"
+      echo "Usage: sudo inspectLocalBackups"
+      exit 1
+    fi
+
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
     
@@ -160,8 +176,16 @@ let
 
   inspectRemoteBackupsScript = pkgs.writeShellScriptBin "inspectRemoteBackups" ''
     #!/bin/bash
-    
+
     set -euo pipefail
+
+    # check for root
+    if [ "$(id -u)" -ne 0 ]; then
+      echo "ERROR: This script must be run as root"
+      echo "Usage: sudo inspectRemoteBackups"
+      exit 1
+    fi
+
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
     
@@ -249,8 +273,16 @@ let
   }: # function that generates a standardized recovery script for any oci-container module service
   pkgs.writeShellScriptBin "recover${lib.strings.toUpper (builtins.substring 0 1 serviceName)}${builtins.substring 1 (-1) serviceName}" ''
     #!/bin/bash
-   
+
     set -euo pipefail
+
+    # check for root
+    if [ "$(id -u)" -ne 0 ]; then
+      echo "ERROR: This script must be run as root"
+      echo "Usage: sudo $(basename "$0")"
+      exit 1
+    fi
+
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
@@ -500,8 +532,16 @@ let
   }: # function that generates a standardized recovery script for any nix module service
   pkgs.writeShellScriptBin "recover${lib.strings.toUpper (lib.substring 0 1 serviceName)}${lib.substring 1 (-1) serviceName}" ''
     #!/bin/bash
-   
+
     set -euo pipefail
+
+    # check for root
+    if [ "$(id -u)" -ne 0 ]; then
+      echo "ERROR: This script must be run as root"
+      echo "Usage: sudo $(basename "$0")"
+      exit 1
+    fi
+
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
@@ -756,6 +796,14 @@ let
     #!/bin/bash
 
     set -euo pipefail
+
+    # check for root
+    if [ "$(id -u)" -ne 0 ]; then
+      echo "ERROR: This script must be run as root"
+      echo "Usage: sudo recoverDataDirectory"
+      exit 1
+    fi
+
     export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
@@ -989,6 +1037,26 @@ in
         description = "commands to run after starting services";
       };
     };
+    prune = lib.mkOption {
+      type = lib.types.attrs;
+      default = {
+        daily = 30;
+        weekly = 4;
+        monthly = 3;
+      };
+      description = "borg backup retention policy";
+      example = {
+        daily = 7;
+        weekly = 2;
+        monthly = 1;
+      };
+    };
+    exclude = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+      description = "patterns to exclude from backup (borg pattern syntax)";
+      example = [ "/home/*/.cache" "/snapshots/hourly-*" ];
+    };
   };
   
   config = {
@@ -1060,11 +1128,8 @@ in
           ${lib.concatStringsSep "\n" config.backups.serviceHooks.postHook}
         '';
         paths = lib.mkDefault config.backups.standaloneData;
-        prune.keep = {
-          daily = 30; # keep the last thirty daily archives
-          weekly = 4; # keep the last four weekly archives (following exhaustion of the daily archives)
-          monthly = 3; # keep the last three monthly archives (following exhaustion of the weekly archives)
-        };
+        exclude = lib.mkDefault config.backups.exclude;
+        prune.keep = config.backups.prune;
       };
     };
 

@@ -24,7 +24,7 @@
     services.btrfs.autoScrub = {
       enable = true;
       interval = "Sun *-*-* 04:00:00";
-      fileSystems = [ "/" ];
+      fileSystems = [ "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_103227147-part2" ]; # vps virtual disk partition
     };
 
     # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
