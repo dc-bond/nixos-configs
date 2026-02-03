@@ -31,8 +31,9 @@ let
     # set the new wallpaper
     ${pkgs.swww}/bin/swww img $wallpaper --transition-step 20 --transition-fps=20
     
-    # reload waybar (restart if running, start if not)
-    ${pkgs.systemd}/bin/systemctl --user restart waybar.service 2>/dev/null || ${pkgs.systemd}/bin/systemctl --user start waybar.service
+    # reload waybar
+    ${pkgs.procps}/bin/pkill waybar || true
+    ${pkgs.waybar}/bin/waybar &
     
     # send notification
     #${pkgs.dunst}/bin/dunstify "Wallpaper and Taskbar Reloaded"
@@ -109,25 +110,17 @@ in
     mimeType = [ "x-scheme-handler/element" ];
   };
 
-  #1. Hyprland starts → triggers graphical-session.target
-  #2. Waybar starts via systemd (may initially fail to load colors properly since desktopReload has not run yet)
-  #3. desktopReload service starts automatically after waybar
-  #4. 2-second delay ensures everything is settled
-  #5. desktopReload runs → creates colors and restarts waybar
-  #6. Waybar reloads with proper colors
+  # wrap desktopReload in a systemd user service so timer can automatically cycle wallpaper, otherwise desktopReload called directly from startup script and hotkeys
   systemd.user = {
     services.desktopReload = {
       Unit = {
         Description = "Reload desktop theme and wallpaper";
-        After = [ "graphical-session.target" "waybar.service" ];
+        After = [ "graphical-session.target" ];
       };
       Service = {
         Type = "oneshot";
-        ExecStartPre = "${pkgs.coreutils}/bin/sleep 2";
         ExecStart = "${desktopReloadScript}/bin/desktopReload";
-      };
-      Install = {
-        WantedBy = [ "graphical-session.target" ];
+        KillMode = "process"; # don't kill backgrounded waybar when script exits
       };
     };
     timers.desktopReload = {
@@ -151,10 +144,7 @@ in
       exec-once = [
         "swww-daemon"
         "dunst"
-        "firefox-esr"
-        "alacritty"
-        "codium"
-        "element-desktop"
+        "sleep 1 && desktopReload" # generate pywal colors and start waybar
         "sleep 1 && nextcloud"
       ];
       bind = [
@@ -228,10 +218,10 @@ in
       windowrulev2 = [
         "size 1154 706, class:(com.saivert.pwvucontrol)"
         "size 451 607, class:(org.gnome.Calculator)"
-        "workspace 1 silent, class:^(firefox-esr)$"
-        "workspace 2 silent, class:^(Alacritty)$"
-        "workspace 3 silent, class:^(VSCodium)$"
-        "workspace 10 silent, class:^(Element)$"
+        #"workspace 1 silent, class:^(firefox-esr)$"
+        #"workspace 2 silent, class:^(Alacritty)$"
+        #"workspace 3 silent, class:^(VSCodium)$"
+        #"workspace 10 silent, class:^(Element)$"
       ];
       windowrule = [
         "float, class:^(com.saivert.pwvucontrol)$"

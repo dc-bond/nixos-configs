@@ -15,6 +15,14 @@
 
     networking.hostName = "thinkpad";
 
+    backups = {
+      borgDir = "/persist/borgbackup"; # use persistent storage for borg repo on impermanence hosts
+      serviceHooks.preHook = lib.mkOrder 2000 [ "systemctl start btrbk-recovery.service" ]; # priority 2000 ensures this runs after all lib.mkAfter (1500) service stops
+      standaloneData = [ "/snapshots" ];
+      exclude = [ "/snapshots/hourly-persist.*" ]; # exclude hourly snapshots, only backup recovery-persist.* snapshot
+      prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
+    };
+
     environment.systemPackages = with pkgs; [
       age # encryption tool
       mkpasswd # password hashing tool
@@ -27,7 +35,7 @@
       ethtool # network tools
       inetutils # more network tools like telnet
       unzip # utility to unzip directories
-      btop # system monitor
+      #btop # system monitor
       nmap # network scanning
       brightnessctl # screen brightness application
       ddcutil # query and change monitor settings using DDC/CI and USB
@@ -59,11 +67,12 @@
       "nixos-system/zsh.nix"
       "nixos-system/yubikey.nix"
       "nixos-system/printing.nix"
+      "nixos-system/backups.nix"
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"
       "nixos-system/usb-phone-mount.nix"
-      
+
       "nixos-system/greetd.nix"
       "nixos-system/hyprland.nix"
 

@@ -53,6 +53,16 @@ in
       };
     };
 
+    # centralized logging configuration
+    services.journald = {
+      extraConfig = ''
+        SystemMaxUse=2G
+        MaxRetentionSec=2week
+        MaxFileSec=1day
+      '';
+      forwardToSyslog = false;
+    };
+
     # system locale and regional settings
     time.timeZone = "America/New_York";
     i18n.defaultLocale = "en_US.UTF-8";

@@ -32,7 +32,8 @@ let
     ${pkgs.swww}/bin/swww img $wallpaper --transition-step 20 --transition-fps=20
     
     # reload waybar
-    ${pkgs.systemd}/bin/systemctl --user restart waybar.service
+    ${pkgs.procps}/bin/pkill waybar || true
+    ${pkgs.waybar}/bin/waybar &
 
     # send notification
     #${pkgs.dunst}/bin/dunstify "Wallpaper and Taskbar Reloaded"
@@ -107,6 +108,7 @@ in
     mimeType = [ "x-scheme-handler/element" ];
   };
 
+  # wrap desktopReload in a systemd user service so timer can automatically cycle wallpaper, otherwise desktopReload called directly from startup script and hotkeys
   systemd.user = {
     services.desktopReload = {
       Unit = {
@@ -116,6 +118,7 @@ in
       Service = {
         Type = "oneshot";
         ExecStart = "${desktopReloadScript}/bin/desktopReload";
+        KillMode = "process"; # don't kill backgrounded waybar when script exits
       };
     };
     timers.desktopReload = {

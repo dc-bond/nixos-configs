@@ -502,6 +502,10 @@ ${config.sops.placeholder.matrixHookshotPasskey}
           webhooks-allow.ipAllowList.sourceRange = [
             "${configVars.hosts.aspen.networking.tailscaleIp}"
             "${configVars.hosts.juniper.networking.tailscaleIp}"
+            "${configVars.hosts.thinkpad.networking.tailscaleIp}"
+            "${configVars.hosts.cypress.networking.tailscaleIp}"
+            "${configVars.hosts.kauri.networking.tailscaleIp}"
+            "${configVars.hosts.alder.networking.tailscaleIp}"
           ];
         };
         services = {
