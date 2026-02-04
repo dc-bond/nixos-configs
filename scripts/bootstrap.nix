@@ -1,3 +1,15 @@
+# RECOMMENDED: Automated Bootstrap (One Command)
+#   curl -sL https://raw.githubusercontent.com/dc-bond/nixos-configs/main/scripts/bootstrap-iso.sh | bash
+#
+# The automated script will:
+#   - Prompt for hostname and GitHub token
+#   - Setup GPG with Yubikey
+#   - Clone repos via HTTPS (no SSH setup needed)
+#   - Run the bootstrap deployment
+#
+# ============================================================================
+#
+# ALTERNATIVE: Manual Bootstrap (for advanced users or debugging)
 # Usage from NixOS ISO (booted directly on the target machine, not over SSH):
 #   1. Boot target machine from NixOS ISO
 #   2. Connect to network (wired or wifi)
