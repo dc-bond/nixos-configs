@@ -16,7 +16,7 @@ read -p "Hostname: " HOSTNAME
 
 export HOSTNAME
 
-nix-shell -p gnupg pinentry-curses git pass --run '
+nix-shell -p gnupg pinentry-curses git pass --command '
 set -euo pipefail
 
 echo "Checking for Yubikey..."
@@ -43,10 +43,7 @@ export GPG_TTY=$(tty)
 export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 gpg-connect-agent updatestartuptty /bye
 
-echo "Unlocking Yubikey (enter PIN when prompted)..."
-echo "test" | gpg --sign --local-user chris@dcbond.com >/dev/null
-
-echo "Testing SSH to GitHub..."
+echo "Testing SSH to GitHub (touch Yubikey when prompted)..."
 ssh -T git@github.com 2>&1 | grep -q "dc-bond" || { echo "SSH auth failed"; exit 1; }
 
 echo "Cloning configs..."
