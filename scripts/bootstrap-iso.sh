@@ -16,7 +16,7 @@ read -p "Hostname: " HOSTNAME
 
 export HOSTNAME
 
-nix-shell -p gnupg pinentry-curses git pass --command '
+nix-shell -p gnupg pinentry-tty git pass --command '
 set -euo pipefail
 
 echo "Checking for Yubikey..."
@@ -32,7 +32,7 @@ echo "Configuring GPG agent for SSH..."
 mkdir -p ~/.gnupg
 cat > ~/.gnupg/gpg-agent.conf << EOF
 enable-ssh-support
-pinentry-program $(which pinentry-curses)
+pinentry-program $(which pinentry-tty)
 EOF
 echo "0220A39C45CB35A72692C72BC35B8E300BDA0690" > ~/.gnupg/sshcontrol
 
