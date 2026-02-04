@@ -5,18 +5,15 @@
 
 set -euo pipefail
 
-# reclaim terminal for interactive prompts (needed when run via curl|bash)
-exec < /dev/tty
-
 [[ ! -f /etc/NIXOS ]] && { echo "Must run from NixOS ISO"; exit 1; }
 
 echo "Available hosts: thinkpad, cypress, kauri, aspen, juniper"
 read -p "Hostname: " HOSTNAME
 [[ -z "$HOSTNAME" ]] && exit 1
 
-export HOSTNAME
-
-nix-shell -p gnupg pinentry-tty git pass --command '
+# Phase 1: Setup (no PIN required)
+echo "Phase 1: Setting up GPG and SSH..."
+nix-shell -p gnupg pinentry-curses git pass --run '
 set -euo pipefail
 
 echo "Checking for Yubikey..."
@@ -32,19 +29,39 @@ echo "Configuring GPG agent for SSH..."
 mkdir -p ~/.gnupg
 cat > ~/.gnupg/gpg-agent.conf << EOF
 enable-ssh-support
-pinentry-program $(which pinentry-tty)
+pinentry-program $(which pinentry-curses)
 EOF
 echo "0220A39C45CB35A72692C72BC35B8E300BDA0690" > ~/.gnupg/sshcontrol
 
-echo "Restarting GPG agent..."
 gpgconf --kill gpg-agent
-sleep 1
-export GPG_TTY=$(tty)
-export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-gpg-connect-agent updatestartuptty /bye
+echo "Phase 1 complete."
+'
 
-echo "Testing SSH to GitHub (touch Yubikey when prompted)..."
-ssh -T git@github.com 2>&1 | grep -q "dc-bond" || { echo "SSH auth failed"; exit 1; }
+# Phase 2: Manual PIN entry
+echo ""
+echo "============================================"
+echo "Phase 2: Manual step required"
+echo "============================================"
+echo ""
+echo "Run these commands:"
+echo ""
+echo "  nix-shell -p gnupg pinentry-curses git pass"
+echo ""
+echo "Then inside nix-shell:"
+echo ""
+echo "  export GPG_TTY=\$(tty)"
+echo "  export SSH_AUTH_SOCK=\$(gpgconf --list-dirs agent-ssh-socket)"
+echo "  gpg-connect-agent updatestartuptty /bye"
+echo "  ssh -T git@github.com"
+echo ""
+echo "After successful GitHub auth, run:"
+echo ""
+echo "  HOSTNAME=$HOSTNAME source ~/bootstrap-phase3.sh"
+echo ""
+
+# Write phase 3 script
+cat > ~/bootstrap-phase3.sh << 'EOF'
+set -euo pipefail
 
 echo "Cloning configs..."
 git clone https://github.com/dc-bond/nixos-configs.git ~/nixos-configs 2>/dev/null || (cd ~/nixos-configs && git pull)
@@ -63,6 +80,8 @@ read -p "Type yes to proceed: " CONFIRM
 echo "Starting bootstrap deployment..."
 cd ~/nixos-configs
 nix-shell ~/nixos-configs/scripts/bootstrap.nix --run "bootstrap-${HOSTNAME}"
-'
 
 echo "Done! Reboot, login, then run: sudo recoverSnap"
+EOF
+
+echo "Phase 3 script written to ~/bootstrap-phase3.sh"
