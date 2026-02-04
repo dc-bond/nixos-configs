@@ -1,9 +1,12 @@
 #!/usr/bin/env bash
 # NixOS ISO Bootstrap Script
-# Usage: curl -sL https://raw.githubusercontent.com/dc-bond/nixos-configs/main/scripts/bootstrap-iso.sh | bash
+# Usage: curl -sLO https://raw.githubusercontent.com/dc-bond/nixos-configs/main/scripts/bootstrap-iso.sh && bash bootstrap-iso.sh
 # Requires: Yubikey with GPG auth subkey (SSH key registered with GitHub)
 
 set -euo pipefail
+
+# reclaim terminal for interactive prompts (needed when run via curl|bash)
+exec < /dev/tty
 
 [[ ! -f /etc/NIXOS ]] && { echo "Must run from NixOS ISO"; exit 1; }
 
