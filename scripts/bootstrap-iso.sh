@@ -60,7 +60,6 @@ echo "SSH key loaded from Yubikey successfully"
 
 echo "Cloning repos via SSH..."
 git clone git@github.com:dc-bond/nixos-configs.git ~/nixos-configs
-git clone git@github.com:dc-bond/nixos-configs-private.git ~/nixos-configs-private
 git clone git@github.com:dc-bond/.password-store.git ~/.password-store
 
 echo "Verifying pass access..."
