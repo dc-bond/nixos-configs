@@ -56,7 +56,12 @@
 
 let
   # load configVars from the parent directory
-  configVars = import ../vars/default.nix { inherit lib; };
+  # Note: inputs is not available in bootstrap context, but vars/default.nix doesn't actually use it
+  # We pass an empty attrset to satisfy the function signature
+  configVars = import ../vars/default.nix {
+    inherit lib;
+    inputs = {};
+  };
 
   # generate bootstrap script for a specific host
   mkBootstrapScript = hostname: hostConfig:
