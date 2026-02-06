@@ -12,13 +12,15 @@ read -p "Hostname: " HOSTNAME
 [[ -z "$HOSTNAME" ]] && exit 1
 
 export HOSTNAME
+
+# Do ALL GPG setup inside a nix-shell with packages available
+nix-shell -p gnupg pinentry-curses git pass --run '
+set -euo pipefail
+
+# Set up environment variables
 export GPG_TTY=$(tty)
+export HOSTNAME="'"$HOSTNAME"'"
 
-# Install required packages first
-echo "Installing required packages..."
-nix-shell -p gnupg pinentry-curses git pass --run 'true'
-
-# Setup GPG agent BEFORE entering the main shell
 echo "Setting up GPG environment..."
 mkdir -p ~/.gnupg
 chmod 700 ~/.gnupg
@@ -35,14 +37,15 @@ EOF
 echo "0220A39C45CB35A72692C72BC35B8E300BDA0690" > ~/.gnupg/sshcontrol
 
 echo "Importing GPG key..."
-nix-shell -p gnupg --run '
 gpg --keyserver keyserver.ubuntu.com --recv-keys 012321D46E090E61
 echo -e "trust\n5\ny\nquit" | gpg --command-fd 0 --edit-key chris@dcbond.com
-'
 
 # Kill and restart agent to pick up config
 gpgconf --kill gpg-agent
 gpg-connect-agent /bye
+
+# Update GPG agent with current TTY
+gpg-connect-agent updatestartuptty /bye
 
 # Verify Yubikey
 echo "Checking for Yubikey..."
@@ -55,10 +58,6 @@ export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
 echo "Testing SSH authentication..."
 ssh-add -L || { echo "No SSH keys from GPG agent"; exit 1; }
 echo "SSH key loaded from Yubikey successfully"
-
-# Now enter the main shell with environment already configured
-nix-shell -p git pass --run '
-set -euo pipefail
 
 echo "Cloning repos via SSH..."
 git clone git@github.com:dc-bond/nixos-configs.git ~/nixos-configs
