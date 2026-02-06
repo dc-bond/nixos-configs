@@ -31,7 +31,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     impermanence.url = "github:nix-community/impermanence";
-    private.url = "github:dc-bond/nixos-configs-private";
+    private.url = "git+ssh://git@github.com/dc-bond/nixos-configs-private";
   };
 
   outputs = {
