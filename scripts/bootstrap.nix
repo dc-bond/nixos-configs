@@ -1,54 +1,3 @@
-# RECOMMENDED: Automated Bootstrap (One Command)
-#   curl -sL https://raw.githubusercontent.com/dc-bond/nixos-configs/main/scripts/bootstrap-iso.sh | bash
-#
-# The automated script will:
-#   - Prompt for hostname and GitHub token
-#   - Setup GPG with Yubikey
-#   - Clone repos via HTTPS (no SSH setup needed)
-#   - Run the bootstrap deployment
-#
-# ============================================================================
-#
-# ALTERNATIVE: Manual Bootstrap (for advanced users or debugging)
-# Usage from NixOS ISO (booted directly on the target machine, not over SSH):
-#   1. Boot target machine from NixOS ISO
-#   2. Connect to network (wired or wifi)
-#   3. Run these commands on the ISO console:
-#
-#        nix-shell -p gnupg pinentry-curses git pass
-#
-#        # Import GPG key and configure
-#        gpg --keyserver keyserver.ubuntu.com --recv-keys 012321D46E090E61
-#        gpg --card-status
-#        gpg --edit-key chris@dcbond.com  # type: trust, 5, y, quit
-#
-#        # Configure gpg-agent for SSH
-#        mkdir -p ~/.gnupg
-#        echo "enable-ssh-support" >> ~/.gnupg/gpg-agent.conf
-#        echo "pinentry-program $(which pinentry-curses)" >> ~/.gnupg/gpg-agent.conf
-#        echo "0220A39C45CB35A72692C72BC35B8E300BDA0690" > ~/.gnupg/sshcontrol
-#
-#        # Restart gpg-agent and configure environment
-#        gpgconf --kill gpg-agent
-#        gpg-connect-agent /bye
-#        export GPG_TTY=$(tty)
-#        export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-#        gpg-connect-agent updatestartuptty /bye
-#
-#        # Test SSH (should see "Hi dc-bond!")
-#        ssh -T git@github.com
-#
-#        # Clone repos
-#        git clone git@github.com:dc-bond/.password-store.git ~/.password-store
-#        git clone https://github.com/dc-bond/nixos-configs.git ~/nixos-configs
-#
-#        # Test pass access
-#        pass show hosts/<hostname>/age/private
-#
-#        # Run bootstrap
-#        nix-shell ~/nixos-configs/scripts/bootstrap.nix
-#        bootstrap-<hostname>  # e.g., bootstrap-thinkpad
-
 {
   pkgs ? import <nixpkgs> {},
   lib ? pkgs.lib,
@@ -56,8 +5,8 @@
 
 let
   # load configVars from the parent directory
-  # Note: inputs is not available in bootstrap context, but vars/default.nix doesn't actually use it
-  # We pass an empty attrset to satisfy the function signature
+  # note: inputs is not available in bootstrap context, but vars/default.nix doesn't actually use it
+  # pass an empty attrset to satisfy the function signature
   configVars = import ../vars/default.nix {
     inherit lib;
     inputs = {};
