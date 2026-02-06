@@ -66,48 +66,46 @@ echo "Verifying pass access..."
 pass show "hosts/$HOSTNAME/age/private" >/dev/null || { echo "Pass access failed"; exit 1; }
 
 echo ""
-echo "Setting up build space on target disk..."
-echo "Available disks:"
-lsblk -d -n -o NAME,SIZE,TYPE | grep disk
+echo "Checking system resources..."
 
-read -p "Target disk (e.g., nvme0n1, sda, vda): " TARGET_DISK
-[[ -z "$TARGET_DISK" ]] && { echo "No disk specified"; exit 1; }
+# check available RAM
+TOTAL_RAM_KB=$(grep MemTotal /proc/meminfo | awk "{print \$2}")
+TOTAL_RAM_GB=$((TOTAL_RAM_KB / 1024 / 1024))
+AVAILABLE_RAM_KB=$(grep MemAvailable /proc/meminfo | awk "{print \$2}")
+AVAILABLE_RAM_GB=$((AVAILABLE_RAM_KB / 1024 / 1024))
 
-TARGET_DISK_PATH="/dev/$TARGET_DISK"
-[[ ! -b "$TARGET_DISK_PATH" ]] && { echo "Disk $TARGET_DISK_PATH not found"; exit 1; }
+echo "Total RAM: ${TOTAL_RAM_GB} GB"
+echo "Available RAM: ${AVAILABLE_RAM_GB} GB"
 
-echo ""
-echo "WARNING: Using $TARGET_DISK_PATH for temporary build space"
-echo "This disk will be completely wiped during deployment!"
-read -p "Confirm disk selection (type disk name): " CONFIRM_DISK
-[[ "$CONFIRM_DISK" != "$TARGET_DISK" ]] && { echo "Disk confirmation failed"; exit 1; }
+# calculate safe tmpfs size (leave 4GB for ISO + overhead)
+MIN_RAM_GB=16
+REQUIRED_TMPFS_GB=12
+SAFE_TMPFS_GB=$((AVAILABLE_RAM_GB - 4))
 
-# create temporary partition for build
-echo "Creating temporary build partition..."
-sudo parted -s "$TARGET_DISK_PATH" mklabel gpt
-sudo parted -s "$TARGET_DISK_PATH" mkpart primary 0% 100%
-sleep 2  # wait for kernel to recognize partition
-
-# determine partition name (nvme0n1p1 vs sda1)
-if [[ "$TARGET_DISK" == nvme* ]] || [[ "$TARGET_DISK" == mmcblk* ]]; then
-    PARTITION="${TARGET_DISK_PATH}p1"
+if [ "$TOTAL_RAM_GB" -lt "$MIN_RAM_GB" ]; then
+    echo ""
+    echo "WARNING: System has only ${TOTAL_RAM_GB} GB RAM"
+    echo "Recommended minimum: ${MIN_RAM_GB} GB for reliable builds"
+    echo "Build may fail due to insufficient tmpfs space"
+    read -p "Continue anyway? (yes/no): " CONTINUE
+    [[ "$CONTINUE" != "yes" ]] && exit 1
+    TMPFS_SIZE_GB=$SAFE_TMPFS_GB
 else
-    PARTITION="${TARGET_DISK_PATH}1"
+    TMPFS_SIZE_GB=$REQUIRED_TMPFS_GB
 fi
 
-# format and mount
-echo "Formatting $PARTITION..."
-sudo mkfs.ext4 -F "$PARTITION"
-sudo mkdir -p /mnt/build
-sudo mount "$PARTITION" /mnt/build
-
-# replace tmpfs with disk-backed storage
-echo "Mounting build space over /nix/.rw-store..."
-sudo mount --bind /mnt/build /nix/.rw-store
+# expand tmpfs for build
+echo ""
+echo "Expanding tmpfs to ${TMPFS_SIZE_GB}G for NixOS build..."
+sudo mount -o remount,size=${TMPFS_SIZE_GB}G /nix/.rw-store || {
+    echo "Failed to expand tmpfs - build will likely fail"
+    read -p "Continue anyway? (yes/no): " CONTINUE
+    [[ "$CONTINUE" != "yes" ]] && exit 1
+}
 
 # show available space
-BUILD_SPACE=$(df -h /nix/.rw-store | tail -1 | awk "{print \$4}")
-echo "Available build space: $BUILD_SPACE"
+TMPFS_AVAIL=$(df -h /nix/.rw-store | tail -1 | awk "{print \$4}")
+echo "Available tmpfs space: $TMPFS_AVAIL"
 echo ""
 
 echo "Starting deployment..."
