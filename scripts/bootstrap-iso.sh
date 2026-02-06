@@ -66,9 +66,49 @@ echo "Verifying pass access..."
 pass show "hosts/$HOSTNAME/age/private" >/dev/null || { echo "Pass access failed"; exit 1; }
 
 echo ""
-echo "WARNING: This will wipe all data on the target disk!"
-read -p "Type yes to proceed: " CONFIRM
-[[ "$CONFIRM" != "yes" ]] && exit 1
+echo "Setting up build space on target disk..."
+echo "Available disks:"
+lsblk -d -n -o NAME,SIZE,TYPE | grep disk
+
+read -p "Target disk (e.g., nvme0n1, sda, vda): " TARGET_DISK
+[[ -z "$TARGET_DISK" ]] && { echo "No disk specified"; exit 1; }
+
+TARGET_DISK_PATH="/dev/$TARGET_DISK"
+[[ ! -b "$TARGET_DISK_PATH" ]] && { echo "Disk $TARGET_DISK_PATH not found"; exit 1; }
+
+echo ""
+echo "WARNING: Using $TARGET_DISK_PATH for temporary build space"
+echo "This disk will be completely wiped during deployment!"
+read -p "Confirm disk selection (type disk name): " CONFIRM_DISK
+[[ "$CONFIRM_DISK" != "$TARGET_DISK" ]] && { echo "Disk confirmation failed"; exit 1; }
+
+# create temporary partition for build
+echo "Creating temporary build partition..."
+sudo parted -s "$TARGET_DISK_PATH" mklabel gpt
+sudo parted -s "$TARGET_DISK_PATH" mkpart primary 0% 100%
+sleep 2  # wait for kernel to recognize partition
+
+# determine partition name (nvme0n1p1 vs sda1)
+if [[ "$TARGET_DISK" == nvme* ]] || [[ "$TARGET_DISK" == mmcblk* ]]; then
+    PARTITION="${TARGET_DISK_PATH}p1"
+else
+    PARTITION="${TARGET_DISK_PATH}1"
+fi
+
+# format and mount
+echo "Formatting $PARTITION..."
+sudo mkfs.ext4 -F "$PARTITION"
+sudo mkdir -p /mnt/build
+sudo mount "$PARTITION" /mnt/build
+
+# replace tmpfs with disk-backed storage
+echo "Mounting build space over /nix/.rw-store..."
+sudo mount --bind /mnt/build /nix/.rw-store
+
+# show available space
+BUILD_SPACE=$(df -h /nix/.rw-store | tail -1 | awk "{print \$4}")
+echo "Available build space: $BUILD_SPACE"
+echo ""
 
 echo "Starting deployment..."
 cd ~/nixos-configs
