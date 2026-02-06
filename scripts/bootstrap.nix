@@ -108,10 +108,10 @@ let
       # move to host directory (assumes standard clone location)
       cd "$HOME/nixos-configs/hosts/${hostname}"
 
-      # run nixos-anywhere (identical to deploy.nix except target is localhost)
+      # run nixos-anywhere (identical to deploy.nix except target is localhost and experimental features enabled for ISO)
       ${if useDiskEncryption
         then ''
-          nix run github:nix-community/nixos-anywhere -- \
+          nix --extra-experimental-features nix-command --extra-experimental-features flakes run github:nix-community/nixos-anywhere -- \
             --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
             --disk-encryption-keys /tmp/crypt-passwd.txt <(pass hosts/${hostname}/disk-encryption-passwd) \
             --extra-files "$temp" \
@@ -123,7 +123,7 @@ let
             root@localhost
         ''
         else ''
-          nix run github:nix-community/nixos-anywhere -- \
+          nix --extra-experimental-features nix-command --extra-experimental-features flakes run github:nix-community/nixos-anywhere -- \
             --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
             --extra-files "$temp" \
             ${chownArgs} \
