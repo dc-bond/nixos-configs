@@ -72,7 +72,7 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/kauri/disk-config.nix"
+      "hosts/kauri/disko.nix"
       "hosts/kauri/hardware-configuration.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"

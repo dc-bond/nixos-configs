@@ -34,7 +34,7 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/juniper/disk-config.nix"
+      "hosts/juniper/disko.nix"
       "hosts/juniper/hardware-configuration.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"

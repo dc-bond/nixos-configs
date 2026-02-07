@@ -8,9 +8,7 @@
 
 {
 
-  imports = [
-    inputs.disko.nixosModules.disko
-  ];
+  imports = [ inputs.disko.nixosModules.disko ];
 
   disko.devices = {
     disk = {
@@ -46,10 +44,10 @@
                     mountpoint = "/persist";
                     mountOptions = [ "compress=zstd" "noatime" ];
                   };
-                  #"/snapshots" = { # to be implemented on next fresh installation
-                  #  mountpoint = "/snapshots";
-                  #  mountOptions = [ "compress=zstd" "noatime" ];
-                  #};
+                  "/snapshots" = { # to be implemented on next fresh installation
+                    mountpoint = "/snapshots";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
                   "/swap" = {
                     mountpoint = "/swap";
                     swap.swapfile.size = "8G"; # 0.5x RAM - adequate OOM protection without hibernation
