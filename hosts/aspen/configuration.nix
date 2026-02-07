@@ -19,7 +19,7 @@
       borgDir = "${config.bulkStorage.path}/borgbackup"; # host-specific borg backup directory override on backups.nix
       standaloneData = [
         "${config.bulkStorage.path}/media/family-media"
-        # to enable recovery snapshots (requires uncommenting btrbk config in disk-config.nix):
+        # to enable recovery snapshots (requires uncommenting btrbk config in disko.nix):
         # "/snapshots"
       ];
       # to enable recovery snapshots, add:
@@ -42,7 +42,7 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/aspen/disk-config.nix"
+      "hosts/aspen/disko.nix"
       "hosts/aspen/hardware-configuration.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"

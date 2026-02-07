@@ -79,7 +79,6 @@ in
       #!/usr/bin/env bash
       set -euo pipefail
 
-      # Check for root
       if [ "$(id -u)" -ne 0 ]; then
         echo "ERROR: This script must be run as root"
         echo "Usage: sudo recoverSnap"
@@ -93,7 +92,6 @@ in
       TEMP_EXTRACT=""
       BTRFS_ROOT=""
 
-      # Cleanup function
       cleanup() {
         echo ""
         echo "Cleaning up..."
@@ -125,11 +123,12 @@ in
       echo "========================================"
       echo ""
 
-      # Check if local recovery snapshot exists
       RECOVERY_SNAPSHOT=$(ls -dt /snapshots/recovery-persist.* 2>/dev/null | head -1 || true)
 
       if [ -n "$RECOVERY_SNAPSHOT" ]; then
+
         # SCENARIO A: Local snapshot exists (system rollback)
+
         SNAPSHOT_NAME=$(basename "$RECOVERY_SNAPSHOT")
         TIMESTAMP=''${SNAPSHOT_NAME#recovery-persist.}
 
@@ -168,7 +167,6 @@ in
         ${pkgs.util-linux}/bin/mount /persist
         echo "✓ /persist restored successfully"
 
-        # NixOS generation rollback (only applies to local rollback where nix store is intact)
         echo ""
         if [ -f /persist/.nixos-generation ]; then
           TARGET_GEN=$(cat /persist/.nixos-generation)
@@ -210,7 +208,9 @@ in
         fi
 
       else
+
         # SCENARIO B: No local snapshot (disaster recovery)
+
         echo "No local snapshot found - disaster recovery mode"
         echo ""
         echo "This will restore /persist from the most recent Backblaze backup."
@@ -245,7 +245,6 @@ in
 
         echo "✓ Remote repository mounted"
 
-        # Get most recent archive (no user selection)
         echo ""
         echo "Fetching most recent backup..."
         ARCHIVE=$(${pkgs.borgbackup}/bin/borg list --short "$TEMP_MOUNT" | tail -1)
@@ -257,7 +256,6 @@ in
 
         echo "Using archive: $ARCHIVE"
 
-        # Find recovery snapshot in archive
         SNAPSHOT_PATH=$(${pkgs.borgbackup}/bin/borg list --short "$TEMP_MOUNT"::"$ARCHIVE" | grep "^snapshots/recovery-persist" | head -1 || true)
 
         if [ -z "$SNAPSHOT_PATH" ]; then
@@ -270,17 +268,15 @@ in
 
         echo "Found snapshot: $SNAPSHOT_PATH"
 
-        # Mount btrfs root early to extract to disk instead of tmpfs
+        # mount btrfs root early to extract to disk instead of tmpfs
         echo ""
         echo "Mounting btrfs root..."
         BTRFS_ROOT=$(mktemp -d)
         ${pkgs.util-linux}/bin/mount -t btrfs -o subvolid=5 ${btrfsRootDevice} "$BTRFS_ROOT"
 
-        # Create temp extraction directory on disk
         TEMP_EXTRACT="$BTRFS_ROOT/tmp-borg-extract-$$"
         mkdir -p "$TEMP_EXTRACT"
 
-        # Extract snapshot to disk
         echo ""
         echo "Streaming snapshot from B2 to local disk..."
         cd "$TEMP_EXTRACT"
@@ -291,23 +287,17 @@ in
 
         echo "✓ Snapshot downloaded"
 
-        # Unmount remote
         fusermount -u "$TEMP_MOUNT" 2>/dev/null || true
         rmdir "$TEMP_MOUNT" 2>/dev/null || true
         TEMP_MOUNT=""
 
-        # Recreate /persist and restore
         echo ""
         echo "Restoring /persist..."
-
-        # Delete old /persist and create new subvolume
         ${pkgs.btrfs-progs}/bin/btrfs subvolume delete "$BTRFS_ROOT/persist" 2>/dev/null || true
         ${pkgs.btrfs-progs}/bin/btrfs subvolume create "$BTRFS_ROOT/persist"
 
-        # Copy extracted files to new /persist subvolume
         ${pkgs.rsync}/bin/rsync -av "$TEMP_EXTRACT/$SNAPSHOT_PATH/" "$BTRFS_ROOT/persist/"
 
-        # Cleanup temp extraction
         echo "Removing temp extraction directory..."
         cd /
         rm -rf "$TEMP_EXTRACT"
@@ -325,7 +315,6 @@ in
         echo "✓ /persist restored successfully"
       fi
 
-      # Reboot
       echo ""
       echo "========================================"
       echo "Recovery complete. Rebooting in 3 seconds..."

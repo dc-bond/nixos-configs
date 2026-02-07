@@ -15,7 +15,7 @@
 
     networking.hostName = "cypress";
 
-    programs.nix-ld.enable = true; # run generic linux binaries (e.g. for vscodium server installation)
+    #programs.nix-ld.enable = true; # run generic linux binaries (e.g. for vscodium server installation)
 
     environment.systemPackages = with pkgs; [
       age # encryption tool
@@ -52,7 +52,7 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/cypress/disk-config.nix"
+      "hosts/cypress/disko.nix"
       "hosts/cypress/hardware-configuration.nix"
       "hosts/cypress/impermanence.nix"
       "nixos-system/boot.nix"
@@ -67,7 +67,7 @@
       "nixos-system/yubikey.nix"
       "nixos-system/printing.nix"
       "nixos-system/backups.nix"
-      #"nixos-system/btrfs.nix"
+      "nixos-system/btrfs.nix"
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"

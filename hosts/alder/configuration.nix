@@ -68,7 +68,7 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/alder/disk-config.nix"
+      "hosts/alder/disko.nix"
       "hosts/alder/hardware-configuration.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"

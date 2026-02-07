@@ -50,7 +50,7 @@
 
   imports = lib.flatten [
     (map configLib.relativeToRoot [
-      "hosts/thinkpad/disk-config.nix"
+      "hosts/thinkpad/disko.nix"
       "hosts/thinkpad/hardware-configuration.nix"
       "hosts/thinkpad/impermanence.nix"
       "nixos-system/boot.nix"
