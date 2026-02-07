@@ -42,9 +42,6 @@
 
     backups = {
       borgDir = "/persist/borgbackup"; # use persistent storage for borg repo on impermanence hosts
-      #serviceHooks.preHook = lib.mkOrder 2000 [ "systemctl start btrbk-recovery.service" ]; # requires: /snapshots subvolume (uncomment on next fresh installation)
-      #standaloneData = [ "/snapshots" ]; # requires: /snapshots subvolume (uncomment on next fresh installation)
-      #exclude = [ "/snapshots/hourly-persist.*" ]; # exclude hourly snapshots, only backup recovery-persist.* snapshot
       prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
     };
 
@@ -70,6 +67,7 @@
       "nixos-system/yubikey.nix"
       "nixos-system/printing.nix"
       "nixos-system/backups.nix"
+      #"nixos-system/btrfs.nix"
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"

@@ -67,6 +67,7 @@
                 hasBattery = true;
         hasBluetooth = true;
         hasBacklight = true;
+        btrfsOsDisk = "/dev/disk/by-id/nvme-WDC_PC_SN730_SDBQNTY-256G-1001_194356801585"; # 256GB NVMe SSD
       };
     };
 
@@ -127,6 +128,7 @@
         hasBattery = false;
         hasBluetooth = true;
         hasBacklight = false;
+        btrfsOsDisk = "/dev/disk/by-id/ata-512GB_SSD_MP32B12203488"; # 512GB SATA SSD
       };
     };
 
