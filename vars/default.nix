@@ -115,7 +115,7 @@
         wifiInterface = null;
         dockInterface = null;
         ipv4 = "192.168.1.89";
-        tailscaleIp = "100.77.201.60";
+        tailscaleIp = "100.118.203.123";
         tailscale = {
           role = "client";
           advertiseRoutes = null;
