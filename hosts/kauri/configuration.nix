@@ -27,7 +27,7 @@
 
   systemd.services.tailscaled.restartIfChanged = false;
   systemd.services.iwd.restartIfChanged = false;
-  
+
   networking.hostName = "kauri";
 
   environment.systemPackages = with pkgs; [
@@ -51,11 +51,11 @@
   ];
 
   backups = {
-    #serviceHooks.preHook = lib.mkOrder 2000 [ "systemctl start btrbk-recovery.service" ]; # requires: /snapshots subvolume (uncomment on next fresh installation)
-    #standaloneData = [ "/snapshots" ]; # requires: /snapshots subvolume (uncomment on next fresh installation)
-    #exclude = [ "/snapshots/hourly-root.*" ]; # exclude hourly snapshots, only backup recovery-root.* snapshot
     prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
   };
+
+  # FRESH INSTALL ONLY - uncomment on fresh install with impermanence
+  #btrfs.snapshots = true; # enable hourly + recovery snapshots and recoverSnap script
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
@@ -74,6 +74,7 @@
     (map configLib.relativeToRoot [
       "hosts/kauri/disko.nix"
       "hosts/kauri/hardware-configuration.nix"
+      #"hosts/kauri/impermanence.nix" # FRESH INSTALL ONLY - uncomment on fresh install
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
       "nixos-system/networking.nix"
@@ -84,10 +85,11 @@
       "nixos-system/zsh.nix"
       "nixos-system/printing.nix"
       "nixos-system/backups.nix"
+      #"nixos-system/btrfs.nix" # FRESH INSTALL ONLY - uncomment on fresh install
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"
-      
+
       "nixos-system/greetd.nix"
       "nixos-system/labwc.nix"
     ])

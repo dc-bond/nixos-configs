@@ -8,8 +8,6 @@
 
   sops.secrets.sambaPasswd = {};
 
-  #networking.firewall.interfaces.tailscale0.allowedTCPPorts = [ 445 ]; # open samba port on tailscale interface to recieve uploads pushed from outside clients
-
   services = {
     samba = {
       enable = true;

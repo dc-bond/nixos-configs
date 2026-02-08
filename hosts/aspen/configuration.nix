@@ -16,15 +16,10 @@
     networking.hostName = "aspen";
 
     backups = {
-      borgDir = "${config.bulkStorage.path}/borgbackup"; # host-specific borg backup directory override on backups.nix
+      borgDir = "${config.bulkStorage.path}/borgbackup"; # borg repo lives on the bulk storage HDD
       standaloneData = [
         "${config.bulkStorage.path}/media/family-media"
-        # to enable recovery snapshots (requires uncommenting btrbk config in disko.nix):
-        # "/snapshots"
       ];
-      # to enable recovery snapshots, add:
-      # serviceHooks.preHook = lib.mkOrder 2000 [ "systemctl start btrbk-recovery.service" ]; # priority 2000 ensures this runs after all lib.mkAfter (1500) service stops
-      # exclude = [ "/snapshots/hourly-*" ]; # if hourly snapshots are also enabled
     };
 
     environment.systemPackages = with pkgs; [
@@ -44,6 +39,7 @@
     (map configLib.relativeToRoot [
       "hosts/aspen/disko.nix"
       "hosts/aspen/hardware-configuration.nix"
+      #"hosts/aspen/impermanence.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
       "nixos-system/networking.nix"
@@ -53,6 +49,7 @@
       "nixos-system/sshd.nix"
       "nixos-system/zsh.nix"
       "nixos-system/backups.nix"
+      "nixos-system/btrfs.nix"
       "nixos-system/sops.nix"
       "nixos-system/nvidia.nix"
       "nixos-system/samba.nix"

@@ -12,7 +12,7 @@
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       windowManager = null;
-      usesImpermanence = false;
+      #usesImpermanence = true; # deploy script uses this to determine age key paths; impermanence.nix import is commented out in configuration.nix until fresh install
       networking = {
         sshPort = 28766;
         sshPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAEw3/kxz9yXRd1kHVqyxjU+TJVfZkqfUM0rskhgjZNO";
@@ -37,6 +37,7 @@
         hasBattery = false;
         hasBluetooth = false;
         hasBacklight = false;
+        btrfsOsDisk = "/dev/disk/by-id/nvme-Samsung_SSD_960_EVO_250GB_S3ESNX0J831623T"; # 256GB NVMe SSD
       };
     };
 
@@ -76,7 +77,7 @@
       users = [ "danielle" ];
       bootLoader = "systemd-boot";
       windowManager = "labwc";
-      usesImpermanence = false;
+      #usesImpermanence = true; # deploy script uses this to determine age key paths; impermanence.nix import is commented out in configuration.nix until fresh install
       networking = {
         sshPort = null; # only use tailscale ssh
         sshPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDKwzO4ZLlKqo8gjamhghmo9ZRIzQirrnw2LRbq94qNt root@kauri";
@@ -98,9 +99,10 @@
                 hasBattery = true;
         hasBluetooth = true;
         hasBacklight = true;
+        btrfsOsDisk = "/dev/disk/by-id/nvme-SAMSUNG_MZVLB512HBJQ-000L7_S4ENNF0N466097"; # 512GB NVMe SSD
       };
     };
-    
+
     cypress = {
       system = "x86_64-linux";
       users = [ "chris" ];
@@ -159,6 +161,7 @@
                 hasBattery = false;
         hasBluetooth = false;
         hasBacklight = false;
+        btrfsOsDisk = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_103227147"; # VPS virtual disk
       };
     };
     
@@ -167,7 +170,7 @@
       users = [ "eric" ];
       bootLoader = "systemd-boot";
       windowManager = "labwc";
-      usesImpermanence = false;
+      #usesImpermanence = true; # deploy script uses this to determine age key paths; impermanence.nix import is commented out in configuration.nix until fresh install
       networking = {
         sshPort = null;
         sshPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMxcJPA4LtJ6UEFN/+7tK9njONRsiozhZ3Y6LdS89vF9";
@@ -189,6 +192,7 @@
                 hasBattery = false;
         hasBluetooth = true;
         hasBacklight = true;
+        # TODO: Add btrfsOsDisk = "/dev/disk/by-id/..." after running: ls -l /dev/disk/by-id/ | grep -E '(sda|ata-)' | grep -v part
       };
     };
 

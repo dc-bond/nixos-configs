@@ -1,18 +1,3 @@
-## MANUAL SETUP PRE- FRESH INSTALL ##
-# update configVars to add host and users
-# update configuration.nix, disko configs, home.nix, 
-# update greetd.nix default cmd
-# add host and user age keys to sops.yaml, update keys on secrets.yaml (see notes in sops.yaml)
-# add user(s) hashed password to secrets.yaml
-# add user(s) password to pass repo
-# tailscale auth key - generate new key in console, add to secrets.yaml - key non-reusable, 90-day expiration, pre-authorized, non-ephemeral, add new tailscale IP in configVars
-# update monitoring server configs to add node
-## MANUAL SETUP POST- FRESH INSTALL ##
-# first time wifi and tailscale connection
-# tailscale disable expiry in console
-# first time bluetooth devices setup
-# firefox setup (activate extensions, etc.)
-
 { 
   inputs, 
   outputs, 
@@ -30,7 +15,7 @@
     tailscaled.restartIfChanged = false;
     systemd.services.iwd.restartIfChanged = false;
   };
-  
+
   networking.hostName = "alder";
 
   environment.systemPackages = with pkgs; [
@@ -55,11 +40,11 @@
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
   backups = {
-    #serviceHooks.preHook = lib.mkOrder 2000 [ "systemctl start btrbk-recovery.service" ]; # requires: /snapshots subvolume (uncomment on next fresh installation)
-    #standaloneData = [ "/snapshots" ]; # requires: /snapshots subvolume (uncomment on next fresh installation)
-    #exclude = [ "/snapshots/hourly-root.*" ]; # exclude hourly snapshots, only backup recovery-root.* snapshot
     prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
   };
+
+  # FRESH INSTALL ONLY - uncomment on fresh install with impermanence
+  #btrfs.snapshots = true; # enable hourly + recovery snapshots and recoverSnap script
 
   services.logind.settings.Login.HandleLidSwitch = "ignore"; # disable suspend on laptop lid close
 
@@ -70,6 +55,7 @@
     (map configLib.relativeToRoot [
       "hosts/alder/disko.nix"
       "hosts/alder/hardware-configuration.nix"
+      #"hosts/alder/impermanence.nix" # FRESH INSTALL ONLY - uncomment on fresh install
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
       "nixos-system/networking.nix"
@@ -79,10 +65,11 @@
       "nixos-system/audio.nix"
       "nixos-system/zsh.nix"
       "nixos-system/backups.nix"
+      #"nixos-system/btrfs.nix" # FRESH INSTALL ONLY - uncomment on fresh install
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"
-      
+
       "nixos-system/greetd.nix"
       "nixos-system/labwc.nix"
     ])

@@ -648,17 +648,6 @@ let
             annotations:
               summary: "{{ $labels.instance }} is down (probe failed)"
 
-          - alert: sslCertificateExpiringSoon
-            expr: (probe_ssl_earliest_cert_expiry - time()) / 86400 < 14
-            for: 1h
-            labels:
-              severity: warning
-
-          - alert: sslCertificateExpired
-            expr: probe_ssl_earliest_cert_expiry - time() < 0
-            for: 1m
-            labels:
-              severity: critical
 
       - name: host_health_alerts
         interval: 30s

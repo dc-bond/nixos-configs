@@ -16,9 +16,10 @@
     networking.hostName = "thinkpad";
 
     backups = {
-      borgDir = "/persist/borgbackup"; # use persistent storage for borg repo on impermanence hosts
       prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
     };
+
+    btrfs.snapshots = true; # enable hourly + recovery snapshots and recoverSnap script
 
     environment.systemPackages = with pkgs; [
       age # encryption tool
