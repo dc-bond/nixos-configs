@@ -15,17 +15,12 @@
 
     networking.hostName = "juniper";
 
+    backups.borgDir = "/var/lib/borgbackup"; # juniper does not use impermanence
+
     environment.systemPackages = with pkgs; [
       rsync # sync tool
       btop # system monitor
     ];
-
-    # weekly btrfs scrubbing for data integrity
-    services.btrfs.autoScrub = {
-      enable = true;
-      interval = "Sun *-*-* 04:00:00";
-      fileSystems = [ "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_103227147-part2" ]; # vps virtual disk partition
-    };
 
     # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
     system.stateVersion = "24.11";
@@ -44,6 +39,7 @@
       "nixos-system/users.nix"
       "nixos-system/sshd.nix"
       "nixos-system/backups.nix"
+      "nixos-system/btrfs.nix"
       "nixos-system/zsh.nix"
       "nixos-system/sops.nix"
       "nixos-system/monitoring-server.nix"

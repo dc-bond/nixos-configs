@@ -15,8 +15,6 @@
 
     networking.hostName = "cypress";
 
-    #programs.nix-ld.enable = true; # run generic linux binaries (e.g. for vscodium server installation)
-
     environment.systemPackages = with pkgs; [
       age # encryption tool
       mkpasswd # password hashing tool
@@ -41,9 +39,10 @@
     hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
     backups = {
-      borgDir = "/persist/borgbackup"; # use persistent storage for borg repo on impermanence hosts
       prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
     };
+
+    btrfs.snapshots = true; # enable hourly + recovery snapshots and recoverSnap script
 
     # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
     system.stateVersion = "23.11";

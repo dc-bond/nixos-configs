@@ -1011,7 +1011,7 @@ in
   options.backups = {
     borgDir = lib.mkOption {
       type = lib.types.path;
-      default = "/var/lib/borgbackup"; # default, override with different directory in host-specific configuration.nix
+      default = "/persist/borgbackup"; # default for impermanence hosts, override in non-impermanence hosts or if repo is on another disk
       description = "path to the directory for borg backups";
     };
     startTime = lib.mkOption {

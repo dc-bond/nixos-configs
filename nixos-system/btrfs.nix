@@ -1,29 +1,37 @@
-{ 
-  config, 
-  lib, 
-  pkgs, 
-  configVars, 
-  ... 
+{
+  config,
+  lib,
+  pkgs,
+  configVars,
+  ...
 }:
 
 let
 
-  btrfsRootDevice = config.fileSystems."/persist".device; # get the btrfs root device from fileSystems config (handles both encrypted and non-encrypted)
+  cfg = config.btrfs;
   scrubDevice = "${configVars.hosts.${config.networking.hostName}.hardware.btrfsOsDisk}-part2"; # scrub device is the partition
+  btrfsRootDevice = config.fileSystems."/persist".device; # only evaluated when cfg.snapshots = true
 
 in
 
 {
 
-  services = {
+  options.btrfs.snapshots = lib.mkOption {
+    type = lib.types.bool;
+    default = false;
+    description = "Enable btrfs snapshots and recovery tooling (impermanence workstations only)";
+  };
 
-    btrfs.autoScrub = {
+  config = {
+
+    services.btrfs.autoScrub = {
       enable = true;
       interval = "Sun *-*-* 04:00:00"; # weekly sunday at 4am
       fileSystems = [ scrubDevice ];
     };
 
-    btrbk.instances = {
+    services.btrbk.instances = lib.mkIf cfg.snapshots {
+
       # hourly snapshots for quick "oops I deleted that" recoveries
       hourly = {
         onCalendar = "hourly";
@@ -31,51 +39,50 @@ in
           timestamp_format = "long";
           snapshot_preserve_min = "2d"; # keep all snapshots for 2 days (48 snapshots)
           volume."/" = {
-            subvolume."persist" = {
+            subvolume.persist = {
               snapshot_dir = "/snapshots";
               snapshot_name = "hourly-persist";
             };
           };
         };
       };
-     # recovery snapshots (for backups and rebuild rollbacks)
-     recovery = {
-       onCalendar = null; # manual trigger only (via backup preHook and rebuild-snapshot)
-       settings = {
-         timestamp_format = "long";
-         snapshot_preserve_min = "latest"; # keep only the most recent recovery snapshot
-         volume."/" = {
-           subvolume."persist" = {
-             snapshot_dir = "/snapshots";
-             snapshot_name = "recovery-persist";
-           };
-         };
-       };
-     };
+
+      # recovery snapshots (for backups and rebuild rollbacks)
+      recovery = {
+        onCalendar = null; # manual trigger only (via backup preHook and rebuild-snapshot)
+        settings = {
+          timestamp_format = "long";
+          snapshot_preserve_min = "latest"; # keep only the most recent recovery snapshot
+          volume."/" = {
+            subvolume.persist = {
+              snapshot_dir = "/snapshots";
+              snapshot_name = "recovery-persist";
+            };
+          };
+        };
+      };
+
     };
 
-  };
-
-  # save NixOS generation number before recovery snapshot
-  systemd.services.btrbk-recovery.serviceConfig.ExecStartPre = [
-    "+${pkgs.writeShellScript "save-nixos-generation" ''
-      ${pkgs.coreutils}/bin/readlink /nix/var/nix/profiles/system \
-        | ${pkgs.gnused}/bin/sed 's/system-\([0-9]*\)-link/\1/' \
-        > /persist/.nixos-generation
-    ''}"
-  ];
-
-  backups = {
-    serviceHooks.preHook = lib.mkOrder 2000 [
-      "systemctl start btrbk-recovery.service"
+    # save NixOS generation number before recovery snapshot
+    systemd.services.btrbk-recovery.serviceConfig.ExecStartPre = lib.mkIf cfg.snapshots [
+      "+${pkgs.writeShellScript "save-nixos-generation" ''
+        ${pkgs.coreutils}/bin/readlink /nix/var/nix/profiles/system \
+          | ${pkgs.gnused}/bin/sed 's/system-\([0-9]*\)-link/\1/' \
+          > /persist/.nixos-generation
+      ''}"
     ];
-    standaloneData = [ "/snapshots" ];
-    exclude = [ "/snapshots/hourly-persist.*" ];
-  };
 
-  # unified snapshot recovery: restore from backblaze or local disk
-  environment.systemPackages = [
-    (pkgs.writeShellScriptBin "recoverSnap" ''
+    backups = lib.mkIf cfg.snapshots {
+      serviceHooks.preHook = lib.mkOrder 2000 [
+        "systemctl start btrbk-recovery.service"
+      ];
+      standaloneData = [ "/snapshots" ];
+      exclude = [ "/snapshots/hourly-persist.*" ];
+    };
+
+    # unified snapshot recovery: restore from backblaze or local disk
+    environment.systemPackages = lib.mkIf cfg.snapshots [ (pkgs.writeShellScriptBin "recoverSnap" ''
       #!/usr/bin/env bash
       set -euo pipefail
 
@@ -313,6 +320,7 @@ in
         ${pkgs.util-linux}/bin/umount /persist
         ${pkgs.util-linux}/bin/mount /persist
         echo "✓ /persist restored successfully"
+
       fi
 
       echo ""
@@ -321,7 +329,8 @@ in
       echo "========================================"
       sleep 3
       reboot
-    '')
-  ];
+    '') ];
+
+  };
 
 }

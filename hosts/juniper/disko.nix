@@ -1,8 +1,9 @@
-{ 
-  inputs, 
-  config, 
-  ... 
-}: 
+{
+  inputs,
+  config,
+  configVars,
+  ...
+}:
 
 {
 
@@ -14,8 +15,7 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_103227147"; # virtual disk id
-        #device = "/dev/sda";  # virtual disk path
+        device = configVars.hosts.${config.networking.hostName}.hardware.btrfsOsDisk;
         content = {
           type = "gpt";
           partitions = {

@@ -61,7 +61,7 @@
       chrisworkoutdev = "cd /home/chris/nextcloud-client/Personal/misc/chris-workouts/ && nix develop";
       danielleworkoutdev = "cd /home/chris/nextcloud-client/Personal/misc/danielle-workouts/ && nix develop";
       cloneconfigs = "cd $HOME/nextcloud-client/Personal/nixos && git clone https://github.com/dc-bond/nixos-configs";
-      configs = "cd $HOME/nextcloud-client/Personal/nixos/nixos-configs";
+      configs = "cd $HOME/nextcloud-client/Personal/nixos";
       flakeupdate= "(cd $HOME/nextcloud-client/Personal/nixos/nixos-configs && nix flake update)";
     # } // lib.optionalAttrs (osConfig.networking.hostName == "cypress") {
     #   storage = "cd /storage ; ls";

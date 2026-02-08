@@ -50,7 +50,6 @@ in
       "home-manager/shared/hyprlock.nix"
       "home-manager/shared/gammastep.nix"
       "home-manager/shared/chromium.nix"
-      #"home-manager/${username}/firefox.nix"
     ])
   ];
 
@@ -311,7 +310,6 @@ in
     "labwc/environment".text = ''
       XDG_CURRENT_DESKTOP=labwc
       XDG_SESSION_TYPE=wayland
-      MOZ_ENABLE_WAYLAND=1
       QT_QPA_PLATFORM=wayland
       QT_WAYLAND_DISABLE_WINDOWDECORATION=1
     '';
