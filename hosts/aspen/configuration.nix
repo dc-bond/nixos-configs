@@ -19,8 +19,9 @@
   # disko disk formatting occurs once on first deployment
   disko.devices = {
     disk = {
-      
-      disk0 = {
+
+      main = {
+      #disk0 = {
         type = "disk";
         device = configVars.hosts.${config.networking.hostName}.hardware.btrfsOsDisk;
         content = {
@@ -210,7 +211,7 @@
       fsType = "ext4";
       options = [ "defaults" ];
     };
-    #"/storage-zfs" = {
+    #"/storage-zfs" = { # uncomment after zfs pool online
     #  device = "storage/root";
     #  fsType = "zfs";
     #};
@@ -283,9 +284,6 @@
       "nixos-system/oci-searxng.nix"
       "nixos-system/oci-recipesage.nix"
       "nixos-system/oci-unifi.nix"
-      #"nixos-system/oci-finplanner.nix" # requires authelia-dcbond.nix
-      "nixos-system/oci-chris-workouts.nix"
-      "nixos-system/oci-danielle-workouts.nix"
       "nixos-system/oci-n8n.nix"
       "nixos-system/oci-media-server.nix"
 

@@ -29,11 +29,11 @@ in
       hideThemeToggle = true;
       hideReload = true;
       layout = {
-        "Public Services" = {
+        "Family Services" = {
           style = "row";
           columns = 5;
         };
-        "Internal Services - Tailscale VPN Connection Only" = {
+        "Infrastructure Management" = {
           style = "row";
           columns = 5;
         };
@@ -42,46 +42,123 @@ in
 
     services = [
       {
-        "Public Services" = [
+        "Family Services" = [
           {
             "Nextcloud" = {
               href = "https://nextcloud.${configVars.domain1}/";
-              description = "Private Cloud";
+              description = "(Public Facing) Private Cloud";
               ping = "https://nextcloud.${configVars.domain1}";
             };
           }
           {
             "Matrix" = {
               href = "https://matrix.${configVars.domain1}/";
-              description = "Chat Server";
+              description = "(Public Facing) Chat Server";
               ping = "https://matrix.${configVars.domain1}";
             };
           }
           {
             "Vaultwarden" = {
               href = "https://vaultwarden.${configVars.domain1}/";
-              description = "Password Manager";
+              description = "(Public Facing) Password Manager";
               ping = "https://vaultwarden.${configVars.domain1}";
-            };
-          }
-          {
-            "Authelia" = {
-              href = "https://identity.${configVars.domain1}/";
-              description = "SSO Authentication Portal";
-              ping = "https://identity.${configVars.domain1}";
             };
           }
           {
             "Gatlinburg TN 2026 Trip Itinerary" = {
               href = "https://gatlinburg2026.dcbond.com";
-              description = "Trip Planning";
+              description = "(Public Facing) Trip Planning";
               ping = "https://gatlinburg2026.dcbond.com";
+            };
+          }
+          {
+            "Jellyfin" = {
+              href = "https://jellyfin.${configVars.domain2}/";
+              description = "Media Server";
+              ping = "https://jellyfin.${configVars.domain2}";
+            };
+          }
+          {
+            "Jellyseerr" = {
+              href = "https://jellyseerr.${configVars.domain2}/";
+              description = "Media Requests";
+              ping = "https://jellyseerr.${configVars.domain2}";
+            };
+          }
+          {
+            "Photoprism" = {
+              href = "https://photos.${configVars.domain2}/";
+              description = "Photo Gallery";
+              ping = "https://photos.${configVars.domain2}";
+            };
+          }
+          {
+            "Calibre Web" = {
+              href = "https://calibre-web.${configVars.domain2}/";
+              description = "eBook Library";
+              ping = "https://calibre-web.${configVars.domain2}";
+            };
+          }
+          {
+            "Stirling PDF" = {
+              href = "https://stirling-pdf.${configVars.domain2}/";
+              description = "PDF Tools";
+              ping = "https://stirling-pdf.${configVars.domain2}";
+            };
+          }
+          {
+            "SearXNG" = {
+              href = "https://search.${configVars.domain2}/";
+              description = "Private Search Engine";
+              ping = "https://search.${configVars.domain2}";
+            };
+          }
+          {
+            "RecipeSage" = {
+              href = "https://recipesage.${configVars.domain2}/";
+              description = "Recipe Manager";
+              ping = "https://recipesage.${configVars.domain2}";
+            };
+          }
+          {
+            "Bond Ledger" = {
+              href = "https://bond-ledger.${configVars.domain2}/";
+              description = "Financial Ledger for Bond Household";
+              ping = "https://bond-ledger.${configVars.domain2}";
+            };
+          }
+          {
+            "Actual Budget" = {
+              href = "https://actual.${configVars.domain2}/";
+              description = "Chris' Personal Budget Management";
+              ping = "https://actual.${configVars.domain2}";
+            };
+          }
+          {
+            "Home Assistant" = {
+              href = "https://home-assistant.${configVars.domain2}/";
+              description = "Smart Home Hub";
+              ping = "https://home-assistant.${configVars.domain2}";
+            };
+          }
+          {
+            "Frigate" = {
+              href = "https://frigate.${configVars.domain2}/";
+              description = "Security Camera System";
+              ping = "https://frigate.${configVars.domain2}";
             };
           }
         ];
       }
       {
-        "Internal Services - Tailscale VPN Connection Only" = [
+        "Infrastructure Management" = [
+          {
+            "Authelia" = {
+              href = "https://identity.${configVars.domain1}/";
+              description = "(Public Facing) SSO Authentication Portal";
+              ping = "https://identity.${configVars.domain1}";
+            };
+          }
           {
             "Traefik-Aspen" = {
               href = "https://traefik-aspen.${configVars.domain2}/dashboard/#/";
@@ -146,34 +223,6 @@ in
             };
           }
           {
-            "Jellyfin" = {
-              href = "https://jellyfin.${configVars.domain2}/";
-              description = "Media Server";
-              ping = "https://jellyfin.${configVars.domain2}";
-            };
-          }
-          {
-            "Jellyseerr" = {
-              href = "https://jellyseerr.${configVars.domain2}/";
-              description = "Media Requests";
-              ping = "https://jellyseerr.${configVars.domain2}";
-            };
-          }
-          {
-            "Photoprism" = {
-              href = "https://photos.${configVars.domain2}/";
-              description = "Photo Gallery";
-              ping = "https://photos.${configVars.domain2}";
-            };
-          }
-          {
-            "Calibre Web" = {
-              href = "https://calibre-web.${configVars.domain2}/";
-              description = "eBook Library";
-              ping = "https://calibre-web.${configVars.domain2}";
-            };
-          }
-          {
             "Sabnzbd" = {
               href = "https://sabnzbd.${configVars.domain2}/";
               description = "Downloader";
@@ -202,27 +251,6 @@ in
             };
           }
           {
-            "Stirling PDF" = {
-              href = "https://stirling-pdf.${configVars.domain2}/";
-              description = "PDF Tools";
-              ping = "https://stirling-pdf.${configVars.domain2}";
-            };
-          }
-          {
-            "SearXNG" = {
-              href = "https://search.${configVars.domain2}/";
-              description = "Private Search Engine";
-              ping = "https://search.${configVars.domain2}";
-            };
-          }
-          {
-            "RecipeSage" = {
-              href = "https://recipesage.${configVars.domain2}/";
-              description = "Recipe Manager";
-              ping = "https://recipesage.${configVars.domain2}";
-            };
-          }
-          {
             "N8N" = {
               href = "https://n8n.${configVars.domain2}/";
               description = "Workflow Automation";
@@ -230,52 +258,10 @@ in
             };
           }
           {
-            "Bond Ledger" = {
-              href = "https://bond-ledger.${configVars.domain2}/";
-              description = "Financial Ledger";
-              ping = "https://bond-ledger.${configVars.domain2}";
-            };
-          }
-          {
-            "Actual Budget" = {
-              href = "https://actual.${configVars.domain2}/";
-              description = "Budget Management";
-              ping = "https://actual.${configVars.domain2}";
-            };
-          }
-          {
-            "Home Assistant" = {
-              href = "https://home-assistant.${configVars.domain2}/";
-              description = "Smart Home Hub";
-              ping = "https://home-assistant.${configVars.domain2}";
-            };
-          }
-          {
             "Z-Wave" = {
               href = "https://zwavejs.${configVars.domain2}/";
               description = "Z-Wave Controller";
               ping = "https://zwavejs.${configVars.domain2}";
-            };
-          }
-          {
-            "Frigate" = {
-              href = "https://frigate.${configVars.domain2}/";
-              description = "NVR Camera System";
-              ping = "https://frigate.${configVars.domain2}";
-            };
-          }
-          {
-            "Chris Workouts" = {
-              href = "https://chris-workouts.${configVars.domain2}/";
-              description = "Workout Tracker";
-              ping = "https://chris-workouts.${configVars.domain2}";
-            };
-          }
-          {
-            "Danielle Workouts" = {
-              href = "https://danielle-workouts.${configVars.domain2}/";
-              description = "Workout Tracker";
-              ping = "https://danielle-workouts.${configVars.domain2}";
             };
           }
         ];
@@ -297,6 +283,12 @@ in
             timeStyle = "short";
             hour12 = true;
           };
+        };
+      }
+      {
+        greeting = {
+          text_size = "sm";
+          text = "All services must be accessed through Tailscale VPN connection unless otherwise noted";
         };
       }
     ];
@@ -384,6 +376,13 @@ in
         opacity: 0.6 !important;
       }
 
+      /* Style for public facing indicator */
+      .public-facing-badge {
+        color: #FFE5A0 !important;
+        opacity: 1 !important;
+        font-weight: 600 !important;
+      }
+
       /* Status Indicators with pulse */
       .service-ping {
         transition: all 0.3s ease !important;
@@ -435,7 +434,20 @@ in
       }
     '';
 
-    customJS = "";
+    customJS = ''
+      // Highlight public facing services
+      document.addEventListener('DOMContentLoaded', function() {
+        const descriptions = document.querySelectorAll('.service-description');
+        descriptions.forEach(function(desc) {
+          if (desc.textContent.includes('(Public Facing)')) {
+            desc.innerHTML = desc.innerHTML.replace(
+              /(^\(Public Facing\))/,
+              '<span class="public-facing-badge">$1</span>'
+            );
+          }
+        });
+      });
+    '';
 
     # environmentFile = null;
     allowedHosts = "homepage.${configVars.domain2}";
