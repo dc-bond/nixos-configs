@@ -66,7 +66,7 @@
     # } // lib.optionalAttrs (osConfig.networking.hostName == "cypress") {
     #   storage = "cd /storage ; ls";
     } // lib.optionalAttrs (osConfig.networking.hostName == "aspen") {
-      storage = "cd /storage ; ls";
+      storage = "cd /storage-ext4 ; ls"; # change to storage-zfs after migration
     };
   };
 

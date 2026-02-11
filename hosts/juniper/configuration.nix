@@ -1,35 +1,78 @@
-{ 
-  inputs, 
-  outputs, 
-  lib, 
+{
+  inputs,
+  outputs,
+  lib,
   configLib,
   configVars,
-  config, 
-  pkgs, 
-  ... 
-}: 
+  config,
+  pkgs,
+  ...
+}:
 
 {
-  
-  config = {
 
-    networking.hostName = "juniper";
+  networking.hostName = "juniper";
 
-    backups.borgDir = "/var/lib/borgbackup"; # juniper does not use impermanence
+  # disko disk configuration
+  disko.devices = {
+    disk = {
+      main = {
+        type = "disk";
+        device = configVars.hosts.${config.networking.hostName}.hardware.btrfsOsDisk;
+        content = {
+          type = "gpt";
+          partitions = {
 
-    environment.systemPackages = with pkgs; [
-      rsync # sync tool
-      btop # system monitor
-    ];
+            bios-grub = {
+              size = "2M";
+              type = "EF02";
+            };
 
-    # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
-    system.stateVersion = "24.11";
+            root = {
+              size = "100%";
+              content = {
+                type = "btrfs";
+                extraArgs = [ "-f" ];
+                subvolumes = {
+                  "/root" = {
+                    mountpoint = "/";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                  "/home" = {
+                    mountpoint = "/home";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                  "/nix" = {
+                    mountpoint = "/nix";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                  "/swap" = {
+                    mountpoint = "/swap";
+                    swap.swapfile.size = "8G";
+                  };
+                };
+              };
+            };
 
+          };
+        };
+      };
+    };
   };
 
+  backups.borgDir = "/var/lib/borgbackup"; # juniper does not use impermanence
+
+  environment.systemPackages = with pkgs; [
+    rsync # sync tool
+    btop # system monitor
+  ];
+
+  # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
+  system.stateVersion = "24.11";
+
   imports = lib.flatten [
+    inputs.disko.nixosModules.disko
     (map configLib.relativeToRoot [
-      "hosts/juniper/disko.nix"
       "hosts/juniper/hardware-configuration.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"

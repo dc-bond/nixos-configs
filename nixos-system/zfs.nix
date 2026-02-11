@@ -9,13 +9,23 @@
 let
   cfg = config.services.zfsExtended;
 in
+
 {
+
   options.services.zfsExtended = {
+
     enable = lib.mkEnableOption "ZFS extended configuration with snapshots, scrubbing, and monitoring";
+
+    pools = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+      description = "List of ZFS pools to auto-import at boot";
+      example = [ "storage" "tank" ];
+    };
 
     scrubInterval = lib.mkOption {
       type = lib.types.str;
-      default = "Sun 03:00";
+      default = "Mon 03:00";
       description = "When to run ZFS scrub (integrity verification)";
       example = "weekly";
     };
@@ -30,7 +40,7 @@ in
       frequent = lib.mkOption {
         type = lib.types.int;
         default = 4;
-        description = "Number of 15-minute snapshots to keep (default: 4 = 1 hour)";
+        description = "Number of 15-minute snapshots to keep";
       };
 
       hourly = lib.mkOption {
@@ -58,78 +68,53 @@ in
       };
     };
 
-    enableEmailAlerts = lib.mkOption {
-      type = lib.types.bool;
-      default = true;
-      description = "Enable email alerts for ZFS events (pool degradation, scrub results, etc.)";
-    };
-
-    alertEmail = lib.mkOption {
-      type = lib.types.str;
-      default = configVars.users.chris.email or "";
-      description = "Email address for ZFS event notifications";
-    };
   };
 
   config = lib.mkIf cfg.enable {
-    # ZFS kernel support
-    boot.supportedFilesystems = [ "zfs" ];
-    boot.zfs.forceImportRoot = false;
 
-    # Required: Unique host ID for ZFS
-    # Generate with: head -c 8 /etc/machine-id
-    networking.hostId = lib.mkDefault (
-      builtins.substring 0 8 (
-        builtins.readFile /etc/machine-id or "00000000"
-      )
-    );
-
-    # ZFS automatic scrubbing (integrity verification)
-    services.zfs.autoScrub = {
-      enable = true;
-      interval = cfg.scrubInterval;
-    };
-
-    # ZFS automatic snapshots
-    services.zfs.autoSnapshot = lib.mkIf cfg.enableSnapshots {
-      enable = true;
-      frequent = cfg.snapshotRetention.frequent;
-      hourly = cfg.snapshotRetention.hourly;
-      daily = cfg.snapshotRetention.daily;
-      weekly = cfg.snapshotRetention.weekly;
-      monthly = cfg.snapshotRetention.monthly;
-    };
-
-    # Disable TRIM for ZFS (not needed for HDDs, optional for SSDs)
-    services.zfs.trim.enable = lib.mkDefault false;
-
-    # ZFS Event Daemon (ZED) - Email notifications
-    services.zfs.zed = lib.mkIf cfg.enableEmailAlerts {
-      enableMail = true;
-      settings = {
-        ZED_EMAIL_ADDR = [ cfg.alertEmail ];
-        ZED_EMAIL_PROG = "${pkgs.msmtp}/bin/msmtp";
-        ZED_NOTIFY_VERBOSE = true;
-
-        # Alert on these events
-        ZED_NOTIFY_DATA = true;          # Data errors
-        ZED_NOTIFY_IO_ERRORS = 10;       # Alert after 10 I/O errors
-        ZED_NOTIFY_RESILVER = true;      # Resilver (rebuild) events
-        ZED_SCRUB_AFTER_RESILVER = true; # Auto-scrub after resilver
+    environment = {
+      systemPackages = with pkgs; [ zfs ]; # install zfs utilities
+      shellAliases = {
+        zpool-status = "zpool status -v";
+        zfs-snapshots = "zfs list -t snapshot";
+        zfs-space = "zfs list -o space";
+        zfs-health = "zpool list -Ho name,health,size,allocated,free,fragmentation";
       };
     };
 
-    # Install ZFS utilities
-    environment.systemPackages = with pkgs; [
-      zfs
-    ];
+    boot = {
+      supportedFilesystems = [ "zfs" ];
+      zfs = {
+        forceImportRoot = false;
+        extraPools = cfg.pools; # auto-import specified pools at boot
+      };
 
-    # Helpful aliases for ZFS management
-    environment.shellAliases = {
-      zpool-status = "zpool status -v";
-      zfs-snapshots = "zfs list -t snapshot";
-      zfs-space = "zfs list -o space";
-      zfs-health = "zpool list -Ho name,health,size,allocated,free,fragmentation";
+      # Optional: Limit ZFS ARC (adaptive replacement cache) memory usage
+      # By default, ZFS uses ~50% of system RAM for caching
+      # Uncomment and adjust if experiencing memory pressure with other services
+      # kernelParams = [
+      #   "zfs.zfs_arc_max=8589934592"  # Limit to 8GB (in bytes)
+      # ];
     };
+
+    services.zfs = {
+      # automatic scrubbing (integrity verification)
+      autoScrub = {
+        enable = true;
+        interval = cfg.scrubInterval;
+      };
+      # automatic snapshots
+      autoSnapshot = lib.mkIf cfg.enableSnapshots {
+        enable = true;
+        frequent = cfg.snapshotRetention.frequent;
+        hourly = cfg.snapshotRetention.hourly;
+        daily = cfg.snapshotRetention.daily;
+        weekly = cfg.snapshotRetention.weekly;
+        monthly = cfg.snapshotRetention.monthly;
+      };
+      trim.enable = lib.mkDefault false; # disable for HDDs, can be enabled for SSD pools
+    };
+
   };
+
 }
