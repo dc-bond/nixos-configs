@@ -1,34 +1,6 @@
 #nextcloud-occ config:app:set --value=0 user_oidc allow_multiple_user_backends
 #nextcloud-occ maintenance:repair --include-expensive
 
-# ============================================================================
-# NEXTCLOUD DATA MIGRATION PLAN (NVMe → HDD/ZFS)
-# ============================================================================
-# Goal: Move entire Nextcloud state (config, apps, user data) from fast NVMe
-#       to bulk storage HDD/future ZFS pool. This moves ALL state including the
-#       data/ subdirectory which contains user files (photos, docs).
-#
-# NOTE: The 'datadir' option moves the ENTIRE state tree (config/, data/,
-#       store-apps/, etc.), not just user files. Config and apps are small,
-#       so the performance impact of having them on HDD is negligible.
-#
-# Migration Steps (run on aspen):
-#   2. sudo nextcloud-occ maintenance:mode --on
-#   3. sudo systemctl stop phpfpm-nextcloud nginx
-#   4. sudo rsync -avxHAX --progress /var/lib/nextcloud/ /storage/nextcloud/
-#      (rsync will create /storage/nextcloud/ and preserve ownership/permissions)
-#   5. Verify copy: sudo diff -qr /var/lib/nextcloud/ /storage/nextcloud/
-#   7. Make THREE changes below (search for "MIGRATION"):
-#      a) Uncomment: datadir = "${config.bulkStorage.path}/nextcloud";
-#      b) Uncomment: "${config.bulkStorage.path}/nextcloud" in restoreItems
-#      c) Comment out: "/var/lib/${app}" in restoreItems (no longer needed)
-#   8. sudo nixos-rebuild switch --flake .#aspen
-#   9. sudo nextcloud-occ files:scan --all
-#  10. sudo nextcloud-occ maintenance:mode --off
-#  11. Test web interface, verify files accessible
-#  12. After 1-2 weeks: sudo rm -rf /var/lib/nextcloud.backup-*
-# ============================================================================
-
 {
   self,
   config,
@@ -43,12 +15,9 @@ let
   app = "nextcloud"; # first-time install will fail, must delete /var/lib/nextcloud/config/config.php file and rebuild then should work
   recoveryPlan = {
     restoreItems = [
-      "/var/lib/${app}"  # MIGRATION: After moving to bulk storage, this path will be mostly empty
-                         # When uncommenting the datadir option below, also uncomment the bulk storage path
-                         # and comment out this line to avoid backing up an empty directory
-      "/var/lib/redis-${app}"  # Redis cache stays on NVMe (separate service, unaffected by datadir)
-      "/var/backup/postgresql/${app}.sql.gz"  # Database backup stays on NVMe (separate service)
-      #"${config.bulkStorage.path}/nextcloud"  # MIGRATION: Uncomment to backup all Nextcloud state after migration
+      "/var/lib/${app}"
+      "/var/lib/redis-${app}"
+      "/var/backup/postgresql/${app}.sql.gz"
     ];
     db = {
       type = "postgresql";
@@ -56,7 +25,7 @@ let
       name = "${app}";
       dump = "/var/backup/postgresql/${app}.sql.gz";
     };
-    stopServices = [ ]; # nextcloud has no services to stop
+    stopServices = [ ]; # nextcloud has no services to stop, maintenance-mode on is sufficient to quiesce webserver and database for restoration
     startServices = [ ]; # nextcloud has no services to start
   };
   recoverScript = nixServiceRecoveryScript {
@@ -68,8 +37,10 @@ let
       ${lib.getExe config.services.nextcloud.occ} maintenance:mode --on || exit 1
     '';
     postRestoreHook = ''
+      echo "Updating file system fingerprint..."
+      ${lib.getExe config.services.nextcloud.occ} maintenance:data-fingerprint || exit 1
       echo "Deactivating nextcloud maintenance mode ..."
-        ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1
+      ${lib.getExe config.services.nextcloud.occ} maintenance:mode --off || exit 1
     '';
   };
 
@@ -125,12 +96,6 @@ in
       enable = true;
       hostName = "nextcloud.${configVars.domain1}";
       package = pkgs.nextcloud32; # manually increment with upgrades
-
-      # MIGRATION: Move entire Nextcloud state from NVMe to bulk storage HDD/ZFS pool
-      # Uncomment after rsyncing /var/lib/nextcloud/ to /storage/nextcloud/
-      # This moves ALL state (config, apps, user data) to bulk storage
-      #datadir = "${config.bulkStorage.path}/nextcloud";
-
       database.createLocally = false; # enables postgres service if true, manual setup below
       configureRedis = true; # creates redis instance
       caching.redis = true; # load redis into nextcloud php

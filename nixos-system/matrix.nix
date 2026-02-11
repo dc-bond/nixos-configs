@@ -274,7 +274,7 @@ ${config.sops.placeholder.matrixHookshotPasskey}
           handlers = [
             "journal"
           ];
-          level = "WARNING";
+          level = "INFO";
         };
         version = 1;
       };

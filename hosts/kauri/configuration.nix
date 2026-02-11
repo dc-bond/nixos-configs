@@ -1,6 +1,6 @@
 ## MANUAL SETUP PRE- FRESH INSTALL ##
 # update configVars to add host and users
-# update configuration.nix, disko configs, home.nix, 
+# update configuration.nix, disko configs, home.nix,
 # update greetd.nix default cmd
 # add host and user age keys to sops.yaml, update keys on secrets.yaml (see notes in sops.yaml)
 # add user(s) hashed password to secrets.yaml
@@ -12,23 +12,102 @@
 # tailscale disable expiry in console
 # first time bluetooth devices setup
 
-{ 
-  inputs, 
-  outputs, 
-  lib, 
+{
+  inputs,
+  outputs,
+  lib,
   configLib,
-  config, 
+  config,
   configVars,
-  pkgs, 
-  ... 
-}: 
+  pkgs,
+  ...
+}:
 
 {
 
-  systemd.services.tailscaled.restartIfChanged = false;
-  systemd.services.iwd.restartIfChanged = false;
-
   networking.hostName = "kauri";
+
+  # disko disk configuration
+  disko.devices = {
+    disk = {
+      main = {
+        type = "disk";
+        device = configVars.hosts.${config.networking.hostName}.hardware.btrfsOsDisk;
+        content = {
+          type = "gpt";
+          partitions = {
+            ESP = {
+              size = "512M";
+              type = "EF00";
+              content = {
+                type = "filesystem";
+                format = "vfat";
+                mountpoint = "/boot";
+                mountOptions = [ "umask=0077" ];
+              };
+            };
+            luks = {
+              size = "100%";
+              content = {
+                type = "luks";
+                name = "crypted";
+                settings = {
+                  allowDiscards = false;
+                };
+                passwordFile = "/tmp/crypt-passwd.txt"; # interactive login
+                content = {
+                  type = "btrfs";
+                  extraArgs = [ "-f" ];
+                  subvolumes = {
+                    # CURRENT LAYOUT (traditional root - to be replaced on fresh install)
+                    "/root" = {
+                      mountpoint = "/";
+                      mountOptions = [ "compress=zstd" "noatime" ];
+                    };
+                    "/home" = {
+                      mountpoint = "/home";
+                      mountOptions = [ "compress=zstd" "noatime" ];
+                    };
+                    "/nix" = {
+                      mountpoint = "/nix";
+                      mountOptions = [ "compress=zstd" "noatime" ];
+                    };
+                    "/swap" = {
+                      mountpoint = "/swap";
+                      swap.swapfile.size = "8G"; # 0.5x RAM - adequate OOM protection without hibernation
+                    };
+
+                    # FRESH INSTALL LAYOUT (impermanence - uncomment and remove above on fresh install)
+                    #"/nix" = {
+                    #  mountpoint = "/nix";
+                    #  mountOptions = [ "compress=zstd" "noatime" ];
+                    #};
+                    #"/persist" = {
+                    #  mountpoint = "/persist";
+                    #  mountOptions = [ "compress=zstd" "noatime" ];
+                    #};
+                    #"/snapshots" = {
+                    #  mountpoint = "/snapshots";
+                    #  mountOptions = [ "compress=zstd" "noatime" ];
+                    #};
+                    #"/swap" = {
+                    #  mountpoint = "/swap";
+                    #  swap.swapfile.size = "8G"; # 0.5x RAM - adequate OOM protection without hibernation
+                    #};
+                  };
+                };
+              };
+            };
+          };
+        };
+      };
+    };
+  };
+
+  systemd.services = {
+    tailscaled.restartIfChanged = false;
+    iwd.restartIfChanged = false;
+  };
 
   environment.systemPackages = with pkgs; [
     age # encryption tool
@@ -71,8 +150,8 @@
   system.stateVersion = "25.11";
 
   imports = lib.flatten [
+    inputs.disko.nixosModules.disko
     (map configLib.relativeToRoot [
-      "hosts/kauri/disko.nix"
       "hosts/kauri/hardware-configuration.nix"
       #"hosts/kauri/impermanence.nix" # FRESH INSTALL ONLY - uncomment on fresh install
       "nixos-system/boot.nix"
