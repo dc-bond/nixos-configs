@@ -16,7 +16,6 @@ let
   recoveryPlan = {
     restoreItems = [
       "/var/lib/${app}"
-      "/var/lib/redis-${app}"
       "/var/backup/postgresql/${app}.sql.gz"
     ];
     db = {
@@ -25,8 +24,8 @@ let
       name = "${app}";
       dump = "/var/backup/postgresql/${app}.sql.gz";
     };
-    stopServices = [ ]; # nextcloud has no services to stop, maintenance-mode on is sufficient to quiesce webserver and database for restoration
-    startServices = [ ]; # nextcloud has no services to start
+    stopServices = [ ]; # no services to stop - maintenance mode is sufficient
+    startServices = [ ]; # no services to start
   };
   recoverScript = nixServiceRecoveryScript {
     serviceName = app;

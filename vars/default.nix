@@ -438,20 +438,20 @@
         finplanner = { ipv4 = "172.21.18.2"; };
       };
     };
-    
-    chris-workouts = {
-      subnet = "172.21.19.0/25";
-      containers = {
-        chris-workouts = { ipv4 = "172.21.19.2"; };
-      };
-    };
-    
-    danielle-workouts = {
-      subnet = "172.21.20.0/25";
-      containers = {
-        danielle-workouts = { ipv4 = "172.21.20.2"; };
-      };
-    };
+
+    #null = {
+    #  subnet = "172.21.19.0/25";
+    #  containers = {
+    #    null = { ipv4 = "172.21.19.2"; };
+    #  };
+    #};
+
+    #null = {
+    #  subnet = "172.21.20.0/25";
+    #  containers = {
+    #    null = { ipv4 = "172.21.20.2"; };
+    #  };
+    #};
 
   };
 

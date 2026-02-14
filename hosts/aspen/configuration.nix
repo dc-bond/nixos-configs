@@ -86,7 +86,7 @@
 
       #disk1 = {
       #  type = "disk";
-      #  device = "/dev/disk/by-id/ata-DRIVE1_SERIAL"; # REPLACE: Get from 'ls -l /dev/disk/by-id/' after burn-in
+      #  device = "/dev/disk/by-id/ata-WDC_WD122KRYZ-01CDAB0_B00874SD";
       #  content = {
       #    type = "gpt";
       #    partitions = {
@@ -103,7 +103,7 @@
 
       #disk2 = {
       #  type = "disk";
-      #  device = "/dev/disk/by-id/ata-DRIVE2_SERIAL"; # REPLACE: Get from 'ls -l /dev/disk/by-id/' after burn-in
+      #  device = "/dev/disk/by-id/ata-WDC_WD122KRYZ-01CDAB0_B008428D";
       #  content = {
       #    type = "gpt";
       #    partitions = {
@@ -236,6 +236,7 @@
     smartmontools # provides smartctl command for disk health monitoring
     rsync # sync tool
     btop # system monitor
+    tmux # terminal multiplexer for persistent sessions
   ];
 
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
@@ -244,50 +245,67 @@
   imports = lib.flatten [
     inputs.disko.nixosModules.disko
     (map configLib.relativeToRoot [
-      "hosts/aspen/hardware-configuration.nix"
-      #"hosts/aspen/impermanence.nix"
-      "nixos-system/boot.nix"
-      "nixos-system/foundation.nix"
-      "nixos-system/networking.nix"
-      "nixos-system/crowdsec.nix"
-      "nixos-system/tailscale.nix"
-      "nixos-system/users.nix"
-      "nixos-system/sshd.nix"
-      "nixos-system/zsh.nix"
-      "nixos-system/backups.nix"
-      "nixos-system/btrfs.nix"
-      "nixos-system/zfs.nix"
-      "nixos-system/sops.nix"
-      "nixos-system/nvidia.nix"
-      "nixos-system/samba.nix"
+      # RECOVERY 0: Foundation - no recovery needed, verify SSH/ZFS/secrets after reboot
+      "hosts/aspen/hardware-configuration.nix" # 0
+      "nixos-system/boot.nix" # 0
+      "nixos-system/foundation.nix" # 0
+      #"hosts/aspen/impermanence.nix" # 0
+      "nixos-system/networking.nix" # 0
+      "nixos-system/users.nix" # 0
+      "nixos-system/sshd.nix" # 0
+      "nixos-system/zsh.nix" # 0
+      "nixos-system/sops.nix" # 0
+      "nixos-system/btrfs.nix" # 0
+      "nixos-system/zfs.nix" # 0 (verify pool auto-imports)
+      "nixos-system/tailscale.nix" # 0
 
-      "nixos-system/postgresql.nix"
-      "nixos-system/monitoring-client.nix"
-      "nixos-system/traefik.nix"
-      "nixos-system/mysql.nix"
-      "nixos-system/photoprism.nix" # requires mysql.nix
-      "nixos-system/lldap.nix" # requires postgresql.nix
-      "nixos-system/calibre.nix"
-      "nixos-system/nginx-sites.nix"
-      "nixos-system/nextcloud.nix" # requires postgresql.nix
-      "nixos-system/home-assistant.nix" # requires postgresql.nix
-      "nixos-system/authelia-dcbond.nix" # requires lldap.nix
-      "nixos-system/stirling-pdf.nix"
-      "nixos-system/dcbond-root.nix"
-      "nixos-system/ollama.nix"
-      "nixos-system/oci-containers.nix"
-      "nixos-system/oci-fava.nix"
-      "nixos-system/oci-frigate.nix" # requires nvidia.nix
-      "nixos-system/oci-pihole.nix"
-      "nixos-system/oci-actual.nix"
-      "nixos-system/oci-zwavejs.nix"
-      "nixos-system/oci-searxng.nix"
-      "nixos-system/oci-recipesage.nix"
-      "nixos-system/oci-unifi.nix"
-      "nixos-system/oci-n8n.nix"
-      "nixos-system/oci-media-server.nix"
+      # RECOVERY 1: Core Infrastructure - deploy together, no recovery yet (databases start empty)
+      "nixos-system/postgresql.nix" # 1
+      "nixos-system/mysql.nix" # 1
+      "nixos-system/traefik.nix" # 1
+      "nixos-system/monitoring-client.nix" # 1
+      "nixos-system/nvidia.nix" # 1
+      "nixos-system/backups.nix" # 1 (recovery scripts infrastructure)
+      "nixos-system/samba.nix" # 1
+      "nixos-system/oci-containers.nix" # 1 (docker base - required by all OCI services)
+      "nixos-system/oci-pihole.nix" # 1 (DNS - 100% declarative rebuild via pihole-init)
 
-      "scripts/media-transfer.nix"
+      # RECOVERY 2: LLDAP - deploy alone, run: sudo recoverLldap
+      "nixos-system/lldap.nix" # 2 (requires postgresql.nix)
+
+      # RECOVERY 3: Authelia - deploy after LLDAP working, run: sudo recoverAuthelia-dcbond
+      "nixos-system/authelia-dcbond.nix" # 3 (requires lldap.nix)
+
+      # RECOVERY 4: Nextcloud - deploy alone (complex), run: sudo recoverNextcloud
+      "nixos-system/nextcloud.nix" # 4 (requires postgresql.nix)
+
+      # RECOVERY 5: Core Apps - deploy together, run recoveries: sudo recoverPhotoprism && sudo recoverHomeAssistant
+      "nixos-system/photoprism.nix" # 5 (requires mysql.nix)
+      "nixos-system/home-assistant.nix" # 5 (requires postgresql.nix)
+
+      # RECOVERY 6: Home Automation - deploy together, run recoveries (frigate optional - see audit notes)
+      "nixos-system/oci-frigate.nix" # 6 (requires nvidia.nix; optional recovery)
+      "nixos-system/oci-zwavejs.nix" # 6 (run: sudo recoverZwavejs)
+      "nixos-system/oci-unifi.nix" # 6 (run: sudo recoverUnifi)
+
+      # RECOVERY 7: Productivity - deploy together, run recoveries (fava/calibre optional - see audit notes)
+      "nixos-system/oci-actual.nix" # 7 (run: sudo recoverActual)
+      "nixos-system/oci-fava.nix" # 7 (no recovery - reads from Nextcloud)
+      "nixos-system/oci-recipesage.nix" # 7 (run: sudo recoverRecipesage)
+      "nixos-system/oci-n8n.nix" # 7 (run: sudo recoverN8n)
+      "nixos-system/calibre.nix" # 7 (optional recovery - reading progress only)
+
+      # RECOVERY 8: Utilities - deploy together, no recoveries (all stateless or ephemeral)
+      "nixos-system/stirling-pdf.nix" # 8 (stateless)
+      "nixos-system/ollama.nix" # 8 (can re-download models)
+      "nixos-system/oci-searxng.nix" # 8 (stateless - tmpfs cache)
+      "nixos-system/nginx-sites.nix" # 8 (reads from Nextcloud)
+      "nixos-system/dcbond-root.nix" # 8 (reads from Nextcloud)
+      "nixos-system/crowdsec.nix" # 8 (ephemeral state)
+
+      # RECOVERY 9: Media Stack - deploy together, run: sudo recoverMedia-server
+      "nixos-system/oci-media-server.nix" # 9 (restores 6 containers at once)
+      "scripts/media-transfer.nix" # 9 (no recovery - just scripts)
     ])
   ];
 
