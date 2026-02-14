@@ -642,7 +642,7 @@ let
 
           - alert: publicEndpointDown
             expr: probe_success{job="blackbox-http"} == 0
-            for: 1m
+            for: 5m
             labels:
               severity: critical
             annotations:
@@ -1139,8 +1139,6 @@ in
                 "https://actual.${configVars.domain2}"
                 "https://bond-ledger.${configVars.domain2}"
                 "https://calibre-web.${configVars.domain2}"
-                "https://chris-workouts.${configVars.domain2}"
-                "https://danielle-workouts.${configVars.domain2}"
                 "https://frigate.${configVars.domain2}"
                 "https://home-assistant.${configVars.domain2}"
                 "https://jellyfin.${configVars.domain2}"

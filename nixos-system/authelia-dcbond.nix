@@ -13,7 +13,6 @@ let
   recoveryPlan = {
     restoreItems = [
       "/var/lib/${app}"
-      "/var/lib/redis-${app}"
     ];
     stopServices = [ "${app}" "redis-${app}" ];
     startServices = [ "redis-${app}" "${app}" ];

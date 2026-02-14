@@ -1040,7 +1040,7 @@ in
     prune = lib.mkOption {
       type = lib.types.attrs;
       default = {
-        daily = 30;
+        daily = 7;
         weekly = 4;
         monthly = 3;
       };
