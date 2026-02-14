@@ -37,7 +37,10 @@
         hasBattery = false;
         hasBluetooth = false;
         hasBacklight = false;
-        btrfsOsDisk = "/dev/disk/by-id/nvme-Samsung_SSD_960_EVO_250GB_S3ESNX0J831623T"; # 256GB NVMe SSD
+        disk0 = "/dev/disk/by-id/nvme-Samsung_SSD_960_EVO_250GB_S3ESNX0J831623T"; # 256GB NVMe SSD (OS disk)
+        disk1 = "/dev/disk/by-id/ata-WDC_WD122KRYZ-01CDAB0_B00874SD"; # 12TB HDD (ZFS mirror - disk 1)
+        disk2 = "/dev/disk/by-id/ata-WDC_WD122KRYZ-01CDAB0_B008428D"; # 12TB HDD (ZFS mirror - disk 2)
+        disk3 = "/dev/disk/by-id/ata-WDC_WD40EFRX-68N32N0_WD-WCC7K4RU947F"; # 4TB HDD
       };
     };
 
@@ -68,7 +71,10 @@
                 hasBattery = true;
         hasBluetooth = true;
         hasBacklight = true;
-        btrfsOsDisk = "/dev/disk/by-id/nvme-WDC_PC_SN730_SDBQNTY-256G-1001_194356801585"; # 256GB NVMe SSD
+        disk0 = "/dev/disk/by-id/nvme-WDC_PC_SN730_SDBQNTY-256G-1001_194356801585"; # 256GB NVMe SSD (OS disk)
+        disk1 = null;
+        disk2 = null;
+        disk3 = null;
       };
     };
 
@@ -99,7 +105,10 @@
                 hasBattery = true;
         hasBluetooth = true;
         hasBacklight = true;
-        btrfsOsDisk = "/dev/disk/by-id/nvme-SAMSUNG_MZVLB512HBJQ-000L7_S4ENNF0N466097"; # 512GB NVMe SSD
+        disk0 = "/dev/disk/by-id/nvme-SAMSUNG_MZVLB512HBJQ-000L7_S4ENNF0N466097"; # 512GB NVMe SSD (OS disk)
+        disk1 = null;
+        disk2 = null;
+        disk3 = null;
       };
     };
 
@@ -130,7 +139,10 @@
         hasBattery = false;
         hasBluetooth = true;
         hasBacklight = false;
-        btrfsOsDisk = "/dev/disk/by-id/ata-512GB_SSD_MP32B12203488"; # 512GB SATA SSD
+        disk0 = "/dev/disk/by-id/ata-512GB_SSD_MP32B12203488"; # 512GB SATA SSD (OS disk)
+        disk1 = null; # TODO: external HDD (currently UUID f3fb53cc-52fa-48e3-8cac-b69d85a8aff1, get by-id with: ls -l /dev/disk/by-id/ | grep -v part)
+        disk2 = null;
+        disk3 = null;
       };
     };
 
@@ -161,7 +173,10 @@
                 hasBattery = false;
         hasBluetooth = false;
         hasBacklight = false;
-        btrfsOsDisk = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_103227147"; # VPS virtual disk
+        disk0 = "/dev/disk/by-id/scsi-0QEMU_QEMU_HARDDISK_103227147"; # VPS virtual disk (OS disk)
+        disk1 = null;
+        disk2 = null;
+        disk3 = null;
       };
     };
     
@@ -192,7 +207,10 @@
                 hasBattery = false;
         hasBluetooth = true;
         hasBacklight = true;
-        # TODO: Add btrfsOsDisk = "/dev/disk/by-id/..." after running: ls -l /dev/disk/by-id/ | grep -E '(sda|ata-)' | grep -v part
+        disk0 = null; # TODO: Add after running on alder: ls -l /dev/disk/by-id/ | grep -E '(sda|ata-)' | grep -v part
+        disk1 = null;
+        disk2 = null;
+        disk3 = null;
       };
     };
 

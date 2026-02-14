@@ -9,7 +9,7 @@
 let
 
   cfg = config.btrfs;
-  scrubDevice = "${configVars.hosts.${config.networking.hostName}.hardware.btrfsOsDisk}-part2"; # scrub device is the partition
+  scrubDevice = "${configVars.hosts.${config.networking.hostName}.hardware.disk0}-part2"; # scrub device is the partition
   btrfsRootDevice = config.fileSystems."/persist".device; # only evaluated when cfg.snapshots = true
 
 in
@@ -37,7 +37,7 @@ in
         onCalendar = "hourly";
         settings = {
           timestamp_format = "long";
-          snapshot_preserve_min = "2d"; # keep all snapshots for 2 days (48 snapshots)
+          snapshot_preserve_min = "1d"; # keep the last 24 hourly snapshots
           volume."/" = {
             subvolume.persist = {
               snapshot_dir = "/snapshots";
