@@ -18,8 +18,8 @@
     disk = {
       main = {
         type = "disk";
-        device = "/dev/sda"; # TODO: Change to configVars reference after adding btrfsOsDisk to vars/default.nix
-        # device = configVars.hosts.${config.networking.hostName}.hardware.btrfsOsDisk;
+        device = "/dev/sda"; # TODO: Change to configVars reference after adding disk0 to vars/default.nix
+        # device = configVars.hosts.${config.networking.hostName}.hardware.disk0;
         content = {
           type = "gpt";
           partitions = {

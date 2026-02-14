@@ -32,7 +32,7 @@
     disk = {
       main = {
         type = "disk";
-        device = configVars.hosts.${config.networking.hostName}.hardware.btrfsOsDisk;
+        device = configVars.hosts.${config.networking.hostName}.hardware.disk0;
         content = {
           type = "gpt";
           partitions = {

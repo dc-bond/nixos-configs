@@ -198,7 +198,7 @@ in
       readWritePaths = lib.mkAfter [ "/var/lib/${app}/" ]; # needed to allow borgbackup readwrite access to nextcloud directory containing occ command execution (for turning on/off maintenance mode)
       paths = lib.mkAfter recoveryPlan.restoreItems;
     };
-  
+
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
         entrypoints = ["websecure"];

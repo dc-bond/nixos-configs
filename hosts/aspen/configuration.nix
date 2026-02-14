@@ -23,7 +23,7 @@
       main = {
       #disk0 = {
         type = "disk";
-        device = configVars.hosts.${config.networking.hostName}.hardware.btrfsOsDisk;
+        device = configVars.hosts.${config.networking.hostName}.hardware.disk0;
         content = {
           type = "gpt";
           partitions = {
@@ -86,7 +86,7 @@
 
       #disk1 = {
       #  type = "disk";
-      #  device = "/dev/disk/by-id/ata-WDC_WD122KRYZ-01CDAB0_B00874SD";
+      #  device = configVars.hosts.${config.networking.hostName}.hardware.disk1;
       #  content = {
       #    type = "gpt";
       #    partitions = {
@@ -103,7 +103,7 @@
 
       #disk2 = {
       #  type = "disk";
-      #  device = "/dev/disk/by-id/ata-WDC_WD122KRYZ-01CDAB0_B008428D";
+      #  device = configVars.hosts.${config.networking.hostName}.hardware.disk2;
       #  content = {
       #    type = "gpt";
       #    partitions = {
@@ -229,6 +229,8 @@
       "${config.bulkStorage.path}/media/family-media"
     ];
   };
+
+  #btrfs.snapshots = true; # enable hourly + recovery snapshots and recoverSnap script
 
   environment.systemPackages = with pkgs; [
     wget # download tool
