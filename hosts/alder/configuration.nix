@@ -17,6 +17,7 @@
   disko.devices = {
     disk = {
       main = {
+      #disk0 = {
         type = "disk";
         device = "/dev/sda"; # TODO: Change to configVars reference after adding disk0 to vars/default.nix
         # device = configVars.hosts.${config.networking.hostName}.hardware.disk0;

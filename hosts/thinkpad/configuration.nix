@@ -17,6 +17,7 @@
   disko.devices = {
     disk = {
       main = {
+      #disk0 = {
         type = "disk";
         device = configVars.hosts.${config.networking.hostName}.hardware.disk0;
         content = {

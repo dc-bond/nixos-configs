@@ -239,6 +239,7 @@
     rsync # sync tool
     btop # system monitor
     tmux # terminal multiplexer for persistent sessions
+    bind # dns lookup tool
   ];
 
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
@@ -308,6 +309,7 @@
       # RECOVERY 9: Media Stack - deploy together, run: sudo recoverMedia-server
       "nixos-system/oci-media-server.nix" # 9 (restores 6 containers at once)
       "scripts/media-transfer.nix" # 9 (no recovery - just scripts)
+      "scripts/dns-test.nix" # 9
     ])
   ];
 

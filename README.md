@@ -78,9 +78,15 @@ Each host is defined in `hosts/<hostname>/` and can selectively import service m
 
 **Tailscale-Enabled Devices**:
 1. **On LAN + Tailscale connected**: → juniper VPS via Tailscale override
-2. **On LAN + Tailscale disconnected**: → aspen LAN via DHCP fallback  
+2. **On LAN + Tailscale disconnected**: → aspen LAN via DHCP fallback
 3. **Remote + Tailscale connected**: → juniper via Tailscale
-4. **Automatic failover**: If juniper down → aspen via Tailscale
+4. **On LAN + juniper down**: → automatic failover to aspen via LAN (systemd-resolved switches to ethernet interface after timeout)
+5. **Remote + juniper down**: → DNS fails (no LAN access to aspen)
 
 **LAN-only Devices** (Roku, IoT, cameras):
 - **Always**: → aspen via UniFi DHCP
+
+**Notes**:
+- Tailscale DNS override only includes juniper (not aspen) to avoid brittle dual-server failover
+- When on LAN, failover to aspen works via the ethernet interface, not via Tailscale
+- When remote, juniper downtime = DNS outage (acceptable given 99% uptime)

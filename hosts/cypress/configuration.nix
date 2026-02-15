@@ -17,12 +17,12 @@
   disko.devices = {
     disk = {
       main = {
+      #disk0 = {
         type = "disk";
         device = configVars.hosts.${config.networking.hostName}.hardware.disk0;
         content = {
           type = "gpt";
           partitions = {
-
             ESP = {
               size = "512M";
               type = "EF00";
@@ -33,7 +33,6 @@
                 mountOptions = [ "umask=0077" ];
               };
             };
-
             root = {
               size = "100%";
               content = {
@@ -59,7 +58,6 @@
                 };
               };
             };
-
           };
         };
       };
