@@ -136,6 +136,7 @@
       "nixos-system/hyprland.nix"
 
       "scripts/deploy.nix"
+      "scripts/network-test.nix"
     ])
   ];
 
