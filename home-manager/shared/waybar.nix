@@ -14,19 +14,6 @@ let
   hasDock = hostData.networking.dockInterface != null;
   hasEthernet = hostData.networking.ethernetInterface != null;
 
-  weatherScript = pkgs.writeShellScript "waybar-weather" ''
-    CACHE_FILE="''${XDG_CACHE_HOME:-$HOME/.cache}/waybar-weather.txt"
-    CACHE_MAX_AGE=3600  # consider cache stale after 1 hour
-    WEATHER=$(${pkgs.curl}/bin/curl -s --max-time 5 --retry 2 --retry-delay 1 'wttr.in/?format=%c+%t&u' 2>/dev/null)
-    if [ -n "$WEATHER" ] && [ "$WEATHER" != "Unknown location; please try ~"* ]; then
-      echo "$WEATHER" > "$CACHE_FILE"
-      echo "$WEATHER"
-    elif [ -f "$CACHE_FILE" ]; then
-      cat "$CACHE_FILE"
-    else
-      echo "?"
-    fi
-  '';
 in
 
 {
@@ -52,7 +39,6 @@ in
       
       "modules-right" = [
         "tray"
-        "custom/weather"
         "memory"
         "disk"
         "cpu"
@@ -109,15 +95,6 @@ in
         "spacing" = 15;
       };
 
-      "custom/weather" = {
-        "format" = "{} ";
-        "interval" = 1800;  # update every 30 minutes
-        "exec" = "${weatherScript}";
-        "return-type" = "";
-        "on-click" = "${pkgs.alacritty}/bin/alacritty -e zsh -c 'curl wttr.in; read -k 1 \"?Press any key to continue...\"; exec zsh'";
-        "tooltip-format" = "Outside Weather";
-      };
-      
       "memory" = {
         "format" = "{percentage}% 󰘚";
         "tooltip-format" = "RAM Usage";
@@ -383,24 +360,6 @@ in
           box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
       }
       
-      /* ===== WEATHER MODULE (Sky Blue) ===== */
-      
-      #custom-weather {
-          color: #87ceeb;
-          background: linear-gradient(135deg, rgba(135, 206, 235, 0.15) 0%, rgba(135, 206, 235, 0.05) 100%);
-          padding: 4px 14px;
-          margin: 4px 4px;
-          border-radius: 12px;
-          border: 1px solid rgba(135, 206, 235, 0.3);
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      }
-      
-      #custom-weather:hover {
-          background: linear-gradient(135deg, @color11 0%, @color1 100%);
-          border: 1px solid @color11;
-          box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
-      }
-
       /* ===== BACKLIGHT ===== */
 
       #backlight {

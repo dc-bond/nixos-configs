@@ -84,6 +84,7 @@
     wget # download tool
     rsync # sync tool
     jq # json parser tool
+    bc # calculator for network-test script timing
     usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
     smartmontools # provides smartctl command for disk health monitoring
     nix-tree # table view of package dependencies
