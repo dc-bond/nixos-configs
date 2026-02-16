@@ -9,7 +9,12 @@
 let
 
   cfg = config.btrfs;
-  scrubDevice = "${configVars.hosts.${config.networking.hostName}.hardware.disk0}-part2"; # scrub device is the partition
+  hostData = configVars.hosts.${config.networking.hostName};
+  # use mountpoint for encrypted systems (btrfs scrub works on /dev/mapper/crypted via mountpoint)
+  # use raw partition for unencrypted systems
+  scrubDevice = if (hostData.hardware.diskEncryption or false)
+    then "/persist"
+    else "${hostData.hardware.disk0}-part2";
   btrfsRootDevice = config.fileSystems."/persist".device; # only evaluated when cfg.snapshots = true
 
 in

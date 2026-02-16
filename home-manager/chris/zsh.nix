@@ -63,6 +63,7 @@
       cloneconfigs = "cd $HOME/nextcloud-client/Personal/nixos && git clone https://github.com/dc-bond/nixos-configs";
       configs = "cd $HOME/nextcloud-client/Personal/nixos";
       flakeupdate= "(cd $HOME/nextcloud-client/Personal/nixos/nixos-configs && nix flake update)";
+      fetch-displaylink = "nix-prefetch-url --name displaylink-620.zip https://www.synaptics.com/sites/default/files/exe_files/2025-09/DisplayLink%20USB%20Graphics%20Software%20for%20Ubuntu6.2-EXE.zip";
     # } // lib.optionalAttrs (osConfig.networking.hostName == "cypress") {
     #   storage = "cd /storage ; ls";
     } // lib.optionalAttrs (osConfig.networking.hostName == "aspen") {
