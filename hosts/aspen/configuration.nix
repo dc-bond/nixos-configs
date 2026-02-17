@@ -220,7 +220,7 @@
   services.zfsExtended = {
     enable = true;
     pools = [ "storage" ]; # auto-import storage pool at boot
-    enableSnapshots = true;
+    enableSnapshots = false;
   };
 
   backups = {

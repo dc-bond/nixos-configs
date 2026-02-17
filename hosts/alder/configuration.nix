@@ -13,7 +13,6 @@
 
   networking.hostName = "alder";
 
-  # disko disk configuration
   disko.devices = {
     disk = {
       main = {

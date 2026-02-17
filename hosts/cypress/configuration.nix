@@ -13,7 +13,6 @@
 
   networking.hostName = "cypress";
 
-  # disko disk configuration
   disko.devices = {
     disk = {
       main = {

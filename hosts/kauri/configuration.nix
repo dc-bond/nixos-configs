@@ -1,17 +1,3 @@
-## MANUAL SETUP PRE- FRESH INSTALL ##
-# update configVars to add host and users
-# update configuration.nix, disko configs, home.nix,
-# update greetd.nix default cmd
-# add host and user age keys to sops.yaml, update keys on secrets.yaml (see notes in sops.yaml)
-# add user(s) hashed password to secrets.yaml
-# add user(s) password to pass repo
-# tailscale auth key - generate new key in console, add to secrets.yaml - key non-reusable, 90-day expiration, pre-authorized, non-ephemeral, add new tailscale IP in configVars
-# update monitoring server configs to add node
-## MANUAL SETUP POST- FRESH INSTALL ##
-# first time wifi and tailscale connection
-# tailscale disable expiry in console
-# first time bluetooth devices setup
-
 {
   inputs,
   outputs,
@@ -27,7 +13,6 @@
 
   networking.hostName = "kauri";
 
-  # disko disk configuration
   disko.devices = {
     disk = {
       main = {
