@@ -13,7 +13,7 @@ let
   aspenTailscaleIp = configVars.hosts.aspen.networking.tailscaleIp;
   juniperTailscaleIp = configVars.hosts.juniper.networking.tailscaleIp;
 
-  # Replicate tailscale connection logic from tailscale.nix
+  # replicate tailscale connection logic from tailscale.nix
   tsConfig = hostData.networking.tailscale or {};
   isExitNode = (tsConfig.role or "") == "exit-node";
   defaultExitNodeIp =

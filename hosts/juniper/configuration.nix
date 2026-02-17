@@ -13,7 +13,6 @@
 
   networking.hostName = "juniper";
 
-  # disko disk configuration
   disko.devices = {
     disk = {
       main = {
