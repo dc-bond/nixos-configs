@@ -95,8 +95,8 @@ let
     fi
 
     echo "Testing internal domain..."
-    if ${pkgs.dnsutils}/bin/dig home-assistant.opticon.dev +short >/dev/null 2>&1; then
-      result=$(${pkgs.dnsutils}/bin/dig home-assistant.opticon.dev +short)
+    result=$(${pkgs.dnsutils}/bin/dig home-assistant.opticon.dev +short)
+    if [ -n "$result" ]; then
       echo "✓ home-assistant.opticon.dev resolves to: $result"
     else
       echo "⚠ home-assistant.opticon.dev does not resolve (aspen may be down)"
@@ -134,8 +134,8 @@ let
     fi
 
     echo "Testing internal domain..."
-    if ${pkgs.dnsutils}/bin/dig home-assistant.opticon.dev +short >/dev/null 2>&1; then
-      result=$(${pkgs.dnsutils}/bin/dig home-assistant.opticon.dev +short)
+    result=$(${pkgs.dnsutils}/bin/dig home-assistant.opticon.dev +short)
+    if [ -n "$result" ]; then
       echo "✓ home-assistant.opticon.dev resolves to: $result"
     else
       echo "⚠ home-assistant.opticon.dev does not resolve"
