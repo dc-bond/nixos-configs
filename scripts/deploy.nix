@@ -41,14 +41,20 @@ let
       temp=$(mktemp -d)
       trap "rm -rf $temp" EXIT
 
-      # setup system age key
+      # setup system age key (copy to both /etc/age for install-time SOPS AND /persist/etc/age for post-boot)
       install -d -m755 "$temp/${etcAgePath}"
       pass hosts/${hostname}/age/private > "$temp/${etcAgePath}/${hostname}-age.key"
       chmod 600 "$temp/${etcAgePath}/${hostname}-age.key"
+      ${lib.optionalString usesImpermanence ''
+        # also copy to /etc/age for SOPS during nixos-install (bind mount to /persist/etc/age only happens on boot)
+        install -d -m755 "$temp/etc/age"
+        pass hosts/${hostname}/age/private > "$temp/etc/age/${hostname}-age.key"
+        chmod 600 "$temp/etc/age/${hostname}-age.key"
+      ''}
 
       # setup user age key(s)
       ${userAgeSetup}
-      
+
       # move to host directory
       cd "$HOME/nextcloud-client/Personal/nixos/nixos-configs/hosts/${hostname}"
       
@@ -59,6 +65,7 @@ let
             --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
             --disk-encryption-keys /tmp/crypt-passwd.txt <(pass hosts/${hostname}/disk-encryption-passwd) \
             --extra-files "$temp" \
+            ${lib.optionalString usesImpermanence ''--chown /${etcAgePath} 0:0''} \
             ${lib.concatMapStringsSep " \\\n    " (user:
               ''--chown /${homeBasePath}/${user} ${toString configVars.users.${user}.uid}:100''
             ) users} \
@@ -72,6 +79,7 @@ let
           nix run github:nix-community/nixos-anywhere -- \
             --generate-hardware-config nixos-generate-config ./hardware-configuration.nix \
             --extra-files "$temp" \
+            ${lib.optionalString usesImpermanence ''--chown /${etcAgePath} 0:0''} \
             ${lib.concatMapStringsSep " \\\n    " (user:
               ''--chown /${homeBasePath}/${user} ${toString configVars.users.${user}.uid}:100''
             ) users} \

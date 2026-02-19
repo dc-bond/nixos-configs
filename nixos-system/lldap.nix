@@ -108,9 +108,9 @@ in
         rule = "Host(`${app}.${configVars.domain1}`)";
         service = "${app}";
         middlewares = [
-          "authelia-dcbond"
+          #"authelia-dcbond" # disabled to break circular dependency - LLDAP needs Authelia, Authelia needs LLDAP
           "secure-headers"
-          "trusted-allow"
+          "trusted-allow" # IP allowlist - restricts access to LAN + Tailscale only
         ];
         tls = {
           certResolver = "cloudflareDns";
@@ -129,15 +129,17 @@ in
       };
     };
 
-    authelia.instances."${configVars.domain1Short}".settings.access_control.rules = [
-      {
-        domain = [ "${app}.${configVars.domain1}" ];
-        subject = [ # only allow the following users to access lldap and only require one factor
-          "user:admin"
-        ];
-        policy = "one_factor";
-      }
-    ];
+    # Authelia access control rules commented out - circular dependency
+    # Re-enable after both LLDAP and Authelia are running
+    #authelia.instances."${configVars.domain1Short}".settings.access_control.rules = [
+    #  {
+    #    domain = [ "${app}.${configVars.domain1}" ];
+    #    subject = [ # only allow the following users to access lldap and only require one factor
+    #      "user:admin"
+    #    ];
+    #    policy = "one_factor";
+    #  }
+    #];
 
   };
 

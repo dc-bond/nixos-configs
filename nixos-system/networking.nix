@@ -25,9 +25,13 @@ in
       if config.networking.hostName == "juniper" # juniper's pihole listens on tailscale interface only, aspen's pihole listens on all interfaces because behind NAT
       then ''
         nameserver ${hostData.networking.tailscaleIp}
+        nameserver 1.1.1.1
+        nameserver 9.9.9.9
       ''
       else ''
         nameserver 127.0.0.1
+        nameserver 1.1.1.1
+        nameserver 9.9.9.9
       '';
   };
 

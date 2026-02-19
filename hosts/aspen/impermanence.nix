@@ -58,9 +58,9 @@
       "/var/lib/authelia-dcbond"                     # authelia sqlite db, webauthn keys, logs
       "/var/lib/redis-authelia-dcbond"               # authelia session cache
       "/var/lib/calibre-web"                         # calibre-web database
-      "/var/lib/ollama"                              # ollama downloaded models
+      #"/var/lib/ollama"                              # ollama downloaded models
       "/var/lib/crowdsec"                            # crowdsec lapi/capi credentials and decisions
-      "/var/lib/samba"                               # samba tdb files (user passwords, session state)
+      #"/var/lib/samba"                               # samba tdb files (user passwords, session state)
 
       # docker - full data root persisted (image layers + all named volumes)
       { directory = "/var/lib/docker"; mode = "0710"; } # docker requires specific permissions on data root
@@ -72,5 +72,11 @@
     ];
 
   };
+
+  # create parent directories with correct permissions
+  systemd.tmpfiles.rules = [
+    "d /persist/home/chris 0700 chris users -" # tmpfiles ensures directory exists before impermanence tooling bind-mounts /persist/home/{user}/.config/age directory
+    "d /persist/etc/age 0755 root root -" # ensure /etc/age exists for early bind mount (deploy script should create this, but tmpfiles as fallback)
+  ];
 
 }
