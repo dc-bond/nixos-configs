@@ -13,7 +13,6 @@
 
   networking.hostName = "thinkpad";
 
-  # disko disk configuration
   disko.devices = {
     disk = {
       main = {
@@ -70,6 +69,18 @@
         };
       };
     };
+  };
+
+  bulkStorage.path = "/storage";
+
+  fileSystems."/storage" = {
+    device = "/dev/disk/by-uuid/025cbd65-8476-47ef-a814-c3cd8624d2fc"; # WD My Passport 260D (usb-WD_My_Passport_260D_575832314443383652553350-0:0)
+    fsType = "ext4";
+    options = [
+      "defaults"  # standard mount options
+      "nofail"    # don't fail boot if drive is unplugged
+      "noatime"   # don't update access times (better performance, less wear)
+    ];
   };
 
   backups = {
