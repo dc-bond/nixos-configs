@@ -12,7 +12,7 @@
       users = [ "chris" ];
       bootLoader = "systemd-boot";
       windowManager = null;
-      #usesImpermanence = true; # deploy script uses this to determine age key paths; impermanence.nix import is commented out in configuration.nix until fresh install
+      usesImpermanence = true; # deploy script uses this to determine age key paths
       networking = {
         sshPort = 28766;
         sshPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAEw3/kxz9yXRd1kHVqyxjU+TJVfZkqfUM0rskhgjZNO";

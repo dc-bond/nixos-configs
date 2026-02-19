@@ -20,8 +20,7 @@
   disko.devices = {
     disk = {
 
-      main = {
-      #disk0 = {
+      disk0 = {
         type = "disk";
         device = configVars.hosts.${config.networking.hostName}.hardware.disk0;
         content = {
@@ -43,40 +42,22 @@
                 type = "btrfs";
                 extraArgs = [ "-f" ];
                 subvolumes = {
-                  "/root" = {
-                    mountpoint = "/";
-                    mountOptions = [ "compress=zstd" "noatime" ];
-                  };
-                  "/home" = {
-                    mountpoint = "/home";
-                    mountOptions = [ "compress=zstd" "noatime" ];
-                  };
                   "/nix" = {
                     mountpoint = "/nix";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                  "/persist" = {
+                    mountpoint = "/persist";
+                    mountOptions = [ "compress=zstd" "noatime" ];
+                  };
+                  "/snapshots" = {
+                    mountpoint = "/snapshots";
                     mountOptions = [ "compress=zstd" "noatime" ];
                   };
                   "/swap" = {
                     mountpoint = "/swap";
                     swap.swapfile.size = "8G"; # 0.25x RAM - adequate OOM protection for well-provisioned server
                   };
-
-                  # FRESH INSTALL LAYOUT (impermanence - uncomment and remove above on fresh install)
-                  #"/nix" = {
-                  #  mountpoint = "/nix";
-                  #  mountOptions = [ "compress=zstd" "noatime" ];
-                  #};
-                  #"/persist" = {
-                  #  mountpoint = "/persist";
-                  #  mountOptions = [ "compress=zstd" "noatime" ];
-                  #};
-                  #"/snapshots" = {
-                  #  mountpoint = "/snapshots";
-                  #  mountOptions = [ "compress=zstd" "noatime" ];
-                  #};
-                  #"/swap" = {
-                  #  mountpoint = "/swap";
-                  #  swap.swapfile.size = "8G"; # 0.25x RAM - adequate OOM protection for well-provisioned server
-                  #};
                 };
               };
             };
@@ -84,122 +65,122 @@
         };
       };
 
-      #disk1 = {
-      #  type = "disk";
-      #  device = configVars.hosts.${config.networking.hostName}.hardware.disk1;
-      #  content = {
-      #    type = "gpt";
-      #    partitions = {
-      #      zfs = {
-      #        size = "100%";
-      #        content = {
-      #          type = "zfs";
-      #          pool = "storage";
-      #        };
-      #      };
-      #    };
-      #  };
-      #};
+      disk1 = {
+        type = "disk";
+        device = configVars.hosts.${config.networking.hostName}.hardware.disk1;
+        content = {
+          type = "gpt";
+          partitions = {
+            zfs = {
+              size = "100%";
+              content = {
+                type = "zfs";
+                pool = "storage";
+              };
+            };
+          };
+        };
+      };
 
-      #disk2 = {
-      #  type = "disk";
-      #  device = configVars.hosts.${config.networking.hostName}.hardware.disk2;
-      #  content = {
-      #    type = "gpt";
-      #    partitions = {
-      #      zfs = {
-      #        size = "100%";
-      #        content = {
-      #          type = "zfs";
-      #          pool = "storage";
-      #        };
-      #      };
-      #    };
-      #  };
-      #};
+      disk2 = {
+        type = "disk";
+        device = configVars.hosts.${config.networking.hostName}.hardware.disk2;
+        content = {
+          type = "gpt";
+          partitions = {
+            zfs = {
+              size = "100%";
+              content = {
+                type = "zfs";
+                pool = "storage";
+              };
+            };
+          };
+        };
+      };
 
     };
 
-    #zpool = {
-    #  storage = {
-    #    type = "zpool";
-    #    mode = "mirror";
-    #    options = {
-    #      ashift = "12"; # 4K sector size
-    #    };
-    #    rootFsOptions = {
-    #      compression = "lz4";      # fast compression by default
-    #      atime = "off";            # disable access time tracking
-    #      xattr = "sa";             # extended attributes inline
-    #      acltype = "posixacl";     # POSIX ACLs
-    #    };
-    #    mountpoint = null; # pool root not mounted directly
-    #    datasets = {
+    zpool = {
+      storage = {
+        type = "zpool";
+        mode = "mirror";
+        options = {
+          ashift = "12"; # 4K sector size
+        };
+        rootFsOptions = {
+          compression = "lz4";      # fast compression by default
+          atime = "off";            # disable access time tracking
+          xattr = "sa";             # extended attributes inline
+          acltype = "posixacl";     # POSIX ACLs
+        };
+        mountpoint = null; # pool root not mounted directly
+        datasets = {
 
-    #      "root" = { # organizational parent dataset for entire pool
-    #        type = "zfs_fs";
-    #        mountpoint = "/storage-zfs";
-    #      };
-    #
-    #      "root/media" = { # organizational parent dataset for media directory, not mounted
-    #        type = "zfs_fs";
-    #        options = {
-    #          mountpoint = "none";
-    #        };
-    #      };
-    #
-    #      "root/media/family-media" = {
-    #        type = "zfs_fs";
-    #        mountpoint = "/storage-zfs/media/family-media";
-    #        options = {
-    #          recordsize = "1M";           # optimized for large files
-    #          compression = "lz4";         # fast compression
-    #          xattr = "sa";                # PhotoPrism metadata support
-    #        };
-    #      };
-    #
-    #      "root/media/security-cameras" = {
-    #        type = "zfs_fs";
-    #        mountpoint = "/storage-zfs/media/security-cameras";
-    #        options = {
-    #          recordsize = "1M";           # large video files
-    #          compression = "off";         # video already H.264 compressed
-    #          primarycache = "metadata";   # don't cache video in ARC
-    #          logbias = "throughput";      # optimize for streaming
-    #          sync = "disabled";           # accept risk of data corruption on power loss for performance
-    #        };
-    #      };
-    #
-    #      "root/media/library" = {
-    #        type = "zfs_fs";
-    #        mountpoint = "/storage-zfs/media/library";
-    #        options = {
-    #          recordsize = "1M";           # large sequential files
-    #          compression = "lz4";         # fast compression
-    #        };
-    #      };
-    #
-    #      "root/borgbackup" = {
-    #        type = "zfs_fs";
-    #        mountpoint = "/storage-zfs/borgbackup";
-    #        options = {
-    #          recordsize = "1M";           # large backup archives
-    #          compression = "off";         # borg handles compression (zstd,8)
-    #        };
-    #      };
-    #
-    #      "root/reserved" = { # theoretically prevent fragmentation by proactively setting aside a chunk of space, then delete if approaching capacity to free up that space
-    #        type = "zfs_fs";
-    #        options = {
-    #          mountpoint = "none";         # not mounted (placeholder only)
-    #          reservation = "2400G";       # 20% of 12TB usable capacity
-    #          quota = "2400G";             # prevent growth beyond reservation
-    #        };
-    #      };
+          "root" = { # organizational parent dataset for entire pool
+            type = "zfs_fs";
+            mountpoint = "/storage-zfs";
+          };
 
-    #    };
-    #  };
-    #};
+          "root/media" = { # organizational parent dataset for media directory, not mounted
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";
+            };
+          };
+
+          "root/media/family-media" = {
+            type = "zfs_fs";
+            mountpoint = "/storage-zfs/media/family-media";
+            options = {
+              recordsize = "1M";           # optimized for large files
+              compression = "lz4";         # fast compression
+              xattr = "sa";                # PhotoPrism metadata support
+            };
+          };
+
+          "root/media/security-cameras" = {
+            type = "zfs_fs";
+            mountpoint = "/storage-zfs/media/security-cameras";
+            options = {
+              recordsize = "1M";           # large video files
+              compression = "off";         # video already H.264 compressed
+              primarycache = "metadata";   # don't cache video in ARC
+              logbias = "throughput";      # optimize for streaming
+              sync = "disabled";           # accept risk of data corruption on power loss for performance
+            };
+          };
+
+          "root/media/library" = {
+            type = "zfs_fs";
+            mountpoint = "/storage-zfs/media/library";
+            options = {
+              recordsize = "1M";           # large sequential files
+              compression = "lz4";         # fast compression
+            };
+          };
+
+          "root/borgbackup" = {
+            type = "zfs_fs";
+            mountpoint = "/storage-zfs/borgbackup";
+            options = {
+              recordsize = "1M";           # large backup archives
+              compression = "off";         # borg handles compression (zstd,8)
+            };
+          };
+
+          "root/reserved" = { # theoretically prevent fragmentation by proactively setting aside a chunk of space, then delete if approaching capacity to free up that space
+            type = "zfs_fs";
+            options = {
+              mountpoint = "none";         # not mounted (placeholder only)
+              reservation = "2400G";       # 20% of 12TB usable capacity
+              quota = "2400G";             # prevent growth beyond reservation
+            };
+          };
+
+        };
+      };
+    };
 
   };
 
@@ -209,12 +190,13 @@
     "/storage-ext4" = {
       device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb"; # western digital 4TB SATA HDD (ata-WDC_WD40EFRX-68N32N0_WD-WCC7K4RU947F)
       fsType = "ext4";
-      options = [ "defaults" ];
+      options = [ "defaults" "nofail" ];
     };
-    #"/storage-zfs" = { # uncomment after zfs pool online
-    #  device = "storage/root";
-    #  fsType = "zfs";
-    #};
+    "/storage-zfs" = {
+      device = "storage/root";
+      fsType = "zfs";
+      options = [ "nofail" ];
+    };
   };
 
   services.zfsExtended = {
@@ -243,7 +225,7 @@
   ];
 
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
-  system.stateVersion = "24.11";
+  system.stateVersion = "25.11";
 
   imports = lib.flatten [
     inputs.disko.nixosModules.disko
@@ -251,54 +233,54 @@
       "hosts/aspen/hardware-configuration.nix" # 0
       "nixos-system/boot.nix" # 0
       "nixos-system/foundation.nix" # 0
-      #"hosts/aspen/impermanence.nix" # 0
+      "hosts/aspen/impermanence.nix" # 0
       "nixos-system/networking.nix" # 0
       "nixos-system/users.nix" # 0
       "nixos-system/sshd.nix" # 0
       "nixos-system/zsh.nix" # 0
       "nixos-system/sops.nix" # 0
       "nixos-system/btrfs.nix" # 0
-      "nixos-system/zfs.nix" # 0 (verify pool auto-imports)
+      "nixos-system/zfs.nix" # 0
       "nixos-system/tailscale.nix" # 0
 
-      "nixos-system/postgresql.nix" # 1
-      "nixos-system/mysql.nix" # 1
-      "nixos-system/traefik.nix" # 1
-      "nixos-system/monitoring-client.nix" # 1
-      "nixos-system/nvidia.nix" # 1
-      "nixos-system/backups.nix" # 1
-      "nixos-system/oci-containers.nix" # 1
-      "nixos-system/oci-pihole.nix" # 1
+      #"nixos-system/postgresql.nix" # 1
+      #"nixos-system/mysql.nix" # 1
+      #"nixos-system/traefik.nix" # 1
+      #"nixos-system/monitoring-client.nix" # 1
+      #"nixos-system/nvidia.nix" # 1
+      #"nixos-system/backups.nix" # 1
+      #"nixos-system/oci-containers.nix" # 1
+      #"nixos-system/oci-pihole.nix" # 1
 
-      "nixos-system/lldap.nix" # 2 (run: sudo recoverLldap)
+      #"nixos-system/lldap.nix" # 2 (run: sudo recoverLldap)
 
-      "nixos-system/authelia-dcbond.nix" # 3 (run: sudo recoverAuthelia-dcbond)
+      #"nixos-system/authelia-dcbond.nix" # 3 (run: sudo recoverAuthelia-dcbond)
 
-      "nixos-system/nextcloud.nix" # 4 (run: sudo recoverNextcloud)
+      #"nixos-system/nextcloud.nix" # 4 (run: sudo recoverNextcloud)
 
-      "nixos-system/photoprism.nix" # 5 (run: sudo recoverPhotoprism)
-      "nixos-system/home-assistant.nix" # 5 (run: sudo recoverHomeAssistant)
+      #"nixos-system/photoprism.nix" # 5 (run: sudo recoverPhotoprism)
+      #"nixos-system/home-assistant.nix" # 5 (run: sudo recoverHomeAssistant)
 
-      "nixos-system/oci-frigate.nix" # 6
-      "nixos-system/oci-zwavejs.nix" # 6 (run: sudo recoverZwavejs)
-      "nixos-system/oci-unifi.nix" # 6 (run: sudo recoverUnifi)
-      "nixos-system/oci-media-server.nix" # 6 (run: sudo recoverMedia-server)
+      #"nixos-system/oci-frigate.nix" # 6
+      #"nixos-system/oci-zwavejs.nix" # 6 (run: sudo recoverZwavejs)
+      #"nixos-system/oci-unifi.nix" # 6 (run: sudo recoverUnifi)
+      #"nixos-system/oci-media-server.nix" # 6 (run: sudo recoverMedia-server)
 
-      "nixos-system/oci-actual.nix" # 7 (run: sudo recoverActual)
-      "nixos-system/oci-fava.nix" # 7
-      "nixos-system/oci-recipesage.nix" # 7 (run: sudo recoverRecipesage)
-      "nixos-system/oci-n8n.nix" # 7 (run: sudo recoverN8n)
+      #"nixos-system/oci-actual.nix" # 7 (run: sudo recoverActual)
+      #"nixos-system/oci-fava.nix" # 7
+      #"nixos-system/oci-recipesage.nix" # 7 (run: sudo recoverRecipesage)
+      #"nixos-system/oci-n8n.nix" # 7 (run: sudo recoverN8n)
 
-      "nixos-system/oci-fava.nix" # 8
-      "nixos-system/calibre.nix" # 8
-      "nixos-system/stirling-pdf.nix" # 8
-      "nixos-system/oci-searxng.nix" # 8
-      "nixos-system/nginx-sites.nix" # 8
-      "nixos-system/dcbond-root.nix" # 8
-      "nixos-system/crowdsec.nix" # 8
+      #"nixos-system/oci-fava.nix" # 8
+      #"nixos-system/calibre.nix" # 8
+      #"nixos-system/stirling-pdf.nix" # 8
+      #"nixos-system/oci-searxng.nix" # 8
+      #"nixos-system/nginx-sites.nix" # 8
+      #"nixos-system/dcbond-root.nix" # 8
+      #"nixos-system/crowdsec.nix" # 8
 
-      "scripts/media-transfer.nix" # 9
-      "scripts/network-test.nix" # 9
+      #"scripts/media-transfer.nix" # 9
+      #"scripts/network-test.nix" # 9
     ])
   ];
 
