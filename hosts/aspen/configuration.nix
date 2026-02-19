@@ -113,8 +113,9 @@
           atime = "off";            # disable access time tracking
           xattr = "sa";             # extended attributes inline
           acltype = "posixacl";     # POSIX ACLs
+          mountpoint = "none";      # prevent pool root from auto-mounting
         };
-        mountpoint = null; # pool root not mounted directly
+        mountpoint = null; # don't create NixOS fileSystems entry for pool root
         datasets = {
 
           "root" = { # organizational parent dataset for entire pool
@@ -242,21 +243,20 @@
       "nixos-system/btrfs.nix" # 0
       "nixos-system/zfs.nix" # 0
       "nixos-system/tailscale.nix" # 0
+      "nixos-system/backups.nix" # 0 (required by btrfs.nix even when snapshots disabled)
+      "nixos-system/postgresql.nix" # 1
+      "nixos-system/mysql.nix" # 1
+      "nixos-system/traefik.nix" # 1
+      "nixos-system/monitoring-client.nix" # 1
+      "nixos-system/nvidia.nix" # 1
+      "nixos-system/oci-containers.nix" # 1
+      "nixos-system/oci-pihole.nix" # 1
 
-      #"nixos-system/postgresql.nix" # 1
-      #"nixos-system/mysql.nix" # 1
-      #"nixos-system/traefik.nix" # 1
-      #"nixos-system/monitoring-client.nix" # 1
-      #"nixos-system/nvidia.nix" # 1
-      #"nixos-system/backups.nix" # 1
-      #"nixos-system/oci-containers.nix" # 1
-      #"nixos-system/oci-pihole.nix" # 1
+      "nixos-system/lldap.nix" # 2 (run: sudo recoverLldap)
 
-      #"nixos-system/lldap.nix" # 2 (run: sudo recoverLldap)
+      "nixos-system/authelia-dcbond.nix" # 3 (run: sudo recoverAuthelia-dcbond)
 
-      #"nixos-system/authelia-dcbond.nix" # 3 (run: sudo recoverAuthelia-dcbond)
-
-      #"nixos-system/nextcloud.nix" # 4 (run: sudo recoverNextcloud)
+      "nixos-system/nextcloud.nix" # 4 (run: sudo recoverNextcloud)
 
       #"nixos-system/photoprism.nix" # 5 (run: sudo recoverPhotoprism)
       #"nixos-system/home-assistant.nix" # 5 (run: sudo recoverHomeAssistant)
