@@ -121,6 +121,9 @@
           "root" = { # organizational parent dataset for entire pool
             type = "zfs_fs";
             mountpoint = "/storage-zfs";
+            options = {
+              mountpoint = "legacy";       # systemd manages mounting via fileSystems
+            };
           };
 
           "root/media" = { # organizational parent dataset for media directory, not mounted
@@ -134,6 +137,7 @@
             type = "zfs_fs";
             mountpoint = "/storage-zfs/media/family-media";
             options = {
+              mountpoint = "legacy";       # systemd manages mounting via fileSystems
               recordsize = "1M";           # optimized for large files
               compression = "lz4";         # fast compression
               xattr = "sa";                # PhotoPrism metadata support
@@ -144,6 +148,7 @@
             type = "zfs_fs";
             mountpoint = "/storage-zfs/media/security-cameras";
             options = {
+              mountpoint = "legacy";       # systemd manages mounting via fileSystems
               recordsize = "1M";           # large video files
               compression = "off";         # video already H.264 compressed
               primarycache = "metadata";   # don't cache video in ARC
@@ -156,6 +161,7 @@
             type = "zfs_fs";
             mountpoint = "/storage-zfs/media/library";
             options = {
+              mountpoint = "legacy";       # systemd manages mounting via fileSystems
               recordsize = "1M";           # large sequential files
               compression = "lz4";         # fast compression
             };
@@ -165,6 +171,7 @@
             type = "zfs_fs";
             mountpoint = "/storage-zfs/borgbackup";
             options = {
+              mountpoint = "legacy";       # systemd manages mounting via fileSystems
               recordsize = "1M";           # large backup archives
               compression = "off";         # borg handles compression (zstd,8)
             };
@@ -206,6 +213,10 @@
     enableSnapshots = false;
   };
 
+  # disable ZFS auto-mount service when using legacy mountpoints
+  # systemd manages mounting via fileSystems entries instead
+  systemd.services.zfs-mount.enable = false;
+
   backups = {
     borgDir = "${config.bulkStorage.path}/borgbackup";
     standaloneData = [
@@ -231,56 +242,52 @@
   imports = lib.flatten [
     inputs.disko.nixosModules.disko
     (map configLib.relativeToRoot [
-      "hosts/aspen/hardware-configuration.nix" # 0
-      "nixos-system/boot.nix" # 0
-      "nixos-system/foundation.nix" # 0
-      "hosts/aspen/impermanence.nix" # 0
-      "nixos-system/networking.nix" # 0
-      "nixos-system/users.nix" # 0
-      "nixos-system/sshd.nix" # 0
-      "nixos-system/zsh.nix" # 0
-      "nixos-system/sops.nix" # 0
-      "nixos-system/btrfs.nix" # 0
-      "nixos-system/zfs.nix" # 0
-      "nixos-system/tailscale.nix" # 0
-      "nixos-system/backups.nix" # 0 (required by btrfs.nix even when snapshots disabled)
-      "nixos-system/postgresql.nix" # 1
-      "nixos-system/mysql.nix" # 1
-      "nixos-system/traefik.nix" # 1
-      "nixos-system/monitoring-client.nix" # 1
-      "nixos-system/nvidia.nix" # 1
-      "nixos-system/oci-containers.nix" # 1
-      "nixos-system/oci-pihole.nix" # 1
+      "hosts/aspen/hardware-configuration.nix"
+      "hosts/aspen/impermanence.nix"
+      "nixos-system/boot.nix"
+      "nixos-system/foundation.nix"
+      "nixos-system/networking.nix"
+      "nixos-system/users.nix"
+      "nixos-system/sshd.nix"
+      "nixos-system/zsh.nix"
+      "nixos-system/sops.nix"
+      "nixos-system/btrfs.nix"
+      "nixos-system/zfs.nix"
+      "nixos-system/tailscale.nix"
+      "nixos-system/backups.nix"
+      "nixos-system/postgresql.nix"
+      "nixos-system/mysql.nix"
+      "nixos-system/traefik.nix"
+      "nixos-system/monitoring-client.nix"
+      "nixos-system/nvidia.nix"
+      "nixos-system/oci-containers.nix"
+      "nixos-system/oci-pihole.nix"
 
-      "nixos-system/lldap.nix" # 2 (run: sudo recoverLldap)
+      "nixos-system/lldap.nix" # recoverLldap
 
-      "nixos-system/authelia-dcbond.nix" # 3 (run: sudo recoverAuthelia-dcbond)
+      "nixos-system/authelia-dcbond.nix" # recoverAuthelia-dcbond
 
-      "nixos-system/nextcloud.nix" # 4 (run: sudo recoverNextcloud)
+      "nixos-system/nextcloud.nix" # recoverNextcloud
 
-      #"nixos-system/photoprism.nix" # 5 (run: sudo recoverPhotoprism)
-      #"nixos-system/home-assistant.nix" # 5 (run: sudo recoverHomeAssistant)
+      "nixos-system/photoprism.nix" # recoverPhotoprism
+      "nixos-system/home-assistant.nix" # recoverHomeAssistant
+      "nixos-system/oci-frigate.nix"
+      "nixos-system/oci-zwavejs.nix" # recoverZwavejs
+      "nixos-system/oci-unifi.nix" # recoverUnifi
+      "nixos-system/oci-media-server.nix" # recoverMedia-server
+      "nixos-system/oci-actual.nix" # recoverActual
+      "nixos-system/oci-fava.nix"
+      "nixos-system/oci-recipesage.nix" # recoverRecipesage
+      "nixos-system/oci-n8n.nix" # recoverN8n
+      "nixos-system/oci-fava.nix"
+      "nixos-system/calibre.nix"
+      "nixos-system/stirling-pdf.nix"
+      "nixos-system/oci-searxng.nix"
+      "nixos-system/nginx-sites.nix"
+      "nixos-system/dcbond-root.nix"
 
-      #"nixos-system/oci-frigate.nix" # 6
-      #"nixos-system/oci-zwavejs.nix" # 6 (run: sudo recoverZwavejs)
-      #"nixos-system/oci-unifi.nix" # 6 (run: sudo recoverUnifi)
-      #"nixos-system/oci-media-server.nix" # 6 (run: sudo recoverMedia-server)
-
-      #"nixos-system/oci-actual.nix" # 7 (run: sudo recoverActual)
-      #"nixos-system/oci-fava.nix" # 7
-      #"nixos-system/oci-recipesage.nix" # 7 (run: sudo recoverRecipesage)
-      #"nixos-system/oci-n8n.nix" # 7 (run: sudo recoverN8n)
-
-      #"nixos-system/oci-fava.nix" # 8
-      #"nixos-system/calibre.nix" # 8
-      #"nixos-system/stirling-pdf.nix" # 8
-      #"nixos-system/oci-searxng.nix" # 8
-      #"nixos-system/nginx-sites.nix" # 8
-      #"nixos-system/dcbond-root.nix" # 8
-      #"nixos-system/crowdsec.nix" # 8
-
-      #"scripts/media-transfer.nix" # 9
-      #"scripts/network-test.nix" # 9
+      "scripts/media-transfer.nix"
+      "scripts/network-test.nix"
     ])
   ];
 

@@ -59,8 +59,6 @@
       "/var/lib/redis-authelia-dcbond"               # authelia session cache
       "/var/lib/calibre-web"                         # calibre-web database
       #"/var/lib/ollama"                              # ollama downloaded models
-      "/var/lib/crowdsec"                            # crowdsec lapi/capi credentials and decisions
-      #"/var/lib/samba"                               # samba tdb files (user passwords, session state)
 
       # docker - full data root persisted (image layers + all named volumes)
       { directory = "/var/lib/docker"; mode = "0710"; } # docker requires specific permissions on data root

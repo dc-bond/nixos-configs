@@ -115,10 +115,10 @@ in
       Type = "oneshot";
       RemainAfterExit = true;
     };
-    path = with pkgs; [ ethtool iproute2 ];
+    path = with pkgs; [ ethtool ];
     script = ''
-      NETDEV=$(ip -o route get 1.1.1.1 | cut -f 5 -d " ")
-      ethtool -K $NETDEV rx-udp-gro-forwarding on rx-gro-list off
+      # use configured interface directly instead of route detection (avoids DHCP race condition)
+      ethtool -K ${hostData.networking.ethernetInterface} rx-udp-gro-forwarding on rx-gro-list off
     '';
   };
 
