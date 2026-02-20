@@ -19,7 +19,7 @@
   # disko disk formatting occurs once on first deployment
   # data drives (disk1, disk2, disk3) are commented out to prevent accidental reformatting during OS reinstalls
   # commented-out configs below document how drives were originally provisioned by disko
-  # after initial provisioning, drives are managed via fileSystems + services.zfsExtended (ZFS) or fileSystems only (ext4)
+  # after initial provisioning, drives are managed via fileSystems + services.zfsExtended (zfs) or fileSystems only (ext4)
   disko.devices = {
     disk = {
 
@@ -231,7 +231,7 @@
       options = [ "nofail" ];
     };
 
-    # zfs child datasets explicitly defined here since we use legacy mountpoints (systemd-managed mounting)
+    # zfs child datasets explicitly defined here since we use legacy systemd-managed mountpoints
     "/storage-zfs/media/family-media" = {
       device = "storage/root/media/family-media";
       fsType = "zfs";
@@ -260,7 +260,7 @@
     enableSnapshots = false;
   };
 
-  systemd.services.zfs-mount.enable = false; # disable zfs auto-mount service when using legacy mountpoints
+  systemd.services.zfs-mount.enable = false; # disable zfs auto-mount service when using legacy systemd-managed mountpoints
 
   backups = {
     borgDir = "${config.bulkStorage.path}/borgbackup";
@@ -287,9 +287,14 @@
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "25.11";
 
+  # disaster recovery option 1 - run deploy.nix with minimal tier 1 modules below, run btrfs recoverSnap to restore snapshot from backblaze, reboot, then rebuild with full config
+  # disaster recovery option 2 - run deploy.nix with minimal tier 1 modules below, reboot, rebuild with full config, restore individual service state manually from borg using sudo recover* scripts
+
   imports = lib.flatten [
     inputs.disko.nixosModules.disko
     (map configLib.relativeToRoot [
+
+      # tier 1
       "hosts/aspen/hardware-configuration.nix"
       "hosts/aspen/impermanence.nix"
       "nixos-system/boot.nix"
@@ -301,20 +306,20 @@
       "nixos-system/sops.nix"
       "nixos-system/btrfs.nix"
       "nixos-system/zfs.nix"
+
+      # tier 2
       "nixos-system/tailscale.nix"
+      "nixos-system/monitoring-client.nix"
       "nixos-system/backups.nix"
       "nixos-system/postgresql.nix"
       "nixos-system/mysql.nix"
       "nixos-system/traefik.nix"
       "nixos-system/nvidia.nix"
       "nixos-system/oci-containers.nix"
-      "nixos-system/oci-pihole.nix"
-
+      "nixos-system/oci-pihole.nix" # declarative, but may require manual intervention due to circular dependency fallback dns for pulling container images
       "nixos-system/lldap.nix" # recoverLldap
       "nixos-system/authelia-dcbond.nix" # recoverAuthelia-dcbond
-
       "nixos-system/nextcloud.nix" # recoverNextcloud
-      "nixos-system/monitoring-client.nix"
       "nixos-system/photoprism.nix" # recoverPhotoprism
       "nixos-system/home-assistant.nix" # recoverHome-assistant
       "nixos-system/oci-frigate.nix"
@@ -331,7 +336,6 @@
       "nixos-system/oci-searxng.nix"
       "nixos-system/nginx-sites.nix"
       "nixos-system/dcbond-root.nix"
-
       "scripts/media-transfer.nix"
       "scripts/network-test.nix"
     ])

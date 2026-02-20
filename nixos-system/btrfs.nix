@@ -36,6 +36,23 @@ in
 
   config = {
 
+    sops = lib.mkIf cfg.snapshots {
+      secrets = {
+        borgCryptPasswd = {};                # borg repository encryption password
+        backblazeMasterAppKeyId = {};        # B2 account ID (rclone "account")
+        backblazeMasterAppKey = {};          # B2 application key (rclone "key")
+      };
+      templates = {
+        "rclone.conf".content = ''
+          [backblaze-b2]
+          type = b2
+          account = ${config.sops.placeholder.backblazeMasterAppKeyId}
+          key = ${config.sops.placeholder.backblazeMasterAppKey}
+          hard_delete = true
+        '';
+      };
+    };
+
     services.btrfs.autoScrub = {
       enable = true;
       interval = "Sun *-*-* 04:00:00"; # weekly sunday at 4am
