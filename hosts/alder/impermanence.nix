@@ -30,6 +30,10 @@
 
     hideMounts = true;  # hide bind mounts from file manager to reduce visual clutter
 
+    files = [
+      "/etc/machine-id"  # systemd machine identity (prevents new journal directories on each boot)
+    ];
+
     # system-level persistence
     directories = [
       "/var/lib/nixos" # UID/GID mappings to prevent permissions issues on reboot
@@ -56,7 +60,7 @@
   # create parent directories with correct permissions
   systemd.tmpfiles.rules = [
     "d /persist/home/eric 0700 eric users -" # tmpfiles ensures directory exists before impermanence tooling bind-mounts /persist/home/{user}/.config/age directory
-    #"d /persist/etc/age 0755 root root -" # since early bind mounting /etc/age manually (i.e. not using impermanence tooling bind mounts) due to sops needing age keys for user creation prior to impermanence bind mounts, tmpfiles not needed here (/etc/age created by deploy script initially)
+    "d /persist/etc/age 0755 root root -" # since early bind mounting /etc/age manually (i.e. not using impermanence tooling bind mounts) due to sops needing age keys for user creation prior to impermanence bind mounts (deploy script should create this, but tmpfiles as fallback)
   ];
 
 }

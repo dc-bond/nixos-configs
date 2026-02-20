@@ -55,6 +55,7 @@ in
 
     # centralized logging configuration
     services.journald = {
+      storage = "persistent"; # write logs to /var/log/journal (survives reboots on impermanence hosts)
       extraConfig = ''
         SystemMaxUse=2G
         MaxRetentionSec=2week

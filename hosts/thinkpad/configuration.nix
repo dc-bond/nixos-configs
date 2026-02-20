@@ -101,7 +101,7 @@
     ethtool # network tools
     inetutils # more network tools like telnet
     unzip # utility to unzip directories
-    #btop # system monitor
+    btop # system monitor
     nmap # network scanning
     brightnessctl # screen brightness application
     ddcutil # query and change monitor settings using DDC/CI and USB
@@ -142,6 +142,7 @@
       "nixos-system/hyprland.nix"
 
       "scripts/deploy.nix"
+      "scripts/network-test.nix"
     ])
   ];
 

@@ -21,10 +21,17 @@ in
 
 {
 
-  options.btrfs.snapshots = lib.mkOption {
-    type = lib.types.bool;
-    default = false;
-    description = "Enable btrfs snapshots and recovery tooling (impermanence workstations only)";
+  options.btrfs = {
+    snapshots = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enable btrfs snapshots and recovery tooling (impermanence systems only)";
+    };
+    hourlySnapshots = lib.mkOption {
+      type = lib.types.bool;
+      default = cfg.snapshots;
+      description = "Enable hourly btrfs snapshots (only applies when btrfs.snapshots is true)";
+    };
   };
 
   config = {
@@ -35,39 +42,43 @@ in
       fileSystems = [ scrubDevice ];
     };
 
-    services.btrbk.instances = lib.mkIf cfg.snapshots {
+    services.btrbk.instances = lib.mkMerge [
 
       # hourly snapshots for quick "oops I deleted that" recoveries
-      hourly = {
-        onCalendar = "hourly";
-        settings = {
-          timestamp_format = "long";
-          snapshot_preserve_min = "1d"; # keep the last 24 hourly snapshots
-          volume."/" = {
-            subvolume.persist = {
-              snapshot_dir = "/snapshots";
-              snapshot_name = "hourly-persist";
+      (lib.mkIf (cfg.snapshots && cfg.hourlySnapshots) {
+        hourly = {
+          onCalendar = "hourly";
+          settings = {
+            timestamp_format = "long";
+            snapshot_preserve_min = "1d"; # keep the last 24 hourly snapshots
+            volume."/" = {
+              subvolume.persist = {
+                snapshot_dir = "/snapshots";
+                snapshot_name = "hourly-persist";
+              };
             };
           };
         };
-      };
+      })
 
       # recovery snapshots (for backups and rebuild rollbacks)
-      recovery = {
-        onCalendar = null; # manual trigger only (via backup preHook and rebuild-snapshot)
-        settings = {
-          timestamp_format = "long";
-          snapshot_preserve_min = "latest"; # keep only the most recent recovery snapshot
-          volume."/" = {
-            subvolume.persist = {
-              snapshot_dir = "/snapshots";
-              snapshot_name = "recovery-persist";
+      (lib.mkIf cfg.snapshots {
+        recovery = {
+          onCalendar = null; # manual trigger only (via backup preHook and rebuild-snapshot)
+          settings = {
+            timestamp_format = "long";
+            snapshot_preserve_min = "latest"; # keep only the most recent recovery snapshot
+            volume."/" = {
+              subvolume.persist = {
+                snapshot_dir = "/snapshots";
+                snapshot_name = "recovery-persist";
+              };
             };
           };
         };
-      };
+      })
 
-    };
+    ];
 
     # save NixOS generation number before recovery snapshot
     systemd.services.btrbk-recovery.serviceConfig.ExecStartPre = lib.mkIf cfg.snapshots [
@@ -83,7 +94,7 @@ in
         "systemctl start btrbk-recovery.service"
       ];
       standaloneData = [ "/snapshots" ];
-      exclude = [ "/snapshots/hourly-persist.*" ];
+      exclude = lib.mkIf cfg.hourlySnapshots [ "/snapshots/hourly-persist.*" ];
     };
 
     # unified snapshot recovery: restore from backblaze or local disk
@@ -158,14 +169,43 @@ in
         echo ""
         echo "Restoring /persist from local snapshot..."
 
+        echo ""
+        echo "Stopping all services that write to /persist..."
+
+        # databases (stop first - other services depend on them)
+        systemctl stop postgresql.service || true
+        systemctl stop mysql.service || true
+
+        # native NixOS services
+        systemctl stop home-assistant.service || true
+        systemctl stop mosquitto.service || true
+        systemctl stop photoprism.service || true
+        systemctl stop authelia-dcbond.service || true
+        systemctl stop redis-authelia-dcbond.service || true
+        systemctl stop lldap.service || true
+        systemctl stop traefik.service || true
+        systemctl stop redis-nextcloud.service || true
+        systemctl stop calibre-web.service || true
+
+        # docker (stops all containers)
+        systemctl stop docker.service || true
+
+        sleep 2
+        echo "✓ All services stopped"
+
+        echo ""
         echo "Mounting btrfs root..."
         BTRFS_ROOT=$(mktemp -d)
         ${pkgs.util-linux}/bin/mount -t btrfs -o subvolid=5 ${btrfsRootDevice} "$BTRFS_ROOT"
         echo "✓ Btrfs root mounted at $BTRFS_ROOT"
 
+        echo "Unmounting /persist (will be swapped)..."
+        ${pkgs.util-linux}/bin/umount /persist
+
         echo "Deleting current /persist subvolume..."
         ${pkgs.btrfs-progs}/bin/btrfs subvolume delete "$BTRFS_ROOT/persist"
-        echo "Creating snapshot from $SNAPSHOT_NAME..."
+
+        echo "Creating new /persist from snapshot $SNAPSHOT_NAME..."
         ${pkgs.btrfs-progs}/bin/btrfs subvolume snapshot "$BTRFS_ROOT/snapshots/$SNAPSHOT_NAME" "$BTRFS_ROOT/persist"
 
         echo "Unmounting btrfs root..."
@@ -174,8 +214,7 @@ in
         BTRFS_ROOT=""
         echo "✓ Btrfs root unmounted"
 
-        echo "Remounting /persist to reflect restored subvolume..."
-        ${pkgs.util-linux}/bin/umount /persist
+        echo "Remounting /persist with restored snapshot..."
         ${pkgs.util-linux}/bin/mount /persist
         echo "✓ /persist restored successfully"
 
@@ -304,6 +343,33 @@ in
         TEMP_MOUNT=""
 
         echo ""
+        echo "Stopping all services that write to /persist..."
+
+        # databases (stop first - other services depend on them)
+        systemctl stop postgresql.service || true
+        systemctl stop mysql.service || true
+
+        # native NixOS services
+        systemctl stop home-assistant.service || true
+        systemctl stop mosquitto.service || true
+        systemctl stop photoprism.service || true
+        systemctl stop authelia-dcbond.service || true
+        systemctl stop redis-authelia-dcbond.service || true
+        systemctl stop lldap.service || true
+        systemctl stop traefik.service || true
+        systemctl stop redis-nextcloud.service || true
+        systemctl stop calibre-web.service || true
+
+        # docker (stops all containers)
+        systemctl stop docker.service || true
+
+        sleep 2
+        echo "✓ All services stopped"
+
+        echo ""
+        echo "Unmounting /persist (will be swapped)..."
+        ${pkgs.util-linux}/bin/umount /persist
+
         echo "Restoring /persist..."
         ${pkgs.btrfs-progs}/bin/btrfs subvolume delete "$BTRFS_ROOT/persist" 2>/dev/null || true
         ${pkgs.btrfs-progs}/bin/btrfs subvolume create "$BTRFS_ROOT/persist"
@@ -321,8 +387,7 @@ in
         BTRFS_ROOT=""
         echo "✓ Btrfs root unmounted"
 
-        echo "Remounting /persist to reflect restored subvolume..."
-        ${pkgs.util-linux}/bin/umount /persist
+        echo "Remounting /persist with restored snapshot..."
         ${pkgs.util-linux}/bin/mount /persist
         echo "✓ /persist restored successfully"
 
@@ -330,9 +395,17 @@ in
 
       echo ""
       echo "========================================"
-      echo "Recovery complete. Rebooting in 3 seconds..."
+      echo "Recovery Complete"
       echo "========================================"
-      sleep 3
+      echo ""
+      echo "Snapshot restored successfully."
+      echo "System will reboot to activate the restored state."
+      echo ""
+      read -p "Press ENTER to reboot now, or Ctrl+C to cancel: " confirm
+
+      echo ""
+      echo "Rebooting..."
+      sleep 1
       reboot
     '') ];
 

@@ -21,7 +21,7 @@
         wifiInterface = null;
         dockInterface = null;
         ipv4 = "192.168.1.2";
-        tailscaleIp = "100.93.153.116";
+        tailscaleIp = "100.123.159.79";
         tailscale = {
           role = "exit-node";
           advertiseRoutes = [

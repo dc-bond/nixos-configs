@@ -34,6 +34,10 @@
       { directory = ".config/age"; mode = "0700"; }  # user age key for potential future home-manager sops secrets
     ];
 
+    files = [
+      "/etc/machine-id"  # systemd machine identity (prevents new journal directories on each boot)
+    ];
+
     directories = [
 
       # infrastructure
@@ -74,7 +78,7 @@
   # create parent directories with correct permissions
   systemd.tmpfiles.rules = [
     "d /persist/home/chris 0700 chris users -" # tmpfiles ensures directory exists before impermanence tooling bind-mounts /persist/home/{user}/.config/age directory
-    "d /persist/etc/age 0755 root root -" # ensure /etc/age exists for early bind mount (deploy script should create this, but tmpfiles as fallback)
+    "d /persist/etc/age 0755 root root -" # since early bind mounting /etc/age manually (i.e. not using impermanence tooling bind mounts) due to sops needing age keys for user creation prior to impermanence bind mounts (deploy script should create this, but tmpfiles as fallback)
   ];
 
 }

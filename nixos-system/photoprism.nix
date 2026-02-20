@@ -28,6 +28,11 @@ let
     serviceName = app;
     recoveryPlan = recoveryPlan;
     dbType = recoveryPlan.db.type;
+    preSvcStartHook = ''
+      echo "Recreating cache directory with correct permissions..."
+      mkdir -p /var/lib/private/${app}/cache
+      chown -R photoprism:photoprism /var/lib/private/${app}
+    '';
   };
 
 in
@@ -76,6 +81,7 @@ in
       settings = {
         PHOTOPRISM_AUTH_MODE = "public";                                                        # authentication mode (public, password)
         PHOTOPRISM_SITE_URL = "https://photos.${configVars.domain2}/";                          # public server URL incl http:// or https:// and /path, :port is optional
+        PHOTOPRISM_IMPORT_PATH = "/var/lib/photoprism/import";                                  # absolute path for systemd ReadWritePaths hardening
         PHOTOPRISM_ORIGINALS_LIMIT = "50000";                                                   # file size limit for originals in MB (increase for high-res video)
         PHOTOPRISM_HTTP_COMPRESSION = "gzip";                                                   # improves transfer speed and bandwidth utilization (none or gzip)
         PHOTOPRISM_LOG_LEVEL = "info";                                                          # log level: trace, debug, info, warning, error, fatal, or panic
