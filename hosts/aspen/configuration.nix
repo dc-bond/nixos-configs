@@ -213,9 +213,7 @@
     enableSnapshots = false;
   };
 
-  # disable ZFS auto-mount service when using legacy mountpoints
-  # systemd manages mounting via fileSystems entries instead
-  systemd.services.zfs-mount.enable = false;
+  systemd.services.zfs-mount.enable = false; # disable zfs auto-mount service when using legacy mountpoints
 
   backups = {
     borgDir = "${config.bulkStorage.path}/borgbackup";
