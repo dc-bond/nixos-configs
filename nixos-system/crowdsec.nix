@@ -80,7 +80,7 @@ in
               #];
             };
           }
-        ]; 
+        ];
       };
     };
 
@@ -92,7 +92,25 @@ in
         api_url = "http://127.0.0.1:${toString crowdsecApiPort}/";
       };
     };
-  
+
+  };
+
+  # fix boot timing issues
+  systemd.services = {
+    # ensure crowdsec waits for network before downloading hub index
+    # piggyback on tailscaled which already has proper network ordering
+    crowdsec = {
+      after = [ "tailscaled.service" ];
+      wants = [ "tailscaled.service" ];
+    };
+    # ensure firewall bouncer waits for crowdsec to be fully running
+    crowdsec-firewall-bouncer = {
+      after = [ "crowdsec.service" ];
+      requires = [ "crowdsec.service" ];
+      # override hard dependency on register service (registration persists in /var/lib/crowdsec)
+      # allows bouncer to start even if re-registration fails on subsequent boots
+      unitConfig.Requires = lib.mkForce "crowdsec.service";
+    };
   };
 
   programs.zsh = {

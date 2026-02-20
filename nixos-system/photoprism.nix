@@ -129,7 +129,7 @@ in
 
     borgbackup.jobs."${config.networking.hostName}" = {
       paths = lib.mkAfter recoveryPlan.restoreItems;
-      exclude = [ "/var/lib/private/${app}/cache/thumbnails" ]; # exclude thumbnails which are regenerated dynamically
+      exclude = [ "/var/lib/private/${app}/cache" ]; # exclude cache which is regenerated dynamically
     };
     
     traefik.dynamicConfigOptions.http = {

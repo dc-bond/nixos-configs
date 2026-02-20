@@ -1127,7 +1127,7 @@ in
           echo "spinning up services"
           ${lib.concatStringsSep "\n" config.backups.serviceHooks.postHook}
         '';
-        paths = lib.mkDefault config.backups.standaloneData;
+        paths = config.backups.standaloneData;
         exclude = lib.mkDefault config.backups.exclude;
         prune.keep = config.backups.prune;
       };
