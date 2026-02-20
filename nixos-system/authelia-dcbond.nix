@@ -60,7 +60,12 @@ in
   };
 
   environment.systemPackages = with pkgs; [ recoverScript ];
-  
+
+  systemd.services."${app}" = {
+    after = [ "lldap.service" ];
+    requires = [ "lldap.service" ];
+  };
+
   backups.serviceHooks = {
     preHook = lib.mkAfter [
       "systemctl stop ${app}.service"

@@ -792,7 +792,7 @@ let
     echo "========================================"
   '';
 
-  recoverDataDirectoryScript = pkgs.writeShellScriptBin "recoverDataDirectory" ''
+  recoverFamilyMediaScript = pkgs.writeShellScriptBin "recoverFamilyMedia" ''
     #!/bin/bash
 
     set -euo pipefail
@@ -800,7 +800,7 @@ let
     # check for root
     if [ "$(id -u)" -ne 0 ]; then
       echo "ERROR: This script must be run as root"
-      echo "Usage: sudo recoverDataDirectory"
+      echo "Usage: sudo recoverFamilyMedia"
       exit 1
     fi
 
@@ -808,6 +808,8 @@ let
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
     TEMP_MOUNT=""
+    SOURCE_PATH="/storage-ext4/media/family-media"
+    STRIP_COUNT=3  # /storage-ext4/media/family-media has 3 slashes
 
     # cleanup function
     cleanup() {
@@ -821,8 +823,10 @@ let
     trap cleanup EXIT INT TERM
 
     echo "========================================"
-    echo "Data Directory Recovery"
+    echo "Family Media Recovery"
     echo "========================================"
+    echo ""
+    echo "This tool recovers /storage-ext4/media/family-media from aspen backups."
     echo ""
 
     # repo source selection
@@ -862,7 +866,8 @@ let
       mkdir -p "$TEMP_MOUNT"
 
       echo ""
-      echo "Mounting remote backup..."
+      echo "Mounting remote backup from $SOURCE_HOST..."
+      echo "This may take a few moments..."
       ${pkgs.rclone}/bin/rclone mount \
         --config "${rcloneConf}" \
         --vfs-cache-mode writes \
@@ -878,6 +883,7 @@ let
       fi
 
       REPO="$TEMP_MOUNT"
+      echo "Remote repository mounted"
     else
       REPO="${config.backups.borgDir}/${config.networking.hostName}"
 
@@ -919,42 +925,29 @@ let
 
     echo "Selected: $ARCHIVE"
 
-    # path selection from configured standalone data directories
-    DATA_DIRS=(${lib.concatStringsSep " " (map (dir: ''"${dir}"'') config.backups.standaloneData)})
-
-    if [ ''${#DATA_DIRS[@]} -eq 0 ]; then
-      echo ""
-      echo "No standalone data directories configured in backups.standaloneData"
-      echo "Configure standalone backup directories in your host's configuration.nix:"
-      echo "  backups.standaloneData = [ \"/path/to/data\" ];"
-      exit 1
-    fi
-
-    echo ""
-    echo "Available data directories:"
-    for i in "''${!DATA_DIRS[@]}"; do
-      echo "  $((i+1))) ''${DATA_DIRS[$i]}"
-    done
-    echo ""
-
-    read -p "Select directory [1]: " dir_num
-    dir_num=''${dir_num:-1}
-
-    if ! [[ "$dir_num" =~ ^[0-9]+$ ]] || [ "$dir_num" -lt 1 ] || [ "$dir_num" -gt "''${#DATA_DIRS[@]}" ]; then
-      echo "Invalid selection"
-      exit 1
-    fi
-
-    RESTORE_PATH="''${DATA_DIRS[$((dir_num-1))]}"
-    echo "Selected: $RESTORE_PATH"
-
-    # calculate number of path components to strip (count leading slashes)
-    # e.g., /mnt/media/media/family-media has 4 components to strip
-    STRIP_COUNT=$(echo "$RESTORE_PATH" | tr -cd '/' | wc -c)
-
-    # generate recovery directory in same parent as original
+    # generate recovery directory
     TIMESTAMP=$(date +%Y%m%d-%H%M%S)
-    RECOVERY_DIR="$RESTORE_PATH-recovery-$TIMESTAMP"
+    DEFAULT_RECOVERY_DIR="${config.bulkStorage.path}/family-media-recovery-$TIMESTAMP"
+
+    echo ""
+    echo "Default recovery location: $DEFAULT_RECOVERY_DIR"
+    read -p "Use default location? (Y/n): " use_default
+    use_default=''${use_default:-Y}
+
+    if [[ "$use_default" =~ ^[Yy]$ ]]; then
+      RECOVERY_DIR="$DEFAULT_RECOVERY_DIR"
+    else
+      echo ""
+      read -p "Enter custom recovery path: " RECOVERY_DIR
+      if [ -z "$RECOVERY_DIR" ]; then
+        echo "ERROR: Recovery path cannot be empty"
+        exit 1
+      fi
+      # append timestamp if directory name doesn't already include one
+      if [[ ! "$RECOVERY_DIR" =~ -[0-9]{8}-[0-9]{6}$ ]]; then
+        RECOVERY_DIR="$RECOVERY_DIR-$TIMESTAMP"
+      fi
+    fi
 
     if [ -e "$RECOVERY_DIR" ]; then
       echo "ERROR: Recovery directory already exists: $RECOVERY_DIR"
@@ -963,16 +956,16 @@ let
 
     echo ""
     echo "========================================"
-    echo "Extracting Data"
+    echo "Extraction Summary"
     echo "========================================"
     echo ""
-    echo "From: $ARCHIVE"
-    echo "Path: $RESTORE_PATH"
-    echo "To:   $RECOVERY_DIR"
+    echo "Archive: $ARCHIVE"
+    echo "Source:  $SOURCE_PATH"
+    echo "Destination: $RECOVERY_DIR"
     echo ""
-    echo "SAFE MODE: Your existing data will NOT be touched."
+    echo "SAFE MODE: Existing data will NOT be touched."
     echo ""
-    read -p "Proceed? (y/N): " confirm
+    read -p "Proceed with extraction? (y/N): " confirm
     if ! [[ "$confirm" =~ ^[Yy]$ ]]; then
       echo "Aborted."
       exit 0
@@ -983,8 +976,9 @@ let
     echo ""
     echo "Extracting..."
     cd "$RECOVERY_DIR"
-    if ! ${pkgs.borgbackup}/bin/borg extract --verbose --list --strip-components=$STRIP_COUNT "$REPO"::"$ARCHIVE" "$RESTORE_PATH"; then
-      echo "ERROR: extraction failed"
+    if ! ${pkgs.borgbackup}/bin/borg extract --verbose --list --strip-components=$STRIP_COUNT "$REPO"::"$ARCHIVE" "$SOURCE_PATH"; then
+      echo ""
+      echo "ERROR: Extraction failed"
       cd /
       rm -rf "$RECOVERY_DIR"
       exit 1
@@ -997,10 +991,9 @@ let
     echo ""
     echo "Data extracted to: $RECOVERY_DIR"
     echo ""
-    echo "Next steps:"
-    echo "  1. Verify: ls $RECOVERY_DIR"
-    echo "  2. If correct, restore: rsync -av $RECOVERY_DIR/ $RESTORE_PATH/"
-    echo "  3. Clean up: rm -rf $RECOVERY_DIR"
+    echo "Verify the data:"
+    echo "  ls -lh $RECOVERY_DIR"
+    echo "  du -sh $RECOVERY_DIR"
     echo ""
   '';
 
@@ -1088,7 +1081,7 @@ in
       backupSuccessWebhookScript
       inspectLocalBackupsScript
       inspectRemoteBackupsScript
-      recoverDataDirectoryScript
+      recoverFamilyMediaScript
       rclone
       fuse # needed for rclone mount
     ];
