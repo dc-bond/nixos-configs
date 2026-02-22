@@ -65,6 +65,7 @@ in
       "systemctl stop ${app}.service"
       "sleep 2"
       "systemctl start mysql-backup.service"
+      "while systemctl is-active --quiet mysql-backup.service; do sleep 1; done"
     ];
     postHook = lib.mkAfter [
       "systemctl start ${app}.service"
