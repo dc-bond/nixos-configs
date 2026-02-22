@@ -124,6 +124,7 @@
 
       "scripts/deploy.nix"
       "scripts/network-test.nix"
+      "scripts/test-builds.nix"
     ])
   ];
 
