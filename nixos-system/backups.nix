@@ -1081,9 +1081,10 @@ in
       backupSuccessWebhookScript
       inspectLocalBackupsScript
       inspectRemoteBackupsScript
-      recoverFamilyMediaScript
       rclone
       fuse # needed for rclone mount
+    ] ++ lib.optionals (config.bulkStorage.path != null) [
+      recoverFamilyMediaScript
     ];
 
     _module.args = {
