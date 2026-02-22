@@ -13,6 +13,7 @@ let
 
     HOSTS=(${hostsString})
     FAILED=()
+    FLAKE_DIR="${configLib.relativeToRoot "."}"
 
     echo ""
     echo "=========================================="
@@ -22,7 +23,7 @@ let
 
     for host in "''${HOSTS[@]}"; do
       echo -n "Building $host... "
-      if nix build ".#nixosConfigurations.$host.config.system.build.toplevel" --no-link 2>/dev/null; then
+      if nix build "$FLAKE_DIR#nixosConfigurations.$host.config.system.build.toplevel" --no-link 2>/dev/null; then
         echo "✓"
       else
         echo "✗"
