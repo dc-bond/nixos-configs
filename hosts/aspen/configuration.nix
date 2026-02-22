@@ -17,6 +17,9 @@
   };
 
   # disko disk formatting occurs once on first deployment
+  # data drives (disk1, disk2, disk3) are commented out to prevent accidental reformatting during OS reinstalls
+  # commented-out configs below document how drives were originally provisioned by disko
+  # after initial provisioning, drives are managed via fileSystems + services.zfsExtended (zfs) or fileSystems only (ext4)
   disko.devices = {
     disk = {
 
@@ -65,143 +68,187 @@
         };
       };
 
-      disk1 = {
-        type = "disk";
-        device = configVars.hosts.${config.networking.hostName}.hardware.disk1;
-        content = {
-          type = "gpt";
-          partitions = {
-            zfs = {
-              size = "100%";
-              content = {
-                type = "zfs";
-                pool = "storage";
-              };
-            };
-          };
-        };
-      };
+      # disk1 = {
+      #   type = "disk";
+      #   device = configVars.hosts.${config.networking.hostName}.hardware.disk1;
+      #   content = {
+      #     type = "gpt";
+      #     partitions = {
+      #       zfs = {
+      #         size = "100%";
+      #         content = {
+      #           type = "zfs";
+      #           pool = "storage";
+      #         };
+      #       };
+      #     };
+      #   };
+      # };
 
-      disk2 = {
-        type = "disk";
-        device = configVars.hosts.${config.networking.hostName}.hardware.disk2;
-        content = {
-          type = "gpt";
-          partitions = {
-            zfs = {
-              size = "100%";
-              content = {
-                type = "zfs";
-                pool = "storage";
-              };
-            };
-          };
-        };
-      };
+      # disk2 = {
+      #   type = "disk";
+      #   device = configVars.hosts.${config.networking.hostName}.hardware.disk2;
+      #   content = {
+      #     type = "gpt";
+      #     partitions = {
+      #       zfs = {
+      #         size = "100%";
+      #         content = {
+      #           type = "zfs";
+      #           pool = "storage";
+      #         };
+      #       };
+      #     };
+      #   };
+      # };
+
+      # disk3 = {
+      #   type = "disk";
+      #   device = configVars.hosts.${config.networking.hostName}.hardware.disk3;
+      #   content = {
+      #     type = "gpt";
+      #     partitions = {
+      #       primary = {
+      #         size = "100%";
+      #         content = {
+      #           type = "filesystem";
+      #           format = "ext4";
+      #           mountpoint = "/storage-ext4";
+      #         };
+      #       };
+      #     };
+      #   };
+      # };
 
     };
 
-    zpool = {
-      storage = {
-        type = "zpool";
-        mode = "mirror";
-        options = {
-          ashift = "12"; # 4K sector size
-        };
-        rootFsOptions = {
-          compression = "lz4";      # fast compression by default
-          atime = "off";            # disable access time tracking
-          xattr = "sa";             # extended attributes inline
-          acltype = "posixacl";     # POSIX ACLs
-          mountpoint = "none";      # prevent pool root from auto-mounting
-        };
-        mountpoint = null; # don't create NixOS fileSystems entry for pool root
-        datasets = {
-
-          "root" = { # organizational parent dataset for entire pool
-            type = "zfs_fs";
-            mountpoint = "/storage-zfs";
-            options = {
-              mountpoint = "legacy";       # systemd manages mounting via fileSystems
-            };
-          };
-
-          "root/media" = { # organizational parent dataset for media directory, not mounted
-            type = "zfs_fs";
-            options = {
-              mountpoint = "none";
-            };
-          };
-
-          "root/media/family-media" = {
-            type = "zfs_fs";
-            mountpoint = "/storage-zfs/media/family-media";
-            options = {
-              mountpoint = "legacy";       # systemd manages mounting via fileSystems
-              recordsize = "1M";           # optimized for large files
-              compression = "lz4";         # fast compression
-              xattr = "sa";                # PhotoPrism metadata support
-            };
-          };
-
-          "root/media/security-cameras" = {
-            type = "zfs_fs";
-            mountpoint = "/storage-zfs/media/security-cameras";
-            options = {
-              mountpoint = "legacy";       # systemd manages mounting via fileSystems
-              recordsize = "1M";           # large video files
-              compression = "off";         # video already H.264 compressed
-              primarycache = "metadata";   # don't cache video in ARC
-              logbias = "throughput";      # optimize for streaming
-              sync = "disabled";           # accept risk of data corruption on power loss for performance
-            };
-          };
-
-          "root/media/library" = {
-            type = "zfs_fs";
-            mountpoint = "/storage-zfs/media/library";
-            options = {
-              mountpoint = "legacy";       # systemd manages mounting via fileSystems
-              recordsize = "1M";           # large sequential files
-              compression = "lz4";         # fast compression
-            };
-          };
-
-          "root/borgbackup" = {
-            type = "zfs_fs";
-            mountpoint = "/storage-zfs/borgbackup";
-            options = {
-              mountpoint = "legacy";       # systemd manages mounting via fileSystems
-              recordsize = "1M";           # large backup archives
-              compression = "off";         # borg handles compression (zstd,8)
-            };
-          };
-
-          "root/reserved" = { # theoretically prevent fragmentation by proactively setting aside a chunk of space, then delete if approaching capacity to free up that space
-            type = "zfs_fs";
-            options = {
-              mountpoint = "none";         # not mounted (placeholder only)
-              reservation = "2400G";       # 20% of 12TB usable capacity
-              quota = "2400G";             # prevent growth beyond reservation
-            };
-          };
-
-        };
-      };
-    };
+    # zpool = {
+    #   storage = {
+    #     type = "zpool";
+    #     mode = "mirror";
+    #     options = {
+    #       ashift = "12"; # 4K sector size
+    #     };
+    #     rootFsOptions = {
+    #       compression = "lz4";      # fast compression by default
+    #       atime = "off";            # disable access time tracking
+    #       xattr = "sa";             # extended attributes inline
+    #       acltype = "posixacl";     # POSIX ACLs
+    #       mountpoint = "none";      # prevent pool root from auto-mounting
+    #     };
+    #     mountpoint = null; # don't create NixOS fileSystems entry for pool root
+    #     datasets = {
+    #
+    #       "root" = { # organizational parent dataset for entire pool
+    #         type = "zfs_fs";
+    #         mountpoint = "/storage-zfs";
+    #         options = {
+    #           mountpoint = "legacy";       # systemd manages mounting via fileSystems
+    #         };
+    #       };
+    #
+    #       "root/media" = { # organizational parent dataset for media directory, not mounted
+    #         type = "zfs_fs";
+    #         options = {
+    #           mountpoint = "none";
+    #         };
+    #       };
+    #
+    #       "root/media/family-media" = {
+    #         type = "zfs_fs";
+    #         mountpoint = "/storage-zfs/media/family-media";
+    #         options = {
+    #           mountpoint = "legacy";       # systemd manages mounting via fileSystems
+    #           recordsize = "1M";           # optimized for large files
+    #           compression = "lz4";         # fast compression
+    #           xattr = "sa";                # PhotoPrism metadata support
+    #         };
+    #       };
+    #
+    #       "root/media/security-cameras" = {
+    #         type = "zfs_fs";
+    #         mountpoint = "/storage-zfs/media/security-cameras";
+    #         options = {
+    #           mountpoint = "legacy";       # systemd manages mounting via fileSystems
+    #           recordsize = "1M";           # large video files
+    #           compression = "off";         # video already H.264 compressed
+    #           primarycache = "metadata";   # don't cache video in ARC
+    #           logbias = "throughput";      # optimize for streaming
+    #           sync = "disabled";           # accept risk of data corruption on power loss for performance
+    #         };
+    #       };
+    #
+    #       "root/media/library" = {
+    #         type = "zfs_fs";
+    #         mountpoint = "/storage-zfs/media/library";
+    #         options = {
+    #           mountpoint = "legacy";       # systemd manages mounting via fileSystems
+    #           recordsize = "1M";           # large sequential files
+    #           compression = "lz4";         # fast compression
+    #         };
+    #       };
+    #
+    #       "root/borgbackup" = {
+    #         type = "zfs_fs";
+    #         mountpoint = "/storage-zfs/borgbackup";
+    #         options = {
+    #           mountpoint = "legacy";       # systemd manages mounting via fileSystems
+    #           recordsize = "1M";           # large backup archives
+    #           compression = "off";         # borg handles compression (zstd,8)
+    #         };
+    #       };
+    #
+    #       "root/reserved" = { # theoretically prevent fragmentation by proactively setting aside a chunk of space, then delete if approaching capacity to free up that space
+    #         type = "zfs_fs";
+    #         options = {
+    #           mountpoint = "none";         # not mounted (placeholder only)
+    #           reservation = "2400G";       # 20% of 12TB usable capacity
+    #           quota = "2400G";             # prevent growth beyond reservation
+    #         };
+    #       };
+    #
+    #     };
+    #   };
+    # };
 
   };
 
   bulkStorage.path = "/storage-ext4"; # update to /storage-zfs after zfs pool online
 
   fileSystems = {
+
+    # single 4TB SATA HDD
     "/storage-ext4" = {
       device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb"; # western digital 4TB SATA HDD (ata-WDC_WD40EFRX-68N32N0_WD-WCC7K4RU947F)
       fsType = "ext4";
       options = [ "defaults" "nofail" ];
     };
+
+    # zfs pool root dataset comprised of two 12TB SATA HDDs
     "/storage-zfs" = {
       device = "storage/root";
+      fsType = "zfs";
+      options = [ "nofail" ];
+    };
+
+    # zfs child datasets explicitly defined here since we use legacy systemd-managed mountpoints
+    "/storage-zfs/media/family-media" = {
+      device = "storage/root/media/family-media";
+      fsType = "zfs";
+      options = [ "nofail" ];
+    };
+    "/storage-zfs/media/security-cameras" = {
+      device = "storage/root/media/security-cameras";
+      fsType = "zfs";
+      options = [ "nofail" ];
+    };
+    "/storage-zfs/media/library" = {
+      device = "storage/root/media/library";
+      fsType = "zfs";
+      options = [ "nofail" ];
+    };
+    "/storage-zfs/borgbackup" = {
+      device = "storage/root/borgbackup";
       fsType = "zfs";
       options = [ "nofail" ];
     };
@@ -213,7 +260,7 @@
     enableSnapshots = false;
   };
 
-  systemd.services.zfs-mount.enable = false; # disable zfs auto-mount service when using legacy mountpoints
+  systemd.services.zfs-mount.enable = false; # disable zfs auto-mount service when using legacy systemd-managed mountpoints
 
   backups = {
     borgDir = "${config.bulkStorage.path}/borgbackup";
@@ -222,7 +269,10 @@
     ];
   };
 
-  #btrfs.snapshots = true; # enable hourly + recovery snapshots and recoverSnap script
+  btrfs = {
+    snapshots = true; # enable recovery snapshots during backups and recoverSnap script
+    hourlySnapshots = false;
+  };
 
   environment.systemPackages = with pkgs; [
     wget # download tool
@@ -237,9 +287,14 @@
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "25.11";
 
+  # disaster recovery option 1 - run deploy.nix with minimal tier 1 modules below, run btrfs recoverSnap to restore snapshot from backblaze, reboot, then rebuild with full config
+  # disaster recovery option 2 - run deploy.nix with minimal tier 1 modules below, reboot, rebuild with full config, restore individual service state manually from borg using sudo recover* scripts
+
   imports = lib.flatten [
     inputs.disko.nixosModules.disko
     (map configLib.relativeToRoot [
+
+      # tier 1
       "hosts/aspen/hardware-configuration.nix"
       "hosts/aspen/impermanence.nix"
       "nixos-system/boot.nix"
@@ -251,24 +306,22 @@
       "nixos-system/sops.nix"
       "nixos-system/btrfs.nix"
       "nixos-system/zfs.nix"
+
+      # tier 2
       "nixos-system/tailscale.nix"
+      #"nixos-system/monitoring-client.nix"
       "nixos-system/backups.nix"
       "nixos-system/postgresql.nix"
       "nixos-system/mysql.nix"
       "nixos-system/traefik.nix"
-      "nixos-system/monitoring-client.nix"
       "nixos-system/nvidia.nix"
       "nixos-system/oci-containers.nix"
       "nixos-system/oci-pihole.nix"
-
       "nixos-system/lldap.nix" # recoverLldap
-
       "nixos-system/authelia-dcbond.nix" # recoverAuthelia-dcbond
-
       "nixos-system/nextcloud.nix" # recoverNextcloud
-
       "nixos-system/photoprism.nix" # recoverPhotoprism
-      "nixos-system/home-assistant.nix" # recoverHomeAssistant
+      "nixos-system/home-assistant.nix" # recoverHome-assistant
       "nixos-system/oci-frigate.nix"
       "nixos-system/oci-zwavejs.nix" # recoverZwavejs
       "nixos-system/oci-unifi.nix" # recoverUnifi
@@ -283,7 +336,6 @@
       "nixos-system/oci-searxng.nix"
       "nixos-system/nginx-sites.nix"
       "nixos-system/dcbond-root.nix"
-
       "scripts/media-transfer.nix"
       "scripts/network-test.nix"
     ])
