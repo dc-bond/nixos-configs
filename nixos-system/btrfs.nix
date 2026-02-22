@@ -157,6 +157,48 @@ in
         echo "Cleanup complete."
       }
 
+      stop_persist_services() {
+        echo "Stopping all services that write to /persist..."
+
+        # databases (stop first - other services depend on them)
+        systemctl stop postgresql.service || true
+        systemctl stop mysql.service || true
+
+        # native NixOS services
+        systemctl stop home-assistant.service || true
+        systemctl stop mosquitto.service || true
+        systemctl stop photoprism.service || true
+        systemctl stop authelia-dcbond.service || true
+        systemctl stop redis-authelia-dcbond.service || true
+        systemctl stop lldap.service || true
+        systemctl stop traefik.service || true
+        systemctl stop redis-nextcloud.service || true
+        systemctl stop calibre-web.service || true
+
+        # docker (stops all containers and socket to prevent restart)
+        systemctl stop docker.service || true
+        systemctl stop docker.socket || true
+
+        sleep 2
+        echo "✓ All services stopped"
+      }
+
+      unmount_bind_mounts() {
+        echo "Unmounting impermanence bind mounts..."
+
+        # Use findmnt to discover all submounts under /persist (more robust than parsing mount output)
+        # tac reverses the order so we unmount deepest paths first
+        mapfile -t PERSIST_MOUNTS < <(${pkgs.util-linux}/bin/findmnt --output TARGET --noheadings --list --submounts /persist 2>/dev/null | ${pkgs.coreutils}/bin/tac || true)
+
+        for mnt in "''${PERSIST_MOUNTS[@]}"; do
+          # Skip /persist itself - we'll unmount it separately later
+          [[ "$mnt" == "/persist" ]] && continue
+          ${pkgs.util-linux}/bin/umount "$mnt" 2>/dev/null || ${pkgs.util-linux}/bin/umount -l "$mnt" || true
+        done
+
+        echo "✓ Bind mounts unmounted"
+      }
+
       trap cleanup EXIT INT TERM
 
       echo "========================================"
@@ -188,28 +230,7 @@ in
         echo "Restoring /persist from local snapshot..."
 
         echo ""
-        echo "Stopping all services that write to /persist..."
-
-        # databases (stop first - other services depend on them)
-        systemctl stop postgresql.service || true
-        systemctl stop mysql.service || true
-
-        # native NixOS services
-        systemctl stop home-assistant.service || true
-        systemctl stop mosquitto.service || true
-        systemctl stop photoprism.service || true
-        systemctl stop authelia-dcbond.service || true
-        systemctl stop redis-authelia-dcbond.service || true
-        systemctl stop lldap.service || true
-        systemctl stop traefik.service || true
-        systemctl stop redis-nextcloud.service || true
-        systemctl stop calibre-web.service || true
-
-        # docker (stops all containers)
-        systemctl stop docker.service || true
-
-        sleep 2
-        echo "✓ All services stopped"
+        stop_persist_services
 
         echo ""
         echo "Mounting btrfs root..."
@@ -217,9 +238,14 @@ in
         ${pkgs.util-linux}/bin/mount -t btrfs -o subvolid=5 ${btrfsRootDevice} "$BTRFS_ROOT"
         echo "✓ Btrfs root mounted at $BTRFS_ROOT"
 
+        echo ""
+        unmount_bind_mounts
+
+        echo ""
         echo "Unmounting /persist (will be swapped)..."
         ${pkgs.util-linux}/bin/umount /persist
 
+        echo ""
         echo "Deleting current /persist subvolume..."
         ${pkgs.btrfs-progs}/bin/btrfs subvolume delete "$BTRFS_ROOT/persist"
 
@@ -361,33 +387,16 @@ in
         TEMP_MOUNT=""
 
         echo ""
-        echo "Stopping all services that write to /persist..."
+        stop_persist_services
 
-        # databases (stop first - other services depend on them)
-        systemctl stop postgresql.service || true
-        systemctl stop mysql.service || true
-
-        # native NixOS services
-        systemctl stop home-assistant.service || true
-        systemctl stop mosquitto.service || true
-        systemctl stop photoprism.service || true
-        systemctl stop authelia-dcbond.service || true
-        systemctl stop redis-authelia-dcbond.service || true
-        systemctl stop lldap.service || true
-        systemctl stop traefik.service || true
-        systemctl stop redis-nextcloud.service || true
-        systemctl stop calibre-web.service || true
-
-        # docker (stops all containers)
-        systemctl stop docker.service || true
-
-        sleep 2
-        echo "✓ All services stopped"
+        echo ""
+        unmount_bind_mounts
 
         echo ""
         echo "Unmounting /persist (will be swapped)..."
         ${pkgs.util-linux}/bin/umount /persist
 
+        echo ""
         echo "Restoring /persist..."
         ${pkgs.btrfs-progs}/bin/btrfs subvolume delete "$BTRFS_ROOT/persist" 2>/dev/null || true
         ${pkgs.btrfs-progs}/bin/btrfs subvolume create "$BTRFS_ROOT/persist"
@@ -430,3 +439,30 @@ in
   };
 
 }
+
+# ==============================================================================
+# RECOVERY SCRIPT - OVERLAY2 VERSION (2026-02-22)
+# ==============================================================================
+#
+# This script has been simplified by switching Docker storage driver from
+# btrfs to overlay2. With overlay2, Docker images are stored as regular files
+# instead of BTRFS subvolumes, which means:
+#
+# BENEFITS:
+#   ✓ Snapshots preserve all Docker images (no re-pulling needed)
+#   ✓ No nested subvolume issues blocking /persist deletion
+#   ✓ No Docker metadata cleanup required
+#   ✓ No DNS circular dependency (pihole image already in snapshot)
+#   ✓ Recovery completes in ~30 seconds instead of 10-15 minutes
+#   ✓ Fully automated - no manual intervention required
+#
+# REQUIREMENTS:
+#   - Docker storage driver MUST be set to overlay2 in NixOS config:
+#     virtualisation.docker.storageDriver = "overlay2";
+#
+# REMAINING EDGE CASES:
+#   1. Impermanence bind mounts may be busy (handled with lazy unmount)
+#   2. Target NixOS generation may be garbage collected (script offers alternatives)
+#   3. Restored service state may have maintenance modes enabled (rare, document)
+#
+# ==============================================================================

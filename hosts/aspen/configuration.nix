@@ -309,14 +309,14 @@
 
       # tier 2
       "nixos-system/tailscale.nix"
-      "nixos-system/monitoring-client.nix"
+      #"nixos-system/monitoring-client.nix"
       "nixos-system/backups.nix"
       "nixos-system/postgresql.nix"
       "nixos-system/mysql.nix"
       "nixos-system/traefik.nix"
       "nixos-system/nvidia.nix"
       "nixos-system/oci-containers.nix"
-      "nixos-system/oci-pihole.nix" # declarative, but may require manual intervention due to circular dependency fallback dns for pulling container images
+      "nixos-system/oci-pihole.nix"
       "nixos-system/lldap.nix" # recoverLldap
       "nixos-system/authelia-dcbond.nix" # recoverAuthelia-dcbond
       "nixos-system/nextcloud.nix" # recoverNextcloud
