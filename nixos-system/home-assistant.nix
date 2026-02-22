@@ -80,6 +80,7 @@ in
       "systemctl stop mosquitto.service"
       "sleep 2"
       "systemctl start postgresqlBackup-hass.service"
+      "while systemctl is-active --quiet postgresqlBackup-hass.service; do sleep 1; done"
     ];
     postHook = lib.mkAfter [
       "systemctl start mosquitto.service"

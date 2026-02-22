@@ -73,6 +73,7 @@ in
       ])
       (lib.mkAfter [
         "systemctl start postgresqlBackup-${app}.service"
+        "while systemctl is-active --quiet postgresqlBackup-${app}.service; do sleep 1; done"
       ])
     ];
     postHook = lib.mkOrder 500 [ # runs earlier than other service backup postHook hooks

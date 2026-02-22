@@ -109,6 +109,7 @@ in
     backups = lib.mkIf cfg.snapshots {
       serviceHooks.preHook = lib.mkOrder 2000 [
         "systemctl start btrbk-recovery.service"
+        "while systemctl is-active --quiet btrbk-recovery.service; do sleep 1; done"
       ];
       standaloneData = [ "/snapshots" ];
       exclude = lib.mkIf cfg.hourlySnapshots [ "/snapshots/hourly-persist.*" ];
