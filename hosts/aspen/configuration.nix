@@ -287,14 +287,9 @@
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "25.11";
 
-  # disaster recovery option 1 - run deploy.nix with minimal tier 1 modules below, run btrfs recoverSnap to restore snapshot from backblaze, reboot, then rebuild with full config
-  # disaster recovery option 2 - run deploy.nix with minimal tier 1 modules below, reboot, rebuild with full config, restore individual service state manually from borg using sudo recover* scripts
-
   imports = lib.flatten [
     inputs.disko.nixosModules.disko
     (map configLib.relativeToRoot [
-
-      # tier 1
       "hosts/aspen/hardware-configuration.nix"
       "hosts/aspen/impermanence.nix"
       "nixos-system/boot.nix"
@@ -306,10 +301,8 @@
       "nixos-system/sops.nix"
       "nixos-system/btrfs.nix"
       "nixos-system/zfs.nix"
-
-      # tier 2
       "nixos-system/tailscale.nix"
-      #"nixos-system/monitoring-client.nix"
+      "nixos-system/monitoring-client.nix"
       "nixos-system/backups.nix"
       "nixos-system/postgresql.nix"
       "nixos-system/mysql.nix"

@@ -28,11 +28,6 @@ let
     serviceName = app;
     recoveryPlan = recoveryPlan;
     dbType = recoveryPlan.db.type;
-    preSvcStartHook = ''
-      echo "Recreating cache directory with correct permissions..."
-      mkdir -p /var/lib/private/${app}/cache
-      chown -R photoprism:photoprism /var/lib/private/${app}
-    '';
   };
 
 in
