@@ -160,11 +160,19 @@ in
       stop_persist_services() {
         echo "Stopping all services that write to /persist..."
 
+        # enable nextcloud maintenance mode (before stopping services)
+        # note: maintenance mode state will be restored from snapshot (not current state)
+        # if recovery is cancelled, manually disable with: sudo -u nextcloud nextcloud-occ maintenance:mode --off
+        if command -v nextcloud-occ >/dev/null 2>&1; then
+          echo "Enabling Nextcloud maintenance mode..."
+          sudo -u nextcloud nextcloud-occ maintenance:mode --on || true
+        fi
+
         # databases (stop first - other services depend on them)
         systemctl stop postgresql.service || true
         systemctl stop mysql.service || true
 
-        # native NixOS services
+        # native NixOS services (server)
         systemctl stop home-assistant.service || true
         systemctl stop mosquitto.service || true
         systemctl stop photoprism.service || true
@@ -175,28 +183,48 @@ in
         systemctl stop redis-nextcloud.service || true
         systemctl stop calibre-web.service || true
 
-        # docker (stops all containers and socket to prevent restart)
-        systemctl stop docker.service || true
-        systemctl stop docker.socket || true
+        # docker containers (stop via systemd targets, not docker daemon)
+        echo "Stopping Docker container targets..."
+        systemctl stop 'docker-*-root.target' || true
 
-        sleep 2
-        echo "✓ All services stopped"
+        # wait for docker overlay2 mounts to clear (with timeout)
+        echo "Waiting for docker overlay2 mounts to clear..."
+        timeout=30
+        elapsed=0
+        while [ $elapsed -lt $timeout ]; do
+          overlay_count=$(${pkgs.util-linux}/bin/findmnt --output TARGET --noheadings --list --submounts /persist 2>/dev/null | ${pkgs.gnugrep}/bin/grep overlay2 || true | ${pkgs.coreutils}/bin/wc -l)
+          if [ "$overlay_count" -eq 0 ]; then
+            echo "All docker overlay2 mounts cleared after ''${elapsed}s"
+            break
+          fi
+          echo "  $overlay_count overlay2 mounts remaining... (''${elapsed}s elapsed)"
+          sleep 2
+          elapsed=$((elapsed + 2))
+        done
+
+        if [ "$overlay_count" -ne 0 ]; then
+          echo "WARNING: $overlay_count overlay2 mounts still present after ''${timeout}s"
+          echo "Proceeding anyway - unmount may fail if mounts are busy"
+        fi
+
+        echo "All services stopped"
       }
 
       unmount_bind_mounts() {
         echo "Unmounting impermanence bind mounts..."
 
-        # Use findmnt to discover all submounts under /persist (more robust than parsing mount output)
-        # tac reverses the order so we unmount deepest paths first
-        mapfile -t PERSIST_MOUNTS < <(${pkgs.util-linux}/bin/findmnt --output TARGET --noheadings --list --submounts /persist 2>/dev/null | ${pkgs.coreutils}/bin/tac || true)
+        # find all mounts sourcing from /persist subvolume (including impermanence bind mounts)
+        # sort -r gives deepest paths first for safe unmounting
+        mapfile -t PERSIST_MOUNTS < <(${pkgs.util-linux}/bin/findmnt -n -o TARGET,OPTIONS -t btrfs 2>/dev/null | ${pkgs.gnugrep}/bin/grep "subvol=/persist" | ${pkgs.gawk}/bin/awk '{print $1}' | ${pkgs.coreutils}/bin/sort -r || true)
 
         for mnt in "''${PERSIST_MOUNTS[@]}"; do
           # Skip /persist itself - we'll unmount it separately later
           [[ "$mnt" == "/persist" ]] && continue
+          echo "  Unmounting $mnt"
           ${pkgs.util-linux}/bin/umount "$mnt" 2>/dev/null || ${pkgs.util-linux}/bin/umount -l "$mnt" || true
         done
 
-        echo "✓ Bind mounts unmounted"
+        echo "Bind mounts unmounted"
       }
 
       trap cleanup EXIT INT TERM
@@ -236,14 +264,23 @@ in
         echo "Mounting btrfs root..."
         BTRFS_ROOT=$(mktemp -d)
         ${pkgs.util-linux}/bin/mount -t btrfs -o subvolid=5 ${btrfsRootDevice} "$BTRFS_ROOT"
-        echo "✓ Btrfs root mounted at $BTRFS_ROOT"
+        echo "Btrfs root mounted at $BTRFS_ROOT"
 
         echo ""
         unmount_bind_mounts
 
         echo ""
         echo "Unmounting /persist (will be swapped)..."
-        ${pkgs.util-linux}/bin/umount /persist
+        if ! ${pkgs.util-linux}/bin/umount /persist; then
+          echo "ERROR: Failed to unmount /persist"
+          echo "Possible causes:"
+          echo "  - Some bind mounts still active"
+          echo "  - Process has open files in /persist"
+          echo ""
+          echo "Aborting to prevent data corruption."
+          exit 1
+        fi
+        echo "/persist unmounted successfully"
 
         echo ""
         echo "Deleting current /persist subvolume..."
@@ -256,11 +293,19 @@ in
         ${pkgs.util-linux}/bin/umount "$BTRFS_ROOT"
         rmdir "$BTRFS_ROOT"
         BTRFS_ROOT=""
-        echo "✓ Btrfs root unmounted"
+        echo "Btrfs root unmounted"
 
         echo "Remounting /persist with restored snapshot..."
         ${pkgs.util-linux}/bin/mount /persist
-        echo "✓ /persist restored successfully"
+        echo "/persist restored successfully"
+
+        echo ""
+        echo "Restoring critical impermanence bind mounts..."
+        # machine-id is needed for bootloader installation during generation switch
+        if [ -f /persist/etc/machine-id ]; then
+          ${pkgs.util-linux}/bin/mount --bind /persist/etc/machine-id /etc/machine-id
+          echo "  /etc/machine-id restored"
+        fi
 
         echo ""
         if [ -f /persist/.nixos-generation ]; then
@@ -280,7 +325,7 @@ in
               echo "Switching to NixOS generation $TARGET_GEN..."
               ${pkgs.nix}/bin/nix-env --switch-generation "$TARGET_GEN" --profile /nix/var/nix/profiles/system
               /nix/var/nix/profiles/system/bin/switch-to-configuration boot
-              echo "✓ Switched to generation $TARGET_GEN"
+              echo "Switched to generation $TARGET_GEN"
             fi
           else
             echo "WARNING: Generation $TARGET_GEN no longer exists (garbage collected?)"
@@ -295,7 +340,7 @@ in
               echo "Rolling back NixOS generation..."
               ${pkgs.nix}/bin/nix-env --rollback --profile /nix/var/nix/profiles/system
               /nix/var/nix/profiles/system/bin/switch-to-configuration boot
-              echo "✓ Generation rolled back"
+              echo "Generation rolled back"
             fi
           fi
         else
@@ -338,7 +383,7 @@ in
           exit 1
         fi
 
-        echo "✓ Remote repository mounted"
+        echo "Remote repository mounted"
 
         echo ""
         echo "Fetching most recent backup..."
@@ -380,7 +425,7 @@ in
           exit 1
         fi
 
-        echo "✓ Snapshot downloaded"
+        echo "Snapshot downloaded"
 
         fusermount -u "$TEMP_MOUNT" 2>/dev/null || true
         rmdir "$TEMP_MOUNT" 2>/dev/null || true
@@ -394,7 +439,16 @@ in
 
         echo ""
         echo "Unmounting /persist (will be swapped)..."
-        ${pkgs.util-linux}/bin/umount /persist
+        if ! ${pkgs.util-linux}/bin/umount /persist; then
+          echo "ERROR: Failed to unmount /persist"
+          echo "Possible causes:"
+          echo "  - Some bind mounts still active"
+          echo "  - Process has open files in /persist"
+          echo ""
+          echo "Aborting to prevent data corruption."
+          exit 1
+        fi
+        echo "/persist unmounted successfully"
 
         echo ""
         echo "Restoring /persist..."
@@ -412,11 +466,11 @@ in
         ${pkgs.util-linux}/bin/umount "$BTRFS_ROOT"
         rmdir "$BTRFS_ROOT"
         BTRFS_ROOT=""
-        echo "✓ Btrfs root unmounted"
+        echo "Btrfs root unmounted"
 
         echo "Remounting /persist with restored snapshot..."
         ${pkgs.util-linux}/bin/mount /persist
-        echo "✓ /persist restored successfully"
+        echo "/persist restored successfully"
 
       fi
 
@@ -440,29 +494,12 @@ in
 
 }
 
-# ==============================================================================
-# RECOVERY SCRIPT - OVERLAY2 VERSION (2026-02-22)
-# ==============================================================================
-#
-# This script has been simplified by switching Docker storage driver from
-# btrfs to overlay2. With overlay2, Docker images are stored as regular files
-# instead of BTRFS subvolumes, which means:
-#
-# BENEFITS:
-#   ✓ Snapshots preserve all Docker images (no re-pulling needed)
-#   ✓ No nested subvolume issues blocking /persist deletion
-#   ✓ No Docker metadata cleanup required
-#   ✓ No DNS circular dependency (pihole image already in snapshot)
-#   ✓ Recovery completes in ~30 seconds instead of 10-15 minutes
-#   ✓ Fully automated - no manual intervention required
-#
-# REQUIREMENTS:
-#   - Docker storage driver MUST be set to overlay2 in NixOS config:
-#     virtualisation.docker.storageDriver = "overlay2";
-#
-# REMAINING EDGE CASES:
-#   1. Impermanence bind mounts may be busy (handled with lazy unmount)
-#   2. Target NixOS generation may be garbage collected (script offers alternatives)
-#   3. Restored service state may have maintenance modes enabled (rare, document)
-#
-# ==============================================================================
+# VALIDATED RECOVERY WORKFLOW (2026-02-23):
+#   1. Enable Nextcloud maintenance mode (prevents writes during recovery)
+#   2. Stop docker-*-root.target (not docker.service) to avoid race conditions
+#   3. Poll for overlay2 mount cleanup (typically 14s, max 30s timeout)
+#   4. Stop native NixOS services (databases, home-assistant, etc.)
+#   5. Unmount all impermanence bind mounts (found via findmnt subvol filter)
+#   6. Unmount /persist with error checking (aborts on failure)
+#   7. Swap /persist subvolume with snapshot
+#   8. Reboot - impermanence recreates all bind mounts automatically

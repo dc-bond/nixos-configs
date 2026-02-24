@@ -132,7 +132,7 @@ in
         log_type = "file";
         loglevel = 2; # info
         maintenance_window_start = 1;
-        #trashbin_retention_obligation = "auto, 7";
+        trashbin_retention_obligation = "auto, 14"; # delete items older than 14 days in trash automatically (job runs every 30 minutes)
         
         ## openid connect oidc:
         #allow_user_to_change_display_name = false;
