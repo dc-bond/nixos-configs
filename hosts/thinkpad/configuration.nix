@@ -73,15 +73,32 @@
 
   bulkStorage.path = "/storage";
 
-  fileSystems."/storage" = {
-    device = "/dev/disk/by-uuid/025cbd65-8476-47ef-a814-c3cd8624d2fc"; # WD My Passport 260D (usb-WD_My_Passport_260D_575832314443383652553350-0:0)
-    fsType = "ext4";
-    options = [
-      "defaults"  # standard mount options
-      "nofail"    # don't fail boot if drive is unplugged
-      "noatime"   # don't update access times (better performance, less wear)
-    ];
+  # external USB drive: WD My Passport 260D
+  # auto-mounts to /storage when plugged in via udev (no boot dependency)
+  # mount point /storage created by systemd-tmpfiles below
+
+  services.udev.extraRules = ''
+    # auto-mount WD My Passport 260D to /storage when plugged in
+    SUBSYSTEM=="block", ENV{ID_FS_UUID}=="025cbd65-8476-47ef-a814-c3cd8624d2fc", \
+      ACTION=="add", \
+      RUN+="${pkgs.systemd}/bin/systemctl start storage-automount.service"
+    # auto-unmount when unplugged
+    SUBSYSTEM=="block", ENV{ID_FS_UUID}=="025cbd65-8476-47ef-a814-c3cd8624d2fc", \
+      ACTION=="remove", \
+      RUN+="${pkgs.systemd}/bin/systemctl stop storage-automount.service"
+  '';
+
+  systemd.services.storage-automount = {
+    description = "Auto-mount external storage drive to /storage";
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "${pkgs.util-linux}/bin/mount -o noatime UUID=025cbd65-8476-47ef-a814-c3cd8624d2fc /storage";
+      ExecStop = "${pkgs.util-linux}/bin/umount /storage";
+    };
   };
+
+  systemd.tmpfiles.rules = [ "d /storage 0755 root root -" ];  # create /storage mount point
 
   backups = {
     prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
