@@ -45,7 +45,6 @@
                   type = "btrfs";
                   extraArgs = [ "-f" ];
                   subvolumes = {
-                    # CURRENT LAYOUT (traditional root - to be replaced on fresh install)
                     "/root" = {
                       mountpoint = "/";
                       mountOptions = [ "compress=zstd" "noatime" ];
@@ -63,17 +62,12 @@
                       swap.swapfile.size = "8G"; # 0.5x RAM - adequate OOM protection without hibernation
                     };
 
-                    # FRESH INSTALL LAYOUT (impermanence - uncomment and remove above on fresh install)
                     #"/nix" = {
                     #  mountpoint = "/nix";
                     #  mountOptions = [ "compress=zstd" "noatime" ];
                     #};
                     #"/persist" = {
                     #  mountpoint = "/persist";
-                    #  mountOptions = [ "compress=zstd" "noatime" ];
-                    #};
-                    #"/snapshots" = {
-                    #  mountpoint = "/snapshots";
                     #  mountOptions = [ "compress=zstd" "noatime" ];
                     #};
                     #"/swap" = {
@@ -119,9 +113,6 @@
     prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
   };
 
-  # FRESH INSTALL ONLY - uncomment on fresh install with impermanence
-  #btrfs.snapshots = true; # enable hourly + recovery snapshots and recoverSnap script
-
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
   services = {
@@ -150,7 +141,7 @@
       "nixos-system/zsh.nix"
       "nixos-system/printing.nix"
       "nixos-system/backups.nix"
-      #"nixos-system/btrfs.nix" # FRESH INSTALL ONLY - uncomment on fresh install
+      "nixos-system/btrfs.nix"
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"

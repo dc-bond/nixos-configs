@@ -53,7 +53,7 @@
                     mountpoint = "/persist";
                     mountOptions = [ "compress=zstd" "noatime" ];
                   };
-                  "/snapshots" = {
+                  "/snapshots" = { # DEPRECATED: btrfs snapshots removed, delete subvolume on next wipe/reformat
                     mountpoint = "/snapshots";
                     mountOptions = [ "compress=zstd" "noatime" ];
                   };
@@ -267,11 +267,6 @@
     standaloneData = [
       "${config.bulkStorage.path}/media/family-media"
     ];
-  };
-
-  btrfs = {
-    snapshots = true; # enable recovery snapshots during backups and recoverSnap script
-    hourlySnapshots = false;
   };
 
   environment.systemPackages = with pkgs; [

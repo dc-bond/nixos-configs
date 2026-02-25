@@ -46,7 +46,6 @@
                   type = "btrfs";
                   extraArgs = [ "-f" ];
                   subvolumes = {
-                    # CURRENT LAYOUT (traditional root - to be replaced on fresh install)
                     "/root" = {
                       mountpoint = "/";
                       mountOptions = [ "compress=zstd" "noatime" ];
@@ -64,17 +63,12 @@
                       swap.swapfile.size = "2G"; # 0.5x RAM - adequate OOM protection without hibernation
                     };
 
-                    # FRESH INSTALL LAYOUT (impermanence - uncomment and remove above on fresh install)
                     #"/nix" = {
                     #  mountpoint = "/nix";
                     #  mountOptions = [ "compress=zstd" "noatime" ];
                     #};
                     #"/persist" = {
                     #  mountpoint = "/persist";
-                    #  mountOptions = [ "compress=zstd" "noatime" ];
-                    #};
-                    #"/snapshots" = {
-                    #  mountpoint = "/snapshots";
                     #  mountOptions = [ "compress=zstd" "noatime" ];
                     #};
                     #"/swap" = {
@@ -120,9 +114,6 @@
   backups = {
     prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
   };
-
-  # FRESH INSTALL ONLY - uncomment on fresh install with impermanence
-  #btrfs.snapshots = true; # enable hourly + recovery snapshots and recoverSnap script
 
   services.logind.settings.Login.HandleLidSwitch = "ignore"; # disable suspend on laptop lid close
 

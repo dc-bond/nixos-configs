@@ -1,18 +1,20 @@
-{ 
-  pkgs, 
+{
+  pkgs,
   config,
   configVars,
   lib,
-  ... 
-}: 
+  nixServiceRecoveryScript,
+  ...
+}:
 
 let
 
+  app = "tailscale";
   hostData = configVars.hosts.${config.networking.hostName};
   tsConfig = hostData.networking.tailscale or {};
   isExitNode = (tsConfig.role or "") == "exit-node";
   isClient = (tsConfig.role or "") == "client";
-  defaultExitNodeIp = 
+  defaultExitNodeIp =
   if (tsConfig ? defaultExitNode) && (tsConfig.defaultExitNode != null)
   then configVars.hosts.${tsConfig.defaultExitNode}.networking.tailscaleIp
   else null;
@@ -62,10 +64,34 @@ let
       --reset
   '';
 
+  recoveryPlan = {
+    restoreItems = [ "/var/lib/tailscale" ];
+    stopServices = [ "tailscaled" ];
+    startServices = [ "tailscaled" ];
+  };
+  recoverScript = nixServiceRecoveryScript {
+    serviceName = app;
+    recoveryPlan = recoveryPlan;
+    postRestoreHook = ''
+      echo ""
+      echo "Waiting for tailscaled to be ready..."
+      sleep 3
+      echo "Reconnecting to tailnet..."
+      ${tailscaleUp}
+      echo ""
+      echo "Tailscale reconnected with preserved node identity!"
+      echo ""
+      echo "Current status:"
+      ${pkgs.tailscale}/bin/tailscale status
+    '';
+  };
+
 in
 
 {
-  
+
+  environment.systemPackages = [ recoverScript ];
+
   sops.secrets."${config.networking.hostName}TailscaleAuthKey" = {}; # authKeys created in tailscale console are one-time use only; manually run 'tup' on fresh install to connect; authKey in sops then becomes deprecated
 
   networking = {
@@ -77,12 +103,15 @@ in
     };
   };
 
-  services.tailscale = {
-    enable = true;
-    #authKeyFile = config.sops.secrets."${config.networking.hostName}TailscaleAuthKey".path; # remove to prevent nix's default tailscale autoconnect service from being created
-    useRoutingFeatures = if isExitNode then "server" else "client"; # configures kernel routing (e.g. "net.ipv4.ip_forward" = 1)
-    extraDaemonFlags = [ "--no-logs-no-support" ];
-    #extraUpFlags = fullUpFlags; # only used with nix's default tailscale autoconnect service
+  services = {
+    borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
+    tailscale = {
+      enable = true;
+      #authKeyFile = config.sops.secrets."${config.networking.hostName}TailscaleAuthKey".path; # remove to prevent nix's default tailscale autoconnect service from being created
+      useRoutingFeatures = if isExitNode then "server" else "client"; # configures kernel routing (e.g. "net.ipv4.ip_forward" = 1)
+      extraDaemonFlags = [ "--no-logs-no-support" ];
+      #extraUpFlags = fullUpFlags; # only used with nix's default tailscale autoconnect service
+    };
   };
 
   programs.zsh.shellAliases = {
