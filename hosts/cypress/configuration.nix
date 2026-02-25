@@ -46,7 +46,7 @@
                     mountpoint = "/persist";
                     mountOptions = [ "compress=zstd" "noatime" ];
                   };
-                  "/snapshots" = { # to be implemented on next fresh installation
+                  "/snapshots" = { # DEPRECATED: btrfs snapshots removed, delete subvolume on next wipe/reformat
                     mountpoint = "/snapshots";
                     mountOptions = [ "compress=zstd" "noatime" ];
                   };
@@ -90,8 +90,6 @@
   backups = {
     prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
   };
-
-  btrfs.snapshots = true; # enable hourly + recovery snapshots and recoverSnap script
 
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "23.11";

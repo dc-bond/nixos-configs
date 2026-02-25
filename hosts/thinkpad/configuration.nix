@@ -53,7 +53,11 @@
                       mountpoint = "/persist";
                       mountOptions = [ "compress=zstd" "noatime" ];
                     };
-                    "/snapshots" = {
+                    "/persist/borgbackup" = { # DEPRECATED: nested subvolume no longer needed, convert to regular directory on next wipe/reformat
+                      mountpoint = "/persist/borgbackup";
+                      mountOptions = [ "compress=zstd" "noatime" ];
+                    };
+                    "/snapshots" = { # DEPRECATED: btrfs snapshots removed, delete subvolume on next wipe/reformat
                       mountpoint = "/snapshots";
                       mountOptions = [ "compress=zstd" "noatime" ];
                     };
@@ -103,8 +107,6 @@
   backups = {
     prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
   };
-
-  btrfs.snapshots = true; # enable hourly + recovery snapshots and recoverSnap script
 
   environment.systemPackages = with pkgs; [
     age # encryption tool
