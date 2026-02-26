@@ -1015,14 +1015,6 @@ let
             annotations:
               summary: "BTRFS DATA CORRUPTION detected on {{ $labels.mountpoint }} ({{ $labels.host }}) - {{ $value }} {{ $labels.type }} errors found"
 
-          - alert: btrfsScrubNotRunning
-            expr: time() - btrfs_scrub_last_completion_timestamp > 604800
-            for: 30m
-            labels:
-              severity: warning
-            annotations:
-              summary: "BTRFS scrub has not completed on {{ $labels.mountpoint }} ({{ $labels.host }}) in over 7 days"
-
           - alert: btrfsScrubFailed
             expr: btrfs_scrub_status == 0
             for: 5m
@@ -1030,22 +1022,6 @@ let
               severity: critical
             annotations:
               summary: "BTRFS scrub failed on {{ $labels.mountpoint }} ({{ $labels.host }})"
-
-          - alert: btrfsScrubNeverRun
-            expr: btrfs_scrub_status == 3
-            for: 1h
-            labels:
-              severity: warning
-            annotations:
-              summary: "BTRFS scrub has never run on {{ $labels.mountpoint }} ({{ $labels.host }})"
-
-          - alert: btrfsScrubMetricsStale
-            expr: time() - btrfs_scrub_last_completion_timestamp > 691200
-            for: 1h
-            labels:
-              severity: warning
-            annotations:
-              summary: "BTRFS scrub metrics on {{ $labels.mountpoint }} ({{ $labels.host }}) haven't updated in over 8 days (monitoring may be broken)"
 
       # TODO: uncomment after aspen re-install with ZFS pool
       #- name: zfs_scrub_alerts

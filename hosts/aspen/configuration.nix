@@ -22,7 +22,7 @@
   # after initial provisioning, drives are managed via fileSystems + services.zfsExtended (zfs) or fileSystems only (ext4)
   disko.devices = {
     disk = {
-
+      
       disk0 = {
         type = "disk";
         device = configVars.hosts.${config.networking.hostName}.hardware.disk0;
@@ -51,10 +51,6 @@
                   };
                   "/persist" = {
                     mountpoint = "/persist";
-                    mountOptions = [ "compress=zstd" "noatime" ];
-                  };
-                  "/snapshots" = { # DEPRECATED: btrfs snapshots removed, delete subvolume on next wipe/reformat
-                    mountpoint = "/snapshots";
                     mountOptions = [ "compress=zstd" "noatime" ];
                   };
                   "/swap" = {
@@ -296,7 +292,7 @@
       "nixos-system/sops.nix"
       "nixos-system/btrfs.nix"
       "nixos-system/zfs.nix"
-      "nixos-system/tailscale.nix"
+      "nixos-system/tailscale.nix" # recoverTailscale
       "nixos-system/monitoring-client.nix"
       "nixos-system/backups.nix"
       "nixos-system/postgresql.nix"
