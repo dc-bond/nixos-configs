@@ -53,14 +53,6 @@
                       mountpoint = "/persist";
                       mountOptions = [ "compress=zstd" "noatime" ];
                     };
-                    "/persist/borgbackup" = { # DEPRECATED: nested subvolume no longer needed, convert to regular directory on next wipe/reformat
-                      mountpoint = "/persist/borgbackup";
-                      mountOptions = [ "compress=zstd" "noatime" ];
-                    };
-                    "/snapshots" = { # DEPRECATED: btrfs snapshots removed, delete subvolume on next wipe/reformat
-                      mountpoint = "/snapshots";
-                      mountOptions = [ "compress=zstd" "noatime" ];
-                    };
                     "/swap" = {
                       mountpoint = "/swap";
                       swap.swapfile.size = "4G"; # 0.5x RAM - adequate OOM protection without hibernation
@@ -143,7 +135,7 @@
       "nixos-system/foundation.nix"
       "nixos-system/rebuilds.nix"
       "nixos-system/networking.nix"
-      "nixos-system/tailscale.nix"
+      "nixos-system/tailscale.nix" # recoverTailscale
       "nixos-system/users.nix"
       "nixos-system/sshd.nix"
       "nixos-system/audio.nix"
@@ -156,10 +148,8 @@
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"
       "nixos-system/usb-phone-mount.nix"
-
       "nixos-system/greetd.nix"
       "nixos-system/hyprland.nix"
-
       "scripts/deploy.nix"
       "scripts/network-test.nix"
     ])
