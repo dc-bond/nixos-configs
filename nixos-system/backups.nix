@@ -1110,7 +1110,7 @@ in
         environment = { 
           BORG_RELOCATED_REPO_ACCESS_IS_OK = "yes"; # supress warning about repo location being moved since last backup (e.g. changing directory location or IP address)
         };
-        compression = "auto,zstd,8";
+        compression = "auto,zstd,3";
         preHook = lib.mkDefault ''
           set -x
           echo "spinning down services and starting sql database dumps"

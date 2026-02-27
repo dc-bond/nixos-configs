@@ -322,7 +322,7 @@
       "nixos-system/nginx-sites.nix"
       "nixos-system/dcbond-root.nix"
       "scripts/media-transfer.nix"
-      "scripts/network-test.nix"
+      #"scripts/network-test.nix"
     ])
   ];
 

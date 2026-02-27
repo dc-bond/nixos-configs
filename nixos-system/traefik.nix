@@ -3,25 +3,11 @@
   lib,
   pkgs,
   configVars,
-  nixServiceRecoveryScript,
   ...
-}: 
+}:
 
 let
-
   app = "traefik";
-  recoveryPlan = {
-    restoreItems = [
-      "/var/lib/${app}"
-    ];
-    stopServices = [ "${app}" ];
-    startServices = [ "${app}" ];
-  };
-  recoverScript = nixServiceRecoveryScript {
-    serviceName = app;
-    recoveryPlan = recoveryPlan;
-  };
-
 in
 
 {
@@ -50,17 +36,6 @@ in
   }; 
 
   users.users.${app}.extraGroups = [ "docker" ]; # add traefik to docker group to enable docker socket access
-
-  backups.serviceHooks = {
-    preHook = lib.mkAfter [
-      "systemctl stop ${app}.service"
-    ];
-    postHook = lib.mkAfter [
-      "systemctl start ${app}.service"
-    ];
-  };
-
-  environment.systemPackages = with pkgs; [ recoverScript ];
 
   services = {
 
@@ -270,8 +245,6 @@ in
         postrotate = "systemctl kill --signal=SIGUSR1 traefik.service";  # tell traefik to reopen log file
       };
     };
-
-    borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter [ "/var/lib/${app}" ];
 
   };
 
