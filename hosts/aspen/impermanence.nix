@@ -44,6 +44,7 @@
       "/var/lib/nixos"                               # UID/GID mappings to prevent permissions issues on reboot
       "/var/lib/tailscale"                           # tailscale node identity
       "/var/lib/prometheus/node-exporter-text-files" # persist btrfs scrub metrics between weekly scrubs
+      #{ directory = "/var/lib/crowdsec"; user = "crowdsec"; group = "crowdsec"; mode = "0750"; } # crowdsec lapi/capi credentials, console enrollment, bouncers, decisions
 
       # databases
       "/var/lib/postgresql"                          # nextcloud, hass, lldap databases

@@ -102,6 +102,14 @@ in
     crowdsec = {
       after = [ "tailscaled.service" ];
       wants = [ "tailscaled.service" ];
+      # workaround for https://github.com/crowdsecurity/crowdsec/issues/3632
+      # cscli expects these credential files to exist before running registration
+      preStart = ''
+        touch /var/lib/crowdsec/state/capi-credentials.yaml
+        touch /var/lib/crowdsec/state/lapi-credentials.yaml
+        chmod 640 /var/lib/crowdsec/state/capi-credentials.yaml
+        chmod 640 /var/lib/crowdsec/state/lapi-credentials.yaml
+      '';
     };
     # ensure firewall bouncer waits for crowdsec to be fully running
     crowdsec-firewall-bouncer = {
