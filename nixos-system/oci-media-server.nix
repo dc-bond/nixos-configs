@@ -568,7 +568,7 @@ in
         entrypoints = ["websecure"];
         rule = "Host(`${app7}.${configVars.domain2}`)";
         service = "${app7}";
-        middlewares = ["jellyfin-trusted-allow" "secure-headers"];
+        middlewares = ["error-pages" "jellyfin-trusted-allow" "secure-headers"];
         tls = {
           certResolver = "cloudflareDns";
           options = "tls-13@file";
