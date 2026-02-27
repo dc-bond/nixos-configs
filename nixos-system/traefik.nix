@@ -141,6 +141,17 @@ in
 
       dynamicConfigOptions = {
         http = {
+          # serversTransports = {
+          #   fast-timeout = {
+          #     serverName = "";
+          #     insecureSkipVerify = false;
+          #     forwardingTimeouts = {
+          #       dialTimeout = "3s";           # Max time to establish connection (down from 30s default)
+          #       responseHeaderTimeout = "5s"; # Max time to read response headers (down from 60s default)
+          #       idleConnTimeout = "90s";      # Keep default - affects persistent connections
+          #     };
+          #   };
+          # };
           routers."${app}-dashboard" = {
             entrypoints = ["websecure"];
             rule = "Host(`${app}-${config.networking.hostName}.${configVars.domain2}`)";
