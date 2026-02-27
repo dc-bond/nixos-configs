@@ -286,6 +286,7 @@
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
       "nixos-system/networking.nix"
+      #"nixos-system/crowdsec.nix"
       "nixos-system/users.nix"
       "nixos-system/sshd.nix"
       "nixos-system/zsh.nix"
