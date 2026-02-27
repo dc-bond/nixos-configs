@@ -1574,13 +1574,13 @@ in
               name = "nightly-backup-window";
               time_intervals = [
                 # all hosts backup at 02:30 EST/EDT (06:30-07:30 UTC depending on DST)
-                # services are stopped, local borg backup runs (few minutes), services restart
-                # 90-minute window covers local backup downtime + DST variation
+                # aspen backup takes ~70 minutes (services down, borg backup, services up)
+                # window: 02:25-03:50 EST/EDT = 06:25-08:50 UTC (covers both DST scenarios + buffer)
                 {
                   times = [
                     {
                       start_time = "06:25";
-                      end_time = "07:45";
+                      end_time = "08:50";
                     }
                   ];
                   # applies to all days (omitting weekdays field means every day)
