@@ -273,6 +273,7 @@
     btop # system monitor
     tmux # terminal multiplexer for persistent sessions
     dig # dns lookup tool
+    jq # json processor for parsing and filtering JSON data
   ];
 
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated

@@ -17,6 +17,7 @@ lib,
           rule = "Host(`${configVars.domain1}`)";
           service = "noop@internal";
           middlewares = [
+            "maintenance-page"
             "secure-headers"
             "${configVars.domain1}-redirect"
           ];

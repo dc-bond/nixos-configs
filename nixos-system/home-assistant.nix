@@ -182,6 +182,8 @@ in
         rule = "Host(`${app}.${configVars.domain2}`)";
         service = "${app}";
         middlewares = [
+          "maintenance-page"
+          "forbidden-page"
           #"authelia" # ios app does not support authentication provider sittnig in front of home assistant
           "trusted-allow"
           "secure-headers"
@@ -193,6 +195,7 @@ in
       };
       services.${app} = {
         loadBalancer = {
+          serversTransport = "default";
           passHostHeader = true;
           servers = [
           {

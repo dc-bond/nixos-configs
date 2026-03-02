@@ -459,6 +459,8 @@ in
       rule = "Host(`homepage.${configVars.domain2}`)";
       service = "${app}";
       middlewares = [
+        "maintenance-page"
+        "forbidden-page"
         "trusted-allow"
         "secure-headers"
       ];
@@ -469,6 +471,7 @@ in
     };
     services.${app} = {
       loadBalancer = {
+        serversTransport = "default";
         passHostHeader = true;
         servers = [
           {

@@ -109,6 +109,8 @@ in
         rule = "Host(`${app}.${configVars.domain1}`)";
         service = "${app}";
         middlewares = [
+          "maintenance-page"
+          "forbidden-page"
           #"authelia-dcbond" # disabled to break circular dependency - LLDAP needs Authelia, Authelia needs LLDAP
           "secure-headers"
           "trusted-allow" # IP allowlist - restricts access to LAN + Tailscale only
@@ -120,6 +122,7 @@ in
       };
       services.${app} = {
         loadBalancer = {
+          serversTransport = "default";
           passHostHeader = true;
           servers = [
           {

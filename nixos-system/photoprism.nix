@@ -140,6 +140,8 @@ in
         rule = "Host(`photos.${configVars.domain2}`)";
         service = "${app}";
         middlewares = [
+          "maintenance-page"
+          "forbidden-page"
           "secure-headers"
           "trusted-allow"
         ];
@@ -150,6 +152,7 @@ in
       };
       services.${app} = {
         loadBalancer = {
+          serversTransport = "default";
           passHostHeader = true;
           servers = [
           {

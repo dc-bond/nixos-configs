@@ -112,6 +112,7 @@ in
         rule = "Host(`${app}.${configVars.domain1}`) && !PathPrefix(`/admin`)";
         service = "${app}";
         middlewares = [
+          "maintenance-page"
           "${app}-headers"
         ];
         tls = {
@@ -125,6 +126,8 @@ in
         rule = "Host(`${app}.${configVars.domain1}`) && PathPrefix(`/admin`)";
         service = "${app}";
         middlewares = [
+          "maintenance-page"
+          "forbidden-page"
           "trusted-allow"
           "${app}-headers"
         ];
@@ -153,6 +156,7 @@ in
       # single service definition shared by both routers
       services.${app} = {
         loadBalancer = {
+          serversTransport = "default";
           passHostHeader = true;
           servers = [
             {

@@ -206,6 +206,7 @@ in
         rule = "Host(`${app}.${configVars.domain1}`)";
         service = "${app}";
         middlewares = [
+          "maintenance-page"
           "nextcloud-headers"
           "nextcloud-redirect-dav"
         ];

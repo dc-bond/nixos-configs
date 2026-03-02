@@ -247,6 +247,7 @@ in
         rule = "Host(`identity.${configVars.domain1}`)";
         service = "${app}";
         middlewares = [
+          "maintenance-page"
           "secure-headers"
         ];
         tls = {
