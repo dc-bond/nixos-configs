@@ -1704,6 +1704,8 @@ in
         rule = "Host(`${app1}.${configVars.domain2}`)";
         service = "${app1}";
         middlewares = [
+          "maintenance-page"
+          "forbidden-page"
           "secure-headers"
           "trusted-allow"
         ];
@@ -1714,6 +1716,7 @@ in
       };
       services.${app1} = {
         loadBalancer = {
+          serversTransport = "default";
           passHostHeader = true;
           servers = [{
             url = "http://127.0.0.1:9090";
@@ -1726,6 +1729,8 @@ in
         rule = "Host(`${app2}.${configVars.domain2}`)";
         service = "${app2}";
         middlewares = [
+          "maintenance-page"
+          "forbidden-page"
           "secure-headers"
           "trusted-allow"
         ];
@@ -1736,6 +1741,7 @@ in
       };
       services.${app2} = {
         loadBalancer = {
+          serversTransport = "default";
           passHostHeader = true;
           servers = [{
             url = "http://127.0.0.1:3002";
@@ -1748,6 +1754,8 @@ in
         rule = "Host(`${app3}.${configVars.domain2}`)";
         service = "${app3}";
         middlewares = [
+          "maintenance-page"
+          "forbidden-page"
           "secure-headers"
           "trusted-allow"
         ];
@@ -1758,6 +1766,7 @@ in
       };
       services.${app3} = {
         loadBalancer = {
+          serversTransport = "default";
           passHostHeader = true;
           servers = [{
             url = "http://127.0.0.1:9093";

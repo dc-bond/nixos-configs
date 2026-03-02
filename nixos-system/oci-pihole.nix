@@ -70,6 +70,9 @@ let
   '';
 
   customDnsEntries = [
+    # wildcard records for custom 404 page - specific records below take precedence
+    "address=/.${configVars.domain1}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     # aspen base hostnames
     "address=/aspen.${configVars.domain1}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/aspen.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
@@ -272,7 +275,7 @@ in
         "traefik.http.routers.${app}-${config.networking.hostName}.rule" = "Host(`${app}-${config.networking.hostName}.${configVars.domain2}`)";
         "traefik.http.routers.${app}-${config.networking.hostName}.tls" = "true";
         "traefik.http.routers.${app}-${config.networking.hostName}.tls.options" = "tls-13@file";
-        "traefik.http.routers.${app}-${config.networking.hostName}.middlewares" = "trusted-allow@file,secure-headers@file";
+        "traefik.http.routers.${app}-${config.networking.hostName}.middlewares" = "maintenance-page@file,forbidden-page@file,trusted-allow@file,secure-headers@file";
         "traefik.http.services.${app}-${config.networking.hostName}.loadbalancer.server.port" = "80"; # port for browser interface
       };
     };

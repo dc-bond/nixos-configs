@@ -518,7 +518,7 @@ in
         entrypoints = ["websecure"];
         rule = "Host(`${app2}.${configVars.domain2}`)";
         service = "${app2}";
-        middlewares = ["trusted-allow" "secure-headers"];
+        middlewares = ["maintenance-page" "forbidden-page" "trusted-allow" "secure-headers"];
         tls = {
           certResolver = "cloudflareDns";
           options = "tls-13@file";
@@ -528,7 +528,7 @@ in
         entrypoints = ["websecure"];
         rule = "Host(`${app3}.${configVars.domain2}`)";
         service = "${app3}";
-        middlewares = ["trusted-allow" "secure-headers"];
+        middlewares = ["maintenance-page" "forbidden-page" "trusted-allow" "secure-headers"];
         tls = {
           certResolver = "cloudflareDns";
           options = "tls-13@file";
@@ -538,7 +538,7 @@ in
         entrypoints = ["websecure"];
         rule = "Host(`${app4}.${configVars.domain2}`)";
         service = "${app4}";
-        middlewares = ["trusted-allow" "secure-headers"];
+        middlewares = ["maintenance-page" "forbidden-page" "trusted-allow" "secure-headers"];
         tls = {
           certResolver = "cloudflareDns";
           options = "tls-13@file";
@@ -548,7 +548,7 @@ in
         entrypoints = ["websecure"];
         rule = "Host(`${app5}.${configVars.domain2}`)";
         service = "${app5}";
-        middlewares = ["trusted-allow" "secure-headers"];
+        middlewares = ["maintenance-page" "forbidden-page" "trusted-allow" "secure-headers"];
         tls = {
           certResolver = "cloudflareDns";
           options = "tls-13@file";
@@ -558,7 +558,7 @@ in
         entrypoints = ["websecure"];
         rule = "Host(`${app6}.${configVars.domain2}`)";
         service = "${app6}";
-        middlewares = ["trusted-allow" "secure-headers"];
+        middlewares = ["maintenance-page" "forbidden-page" "trusted-allow" "secure-headers"];
         tls = {
           certResolver = "cloudflareDns";
           options = "tls-13@file";
@@ -568,7 +568,7 @@ in
         entrypoints = ["websecure"];
         rule = "Host(`${app7}.${configVars.domain2}`)";
         service = "${app7}";
-        middlewares = ["error-pages" "jellyfin-trusted-allow" "secure-headers"];
+        middlewares = ["maintenance-page" "forbidden-page" "jellyfin-trusted-allow" "secure-headers"];
         tls = {
           certResolver = "cloudflareDns";
           options = "tls-13@file";
@@ -576,12 +576,30 @@ in
       };
     };
     services = {
-      ${app2}.loadBalancer.servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:8080"; }];
-      ${app3}.loadBalancer.servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:8989"; }];
-      ${app4}.loadBalancer.servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:7878"; }];
-      ${app5}.loadBalancer.servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:9696"; }];
-      ${app6}.loadBalancer.servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:5055"; }];
-      ${app7}.loadBalancer.servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:8096"; }];
+      ${app2}.loadBalancer = {
+        serversTransport = "default";
+        servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:8080"; }];
+      };
+      ${app3}.loadBalancer = {
+        serversTransport = "default";
+        servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:8989"; }];
+      };
+      ${app4}.loadBalancer = {
+        serversTransport = "default";
+        servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:7878"; }];
+      };
+      ${app5}.loadBalancer = {
+        serversTransport = "default";
+        servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:9696"; }];
+      };
+      ${app6}.loadBalancer = {
+        serversTransport = "default";
+        servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:5055"; }];
+      };
+      ${app7}.loadBalancer = {
+        serversTransport = "default";
+        servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:8096"; }];
+      };
     };
   };
 

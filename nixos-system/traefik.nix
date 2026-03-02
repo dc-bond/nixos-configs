@@ -8,6 +8,175 @@
 
 let
   app = "traefik";
+
+  # common styling for all error pages
+  errorPageStyle = ''
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #2E3440;
+      color: #ECEFF4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    .container {
+      background: #3B4252;
+      border-radius: 12px;
+      padding: 60px 40px;
+      text-align: center;
+      max-width: 600px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+    .icon {
+      font-size: 72px;
+      margin-bottom: 24px;
+      line-height: 1;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 16px;
+      font-weight: 600;
+      color: #ECEFF4;
+    }
+    p {
+      font-size: 1rem;
+      color: #D8DEE9;
+      margin-bottom: 12px;
+    }
+    .info-box {
+      margin-top: 32px;
+      padding: 20px;
+      background: #434C5E;
+      border-radius: 8px;
+      border-left: 4px solid #88C0D0;
+    }
+    .info-box p {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+    .note {
+      font-size: 0.875rem;
+      color: #D8DEE9;
+      margin-top: 24px;
+      opacity: 0.8;
+    }
+    a {
+      color: #88C0D0;
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: border-color 0.2s;
+    }
+    a:hover {
+      border-bottom-color: #88C0D0;
+    }
+  '';
+
+  # 502/503/504 - maintenance page
+  maintenanceRoot = pkgs.runCommand "maintenance-page" {} ''
+    mkdir -p $out
+    cat > $out/index.html <<'EOF'
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Service Temporarily Unavailable</title>
+      <style>
+        ${errorPageStyle}
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="icon">🔧</div>
+        <h1>Service Temporarily Unavailable</h1>
+        <p>This service is currently undergoing scheduled maintenance.</p>
+        <p>Normal service will resume shortly.</p>
+        <div class="info-box">
+          <p><strong>Regular Maintenance Window</strong></p>
+          <p>2:30 AM - 3:40 AM EST</p>
+        </div>
+        <p class="note">
+          If you're seeing this outside the maintenance window, the service may be restarting. Please try again in a few moments.
+        </p>
+      </div>
+    </body>
+    </html>
+    EOF
+  '';
+
+  # 403 - forbidden page
+  forbiddenRoot = pkgs.runCommand "forbidden-page" {} ''
+    mkdir -p $out
+    cat > $out/index.html <<'EOF'
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Access Denied</title>
+      <style>
+        ${errorPageStyle}
+        .icon { color: #BF616A; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="icon">🔒</div>
+        <h1>Access Denied</h1>
+        <p>This service is only accessible from authorized networks.</p>
+        <div class="info-box">
+          <p><strong>Authorized Access Points:</strong></p>
+          <p>• Local Network (192.168.1.0/24)</p>
+          <p>• Tailscale VPN</p>
+        </div>
+        <p class="note">
+          Please connect to the local network or VPN to access this service.
+        </p>
+      </div>
+    </body>
+    </html>
+    EOF
+  '';
+
+  # 404 - not found page
+  notFoundRoot = pkgs.runCommand "notfound-page" {} ''
+    mkdir -p $out
+    cat > $out/index.html <<'EOF'
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Page Not Found</title>
+      <style>
+        ${errorPageStyle}
+        .icon { color: #81A1C1; }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="icon">🔍</div>
+        <h1>Page Not Found</h1>
+        <p>The page you're looking for doesn't exist or has been moved.</p>
+        <div class="info-box">
+          <p><strong>Available Services:</strong></p>
+          <p><a href="https://homepage.opticon.dev">Homepage Dashboard</a></p>
+          <p><a href="https://nextcloud.dcbond.com">Nextcloud</a></p>
+          <p><a href="https://photos.opticon.dev">Photos</a></p>
+        </div>
+        <p class="note">
+          If you believe this is an error, please check the URL and try again.
+        </p>
+      </div>
+    </body>
+    </html>
+    EOF
+  '';
+
 in
 
 {
@@ -141,22 +310,20 @@ in
 
       dynamicConfigOptions = {
         http = {
-          # serversTransports = {
-          #   fast-timeout = {
-          #     serverName = "";
-          #     insecureSkipVerify = false;
-          #     forwardingTimeouts = {
-          #       dialTimeout = "3s";           # Max time to establish connection (down from 30s default)
-          #       responseHeaderTimeout = "5s"; # Max time to read response headers (down from 60s default)
-          #       idleConnTimeout = "90s";      # Keep default - affects persistent connections
-          #     };
-          #   };
-          # };
+          serversTransports = {
+            default = {
+              forwardingTimeouts = {
+                dialTimeout = "5s"; # max time to establish connection (down from 30s default)
+                responseHeaderTimeout = "10s"; # max time to read response headers - triggers maintenance page faster
+              };
+            };
+          };
           routers."${app}-dashboard" = {
             entrypoints = ["websecure"];
             rule = "Host(`${app}-${config.networking.hostName}.${configVars.domain2}`)";
             service = "api@internal";
             middlewares = [
+              "forbidden-page"
               "trusted-allow"
               "secure-headers"
             ];
@@ -173,6 +340,19 @@ in
                   sans = "*.${configVars.domain2}";
                 };
               };
+            };
+          };
+          routers.notfound-catchall = {
+            entrypoints = ["websecure"];
+            rule = "HostRegexp(`{host:.+}`)";
+            service = "notfound-page";
+            priority = 1;
+            middlewares = [
+              "secure-headers"
+            ];
+            tls = {
+              certResolver = "cloudflareDns";
+              options = "tls-13@file";
             };
           };
           middlewares = {
@@ -209,6 +389,49 @@ in
                 ];
                 referrerPolicy = "same-origin";
                 addVaryHeader = true;
+              };
+            };
+            maintenance-page = {
+              errors = {
+                status = ["502" "503" "504"];
+                service = "maintenance-page";
+                query = "/";
+              };
+            };
+            forbidden-page = {
+              errors = {
+                status = ["403"];
+                service = "forbidden-page";
+                query = "/";
+              };
+            };
+          };
+          services = {
+            maintenance-page = {
+              loadBalancer = {
+                servers = [
+                  {
+                    url = "http://127.0.0.1:9018";
+                  }
+                ];
+              };
+            };
+            forbidden-page = {
+              loadBalancer = {
+                servers = [
+                  {
+                    url = "http://127.0.0.1:9019";
+                  }
+                ];
+              };
+            };
+            notfound-page = {
+              loadBalancer = {
+                servers = [
+                  {
+                    url = "http://127.0.0.1:9020";
+                  }
+                ];
               };
             };
           };
@@ -254,6 +477,47 @@ in
         missingok = true;
         notifempty = true;
         postrotate = "systemctl kill --signal=SIGUSR1 traefik.service";  # tell traefik to reopen log file
+      };
+    };
+
+    nginx = {
+      enable = true;
+      recommendedGzipSettings = true;
+      recommendedOptimisation = true;
+      recommendedProxySettings = true;
+      recommendedTlsSettings = true;
+      virtualHosts."maintenance-page" = {
+        enableACME = false;
+        forceSSL = false;
+        root = "${maintenanceRoot}";
+        listen = [
+          {
+            addr = "127.0.0.1";
+            port = 9018;
+          }
+        ];
+      };
+      virtualHosts."forbidden-page" = {
+        enableACME = false;
+        forceSSL = false;
+        root = "${forbiddenRoot}";
+        listen = [
+          {
+            addr = "127.0.0.1";
+            port = 9019;
+          }
+        ];
+      };
+      virtualHosts."notfound-page" = {
+        enableACME = false;
+        forceSSL = false;
+        root = "${notFoundRoot}";
+        listen = [
+          {
+            addr = "127.0.0.1";
+            port = 9020;
+          }
+        ];
       };
     };
 

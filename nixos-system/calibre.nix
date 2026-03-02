@@ -55,6 +55,8 @@ in
           rule = "Host(`${app2}.${configVars.domain2}`)";
           service = "${app2}";
           middlewares = [
+            "maintenance-page"
+            "forbidden-page"
             "trusted-allow"
             "secure-headers"
           ];
@@ -77,6 +79,7 @@ in
         #};
         ${app2} = {
           loadBalancer = {
+            serversTransport = "default";
             passHostHeader = true;
             servers = [
             {

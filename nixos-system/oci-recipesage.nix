@@ -124,7 +124,7 @@ in
         "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
         "traefik.http.routers.${app}.tls" = "true";
         "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-        "traefik.http.routers.${app}.middlewares" = "trusted-allow@file,secure-headers@file";
+        "traefik.http.routers.${app}.middlewares" = "maintenance-page@file,forbidden-page@file,trusted-allow@file,secure-headers@file";
         "traefik.http.services.${app}.loadbalancer.server.port" = "80";
       };
     };

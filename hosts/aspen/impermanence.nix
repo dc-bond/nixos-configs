@@ -80,6 +80,7 @@
   systemd.tmpfiles.rules = [
     "d /persist/home/chris 0700 chris users -" # tmpfiles ensures directory exists before impermanence tooling bind-mounts /persist/home/{user}/.config/age directory
     "d /persist/etc/age 0755 root root -" # since early bind mounting /etc/age manually (i.e. not using impermanence tooling bind mounts) due to sops needing age keys for user creation prior to impermanence bind mounts (deploy script should create this, but tmpfiles as fallback)
+    "d /persist/var/lib/private 0700 root root -" # systemd requires mode 0700 for StateDirectory parent when using DynamicUser, must fix /persist since will be bind mounted to /var/lib/private
     "d /var/lib/private 0700 root root -" # systemd requires mode 0700 for StateDirectory parent when using DynamicUser
   ];
 
