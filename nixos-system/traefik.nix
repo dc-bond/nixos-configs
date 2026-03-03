@@ -130,8 +130,8 @@ let
         <p>This service is only accessible from authorized networks.</p>
         <div class="info-box">
           <p><strong>Authorized Access Points:</strong></p>
-          <p>• Local Network (192.168.1.0/24)</p>
-          <p>• Tailscale VPN</p>
+          <p>• Bond Local Area Network</p>
+          <p>• Bond VPN</p>
         </div>
         <p class="note">
           Please connect to the local network or VPN to access this service.
@@ -142,40 +142,40 @@ let
     EOF
   '';
 
-  # 404 - not found page
-  notFoundRoot = pkgs.runCommand "notfound-page" {} ''
-    mkdir -p $out
-    cat > $out/index.html <<'EOF'
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Page Not Found</title>
-      <style>
-        ${errorPageStyle}
-        .icon { color: #81A1C1; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="icon">🔍</div>
-        <h1>Page Not Found</h1>
-        <p>The page you're looking for doesn't exist or has been moved.</p>
-        <div class="info-box">
-          <p><strong>Available Services:</strong></p>
-          <p><a href="https://homepage.opticon.dev">Homepage Dashboard</a></p>
-          <p><a href="https://nextcloud.dcbond.com">Nextcloud</a></p>
-          <p><a href="https://photos.opticon.dev">Photos</a></p>
-        </div>
-        <p class="note">
-          If you believe this is an error, please check the URL and try again.
-        </p>
-      </div>
-    </body>
-    </html>
-    EOF
-  '';
+  ## 404 - not found page
+  #notFoundRoot = pkgs.runCommand "notfound-page" {} ''
+  #  mkdir -p $out
+  #  cat > $out/index.html <<'EOF'
+  #  <!DOCTYPE html>
+  #  <html lang="en">
+  #  <head>
+  #    <meta charset="UTF-8">
+  #    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  #    <title>Page Not Found</title>
+  #    <style>
+  #      ${errorPageStyle}
+  #      .icon { color: #81A1C1; }
+  #    </style>
+  #  </head>
+  #  <body>
+  #    <div class="container">
+  #      <div class="icon">🔍</div>
+  #      <h1>Page Not Found</h1>
+  #      <p>The page you're looking for doesn't exist or has been moved.</p>
+  #      <div class="info-box">
+  #        <p><strong>Available Services:</strong></p>
+  #        <p><a href="https://homepage.opticon.dev">Homepage Dashboard</a></p>
+  #        <p><a href="https://nextcloud.dcbond.com">Nextcloud</a></p>
+  #        <p><a href="https://photos.opticon.dev">Photos</a></p>
+  #      </div>
+  #      <p class="note">
+  #        If you believe this is an error, please check the URL and try again.
+  #      </p>
+  #    </div>
+  #  </body>
+  #  </html>
+  #  EOF
+  #'';
 
 in
 
@@ -310,12 +310,10 @@ in
 
       dynamicConfigOptions = {
         http = {
-          serversTransports = {
-            default = {
-              forwardingTimeouts = {
-                dialTimeout = "5s"; # max time to establish connection (down from 30s default)
-                responseHeaderTimeout = "10s"; # max time to read response headers - triggers maintenance page faster
-              };
+          serversTransports.default = {
+            forwardingTimeouts = {
+              dialTimeout = "5s"; # max time to establish connection (down from 30s default)
+              responseHeaderTimeout = "10s"; # max time to read response headers - triggers maintenance page faster
             };
           };
           routers."${app}-dashboard" = {
@@ -342,19 +340,19 @@ in
               };
             };
           };
-          routers.notfound-catchall = {
-            entrypoints = ["websecure"];
-            rule = "HostRegexp(`{host:.+}`)";
-            service = "notfound-page";
-            priority = 1;
-            middlewares = [
-              "secure-headers"
-            ];
-            tls = {
-              certResolver = "cloudflareDns";
-              options = "tls-13@file";
-            };
-          };
+          #routers.notfound-catchall = {
+          #  entrypoints = ["websecure"];
+          #  rule = "HostRegexp(`{host:.+}`)";
+          #  service = "notfound-page";
+          #  priority = 1;
+          #  middlewares = [
+          #    "secure-headers"
+          #  ];
+          #  tls = {
+          #    certResolver = "cloudflareDns";
+          #    options = "tls-13@file";
+          #  };
+          #};
           middlewares = {
             trusted-allow = {
               ipAllowList = {
@@ -425,15 +423,15 @@ in
                 ];
               };
             };
-            notfound-page = {
-              loadBalancer = {
-                servers = [
-                  {
-                    url = "http://127.0.0.1:9020";
-                  }
-                ];
-              };
-            };
+            #notfound-page = {
+            #  loadBalancer = {
+            #    servers = [
+            #      {
+            #        url = "http://127.0.0.1:9020";
+            #      }
+            #    ];
+            #  };
+            #};
           };
         };
         tls = {
@@ -508,17 +506,17 @@ in
           }
         ];
       };
-      virtualHosts."notfound-page" = {
-        enableACME = false;
-        forceSSL = false;
-        root = "${notFoundRoot}";
-        listen = [
-          {
-            addr = "127.0.0.1";
-            port = 9020;
-          }
-        ];
-      };
+      #virtualHosts."notfound-page" = {
+      #  enableACME = false;
+      #  forceSSL = false;
+      #  root = "${notFoundRoot}";
+      #  listen = [
+      #    {
+      #      addr = "127.0.0.1";
+      #      port = 9020;
+      #    }
+      #  ];
+      #};
     };
 
   };

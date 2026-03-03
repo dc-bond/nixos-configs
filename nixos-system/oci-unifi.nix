@@ -127,17 +127,6 @@ in
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.${app}.service" = "${app}";
-        "traefik.http.routers.${app}.entrypoints" = "websecure";
-        "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
-        "traefik.http.routers.${app}.tls" = "true";
-        "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-        "traefik.http.routers.${app}.middlewares" = "maintenance-page@file,forbidden-page@file,trusted-allow@file,secure-headers@file,unifi-headers@file";
-        "traefik.http.services.${app}.loadbalancer.server.port" = "8443";
-        "traefik.http.services.${app}.loadbalancer.server.scheme" = "https"; # drop if not using traefik
-      };
     };
     "${app1}" = {
       image = "docker.io/mongo:7.0"; # https://hub.docker.com/_/mongo/tags
@@ -159,9 +148,41 @@ in
 
   };
   
-  services.traefik = {
-    staticConfigOptions.serversTransport.insecureSkipVerify = true; 
-    dynamicConfigOptions.http.middlewares.unifi-headers.headers.customRequestHeaders.Authorization = "";
+  services.traefik.dynamicConfigOptions.http = {
+    middlewares.unifi-headers.headers.customRequestHeaders.Authorization = "";
+    serversTransports.unifi-insecure = {
+      insecureSkipVerify = true; # required for unifi's self-signed cert
+      forwardingTimeouts = {
+        dialTimeout = "5s"; # max time to establish connection (down from 30s default)
+        responseHeaderTimeout = "10s"; # max time to read response headers - triggers maintenance page faster
+      };
+    };
+    routers.${app} = {
+      entrypoints = ["websecure"];
+      rule = "Host(`${app}.${configVars.domain2}`)";
+      service = "${app}";
+      middlewares = [
+        "maintenance-page"
+        "forbidden-page"
+        "trusted-allow"
+        "secure-headers"
+        "unifi-headers"
+      ];
+      tls = {
+        certResolver = "cloudflareDns";
+        options = "tls-13@file";
+      };
+    };
+    services.${app} = {
+      loadBalancer = {
+        serversTransport = "unifi-insecure"; # uses self-signed cert, needs insecureSkipVerify
+        servers = [
+          {
+            url = "https://${configVars.containerServices.unifi.containers.controller.ipv4}:8443";
+          }
+        ];
+      };
+    };
   };
 
   systemd = {

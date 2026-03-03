@@ -71,8 +71,8 @@ let
 
   customDnsEntries = [
     # wildcard records for custom 404 page - specific records below take precedence
-    "address=/.${configVars.domain1}/${configVars.hosts.aspen.networking.ipv4}"
-    "address=/.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    #"address=/.${configVars.domain1}/${configVars.hosts.aspen.networking.ipv4}"
+    #"address=/.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     # aspen base hostnames
     "address=/aspen.${configVars.domain1}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/aspen.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
@@ -102,7 +102,7 @@ let
     "address=/traefik-aspen.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/unifi.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/webhook.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
-    "address=/weekly-recipes.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    #"address=/weekly-recipes.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/zwavejs.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     # juniper services
     "address=/alertmanager.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
@@ -269,15 +269,6 @@ in
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.${app}-${config.networking.hostName}.entrypoints" = "websecure";
-        "traefik.http.routers.${app}-${config.networking.hostName}.rule" = "Host(`${app}-${config.networking.hostName}.${configVars.domain2}`)";
-        "traefik.http.routers.${app}-${config.networking.hostName}.tls" = "true";
-        "traefik.http.routers.${app}-${config.networking.hostName}.tls.options" = "tls-13@file";
-        "traefik.http.routers.${app}-${config.networking.hostName}.middlewares" = "maintenance-page@file,forbidden-page@file,trusted-allow@file,secure-headers@file";
-        "traefik.http.services.${app}-${config.networking.hostName}.loadbalancer.server.port" = "80"; # port for browser interface
-      };
     };
 
     "${app2}" = {
@@ -370,6 +361,34 @@ in
       };
       wantedBy = ["multi-user.target"];
     };
-  }; 
+  };
+
+  services.traefik.dynamicConfigOptions.http = {
+    routers."${app}-${config.networking.hostName}" = {
+      entrypoints = ["websecure"];
+      rule = "Host(`${app}-${config.networking.hostName}.${configVars.domain2}`)";
+      service = "${app}-${config.networking.hostName}";
+      middlewares = [
+        "maintenance-page"
+        "forbidden-page"
+        "trusted-allow"
+        "secure-headers"
+      ];
+      tls = {
+        certResolver = "cloudflareDns";
+        options = "tls-13@file";
+      };
+    };
+    services."${app}-${config.networking.hostName}" = {
+      loadBalancer = {
+        serversTransport = "default";
+        servers = [
+          {
+            url = "http://${configVars.containerServices.${app}.containers.${app}.ipv4}:80";
+          }
+        ];
+      };
+    };
+  };
 
 }

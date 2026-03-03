@@ -8,7 +8,7 @@
 {
 
   systemd.tmpfiles.rules = [
-    "L+ /var/www/weekly-recipes.opticon.dev - - - - /var/lib/nextcloud/data/Chris\\040Bond/files/Personal/misc/weekly-recipes.opticon.dev"
+    #"L+ /var/www/weekly-recipes.opticon.dev - - - - /var/lib/nextcloud/data/Chris\\040Bond/files/Personal/misc/weekly-recipes.opticon.dev"
     "L+ /var/www/gatlinburg2026.dcbond.com - - - - /var/lib/nextcloud/data/Chris\\040Bond/files/Bond\\040Family/Travel/2026/April\\040-\\040Gatlinburg\\040TN/gatlinburg2026.dcbond.com"
   ];
 
@@ -22,17 +22,17 @@
       recommendedTlsSettings = true;
       virtualHosts = {
 
-        "weekly-recipes.${configVars.domain2}" = {
-          enableACME = false;
-          forceSSL = false;
-          root = "/var/www/weekly-recipes.opticon.dev";
-          listen = [
-            {
-              addr = "127.0.0.1";
-              port = 9016;
-            }
-          ];
-        };
+        #"weekly-recipes.${configVars.domain2}" = {
+        #  enableACME = false;
+        #  forceSSL = false;
+        #  root = "/var/www/weekly-recipes.opticon.dev";
+        #  listen = [
+        #    {
+        #      addr = "127.0.0.1";
+        #      port = 9016;
+        #    }
+        #  ];
+        #};
 
         "gatlinburg2026.${configVars.domain1}" = {
           enableACME = false;
@@ -67,21 +67,21 @@
 
         routers = {
 
-          "weekly-recipes" = {
-            entrypoints = ["websecure"];
-            rule = "Host(`weekly-recipes.${configVars.domain2}`)";
-            service = "weekly-recipes";
-            middlewares = [
-              "maintenance-page"
-              "forbidden-page"
-              "trusted-allow"
-              "secure-headers"
-            ];
-            tls = {
-              certResolver = "cloudflareDns";
-              options = "tls-13@file";
-            };
-          };
+          #"weekly-recipes" = {
+          #  entrypoints = ["websecure"];
+          #  rule = "Host(`weekly-recipes.${configVars.domain2}`)";
+          #  service = "weekly-recipes";
+          #  middlewares = [
+          #    "maintenance-page"
+          #    "forbidden-page"
+          #    "trusted-allow"
+          #    "secure-headers"
+          #  ];
+          #  tls = {
+          #    certResolver = "cloudflareDns";
+          #    options = "tls-13@file";
+          #  };
+          #};
 
           "gatlinburg2026" = {
             entrypoints = ["websecure"];
@@ -102,17 +102,17 @@
 
         services = {
 
-          "weekly-recipes" = {
-            loadBalancer = {
-              serversTransport = "default";
-              passHostHeader = true;
-              servers = [
-                {
-                  url = "http://127.0.0.1:9016";
-                }
-              ];
-            };
-          };
+          #"weekly-recipes" = {
+          #  loadBalancer = {
+          #    serversTransport = "default";
+          #    passHostHeader = true;
+          #    servers = [
+          #      {
+          #        url = "http://127.0.0.1:9016";
+          #      }
+          #    ];
+          #  };
+          #};
 
           "gatlinburg2026" = {
             loadBalancer = {

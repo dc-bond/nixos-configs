@@ -64,15 +64,6 @@ in
       "--stop-signal=SIGINT"
       "--device=/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_d677b47b5594eb11ba3436703d98b6d1-if00-port0:/dev/zwave"
     ];
-    labels = {
-      "traefik.enable" = "true";
-      "traefik.http.routers.${app}.entrypoints" = "websecure";
-      "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
-      "traefik.http.routers.${app}.tls" = "true";
-      "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-      "traefik.http.routers.${app}.middlewares" = "maintenance-page@file,forbidden-page@file,trusted-allow@file,secure-headers@file";
-      "traefik.http.services.${app}.loadbalancer.server.port" = "8091"; # port for browser interface
-    };
   };
 
   systemd = {
@@ -131,6 +122,34 @@ in
       };
       wantedBy = ["multi-user.target"];
     };
-  }; 
+  };
+
+  services.traefik.dynamicConfigOptions.http = {
+    routers.${app} = {
+      entrypoints = ["websecure"];
+      rule = "Host(`${app}.${configVars.domain2}`)";
+      service = "${app}";
+      middlewares = [
+        "maintenance-page"
+        "forbidden-page"
+        "trusted-allow"
+        "secure-headers"
+      ];
+      tls = {
+        certResolver = "cloudflareDns";
+        options = "tls-13@file";
+      };
+    };
+    services.${app} = {
+      loadBalancer = {
+        serversTransport = "default";
+        servers = [
+          {
+            url = "http://${configVars.containerServices.${app}.containers.${app}.ipv4}:8091";
+          }
+        ];
+      };
+    };
+  };
 
 }

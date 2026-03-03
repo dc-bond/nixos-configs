@@ -9,7 +9,6 @@
 let
   cfg = config.services.zfsExtended;
 
-  # TODO: uncomment after aspen re-install with ZFS pool
   #zfsScrubExporter = pkgs.writeShellScript "zfs-scrub-exporter.sh" ''
   #  #!/usr/bin/env bash
   #  set -euo pipefail
@@ -211,8 +210,7 @@ in
       trim.enable = lib.mkDefault false; # disable for HDDs, can be enabled for SSD pools
     };
 
-    # TODO: uncomment after aspen re-install with ZFS pool
-    # hook into ZFS scrub services to export metrics after completion
+    # hook into zfs scrub services to export metrics after completion
     #systemd.services = lib.mkMerge (lib.forEach cfg.pools (pool: {
     #  "zfs-scrub-${pool}" = {
     #    serviceConfig.ExecStartPost = lib.mkAfter "${zfsScrubExporter}";
