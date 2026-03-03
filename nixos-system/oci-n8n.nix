@@ -86,15 +86,6 @@ in
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.${app}.entrypoints" = "websecure";
-        "traefik.http.routers.${app}.rule" = "Host(`${app}.${configVars.domain2}`)";
-        "traefik.http.routers.${app}.tls" = "true";
-        "traefik.http.routers.${app}.tls.options" = "tls-13@file";
-        "traefik.http.routers.${app}.middlewares" = "maintenance-page@file,forbidden-page@file,trusted-allow@file,secure-headers@file";
-        "traefik.http.services.${app}.loadbalancer.server.port" = "5678";
-      };
     };
 
     "${app2}" = {
@@ -212,6 +203,34 @@ in
       };
       wantedBy = ["multi-user.target"];
     };
-  }; 
+  };
+
+  services.traefik.dynamicConfigOptions.http = {
+    routers.${app} = {
+      entrypoints = ["websecure"];
+      rule = "Host(`${app}.${configVars.domain2}`)";
+      service = "${app}";
+      middlewares = [
+        "maintenance-page"
+        "forbidden-page"
+        "trusted-allow"
+        "secure-headers"
+      ];
+      tls = {
+        certResolver = "cloudflareDns";
+        options = "tls-13@file";
+      };
+    };
+    services.${app} = {
+      loadBalancer = {
+        serversTransport = "default";
+        servers = [
+          {
+            url = "http://${configVars.containerServices.${app}.containers.${app}.ipv4}:5678";
+          }
+        ];
+      };
+    };
+  };
 
 }
