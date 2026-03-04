@@ -110,6 +110,7 @@
   ];
 
   backups = {
+    startTime = "*-*-* 02:50:00"; # staggered: kauri at 2:50 AM
     prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
   };
 

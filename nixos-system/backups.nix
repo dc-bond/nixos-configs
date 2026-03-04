@@ -267,6 +267,139 @@ let
     echo "Inspection complete!"
   '';
 
+  downloadRemoteBackupScript = pkgs.writeShellScriptBin "downloadRemoteBackup" ''
+    #!/bin/bash
+    set -euo pipefail
+
+    # check for root
+    if [ "$(id -u)" -ne 0 ]; then
+      echo "ERROR: This script must be run as root"
+      echo "Usage: sudo downloadRemoteBackup"
+      exit 1
+    fi
+
+    export BORG_PASSPHRASE=$(cat ${borgCryptPasswdFile})
+    export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
+
+    TEMP_MOUNT=""
+
+    # cleanup function
+    cleanup() {
+      if [ -n "$TEMP_MOUNT" ] && [ -d "$TEMP_MOUNT" ] && mountpoint -q "$TEMP_MOUNT" 2>/dev/null; then
+        echo "Cleaning up remote mount..."
+        fusermount -u "$TEMP_MOUNT" 2>/dev/null || umount "$TEMP_MOUNT" 2>/dev/null || true
+        rmdir "$TEMP_MOUNT" 2>/dev/null || true
+      fi
+    }
+
+    trap cleanup EXIT INT TERM
+
+    echo "========================================"
+    echo "Download Remote Backup from Backblaze"
+    echo "========================================"
+    echo ""
+    echo "This downloads a complete backup repository from B2"
+    echo "to local storage for faster/safer recovery."
+    echo ""
+
+    # host selection
+    HOSTS=(${lib.concatStringsSep " " (builtins.attrNames configVars.hosts)})
+
+    echo "Available hosts:"
+    for i in "''${!HOSTS[@]}"; do
+      if [ "''${HOSTS[$i]}" = "${config.networking.hostName}" ]; then
+        echo "  $((i+1))) ''${HOSTS[$i]} (current host)"
+      else
+        echo "  $((i+1))) ''${HOSTS[$i]}"
+      fi
+    done
+    echo ""
+
+    read -p "Select host to download [1]: " host_num
+    host_num=''${host_num:-1}
+
+    if ! [[ "$host_num" =~ ^[0-9]+$ ]] || [ "$host_num" -lt 1 ] || [ "$host_num" -gt "''${#HOSTS[@]}" ]; then
+      echo "Invalid selection"
+      exit 1
+    fi
+
+    SOURCE_HOST="''${HOSTS[$((host_num-1))]}"
+    DOWNLOAD_DIR="${config.backups.borgDir}/$SOURCE_HOST-from-b2"
+
+    echo "Selected: $SOURCE_HOST"
+    echo ""
+
+    # check if already exists
+    if [ -d "$DOWNLOAD_DIR" ]; then
+      echo "WARNING: Download directory already exists: $DOWNLOAD_DIR"
+      echo ""
+      read -p "Delete existing and re-download? (y/N): " confirm
+      if ! [[ "$confirm" =~ ^[Yy]$ ]]; then
+        echo "Aborted."
+        exit 0
+      fi
+      echo "Removing existing download..."
+      rm -rf "$DOWNLOAD_DIR"
+    fi
+
+    echo "Download destination: $DOWNLOAD_DIR"
+    echo ""
+    read -p "Proceed with download? (y/N): " confirm
+    if ! [[ "$confirm" =~ ^[Yy]$ ]]; then
+      echo "Aborted."
+      exit 0
+    fi
+
+    echo ""
+    echo "========================================"
+    echo "Downloading from Backblaze B2"
+    echo "========================================"
+    echo ""
+    echo "This may take 10-60 minutes depending on repository size."
+    echo "You can safely Ctrl+C and re-run to resume."
+    echo ""
+
+    mkdir -p "$DOWNLOAD_DIR"
+
+    # use rclone sync for efficient download with resume capability
+    ${pkgs.rclone}/bin/rclone sync \
+      --config "${rcloneConf}" \
+      --progress \
+      --transfers 4 \
+      --checkers 8 \
+      --contimeout 60s \
+      --timeout 300s \
+      --retries 3 \
+      --low-level-retries 10 \
+      --stats 1m \
+      --stats-one-line \
+      backblaze-b2:$SOURCE_HOST-backup-dcbond "$DOWNLOAD_DIR"
+
+    echo ""
+    echo "========================================"
+    echo "Verifying repository integrity"
+    echo "========================================"
+    echo ""
+
+    if ! ${pkgs.borgbackup}/bin/borg check "$DOWNLOAD_DIR"; then
+      echo ""
+      echo "ERROR: Repository verification failed!"
+      echo "The download may be incomplete or corrupted."
+      exit 1
+    fi
+
+    echo ""
+    echo "========================================"
+    echo "✓ Download complete and verified"
+    echo "========================================"
+    echo ""
+    echo "Repository downloaded to: $DOWNLOAD_DIR"
+    echo ""
+    echo "You can now use this in recovery scripts by selecting:"
+    echo "  D) Downloaded remote repository"
+    echo ""
+  '';
+
   dockerServiceRecoveryScript = { 
   serviceName, 
   recoveryPlan 
@@ -287,8 +420,6 @@ let
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
     TEMP_MOUNT=""
-    TEMP_EXTRACT=""
-    EXTRACT_TO_TEMP=false
     CLEANUP_MOUNT=false
 
     # cleanup function
@@ -299,10 +430,6 @@ let
           fusermount -u "$TEMP_MOUNT" 2>/dev/null || umount "$TEMP_MOUNT" 2>/dev/null || true
         fi
         rmdir "$TEMP_MOUNT" 2>/dev/null || true
-      fi
-      if [ -n "$TEMP_EXTRACT" ] && [ -d "$TEMP_EXTRACT" ]; then
-        echo "Cleaning up temp extraction..."
-        rm -rf "$TEMP_EXTRACT"
       fi
     }
 
@@ -315,18 +442,35 @@ let
     echo ""
 
     # repo source selection
+    DOWNLOADED_REPO="${config.backups.borgDir}/${config.networking.hostName}-from-b2"
+
     echo "Select repository source:"
-    echo "  L) Local repository"
-    echo "  R) Remote repository (Backblaze B2)"
+    echo "  L) Local repository (${config.backups.borgDir}/${config.networking.hostName})"
+    if [ -d "$DOWNLOADED_REPO" ]; then
+      echo "  D) Downloaded remote repository ($DOWNLOADED_REPO)"
+    fi
+    echo "  R) Remote repository (Backblaze B2 - direct mount)"
     echo ""
     read -p "Source [L]: " repo_type
     repo_type=''${repo_type:-L}
-    
-    if [[ "$repo_type" =~ ^[Rr]$ ]]; then
+
+    if [[ "$repo_type" =~ ^[Dd]$ ]]; then
+
+      # use downloaded B2 copy
+      if [ ! -d "$DOWNLOADED_REPO" ]; then
+        echo "ERROR: Downloaded repository not found at $DOWNLOADED_REPO"
+        echo "Run 'sudo downloadRemoteBackup' first to download a copy from B2"
+        exit 1
+      fi
+
+      REPO="$DOWNLOADED_REPO"
+      echo "Using downloaded repository: $REPO"
+
+    elif [[ "$repo_type" =~ ^[Rr]$ ]]; then
 
       # remote: host selection
       HOSTS=(${lib.concatStringsSep " " (builtins.attrNames configVars.hosts)})
-      
+
       echo ""
       echo "Available hosts:"
       for i in "''${!HOSTS[@]}"; do
@@ -337,22 +481,22 @@ let
         fi
       done
       echo ""
-      
+
       read -p "Select host [1]: " host_num
       host_num=''${host_num:-1}
-      
+
       if ! [[ "$host_num" =~ ^[0-9]+$ ]] || [ "$host_num" -lt 1 ] || [ "$host_num" -gt "''${#HOSTS[@]}" ]; then
         echo "Invalid selection"
         exit 1
       fi
-      
+
       SOURCE_HOST="''${HOSTS[$((host_num-1))]}"
       echo "Selected: $SOURCE_HOST"
-      
+
       # mount remote
       TEMP_MOUNT="/tmp/borg-mount-$$"
       mkdir -p "$TEMP_MOUNT"
-      
+
       echo ""
       echo "Mounting remote backup from $SOURCE_HOST via Backblaze B2..."
       echo "This may take a few moments..."
@@ -362,32 +506,31 @@ let
         --allow-other \
         --daemon \
         backblaze-b2:$SOURCE_HOST-backup-dcbond "$TEMP_MOUNT"
-      
+
       # wait for mount to be ready
       sleep 5
-      
+
       # verify mount succeeded
       if ! mountpoint -q "$TEMP_MOUNT"; then
         echo "ERROR: Failed to mount remote repository"
         exit 1
       fi
-      
+
       REPO="$TEMP_MOUNT"
       CLEANUP_MOUNT=true
-      EXTRACT_TO_TEMP=true
       echo "Remote repository mounted"
-      
+
     else
-    
+
       # use local repository
       REPO="${config.backups.borgDir}/${config.networking.hostName}"
-      
+
       # verify local repo exists
       if [ ! -d "$REPO" ]; then
         echo "ERROR: Local repository not found at $REPO"
         exit 1
       fi
-      
+
       echo "Using local repository: $REPO"
     fi
 
@@ -421,38 +564,9 @@ let
     
     echo "Selected: $ARCHIVE"
 
-    # extract data before bringing services down (if remote)
-    if [ "$EXTRACT_TO_TEMP" = true ]; then
-      echo ""
-      echo "========================================"
-      echo "Phase 1: downloading data"
-      echo "========================================"
-      
-      TEMP_EXTRACT="/tmp/borg-extract-$$"
-      mkdir -p "$TEMP_EXTRACT"
-      
-      echo ""
-      echo "Extracting to /tmp..."
-      
-      cd "$TEMP_EXTRACT"
-      if ! ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}; then
-        echo ""
-        echo "ERROR: Extraction failed. No changes made to services."
-        exit 1
-      fi
-      
-      echo ""
-      echo "✓ Data downloaded successfully"
-      
-      # unmount remote
-      fusermount -u "$TEMP_MOUNT" 2>/dev/null || true
-      rmdir "$TEMP_MOUNT" 2>/dev/null || true
-      CLEANUP_MOUNT=false
-    fi
-
     echo ""
     echo "========================================"
-    echo "Phase 2: applying recovery"
+    echo "Applying recovery"
     echo "========================================"
     echo ""
     echo "This will:"
@@ -472,41 +586,35 @@ let
     done
 
     echo "Waiting for graceful container shutdown..."
-    sleep 15 
-    
+    sleep 15
+
     # extract volume names from restore items
     VOLUMES=""
     for item in ${lib.concatStringsSep " " recoveryPlan.restoreItems}; do
       VOLUME_NAME=$(basename "$item")
       VOLUMES="$VOLUMES $VOLUME_NAME"
     done
-    
+
     echo "Removing existing volumes..."
     for volume in $VOLUMES; do
       ${pkgs.docker}/bin/docker volume rm "$volume" 2>/dev/null || true
     done
-    
+
     echo "Recreating volumes..."
     for volume in $VOLUMES; do
       ${pkgs.docker}/bin/docker volume create "$volume"
     done
 
-    # copy (if remote) or direct extract (if local) recovery data
-    if [ "$EXTRACT_TO_TEMP" = true ]; then
-      echo "Moving data to final location..."
-      for item in ${lib.concatStringsSep " " recoveryPlan.restoreItems}; do
-        if [ ! -e "$TEMP_EXTRACT$item" ]; then
-          echo "ERROR: Extracted data not found at $TEMP_EXTRACT$item"
-          exit 1
-        fi
-        cp -av "$TEMP_EXTRACT$item"/. "$item/"
-      done
-      rm -rf "$TEMP_EXTRACT"
-      TEMP_EXTRACT=""
-    else
-      echo "Extracting data..."
-      cd /
-      ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
+    echo "Extracting data..."
+    cd /
+    ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
+
+    # unmount remote if needed
+    if [ "$CLEANUP_MOUNT" = true ]; then
+      echo "Unmounting remote repository..."
+      fusermount -u "$TEMP_MOUNT" 2>/dev/null || true
+      rmdir "$TEMP_MOUNT" 2>/dev/null || true
+      CLEANUP_MOUNT=false
     fi
 
     echo ""
@@ -546,8 +654,6 @@ let
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
     TEMP_MOUNT=""
-    TEMP_EXTRACT=""
-    EXTRACT_TO_TEMP=false
     CLEANUP_MOUNT=false
 
     # cleanup function
@@ -558,10 +664,6 @@ let
           fusermount -u "$TEMP_MOUNT" 2>/dev/null || umount "$TEMP_MOUNT" 2>/dev/null || true
         fi
         rmdir "$TEMP_MOUNT" 2>/dev/null || true
-      fi
-      if [ -n "$TEMP_EXTRACT" ] && [ -d "$TEMP_EXTRACT" ]; then
-        echo "Cleaning up temp extraction..."
-        rm -rf "$TEMP_EXTRACT"
       fi
     }
 
@@ -574,16 +676,33 @@ let
     echo ""
 
     # repo source selection
+    DOWNLOADED_REPO="${config.backups.borgDir}/${config.networking.hostName}-from-b2"
+
     echo "Select repository source:"
-    echo "  L) Local repository"
-    echo "  R) Remote repository (Backblaze B2)"
+    echo "  L) Local repository (${config.backups.borgDir}/${config.networking.hostName})"
+    if [ -d "$DOWNLOADED_REPO" ]; then
+      echo "  D) Downloaded remote repository ($DOWNLOADED_REPO)"
+    fi
+    echo "  R) Remote repository (Backblaze B2 - direct mount)"
     echo ""
     read -p "Source [L]: " repo_type
     repo_type=''${repo_type:-L}
-    
-    if [[ "$repo_type" =~ ^[Rr]$ ]]; then
+
+    if [[ "$repo_type" =~ ^[Dd]$ ]]; then
+
+      # use downloaded B2 copy
+      if [ ! -d "$DOWNLOADED_REPO" ]; then
+        echo "ERROR: Downloaded repository not found at $DOWNLOADED_REPO"
+        echo "Run 'sudo downloadRemoteBackup' first to download a copy from B2"
+        exit 1
+      fi
+
+      REPO="$DOWNLOADED_REPO"
+      echo "Using downloaded repository: $REPO"
+
+    elif [[ "$repo_type" =~ ^[Rr]$ ]]; then
       HOSTS=(${lib.concatStringsSep " " (builtins.attrNames configVars.hosts)})
-      
+
       echo ""
       echo "Available hosts:"
       for i in "''${!HOSTS[@]}"; do
@@ -594,22 +713,22 @@ let
         fi
       done
       echo ""
-      
+
       read -p "Select host [1]: " host_num
       host_num=''${host_num:-1}
-      
+
       if ! [[ "$host_num" =~ ^[0-9]+$ ]] || [ "$host_num" -lt 1 ] || [ "$host_num" -gt "''${#HOSTS[@]}" ]; then
         echo "Invalid selection"
         exit 1
       fi
-      
+
       SOURCE_HOST="''${HOSTS[$((host_num-1))]}"
       echo "Selected: $SOURCE_HOST"
-      
+
       # mount remote
       TEMP_MOUNT="/tmp/borg-mount-$$"
       mkdir -p "$TEMP_MOUNT"
-      
+
       echo ""
       echo "Mounting remote backup from $SOURCE_HOST via Backblaze B2..."
       echo "This may take a few moments..."
@@ -619,30 +738,29 @@ let
         --allow-other \
         --daemon \
         backblaze-b2:$SOURCE_HOST-backup-dcbond "$TEMP_MOUNT"
-      
+
       # wait for mount to be ready
       sleep 5
-      
+
       # verify mount succeeded
       if ! mountpoint -q "$TEMP_MOUNT"; then
         echo "ERROR: Failed to mount remote repository"
         exit 1
       fi
-      
+
       REPO="$TEMP_MOUNT"
       CLEANUP_MOUNT=true
-      EXTRACT_TO_TEMP=true
       echo "Remote repository mounted"
-      
+
     else
       REPO="${config.backups.borgDir}/${config.networking.hostName}"
-      
+
       # verify local repo exists
       if [ ! -d "$REPO" ]; then
         echo "ERROR: Local repository not found at $REPO"
         exit 1
       fi
-      
+
       echo "Using local repository: $REPO"
     fi
 
@@ -676,38 +794,9 @@ let
     
     echo "Selected: $ARCHIVE"
 
-    # extract data before bringing services down (if remote)
-    if [ "$EXTRACT_TO_TEMP" = true ]; then
-      echo ""
-      echo "========================================"
-      echo "Phase 1: downloading data"
-      echo "========================================"
-      
-      TEMP_EXTRACT="/tmp/borg-extract-$$"
-      mkdir -p "$TEMP_EXTRACT"
-      
-      echo ""
-      echo "Extracting to /tmp..."
-      
-      cd "$TEMP_EXTRACT"
-      if ! ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}; then
-        echo ""
-        echo "ERROR: Extraction failed. No changes made to services."
-        exit 1
-      fi
-      
-      echo ""
-      echo "✓ Data downloaded successfully"
-      
-      # unmount remote
-      fusermount -u "$TEMP_MOUNT" 2>/dev/null || true
-      rmdir "$TEMP_MOUNT" 2>/dev/null || true
-      CLEANUP_MOUNT=false
-    fi
-
     echo ""
     echo "========================================"
-    echo "Phase 2: applying recovery"
+    echo "Applying recovery"
     echo "========================================"
     echo ""
     echo "This will:"
@@ -733,25 +822,21 @@ let
 
     ${postSvcStopHook}
 
-    # copy (if remote) or direct extract (if local) recovery data
-    if [ "$EXTRACT_TO_TEMP" = true ]; then
-      echo "Moving data to final location..."
-      for item in ${lib.concatStringsSep " " recoveryPlan.restoreItems}; do
-        if [ ! -e "$TEMP_EXTRACT$item" ]; then
-          echo "ERROR: Extracted data not found at $TEMP_EXTRACT$item"
-          exit 1
-        fi
-        # remove old data and copy restore directory from /tmp
-        rm -rf "$item"
-        mkdir -p "$(dirname "$item")"
-        cp -av "$TEMP_EXTRACT$item" "$item"
-      done
-      rm -rf "$TEMP_EXTRACT"
-      TEMP_EXTRACT=""
-    else
-      echo "Extracting data..."
-      cd /
-      ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
+    echo "Clearing existing data..."
+    for item in ${lib.concatStringsSep " " recoveryPlan.restoreItems}; do
+      find "$item" -mindepth 1 -delete
+    done
+
+    echo "Extracting data..."
+    cd /
+    ${pkgs.borgbackup}/bin/borg extract --verbose --list "$REPO"::"$ARCHIVE" ${lib.concatStringsSep " " recoveryPlan.restoreItems}
+
+    # unmount remote if needed
+    if [ "$CLEANUP_MOUNT" = true ]; then
+      echo "Unmounting remote repository..."
+      fusermount -u "$TEMP_MOUNT" 2>/dev/null || true
+      rmdir "$TEMP_MOUNT" 2>/dev/null || true
+      CLEANUP_MOUNT=false
     fi
 
     # ensure we're in a valid directory for database operations
@@ -1081,6 +1166,7 @@ in
       backupSuccessWebhookScript
       inspectLocalBackupsScript
       inspectRemoteBackupsScript
+      downloadRemoteBackupScript
       rclone
       fuse # needed for rclone mount
     ] ++ lib.optionals (config.bulkStorage.path != null) [

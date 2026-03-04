@@ -60,7 +60,10 @@
     };
   };
 
-  backups.borgDir = "/var/lib/borgbackup"; # juniper does not use impermanence
+  backups = {
+    startTime = "*-*-* 02:35:00"; # staggered: juniper at 2:35 AM
+    borgDir = "/var/lib/borgbackup"; # juniper does not use impermanence
+  };
 
   environment.systemPackages = with pkgs; [
     rsync # sync tool

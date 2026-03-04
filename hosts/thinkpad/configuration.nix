@@ -96,6 +96,7 @@
   systemd.tmpfiles.rules = [ "d /storage 0755 root root -" ];  # create /storage mount point
 
   backups = {
+    startTime = "*-*-* 02:40:00"; # staggered: thinkpad at 2:40 AM
     prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
   };
 
