@@ -238,9 +238,9 @@ in
       environment = { NVIDIA_VISIBLE_DEVICES = "all"; }; # enable GPU utilization
       volumes = [
         "${app7}:/config"
-        "${config.bulkStorage.path}/media/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
-        "${config.bulkStorage.path}/media/movies:/data/movies:ro" # ditto for movies
-        "${config.bulkStorage.path}/media/music:/data/music:ro" # ditto for music
+        "${config.bulkStorage.path}/media/library/television:/data/tvshows:ro" # bind-mount to provide container access to tv shows
+        "${config.bulkStorage.path}/media/library/movies:/data/movies:ro" # ditto for movies
+        "${config.bulkStorage.path}/media/library/music:/data/music:ro" # ditto for music
         "${config.bulkStorage.path}/media/yt-downloads:/data/yt-downloads:ro" # ditto for youtube downloads
       ];
       log-driver = "journald";
