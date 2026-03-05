@@ -209,7 +209,7 @@
 
   };
 
-  bulkStorage.path = "/storage-ext4"; # update to /storage-zfs after zfs pool online
+  bulkStorage.path = "/storage-zfs";
 
   fileSystems = {
 
@@ -259,7 +259,7 @@
   systemd.services.zfs-mount.enable = false; # disable zfs auto-mount service when using legacy systemd-managed mountpoints
 
   backups = {
-    startTime = "*-*-* 02:30:00"; # staggered: aspen at 2:30 AM
+    startTime = "*-*-* 02:20:00";
     borgDir = "${config.bulkStorage.path}/borgbackup";
     standaloneData = [
       "${config.bulkStorage.path}/media/family-media"

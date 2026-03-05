@@ -893,8 +893,8 @@ let
     export BORG_RELOCATED_REPO_ACCESS_IS_OK=yes
 
     TEMP_MOUNT=""
-    SOURCE_PATH="/storage-ext4/media/family-media"
-    STRIP_COUNT=3  # /storage-ext4/media/family-media has 3 slashes
+    SOURCE_PATH="/storage-zfs/media/family-media"
+    STRIP_COUNT=3  # /storage-zfs/media/family-media has 3 slashes
 
     # cleanup function
     cleanup() {
@@ -911,7 +911,7 @@ let
     echo "Family Media Recovery"
     echo "========================================"
     echo ""
-    echo "This tool recovers /storage-ext4/media/family-media from aspen backups."
+    echo "This tool recovers /storage-zfs/media/family-media from aspen backups."
     echo ""
 
     # repo source selection

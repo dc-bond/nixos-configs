@@ -7,21 +7,14 @@
 }:
 
 let
-  #app = "calibre-server";
-  app2 = "calibre-web";
+  app = "calibre-web";
 in
 
 {
 
   services = {
 
-    #"${app}" = {
-    #  enable = true;
-    #  port = 7189;
-    #  libraries = [ "${storage.mountPoint}/media/ebooks/calibre/" ];
-    #};
-
-    "${app2}" = {
+    "${app}" = {
       enable = true;
       user = "calibre-web";
       group = "calibre-web";
@@ -31,29 +24,17 @@ in
       };
       options = {
         reverseProxyAuth.enable = true;
-        calibreLibrary = "${config.bulkStorage.path}/media/ebooks/calibre/";
+        calibreLibrary = "${config.bulkStorage.path}/media/library/ebooks/calibre/";
         enableBookUploading = true;
       };
     };
 
     traefik.dynamicConfigOptions.http = {
       routers = {
-        #${app} = {
-        #  entrypoints = ["websecure"];
-        #  rule = "Host(`${app}.${configVars.domain2}`)";
-        #  service = "${app}";
-        #  middlewares = [
-        #    "secure-headers"
-        #  ];
-        #  tls = {
-        #    certResolver = "cloudflareDns";
-        #    options = "tls-13@file";
-        #  };
-        #};
-        ${app2} = {
+        ${app} = {
           entrypoints = ["websecure"];
-          rule = "Host(`${app2}.${configVars.domain2}`)";
-          service = "${app2}";
+          rule = "Host(`${app}.${configVars.domain2}`)";
+          service = "${app}";
           middlewares = [
             "maintenance-page"
             "forbidden-page"
@@ -67,17 +48,7 @@ in
         };
       };
       services = {
-        #${app} = {
-        #  loadBalancer = {
-        #    passHostHeader = true;
-        #    servers = [
-        #    {
-        #      url = "http://127.0.0.1:7189";
-        #    }
-        #    ];
-        #  };
-        #};
-        ${app2} = {
+        ${app} = {
           loadBalancer = {
             serversTransport = "default";
             passHostHeader = true;
