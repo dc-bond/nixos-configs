@@ -70,6 +70,7 @@ in
       pwvucontrol # pipewire audio volume control app
       claude-code # terminal-based agentic coding assistant
       tigervnc # vnc client app
+      mailspring # desktop email client
     ];
     pointerCursor = {
       enable = true;
@@ -108,6 +109,29 @@ in
     type = "Application";
     categories = [ "Network" "InstantMessaging" "Chat" ];
     mimeType = [ "x-scheme-handler/element" ];
+  };
+
+  # override mailspring desktop entry to specify keyring backend
+  xdg.desktopEntries.Mailspring = {
+    name = "Mailspring";
+    comment = "The best email app for people and teams at work";
+    genericName = "Mail Client";
+    exec = "mailspring --password-store=gnome-libsecret %U";
+    icon = "mailspring";
+    type = "Application";
+    startupNotify = true;
+    categories = [ "GNOME" "GTK" "Network" "Email" ];
+    mimeType = [ "x-scheme-handler/mailto" "x-scheme-handler/mailspring" ];
+    settings = {
+      StartupWMClass = "Mailspring";
+      Keywords = "email;internet;";
+    };
+  };
+
+  # start gnome-keyring daemon for secure password storage (system-level module actually enables, this home-manager module runs daemon on hyprland login)
+  services.gnome-keyring = {
+    enable = true;
+    components = [ "secrets" ];
   };
 
   # wrap desktopReload in a systemd user service so timer can automatically cycle wallpaper, otherwise desktopReload called directly from startup script and hotkeys

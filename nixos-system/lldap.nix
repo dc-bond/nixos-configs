@@ -44,7 +44,7 @@ in
   systemd.services."${app}" = {
     requires = [ "postgresql.target" ];
     after = [ "postgresql.target" ];
-    serviceConfig = { # shit needed because broken settings for passwords and env permissions
+    serviceConfig = { # shit needed because broken settings for passwords and env permissions in 25.11
       LoadCredential = [
         "jwt_secret:${config.sops.secrets.lldapJwtSecret.path}"
         "ldap_user_pass:${config.sops.secrets.lldapLdapUserPasswd.path}"
@@ -111,9 +111,8 @@ in
         middlewares = [
           "maintenance-page"
           "forbidden-page"
-          #"authelia-dcbond" # disabled to break circular dependency - LLDAP needs Authelia, Authelia needs LLDAP
           "secure-headers"
-          "trusted-allow" # IP allowlist - restricts access to LAN + Tailscale only
+          "trusted-allow"
         ];
         tls = {
           certResolver = "cloudflareDns";
@@ -132,18 +131,6 @@ in
         };
       };
     };
-
-    # Authelia access control rules commented out - circular dependency
-    # Re-enable after both LLDAP and Authelia are running
-    #authelia.instances."${configVars.domain1Short}".settings.access_control.rules = [
-    #  {
-    #    domain = [ "${app}.${configVars.domain1}" ];
-    #    subject = [ # only allow the following users to access lldap and only require one factor
-    #      "user:admin"
-    #    ];
-    #    policy = "one_factor";
-    #  }
-    #];
 
   };
 

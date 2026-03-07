@@ -89,7 +89,7 @@
   };
 
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
-  system.stateVersion = "23.11";
+  system.stateVersion = "25.11";
 
   imports = lib.flatten [
     inputs.disko.nixosModules.disko
