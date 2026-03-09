@@ -25,9 +25,9 @@ in
       service = "${app}";
       middlewares = [
         "maintenance-page"
-        "forbidden-page"
         "trusted-allow"
         "secure-headers"
+        "forbidden-page"
       ];
       tls = {
         certResolver = "cloudflareDns";

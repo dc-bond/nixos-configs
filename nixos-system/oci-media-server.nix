@@ -518,7 +518,7 @@ in
         entrypoints = ["websecure"];
         rule = "Host(`${app2}.${configVars.domain2}`)";
         service = "${app2}";
-        middlewares = ["maintenance-page" "forbidden-page" "trusted-allow" "secure-headers"];
+        middlewares = ["maintenance-page" "trusted-allow" "secure-headers" "forbidden-page"];
         tls = {
           certResolver = "cloudflareDns";
           options = "tls-13@file";
@@ -528,7 +528,7 @@ in
         entrypoints = ["websecure"];
         rule = "Host(`${app3}.${configVars.domain2}`)";
         service = "${app3}";
-        middlewares = ["maintenance-page" "forbidden-page" "trusted-allow" "secure-headers"];
+        middlewares = ["maintenance-page" "trusted-allow" "secure-headers" "forbidden-page"];
         tls = {
           certResolver = "cloudflareDns";
           options = "tls-13@file";
@@ -538,7 +538,7 @@ in
         entrypoints = ["websecure"];
         rule = "Host(`${app4}.${configVars.domain2}`)";
         service = "${app4}";
-        middlewares = ["maintenance-page" "forbidden-page" "trusted-allow" "secure-headers"];
+        middlewares = ["maintenance-page" "trusted-allow" "secure-headers" "forbidden-page"];
         tls = {
           certResolver = "cloudflareDns";
           options = "tls-13@file";
@@ -548,7 +548,7 @@ in
         entrypoints = ["websecure"];
         rule = "Host(`${app5}.${configVars.domain2}`)";
         service = "${app5}";
-        middlewares = ["maintenance-page" "forbidden-page" "trusted-allow" "secure-headers"];
+        middlewares = ["maintenance-page" "trusted-allow" "secure-headers" "forbidden-page"];
         tls = {
           certResolver = "cloudflareDns";
           options = "tls-13@file";
@@ -558,7 +558,7 @@ in
         entrypoints = ["websecure"];
         rule = "Host(`${app6}.${configVars.domain2}`)";
         service = "${app6}";
-        middlewares = ["maintenance-page" "forbidden-page" "trusted-allow" "secure-headers"];
+        middlewares = ["maintenance-page" "trusted-allow" "secure-headers" "forbidden-page"];
         tls = {
           certResolver = "cloudflareDns";
           options = "tls-13@file";

@@ -1,8 +1,9 @@
-{ 
-  config, 
-  lib, 
-  pkgs, 
-  ... 
+{
+  config,
+  lib,
+  pkgs,
+  osConfig,
+  ...
 }: 
 
 {
@@ -115,6 +116,8 @@
       speed = "nix run nixpkgs#speedtest-rs";
       yubigpg = ''gpg-connect-agent "scd serialno" "learn --force" /bye''; # force gpg to update its pointer towards whichever yubikey is plugged in
       garbage = "nix-collect-garbage --delete-older-than 7d && sudo nix-collect-garbage --delete-older-than 7d";
+    } // lib.optionalAttrs (osConfig.bulkStorage.path or null != null) {
+      storage = "cd ${osConfig.bulkStorage.path} ; ls";
     };
     history.size = 5000;
     history.path = "${config.xdg.dataHome}/zsh/history";

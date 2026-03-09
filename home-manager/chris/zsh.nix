@@ -11,8 +11,8 @@
   
 
   programs.zsh = {
-    initContent = lib.optionalString (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) # added to zsh interactive shell (.zshrc)
-    ''
+    initContent =
+    (lib.optionalString (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) ''
       librewolf-private() {
         echo "launching LibreWolf..."
         librewolf --private-window "https://ipleak.net" "$@"
@@ -53,7 +53,7 @@
         # kill the SSH tunnel after VNC session ends
         pkill -f "ssh.*alder-vnc"
       }
-    '';
+    '');
     shellAliases = {
     } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {
       ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop --command codium . && cd ~";
@@ -64,10 +64,6 @@
       configs = "cd $HOME/nextcloud-client/Personal/nixos";
       flakeupdate= "(cd $HOME/nextcloud-client/Personal/nixos/nixos-configs && nix flake update)";
       fetch-displaylink = "nix-prefetch-url --name displaylink-620.zip https://www.synaptics.com/sites/default/files/exe_files/2025-09/DisplayLink%20USB%20Graphics%20Software%20for%20Ubuntu6.2-EXE.zip";
-    # } // lib.optionalAttrs (osConfig.networking.hostName == "cypress") {
-    #   storage = "cd /storage ; ls";
-    } // lib.optionalAttrs (osConfig.networking.hostName == "aspen") {
-      storage = "cd /storage-zfs ; ls";
     };
   };
 

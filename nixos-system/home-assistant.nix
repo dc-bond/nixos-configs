@@ -183,10 +183,10 @@ in
         service = "${app}";
         middlewares = [
           "maintenance-page"
-          "forbidden-page"
           #"authelia" # ios app does not support authentication provider sittnig in front of home assistant
           "trusted-allow"
           "secure-headers"
+          "forbidden-page"
         ];
         tls = {
           certResolver = "cloudflareDns";

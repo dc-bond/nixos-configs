@@ -66,34 +66,7 @@
     };
   };
 
-  bulkStorage.path = "/storage";
-
-  # external USB drive: WD My Passport 260D
-  # auto-mounts to /storage when plugged in via udev (no boot dependency)
-  # mount point /storage created by systemd-tmpfiles below
-
-  services.udev.extraRules = ''
-    # auto-mount WD My Passport 260D to /storage when plugged in
-    SUBSYSTEM=="block", ENV{ID_FS_UUID}=="025cbd65-8476-47ef-a814-c3cd8624d2fc", \
-      ACTION=="add", \
-      RUN+="${pkgs.systemd}/bin/systemctl start storage-automount.service"
-    # auto-unmount when unplugged
-    SUBSYSTEM=="block", ENV{ID_FS_UUID}=="025cbd65-8476-47ef-a814-c3cd8624d2fc", \
-      ACTION=="remove", \
-      RUN+="${pkgs.systemd}/bin/systemctl stop storage-automount.service"
-  '';
-
-  systemd.services.storage-automount = {
-    description = "Auto-mount external storage drive to /storage";
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "${pkgs.util-linux}/bin/mount -o noatime UUID=025cbd65-8476-47ef-a814-c3cd8624d2fc /storage";
-      ExecStop = "${pkgs.util-linux}/bin/umount /storage";
-    };
-  };
-
-  systemd.tmpfiles.rules = [ "d /storage 0755 root root -" ];  # create /storage mount point
+  bulkStorage.path = lib.mkIf (config.hardware.wdPassport.enable or false) "/storage-ext4-external";
 
   backups = {
     startTime = "*-*-* 02:40:00"; # staggered: thinkpad at 2:40 AM
@@ -148,6 +121,7 @@
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"
       "nixos-system/usb-phone-mount.nix"
+      "nixos-system/wd-passport.nix"
       "nixos-system/greetd.nix"
       "nixos-system/hyprland.nix"
       "scripts/deploy.nix"
