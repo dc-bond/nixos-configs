@@ -59,6 +59,8 @@
     };
   };
 
+  bulkStorage.path = lib.mkIf (config.hardware.wdPassport.enable or false) "/storage-ext4-external";
+
   environment.systemPackages = with pkgs; [
     age # encryption tool
     mkpasswd # password hashing tool
@@ -113,6 +115,7 @@
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"
       "nixos-system/usb-phone-mount.nix"
+      "nixos-system/wd-passport.nix"
       "nixos-system/greetd.nix"
       "nixos-system/hyprland.nix"
       "scripts/deploy.nix"

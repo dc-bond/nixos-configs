@@ -370,9 +370,9 @@ in
       service = "${app}-${config.networking.hostName}";
       middlewares = [
         "maintenance-page"
-        "forbidden-page"
         "trusted-allow"
         "secure-headers"
+        "forbidden-page"
       ];
       tls = {
         certResolver = "cloudflareDns";

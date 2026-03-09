@@ -321,9 +321,9 @@ in
             rule = "Host(`${app}-${config.networking.hostName}.${configVars.domain2}`)";
             service = "api@internal";
             middlewares = [
-              "forbidden-page"
               "trusted-allow"
               "secure-headers"
+              "forbidden-page"
             ];
             tls = {
               certResolver = "cloudflareDns";
@@ -520,5 +520,12 @@ in
     };
 
   };
+
+  programs.zsh.interactiveShellInit = ''
+    # follow access logs with json formatting, shows: time, IP address, requested URL, and status code
+    acclogs() {
+      sudo tail -f /var/log/traefik/access.log | jq -r '"\(.time // .StartUTC // .StartLocal | split(".")[0] | sub("T"; " ")) | \(.ClientAddr // .ClientHost | split(":")[0]) | \(.RequestMethod // "GET") \(.RequestPath // .RequestLine) | \(.DownstreamStatus // .OriginStatus)"'
+    }
+  '';
 
 }

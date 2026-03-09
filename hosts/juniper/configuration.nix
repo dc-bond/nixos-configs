@@ -68,6 +68,7 @@
   environment.systemPackages = with pkgs; [
     rsync # sync tool
     btop # system monitor
+    jq # json parser tool
   ];
 
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated

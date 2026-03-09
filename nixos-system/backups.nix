@@ -1285,7 +1285,21 @@ in
         
       };
     };
-    
+
+    programs.zsh.interactiveShellInit = ''
+      # show all logs since borgbackup service last started
+      bklogs() {
+        local hostname=$(hostname)
+        local service="borgbackup-job-$hostname.service"
+        local timestamp=$(systemctl show "$service" -p ExecMainStartTimestamp --value 2>/dev/null)
+        if [ -z "$timestamp" ] || [ "$timestamp" = "n/a" ]; then
+          echo "Error: Could not find service $service"
+          return 1
+        fi
+        journalctl -u "$service" --no-pager --since "$timestamp"
+      }
+    '';
+
   };
 
 }

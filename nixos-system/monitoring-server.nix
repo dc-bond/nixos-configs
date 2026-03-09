@@ -1705,9 +1705,9 @@ in
         service = "${app1}";
         middlewares = [
           "maintenance-page"
-          "forbidden-page"
-          "secure-headers"
           "trusted-allow"
+          "secure-headers"
+          "forbidden-page"
         ];
         tls = {
           certResolver = "cloudflareDns";
@@ -1730,9 +1730,9 @@ in
         service = "${app2}";
         middlewares = [
           "maintenance-page"
-          "forbidden-page"
-          "secure-headers"
           "trusted-allow"
+          "secure-headers"
+          "forbidden-page"
         ];
         tls = {
           certResolver = "cloudflareDns";
@@ -1755,9 +1755,9 @@ in
         service = "${app3}";
         middlewares = [
           "maintenance-page"
-          "forbidden-page"
-          "secure-headers"
           "trusted-allow"
+          "secure-headers"
+          "forbidden-page"
         ];
         tls = {
           certResolver = "cloudflareDns";
