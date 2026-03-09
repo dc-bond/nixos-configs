@@ -59,14 +59,23 @@ let
 
     TIMESTAMP="$(date "+%Y-%m-%d %H:%M:%S")"
 
-    ${pkgs.curl}/bin/curl -X POST \
-      -H "Content-Type: application/json" \
-      -d @- \
-      "${configVars.webhooks.matrixBackupNotifications}" <<EOF
-    {
-      "text": "✅ **Backup Success - ${config.networking.hostName}**\n\nTime: $TIMESTAMP\n\nLocal backup and cloud sync completed successfully."
-    }
-    EOF
+    # Matrix-Hookshot (deprecated - migrating to ntfy)
+    #${pkgs.curl}/bin/curl -X POST \
+    #  -H "Content-Type: application/json" \
+    #  -d @- \
+    #  "${configVars.webhooks.matrixBackupNotifications}" <<EOF
+    #{
+    #  "text": "✅ **Backup Success - ${config.networking.hostName}**\n\nTime: $TIMESTAMP\n\nLocal backup and cloud sync completed successfully."
+    #}
+    #EOF
+
+    # ntfy notification
+    ${pkgs.curl}/bin/curl -d "Backup Success - ${config.networking.hostName}
+
+      Time: $TIMESTAMP
+      Local backup and cloud sync completed successfully." \
+
+      https://ntfy.${configVars.domain2}/homelab-info
   '';
 
   backupSuccessEmailScript = pkgs.writeShellScriptBin "backupSuccessEmail" ''
@@ -96,14 +105,36 @@ let
     EXIT_CODE=$(systemctl show cloudBackup.service --property=ExecMainStatus --value)
     TIMESTAMP="$(date "+%Y-%m-%d %H:%M:%S")"
 
-    ${pkgs.curl}/bin/curl -X POST \
-      -H "Content-Type: application/json" \
-      -d @- \
-      "${configVars.webhooks.matrixBackupNotifications}" <<EOF
-    {
-      "text": "🚨 **BACKUP FAILED - ${config.networking.hostName}**\n\n⚠️ IMMEDIATE ACTION REQUIRED!\n\n**Exit Code**: $EXIT_CODE\n\n**Possible Causes**:\n- Local backup failure\n- Repository corruption\n- Low archive count\n- Network/Backblaze issues\n- Service configuration problems\n\n**Time**: $TIMESTAMP\n\n**Action**: Check logs with \`jlogs cloudBackup\`"
-    }
-    EOF
+    # Matrix-Hookshot (deprecated - migrating to ntfy)
+    #${pkgs.curl}/bin/curl -X POST \
+    #  -H "Content-Type: application/json" \
+    #  -d @- \
+    #  "${configVars.webhooks.matrixBackupNotifications}" <<EOF
+    #{
+    #  "text": "🚨 **BACKUP FAILED - ${config.networking.hostName}**\n\n⚠️ IMMEDIATE ACTION REQUIRED!\n\n**Exit Code**: $EXIT_CODE\n\n**Possible Causes**:\n- Local backup failure\n- Repository corruption\n- Low archive count\n- Network/Backblaze issues\n- Service configuration problems\n\n**Time**: $TIMESTAMP\n\n**Action**: Check logs with \`jlogs cloudBackup\`"
+    #}
+    #EOF
+
+    ${pkgs.curl}/bin/curl \
+      -H "Priority: urgent" \
+      -H "Tags: warning,backup" \
+      -d "BACKUP FAILED - ${config.networking.hostName}
+
+      IMMEDIATE ACTION REQUIRED!
+      Exit Code: $EXIT_CODE
+      
+      Possible Causes:
+      - Local backup failure
+      - Repository corruption
+      - Low archive count
+      - Network/Backblaze issues
+      - Service configuration problems
+      
+      Time: $TIMESTAMP
+      
+      Action: Check logs with 'jlogs cloudBackup'" \
+
+      https://ntfy.${configVars.domain2}/homelab-alerts
   '';
 
   backupFailureEmailScript = pkgs.writeShellScriptBin "backupFailureEmail" ''
@@ -1291,6 +1322,17 @@ in
       bklogs() {
         local hostname=$(hostname)
         local service="borgbackup-job-$hostname.service"
+        local timestamp=$(systemctl show "$service" -p ExecMainStartTimestamp --value 2>/dev/null)
+        if [ -z "$timestamp" ] || [ "$timestamp" = "n/a" ]; then
+          echo "Error: Could not find service $service"
+          return 1
+        fi
+        journalctl -u "$service" --no-pager --since "$timestamp"
+      }
+
+      # show all logs since cloudBackup service last started
+      cldlogs() {
+        local service="cloudBackup.service"
         local timestamp=$(systemctl show "$service" -p ExecMainStartTimestamp --value 2>/dev/null)
         if [ -z "$timestamp" ] || [ "$timestamp" = "n/a" ]; then
           echo "Error: Could not find service $service"
