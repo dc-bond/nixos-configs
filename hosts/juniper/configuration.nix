@@ -90,6 +90,7 @@
       "nixos-system/zsh.nix"
       "nixos-system/sops.nix"
       "nixos-system/monitoring-server.nix"
+      "nixos-system/ntfy.nix"
       "nixos-system/oci-containers.nix"
       "nixos-system/oci-pihole.nix"
       "nixos-system/postgresql.nix"

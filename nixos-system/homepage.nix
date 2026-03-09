@@ -216,6 +216,13 @@ in
             };
           }
           {
+            "Ntfy" = {
+              href = "https://ntfy.${configVars.domain2}/";
+              description = "Push Notification Service";
+              ping = "https://ntfy.${configVars.domain2}";
+            };
+          }
+          {
             "Lldap" = {
               href = "https://lldap.${configVars.domain1}/";
               description = "Lightweight LDAP";

@@ -101,17 +101,18 @@ let
     "address=/stirling-pdf.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/traefik-aspen.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/unifi.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
-    "address=/webhook.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    #"address=/webhook.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"  # deprecated - matrix-hookshot migrating to ntfy
     #"address=/weekly-recipes.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/zwavejs.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     # juniper services
     "address=/alertmanager.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
     "address=/grafana.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
     "address=/homepage.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
+    "address=/ntfy.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
     "address=/pihole-juniper.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
     "address=/prometheus.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
     "address=/traefik-juniper.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
-    "address=/webhooks.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
+    #"address=/webhooks.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"  # deprecated - matrix-hookshot migrating to ntfy
   ];
 
   customCnameEntries = [

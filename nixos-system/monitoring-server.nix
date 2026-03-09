@@ -923,34 +923,6 @@ let
             labels:
               severity: critical
 
-      - name: backup_health_alerts
-        interval: 30s
-        rules:
-
-          - alert: backupNotRunRecently
-            expr: time() - node_systemd_unit_start_time_seconds{name=~"borgbackup-job-.*", host=~"aspen|juniper"} > 90000
-            for: 30m
-            labels:
-              severity: critical
-            annotations:
-              summary: "Backup has not run on {{ $labels.host }} in over 25 hours"
-
-          - alert: backupServiceFailed
-            expr: node_systemd_unit_state{name=~"borgbackup-job-.*|cloudBackup.service", state="failed", host=~"aspen|juniper"} == 1
-            for: 5m
-            labels:
-              severity: critical
-            annotations:
-              summary: "Backup service {{ $labels.name }} failed on {{ $labels.host }}"
-
-          - alert: cloudBackupStale
-            expr: time() - node_systemd_unit_start_time_seconds{name="cloudBackup.service", host=~"aspen|juniper"} > 90000
-            for: 30m
-            labels:
-              severity: critical
-            annotations:
-              summary: "Cloud backup has not synced on {{ $labels.host }} in over 25 hours"
-
       - name: disk_health_alerts
         interval: 60s
         rules:
