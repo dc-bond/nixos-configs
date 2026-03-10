@@ -56,25 +56,11 @@ let
 
   backupSuccessWebhookScript = pkgs.writeShellScriptBin "backupSuccessWebhook" ''
     #!/bin/bash
-
     TIMESTAMP="$(date "+%Y-%m-%d %H:%M:%S")"
-
-    # Matrix-Hookshot (deprecated - migrating to ntfy)
-    #${pkgs.curl}/bin/curl -X POST \
-    #  -H "Content-Type: application/json" \
-    #  -d @- \
-    #  "${configVars.webhooks.matrixBackupNotifications}" <<EOF
-    #{
-    #  "text": "✅ **Backup Success - ${config.networking.hostName}**\n\nTime: $TIMESTAMP\n\nLocal backup and cloud sync completed successfully."
-    #}
-    #EOF
-
-    # ntfy notification
-    ${pkgs.curl}/bin/curl -d "Backup Success - ${config.networking.hostName}
-
+    ${pkgs.curl}/bin/curl \
+      -d "Backup Success - ${config.networking.hostName}
       Time: $TIMESTAMP
       Local backup and cloud sync completed successfully." \
-
       https://ntfy.${configVars.domain2}/homelab-info
   '';
 
@@ -101,39 +87,12 @@ let
 
   backupFailureWebhookScript = pkgs.writeShellScriptBin "backupFailureWebhook" ''
     #!/bin/bash
-
     EXIT_CODE=$(systemctl show cloudBackup.service --property=ExecMainStatus --value)
     TIMESTAMP="$(date "+%Y-%m-%d %H:%M:%S")"
-
-    # Matrix-Hookshot (deprecated - migrating to ntfy)
-    #${pkgs.curl}/bin/curl -X POST \
-    #  -H "Content-Type: application/json" \
-    #  -d @- \
-    #  "${configVars.webhooks.matrixBackupNotifications}" <<EOF
-    #{
-    #  "text": "🚨 **BACKUP FAILED - ${config.networking.hostName}**\n\n⚠️ IMMEDIATE ACTION REQUIRED!\n\n**Exit Code**: $EXIT_CODE\n\n**Possible Causes**:\n- Local backup failure\n- Repository corruption\n- Low archive count\n- Network/Backblaze issues\n- Service configuration problems\n\n**Time**: $TIMESTAMP\n\n**Action**: Check logs with \`jlogs cloudBackup\`"
-    #}
-    #EOF
-
     ${pkgs.curl}/bin/curl \
-      -H "Priority: urgent" \
-      -H "Tags: warning,backup" \
-      -d "BACKUP FAILED - ${config.networking.hostName}
-
-      IMMEDIATE ACTION REQUIRED!
-      Exit Code: $EXIT_CODE
-      
-      Possible Causes:
-      - Local backup failure
-      - Repository corruption
-      - Low archive count
-      - Network/Backblaze issues
-      - Service configuration problems
-      
+      -d "Backup FAILED - ${config.networking.hostName}
       Time: $TIMESTAMP
-      
-      Action: Check logs with 'jlogs cloudBackup'" \
-
+      Exit Code: $EXIT_CODE" \
       https://ntfy.${configVars.domain2}/homelab-alerts
   '';
 
