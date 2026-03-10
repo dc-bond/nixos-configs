@@ -7,59 +7,62 @@
   ...
 }:
 
-# MATRIX USER MANAGEMENT
+# ADMIN API USAGE (run on juniper - admin API not exposed through Traefik):
 #
 # CREATE NEW USERS:
 #   Get the registration shared secret: sudo cat /run/secrets/rendered/matrix-extra-conf | grep registration_shared_secret
 #   Then run: nix-shell -p matrix-synapse --run "register_new_matrix_user -k '<shared-secret>' http://127.0.0.1:8008"
 #
-# MAKE BOT USERS JOIN ROOMS (after inviting them in Element):
-#   1. Get bot's access token by logging in:
-#      curl -X POST https://matrix.dcbond.com/_matrix/client/v3/login \
+#   1. Get admin access token (save to $TOKEN variable):
+#      TOKEN=$(curl -s -X POST http://127.0.0.1:8008/_matrix/client/v3/login \
 #        -H 'Content-Type: application/json' \
-#        -d '{"type": "m.login.password", "user": "bot-username", "password": "bot-password"}'
+#        -d '{"type": "m.login.password", "user": "chris", "password": "YOUR_PASSWORD"}' \
+#        | jq -r '.access_token')
 #
-#   2. Make bot join the room (use room ID from Element → Room Settings → Advanced):
-#      curl -X POST 'https://matrix.dcbond.com/_matrix/client/r0/join/<room-id>' \
-#        -H 'Authorization: Bearer <bot-access-token>' \
-#        -H 'Content-Type: application/json' \
-#        -d '{}'
+#   2. List all users:
+#      curl -X GET "http://127.0.0.1:8008/_synapse/admin/v2/users?from=0&limit=100" \
+#        -H "Authorization: Bearer $TOKEN" | jq .
+#
+#   3. Deactivate/delete a user (erase=true removes all messages):
+#      curl -X POST "http://127.0.0.1:8008/_synapse/admin/v1/deactivate/@username:dcbond.com" \
+#        -H "Authorization: Bearer $TOKEN" \
+#        -H "Content-Type: application/json" \
+#        -d '{"erase": true}'
+#
+#   4. Delete a room (purge=true removes all data, get room ID from Element → Room Settings → Advanced):
+#      curl -X DELETE "http://127.0.0.1:8008/_synapse/admin/v2/rooms/%21RoomId%3Adcbond.com" \
+#        -H "Authorization: Bearer $TOKEN" \
+#        -H "Content-Type: application/json" \
+#        -d '{"block": false, "purge": true}'
+#      Note: URL-encode room IDs (! becomes %21, : becomes %3A)
+#
+#   5. Check room deletion status:
+#      curl -X GET "http://127.0.0.1:8008/_synapse/admin/v2/rooms/delete_status" \
+#        -H "Authorization: Bearer $TOKEN" | jq .
 
 let
 
   app = "matrix-synapse";
-  #app2 = "matrix-hookshot";  # deprecated - migrating to ntfy
   recoveryPlan = {
     restoreItems = [
       "/var/lib/${app}"
-      "/var/lib/redis-${app}"
-      #"/var/lib/${app2}"  # deprecated - migrating to ntfy
-      #"/var/lib/redis-${app2}"  # deprecated - migrating to ntfy
       "/var/backup/postgresql/${app}.sql.gz"
     ];
     db = {
-      #type = "postgresql"; # needs preSvcStartHook for custom postgres setup
       user = "${app}";
       name = "${app}";
       dump = "/var/backup/postgresql/${app}.sql.gz";
     };
     stopServices = [
-      #"${app2}"  # deprecated - migrating to ntfy
       "${app}"
-      #"redis-${app2}"  # deprecated - migrating to ntfy
-      "redis-${app}"
     ];
     startServices = [
-      "redis-${app}"
-      #"redis-${app2}"  # deprecated - migrating to ntfy
       "${app}"
-      #"${app2}"  # deprecated - migrating to ntfy
     ];
   };
   recoverScript = nixServiceRecoveryScript {
     serviceName = app;
     recoveryPlan = recoveryPlan;
-    #dbType = recoveryPlan.db.type;
     preSvcStartHook = ''
       echo "Dropping and recreating PostgreSQL database ${recoveryPlan.db.name} ..."
       su - postgres -c "dropdb --if-exists ${recoveryPlan.db.name}"
@@ -78,9 +81,6 @@ in
       chrisEmailPasswd = {};
       matrixSynapseRegistrationSharedSecret = {};
       matrixSynapseMacaroonSecretKey = {};
-      #matrixHookshotAsToken = {};  # deprecated - migrating to ntfy
-      #matrixHookshotHsToken = {};  # deprecated - migrating to ntfy
-      #matrixHookshotPasskey = {};  # deprecated - migrating to ntfy
       coturnStaticAuthSecret = {
         owner = "${config.users.users.turnserver.name}";
         group = "${config.users.users.turnserver.group}";
@@ -122,53 +122,8 @@ in
         group = "${config.users.users.${app}.group}";
         mode = "0440";
       };
-      # deprecated - migrating to ntfy
-      #"${app2}-registration.yml" = {
-      #  content = ''
-      #    id: matrix-hookshot
-      #    url: http://127.0.0.1:9993
-      #    as_token: ${config.sops.placeholder.matrixHookshotAsToken}
-      #    hs_token: ${config.sops.placeholder.matrixHookshotHsToken}
-      #    sender_localpart: hookshot
-      #    rate_limited: false
-      #    namespaces:
-      #      users:
-      #        - regex: '@_hookshot_.*:${configVars.domain1}'
-      #          exclusive: true
-      #        - regex: '@hookshot:${configVars.domain1}'
-      #          exclusive: true
-      #      aliases: []
-      #      rooms: []
-      #    # enable encryption support (requires synapse experimental_features MSCs)
-      #    de.sorunome.msc2409.push_ephemeral: true
-      #    push_ephemeral: true
-      #    org.matrix.msc3202: true
-      #  '';
-      #  owner = "${config.users.users.${app}.name}";
-      #  group = "${config.users.users.${app}.group}";
-      #  mode = "0440";
-      #};
-      # deprecated - migrating to ntfy
-      #"${app2}-passkey.pem" = {
-      #  content = ''
-#${config.sops.placeholder.matrixHookshotPasskey}
-      #  '';
-      #  owner = "${app2}";
-      #  group = "${app2}";
-      #  mode = "0440";
-      #};
     };
   };
-
-  # deprecated - migrating to ntfy
-  #users = {
-  #  users.${app2} = {
-  #    isSystemUser = true;
-  #    group = app2;
-  #    extraGroups = [ app ];  # add to matrix-synapse group for registration file access, which is owned by matrix-synapse
-  #  };
-  #  groups.${app2} = {};
-  #};
 
   networking.firewall = {
     allowedUDPPorts = [
@@ -197,40 +152,17 @@ in
   backups.serviceHooks = {
     preHook = lib.mkAfter [
       "systemctl stop ${app}.service"
-      #"systemctl stop ${app2}.service"  # deprecated - migrating to ntfy
-      "systemctl stop redis-${app}.service"
-      #"systemctl stop redis-${app2}.service"  # deprecated - migrating to ntfy
       "sleep 2"
       "systemctl start postgresqlBackup-${app}.service"
     ];
     postHook = lib.mkAfter [
-      #"systemctl start redis-${app2}.service"  # deprecated - migrating to ntfy
-      "systemctl start redis-${app}.service"
       "systemctl start ${app}.service"
-      #"systemctl start ${app2}.service"  # deprecated - migrating to ntfy
     ];
   };
 
   services = {
 
-    #postgresql = {
-    #  # DOESNT WORK MUST RUN MANUALLY ON FIRST SETUP OR SEE SYSTEMD SERVICE BELOW
-    #  #initialScript = pkgs.writeText "${app}-init.sql" ''
-    #  #CREATE USER "matrix-synapse";
-    #  #CREATE DATABASE "matrix-synapse" ENCODING 'UTF8' LC_COLLATE='C' LC_CTYPE='C' template=template0 OWNER "matrix-synapse";
-    #  #'';
-    #};
-
     postgresqlBackup.databases = [ "${app}" ];
-
-    # deprecated - migrating to ntfy
-    #redis.servers."${app2}" = {
-    #  enable = true;
-    #  user = "${app2}";
-    #  port = 0;
-    #  unixSocket = "/run/redis-${app2}/redis.sock";
-    #  unixSocketPerm = 660;
-    #};
 
     borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
 
@@ -288,16 +220,6 @@ in
         public_baseurl = "https://matrix.${configVars.domain1}";
         enable_registration = false;
         enable_metrics = false;
-        # deprecated - migrating to ntfy
-        #experimental_features = {
-        #  # required for appservice E2EE support (matrix-hookshot)
-        #  msc3202_device_masquerading = true;
-        #  msc3202_transaction_extensions = true;
-        #  msc2409_to_device_messages_enabled = true;
-        #};
-        #app_service_config_files = [
-        #  config.sops.templates."${app2}-registration.yml".path
-        #];
         database = {
           name = "psycopg2";
           args = {
@@ -335,64 +257,6 @@ in
       };
       extraConfigFiles = [ "/run/secrets/rendered/matrix-extra-conf" ];
     };
-
-    # deprecated - migrating to ntfy
-    #${app2} = {
-    #  enable = true;
-    #  registrationFile = config.sops.templates."${app2}-registration.yml".path;
-    #  settings = {
-    #    passFile = config.sops.templates."${app2}-passkey.pem".path;
-    #    bridge = {
-    #      domain = configVars.domain1;
-    #      url = "http://127.0.0.1:8008";
-    #      mediaUrl = "https://matrix.${configVars.domain1}";
-    #      port = 9993;
-    #      bindAddress = "127.0.0.1";
-    #    };
-    #    logging = {
-    #      level = "info";
-    #      colorize = true;
-    #      json = false;
-    #      timestampFormat = "HH:mm:ss:SSS";
-    #    };
-    #    listeners = [
-    #      {
-    #        port = 9000;
-    #        bindAddress = "127.0.0.1";
-    #        resources = [ "webhooks" ];
-    #      }
-    #    ];
-    #    cache = {
-    #      redisUri = "unix:///run/redis-${app2}/redis.sock";
-    #    };
-    #    encryption = {
-    #      storagePath = "/var/lib/${app2}/cryptostore";
-    #    };
-    #    permissions = [
-    #      {
-    #        actor = "@chris:dcbond.com";
-    #        services = [
-    #          {
-    #            service = "*";
-    #            level = "manageConnections";
-    #          }
-    #        ];
-    #      }
-    #    ];
-    #    generic = {
-    #      enabled = true;
-    #      outbound = false;
-    #      urlPrefix = "https://webhooks.${configVars.domain2}/";
-    #      userIdPrefix = "_hookshot_";
-    #      allowJsTransformationFunctions = true; # enable JS transforms for alertmanager formatting
-    #      waitForComplete = false;
-    #    };
-    #    bot = {
-    #      displayname = "Bond-Bot";
-    #      avatar = "mxc://matrix.org/xxx";
-    #    };
-    #  };
-    #};
 
     coturn = rec {
       enable = true;
@@ -482,19 +346,6 @@ in
               options = "tls-13@file";
             };
           };
-          # deprecated - migrating to ntfy
-          #"${app2}-webhooks" = {
-          #  entrypoints = ["websecure"];
-          #  rule = "Host(`webhooks.${configVars.domain2}`)";
-          #  service = "${app2}-webhooks";
-          #  middlewares = [
-          #    "webhooks-allow"
-          #  ];
-          #  tls = {
-          #    certResolver = "cloudflareDns";
-          #    options = "tls-13@file";
-          #  };
-          #};
         };
         middlewares = {
           matrix-body-limit.buffering = {
@@ -506,15 +357,6 @@ in
               "X-Forwarded-Proto" = "https";
             };
           };
-          # deprecated - migrating to ntfy
-          #webhooks-allow.ipAllowList.sourceRange = [
-          #  "${configVars.hosts.aspen.networking.tailscaleIp}"
-          #  "${configVars.hosts.juniper.networking.tailscaleIp}"
-          #  "${configVars.hosts.thinkpad.networking.tailscaleIp}"
-          #  "${configVars.hosts.cypress.networking.tailscaleIp}"
-          #  "${configVars.hosts.kauri.networking.tailscaleIp}"
-          #  "${configVars.hosts.alder.networking.tailscaleIp}"
-          #];
         };
         services = {
           "${app}" = {
@@ -541,17 +383,6 @@ in
               ];
             };
           };
-          # deprecated - migrating to ntfy
-          #"${app2}-webhooks" = {
-          #  loadBalancer = {
-          #    passHostHeader = true;
-          #    servers = [
-          #      {
-          #        url = "http://127.0.0.1:9000";
-          #      }
-          #    ];
-          #  };
-          #};
         };
         serversTransports = {
           matrix-transport = {
@@ -633,30 +464,6 @@ in
           "${app}-postgres-init.service"
         ];
       };
-
-      # deprecated - migrating to ntfy
-      #${app2} = {
-      #  requires = [
-      #    "${app}.service"
-      #    "redis-${app2}.service"
-      #  ];
-      #  after = [
-      #    "${app}.service"
-      #    "redis-${app2}.service"
-      #  ];
-      #  serviceConfig = {
-      #    User = app2;
-      #    Group = app2;
-      #    StateDirectory = app2;  # creates /var/lib/matrix-hookshot with correct ownership
-      #  };
-      #};
-
-      # deprecated - migrating to ntfy
-      #"redis-${app2}" = {
-      #  serviceConfig = {
-      #    StateDirectory = "redis-${app2}";  # ensures /var/lib/redis-matrix-hookshot is created with correct ownership
-      #  };
-      #};
 
       "generate-dhparam" = {
         description = "generate diffie-hellman parameters for coturn";

@@ -14,8 +14,8 @@ let
     restoreItems = [
       "/var/lib/${app}"
     ];
-    stopServices = [ "${app}" "redis-${app}" ];
-    startServices = [ "redis-${app}" "${app}" ];
+    stopServices = [ "${app}" ];
+    startServices = [ "${app}" ];
   };
   recoverScript = nixServiceRecoveryScript {
     serviceName = app;
@@ -69,11 +69,9 @@ in
   backups.serviceHooks = {
     preHook = lib.mkAfter [
       "systemctl stop ${app}.service"
-      "systemctl stop redis-${app}.service"
       "sleep 2"
     ];
     postHook = lib.mkAfter [
-      "systemctl start redis-${app}.service"
       "systemctl start ${app}.service"
     ];
   };

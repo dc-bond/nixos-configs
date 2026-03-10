@@ -133,16 +133,11 @@ in
           #encryption = "tls"; # for port 465
         };
         rest_command = {
-          matrix_notify = {
-            url = "!secret familyNotificationsWebhookUrl";
+          ntfy_notify = {
+            url = "https://ntfy.${configVars.domain2}/homelab-info";
             method = "POST";
-            content_type = "application/json";
-            payload = ''
-              {
-                "text": "{{ message }}",
-                "msgtype": "m.text"
-              }
-            '';
+            content_type = "text/plain";
+            payload = "{{ message }}";
           };
         };
       };

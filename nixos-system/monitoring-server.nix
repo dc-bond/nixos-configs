@@ -216,12 +216,12 @@ let
         disks = get_disk_data()
 
         if not disks:
-            return "⚠️ no disks found in monitoring system"
+            return "no disks found in monitoring system"
 
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # header
-        report = f"📊 **Weekly SMART Disk Health Report**\\n\\n"
+        report = f"**Weekly SMART Disk Health Report**\\n\\n"
         report += f"**Generated**: {timestamp}\\n"
         report += f"**Total Disks**: {len(disks)}\\n\\n"
 
@@ -243,19 +243,19 @@ let
                 warning_disks.append(key)
 
         if failed_disks:
-            report += f"🔴 **CRITICAL**: {len(failed_disks)} disk(s) with FAILED SMART status\\n"
+            report += f"**CRITICAL**: {len(failed_disks)} disk(s) with FAILED SMART status\\n"
             for disk in failed_disks:
                 report += f"   • {disk}\\n"
             report += "\\n"
 
         if warning_disks:
-            report += f"⚠️ **WARNING**: {len(warning_disks)} disk(s) with warning conditions\\n"
+            report += f"**WARNING**: {len(warning_disks)} disk(s) with warning conditions\\n"
             for disk in warning_disks:
                 report += f"   • {disk}\\n"
             report += "\\n"
 
         if not failed_disks and not warning_disks:
-            report += "✅ **All disks healthy**\\n\\n"
+            report += "**All disks healthy**\\n\\n"
 
         report += "---\\n\\n"
 
@@ -266,14 +266,12 @@ let
 
             # smart status
             status = disk.get("smart_status", "UNKNOWN")
-            status_emoji = "✅" if status == "PASSED" else "🔴"
-            report += f"Status: {status_emoji} {status}\\n"
+            report += f"Status: {status}\\n"
 
             # temperature
             temp = disk.get("temperature")
             if temp is not None:
-                temp_emoji = "🌡️" if temp <= 50 else "🔥"
-                report += f"Temp: {temp_emoji} {temp}°C\\n"
+                report += f"Temp: {temp}°C\\n"
 
             # power-on hours
             hours = disk.get("power_on_hours")
@@ -287,36 +285,32 @@ let
             uncorrectable = disk.get("uncorrectable_sectors", 0)
 
             if reallocated > 0:
-                report += f"⚠️ Reallocated Sectors: {reallocated}\\n"
+                report += f"Reallocated Sectors: {reallocated}\\n"
             if pending > 0:
-                report += f"🔴 Pending Sectors: {pending}\\n"
+                report += f"Pending Sectors: {pending}\\n"
             if uncorrectable > 0:
-                report += f"🔴 Uncorrectable Sectors: {uncorrectable}\\n"
+                report += f"Uncorrectable Sectors: {uncorrectable}\\n"
 
             report += "\\n"
 
         return report
 
     def send_webhook(message):
-        """send report to matrix via webhook"""
+        """send report to ntfy"""
         if not WEBHOOK_URL:
             print("ERROR: WEBHOOK_URL not set")
             return False
 
-        # convert markdown to html for matrix
-        html_message = message.replace("\\n", "<br/>")
-        # replace **text** with <b>text</b> using regex
-        html_message = re.sub(r'\*\*([^*]+)\*\*', r'<b>\1</b>', html_message)
+        # strip markdown formatting for plain text
+        plain_message = re.sub(r'\*\*([^*]+)\*\*', r'\1', message)
+        plain_message = plain_message.replace("\\n", "\n")
 
-        payload = json.dumps({
-            "text": re.sub(r'\*\*([^*]+)\*\*', r'\1', message),  # plain text fallback (strip markdown)
-            "html": html_message,
-            "format": "org.matrix.custom.html"
-        }).encode("utf-8")
         req = urllib.request.Request(
             WEBHOOK_URL,
-            data=payload,
-            headers={"Content-Type": "application/json"}
+            data=plain_message.encode("utf-8"),
+            headers={
+                "Content-Type": "text/plain; charset=utf-8"
+            }
         )
 
         try:
@@ -356,10 +350,10 @@ let
     SCRUB_NEVER_RUN = 3
 
     STATUS_MAP = {
-        SCRUB_FAILED: "🔴 Failed",
-        SCRUB_SUCCESS: "✅ Success",
-        SCRUB_RUNNING: "🔄 Running",
-        SCRUB_NEVER_RUN: "⚠️ Never Run"
+        SCRUB_FAILED: "Failed",
+        SCRUB_SUCCESS: "Success",
+        SCRUB_RUNNING: "Running",
+        SCRUB_NEVER_RUN: "Never Run"
     }
 
     def query_prometheus(query):
@@ -444,12 +438,12 @@ let
         scrubs = get_btrfs_data()
 
         if not scrubs:
-            return "⚠️ no btrfs filesystems found in monitoring system"
+            return "no btrfs filesystems found in monitoring system"
 
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # header
-        report = f"🔍 **Weekly BTRFS Scrub Report**\\n\\n"
+        report = f"**Weekly BTRFS Scrub Report**\\n\\n"
         report += f"**Generated**: {timestamp}\\n"
         report += f"**Total Filesystems**: {len(scrubs)}\\n\\n"
 
@@ -471,13 +465,13 @@ let
 
         # summary
         if scrub_errors:
-            report += f"🔴 **CRITICAL**: {len(scrub_errors)} filesystem(s) with data corruption\\n"
+            report += f"**CRITICAL**: {len(scrub_errors)} filesystem(s) with data corruption\\n"
             for item in scrub_errors:
                 report += f"   • {item}\\n"
             report += "\\n"
 
         if scrub_failed:
-            report += f"⚠️ **WARNING**: {len(scrub_failed)} filesystem(s) with failed scrubs\\n"
+            report += f"**WARNING**: {len(scrub_failed)} filesystem(s) with failed scrubs\\n"
             for item in scrub_failed:
                 report += f"   • {item}\\n"
             report += "\\n"
@@ -496,7 +490,7 @@ let
             report += f"**{host}: {mountpoint}**\\n"
 
             # status
-            status = STATUS_MAP.get(status_code, "❓ Unknown")
+            status = STATUS_MAP.get(status_code, "Unknown")
             report += f"Status: {status}\\n"
 
             # duration
@@ -512,7 +506,7 @@ let
             # error count
             errors = scrub.get("errors", 0)
             if errors > 0:
-                report += f"🔴 Errors: {errors}\\n"
+                report += f"Errors: {errors}\\n"
             else:
                 report += f"Errors: 0 (all data verified)\\n"
 
@@ -528,25 +522,21 @@ let
         return report
 
     def send_webhook(message):
-        """send report to matrix via webhook"""
+        """send report to ntfy"""
         if not WEBHOOK_URL:
             print("ERROR: WEBHOOK_URL not set")
             return False
 
-        # convert markdown to html for matrix
-        html_message = message.replace("\\n", "<br/>")
-        # replace **text** with <b>text</b> using regex
-        html_message = re.sub(r'\*\*([^*]+)\*\*', r'<b>\1</b>', html_message)
+        # strip markdown formatting for plain text
+        plain_message = re.sub(r'\*\*([^*]+)\*\*', r'\1', message)
+        plain_message = plain_message.replace("\\n", "\n")
 
-        payload = json.dumps({
-            "text": re.sub(r'\*\*([^*]+)\*\*', r'\1', message),  # plain text fallback (strip markdown)
-            "html": html_message,
-            "format": "org.matrix.custom.html"
-        }).encode("utf-8")
         req = urllib.request.Request(
             WEBHOOK_URL,
-            data=payload,
-            headers={"Content-Type": "application/json"}
+            data=plain_message.encode("utf-8"),
+            headers={
+                "Content-Type": "text/plain; charset=utf-8"
+            }
         )
 
         try:
@@ -567,241 +557,236 @@ let
             print("\\nFailed to send report")
   '';
 
-  # TODO: uncomment after aspen re-install with ZFS pool
-  #zfsHealthScript = pkgs.writeText "zfs-health.py" ''
-  #  #!/usr/bin/env python3
-  #  import json
-  #  import urllib.request
-  #  import urllib.error
-  #  import os
-  #  import re
-  #  from datetime import datetime
-  #
-  #  PROMETHEUS_URL = "http://127.0.0.1:9090"
-  #  WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")
-  #
-  #  # status code constants
-  #  SCRUB_FAILED = 0
-  #  SCRUB_SUCCESS = 1
-  #  SCRUB_RUNNING = 2
-  #  SCRUB_NEVER_RUN = 3
-  #
-  #  STATUS_MAP = {
-  #      SCRUB_FAILED: "🔴 Failed",
-  #      SCRUB_SUCCESS: "✅ Success",
-  #      SCRUB_RUNNING: "🔄 Running",
-  #      SCRUB_NEVER_RUN: "⚠️ Never Run"
-  #  }
-  #
-  #  def query_prometheus(query):
-  #      """query prometheus and return results"""
-  #      url = f"{PROMETHEUS_URL}/api/v1/query?query={urllib.parse.quote(query)}"
-  #      try:
-  #          with urllib.request.urlopen(url, timeout=10) as response:
-  #              data = json.loads(response.read().decode("utf-8"))
-  #              if data.get("status") == "success":
-  #                  return data.get("data", {}).get("result", [])
-  #      except Exception as e:
-  #          print(f"error querying prometheus: {e}")
-  #      return []
-  #
-  #  def get_zfs_data():
-  #      """get all zfs scrub data in one batch"""
-  #      scrubs = {}
-  #
-  #      # batch query all scrub statuses
-  #      results = query_prometheus('zfs_scrub_status')
-  #      for result in results:
-  #          labels = result["metric"]
-  #          host = labels.get("host", "unknown")
-  #          pool = labels.get("pool", "unknown")
-  #          key = f"{host}:{pool}"
-  #          scrubs[key] = {
-  #              "host": host,
-  #              "pool": pool,
-  #              "status_code": int(result["value"][1]),
-  #          }
-  #
-  #      # batch query all repaired bytes
-  #      error_results = query_prometheus('zfs_scrub_errors_repaired_bytes')
-  #      for result in error_results:
-  #          labels = result["metric"]
-  #          key = f"{labels.get('host')}:{labels.get('pool')}"
-  #          if key in scrubs:
-  #              scrubs[key]["repaired_bytes"] = int(result["value"][1])
-  #
-  #      # batch query all timestamps
-  #      timestamp_results = query_prometheus('zfs_scrub_last_completion_timestamp')
-  #      for result in timestamp_results:
-  #          labels = result["metric"]
-  #          key = f"{labels.get('host')}:{labels.get('pool')}"
-  #          if key in scrubs:
-  #              scrubs[key]["last_run"] = int(result["value"][1])
-  #
-  #      # batch query all durations
-  #      duration_results = query_prometheus('zfs_scrub_duration_seconds')
-  #      for result in duration_results:
-  #          labels = result["metric"]
-  #          key = f"{labels.get('host')}:{labels.get('pool')}"
-  #          if key in scrubs:
-  #              scrubs[key]["duration"] = int(result["value"][1])
-  #
-  #      # batch query all total bytes
-  #      bytes_results = query_prometheus('zfs_scrub_total_bytes')
-  #      for result in bytes_results:
-  #          labels = result["metric"]
-  #          key = f"{labels.get('host')}:{labels.get('pool')}"
-  #          if key in scrubs:
-  #              scrubs[key]["total_bytes"] = int(result["value"][1])
-  #
-  #      return scrubs
-  #
-  #  def format_duration(seconds):
-  #      """convert seconds to human readable duration"""
-  #      hours = seconds // 3600
-  #      minutes = (seconds % 3600) // 60
-  #      secs = seconds % 60
-  #      return f"{hours}h {minutes}m {secs}s"
-  #
-  #  def format_bytes(total_bytes):
-  #      """convert bytes to human readable size"""
-  #      if total_bytes == 0:
-  #          return "unknown"
-  #      gb = total_bytes / 1073741824  # 1024^3
-  #      tb = total_bytes / 1099511627776  # 1024^4
-  #      if tb >= 1:
-  #          return f"{tb:.2f} TiB"
-  #      return f"{gb:.2f} GiB"
-  #
-  #  def generate_report():
-  #      """generate comprehensive zfs scrub health report"""
-  #      scrubs = get_zfs_data()
-  #
-  #      if not scrubs:
-  #          return "⚠️ no zfs pools found in monitoring system"
-  #
-  #      timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-  #
-  #      # header
-  #      report = f"🔍 **Weekly ZFS Scrub Report**\\n\\n"
-  #      report += f"**Generated**: {timestamp}\\n"
-  #      report += f"**Total Pools**: {len(scrubs)}\\n\\n"
-  #
-  #      # overall health summary
-  #      scrub_failed = []
-  #      scrub_errors = []
-  #      scrub_ok = []
-  #
-  #      for key, scrub in scrubs.items():
-  #          status_code = scrub["status_code"]
-  #          repaired_bytes = scrub.get("repaired_bytes", 0)
-  #
-  #          if repaired_bytes > 0:
-  #              scrub_errors.append(f"{key} ({format_bytes(repaired_bytes)} repaired)")
-  #          elif status_code == SCRUB_FAILED:
-  #              scrub_failed.append(key)
-  #          elif status_code == SCRUB_SUCCESS:
-  #              scrub_ok.append(key)
-  #
-  #      # summary
-  #      if scrub_errors:
-  #          report += f"🔴 **CRITICAL**: {len(scrub_errors)} pool(s) with data corruption\\n"
-  #          for item in scrub_errors:
-  #              report += f"   • {item}\\n"
-  #          report += "\\n"
-  #
-  #      if scrub_failed:
-  #          report += f"⚠️ **WARNING**: {len(scrub_failed)} pool(s) with failed scrubs\\n"
-  #          for item in scrub_failed:
-  #              report += f"   • {item}\\n"
-  #          report += "\\n"
-  #
-  #      # only show summary if there are errors or failures
-  #      # omit the "all successful" line when everything is OK
-  #
-  #      report += "---\\n\\n"
-  #
-  #      # detailed per-pool report
-  #      for key, scrub in sorted(scrubs.items()):
-  #          host = scrub["host"]
-  #          pool = scrub["pool"]
-  #          status_code = scrub["status_code"]
-  #
-  #          report += f"**{host}: {pool}**\\n"
-  #
-  #          # status
-  #          status = STATUS_MAP.get(status_code, "❓ Unknown")
-  #          report += f"Status: {status}\\n"
-  #
-  #          # duration
-  #          duration = scrub.get("duration", 0)
-  #          if duration > 0:
-  #              report += f"Duration: {format_duration(duration)}\\n"
-  #
-  #          # size scrubbed
-  #          total_bytes = scrub.get("total_bytes", 0)
-  #          if total_bytes > 0:
-  #              report += f"Size Scrubbed: {format_bytes(total_bytes)}\\n"
-  #
-  #          # repaired bytes
-  #          repaired_bytes = scrub.get("repaired_bytes", 0)
-  #          if repaired_bytes > 0:
-  #              report += f"🔴 Data Repaired: {format_bytes(repaired_bytes)}\\n"
-  #          else:
-  #              report += f"Data Repaired: 0 (all data verified)\\n"
-  #
-  #          # last run timestamp
-  #          last_run_timestamp = scrub.get("last_run")
-  #          if last_run_timestamp:
-  #              last_run = datetime.fromtimestamp(last_run_timestamp).strftime("%Y-%m-%d %H:%M:%S")
-  #              days_ago = (datetime.now().timestamp() - last_run_timestamp) / 86400
-  #              report += f"Last Run: {last_run} ({days_ago:.1f} days ago)\\n"
-  #
-  #          report += "\\n"
-  #
-  #      return report
-  #
-  #  def send_webhook(message):
-  #      """send report to matrix via webhook"""
-  #      if not WEBHOOK_URL:
-  #          print("ERROR: WEBHOOK_URL not set")
-  #          return False
-  #
-  #      # convert markdown to html for matrix
-  #      html_message = message.replace("\\n", "<br/>")
-  #      # replace **text** with <b>text</b> using regex
-  #      html_message = re.sub(r'\*\*([^*]+)\*\*', r'<b>\1</b>', html_message)
-  #
-  #      payload = json.dumps({
-  #          "text": re.sub(r'\*\*([^*]+)\*\*', r'\1', message),  # plain text fallback (strip markdown)
-  #          "html": html_message,
-  #          "format": "org.matrix.custom.html"
-  #      }).encode("utf-8")
-  #      req = urllib.request.Request(
-  #          WEBHOOK_URL,
-  #          data=payload,
-  #          headers={"Content-Type": "application/json"}
-  #      )
-  #
-  #      try:
-  #          with urllib.request.urlopen(req, timeout=10) as response:
-  #              # accept any 2xx status code as success
-  #              return 200 <= response.status < 300
-  #      except Exception as e:
-  #          print(f"error sending webhook: {e}")
-  #          return False
-  #
-  #  if __name__ == "__main__":
-  #      report = generate_report()
-  #      print(report)
-  #
-  #      if send_webhook(report):
-  #          print("\\nReport sent successfully")
-  #      else:
-  #          print("\\nFailed to send report")
-  #'';
+  zfsHealthScript = pkgs.writeText "zfs-health.py" ''
+    #!/usr/bin/env python3
+    import json
+    import urllib.request
+    import urllib.error
+    import os
+    import re
+    from datetime import datetime
 
-  # transformer service that converts alertmanager webhooks to matrix hookshot format
+    PROMETHEUS_URL = "http://127.0.0.1:9090"
+    WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")
+
+    # status code constants
+    SCRUB_FAILED = 0
+    SCRUB_SUCCESS = 1
+    SCRUB_RUNNING = 2
+    SCRUB_NEVER_RUN = 3
+
+    STATUS_MAP = {
+        SCRUB_FAILED: "Failed",
+        SCRUB_SUCCESS: "Success",
+        SCRUB_RUNNING: "Running",
+        SCRUB_NEVER_RUN: "Never Run"
+    }
+
+    def query_prometheus(query):
+        """query prometheus and return results"""
+        url = f"{PROMETHEUS_URL}/api/v1/query?query={urllib.parse.quote(query)}"
+        try:
+            with urllib.request.urlopen(url, timeout=10) as response:
+                data = json.loads(response.read().decode("utf-8"))
+                if data.get("status") == "success":
+                    return data.get("data", {}).get("result", [])
+        except Exception as e:
+            print(f"error querying prometheus: {e}")
+        return []
+
+    def get_zfs_data():
+        """get all zfs scrub data in one batch"""
+        scrubs = {}
+
+        # batch query all scrub statuses
+        results = query_prometheus('zfs_scrub_status')
+        for result in results:
+            labels = result["metric"]
+            host = labels.get("host", "unknown")
+            pool = labels.get("pool", "unknown")
+            key = f"{host}:{pool}"
+            scrubs[key] = {
+                "host": host,
+                "pool": pool,
+                "status_code": int(result["value"][1]),
+            }
+
+        # batch query all repaired bytes
+        error_results = query_prometheus('zfs_scrub_errors_repaired_bytes')
+        for result in error_results:
+            labels = result["metric"]
+            key = f"{labels.get('host')}:{labels.get('pool')}"
+            if key in scrubs:
+                scrubs[key]["repaired_bytes"] = int(result["value"][1])
+
+        # batch query all timestamps
+        timestamp_results = query_prometheus('zfs_scrub_last_completion_timestamp')
+        for result in timestamp_results:
+            labels = result["metric"]
+            key = f"{labels.get('host')}:{labels.get('pool')}"
+            if key in scrubs:
+                scrubs[key]["last_run"] = int(result["value"][1])
+
+        # batch query all durations
+        duration_results = query_prometheus('zfs_scrub_duration_seconds')
+        for result in duration_results:
+            labels = result["metric"]
+            key = f"{labels.get('host')}:{labels.get('pool')}"
+            if key in scrubs:
+                scrubs[key]["duration"] = int(result["value"][1])
+
+        # batch query all total bytes
+        bytes_results = query_prometheus('zfs_scrub_total_bytes')
+        for result in bytes_results:
+            labels = result["metric"]
+            key = f"{labels.get('host')}:{labels.get('pool')}"
+            if key in scrubs:
+                scrubs[key]["total_bytes"] = int(result["value"][1])
+
+        return scrubs
+
+    def format_duration(seconds):
+        """convert seconds to human readable duration"""
+        hours = seconds // 3600
+        minutes = (seconds % 3600) // 60
+        secs = seconds % 60
+        return f"{hours}h {minutes}m {secs}s"
+
+    def format_bytes(total_bytes):
+        """convert bytes to human readable size"""
+        if total_bytes == 0:
+            return "unknown"
+        gb = total_bytes / 1073741824  # 1024^3
+        tb = total_bytes / 1099511627776  # 1024^4
+        if tb >= 1:
+            return f"{tb:.2f} TiB"
+        return f"{gb:.2f} GiB"
+
+    def generate_report():
+        """generate comprehensive zfs scrub health report"""
+        scrubs = get_zfs_data()
+
+        if not scrubs:
+            return "no zfs pools found in monitoring system"
+
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # header
+        report = f"**Weekly ZFS Scrub Report**\\n\\n"
+        report += f"**Generated**: {timestamp}\\n"
+        report += f"**Total Pools**: {len(scrubs)}\\n\\n"
+
+        # overall health summary
+        scrub_failed = []
+        scrub_errors = []
+        scrub_ok = []
+
+        for key, scrub in scrubs.items():
+            status_code = scrub["status_code"]
+            repaired_bytes = scrub.get("repaired_bytes", 0)
+
+            if repaired_bytes > 0:
+                scrub_errors.append(f"{key} ({format_bytes(repaired_bytes)} repaired)")
+            elif status_code == SCRUB_FAILED:
+                scrub_failed.append(key)
+            elif status_code == SCRUB_SUCCESS:
+                scrub_ok.append(key)
+
+        # summary
+        if scrub_errors:
+            report += f"**CRITICAL**: {len(scrub_errors)} pool(s) with data corruption\\n"
+            for item in scrub_errors:
+                report += f"   • {item}\\n"
+            report += "\\n"
+
+        if scrub_failed:
+            report += f"**WARNING**: {len(scrub_failed)} pool(s) with failed scrubs\\n"
+            for item in scrub_failed:
+                report += f"   • {item}\\n"
+            report += "\\n"
+
+        # only show summary if there are errors or failures
+        # omit the "all successful" line when everything is OK
+
+        report += "---\\n\\n"
+
+        # detailed per-pool report
+        for key, scrub in sorted(scrubs.items()):
+            host = scrub["host"]
+            pool = scrub["pool"]
+            status_code = scrub["status_code"]
+
+            report += f"**{host}: {pool}**\\n"
+
+            # status
+            status = STATUS_MAP.get(status_code, "Unknown")
+            report += f"Status: {status}\\n"
+
+            # duration
+            duration = scrub.get("duration", 0)
+            if duration > 0:
+                report += f"Duration: {format_duration(duration)}\\n"
+
+            # size scrubbed
+            total_bytes = scrub.get("total_bytes", 0)
+            if total_bytes > 0:
+                report += f"Size Scrubbed: {format_bytes(total_bytes)}\\n"
+
+            # repaired bytes
+            repaired_bytes = scrub.get("repaired_bytes", 0)
+            if repaired_bytes > 0:
+                report += f"Data Repaired: {format_bytes(repaired_bytes)}\\n"
+            else:
+                report += f"Data Repaired: 0 (all data verified)\\n"
+
+            # last run timestamp
+            last_run_timestamp = scrub.get("last_run")
+            if last_run_timestamp:
+                last_run = datetime.fromtimestamp(last_run_timestamp).strftime("%Y-%m-%d %H:%M:%S")
+                days_ago = (datetime.now().timestamp() - last_run_timestamp) / 86400
+                report += f"Last Run: {last_run} ({days_ago:.1f} days ago)\\n"
+
+            report += "\\n"
+
+        return report
+
+    def send_webhook(message):
+        """send report to ntfy"""
+        if not WEBHOOK_URL:
+            print("ERROR: WEBHOOK_URL not set")
+            return False
+
+        # strip markdown formatting for plain text
+        plain_message = re.sub(r'\*\*([^*]+)\*\*', r'\1', message)
+        plain_message = plain_message.replace("\\n", "\n")
+
+        req = urllib.request.Request(
+            WEBHOOK_URL,
+            data=plain_message.encode("utf-8"),
+            headers={
+                "Content-Type": "text/plain; charset=utf-8"
+            }
+        )
+
+        try:
+            with urllib.request.urlopen(req, timeout=10) as response:
+                # accept any 2xx status code as success
+                return 200 <= response.status < 300
+        except Exception as e:
+            print(f"error sending webhook: {e}")
+            return False
+
+    if __name__ == "__main__":
+        report = generate_report()
+        print(report)
+
+        if send_webhook(report):
+            print("\\nReport sent successfully")
+        else:
+            print("\\nFailed to send report")
+  '';
+
+  # transformer service that converts alertmanager webhooks to ntfy format
   transformerScript = pkgs.writeText "alertmanager-transformer.py" ''
     #!/usr/bin/env python3
     from http.server import BaseHTTPRequestHandler, HTTPServer
@@ -810,15 +795,16 @@ let
     import urllib.request
     import urllib.error
 
-    HOOKSHOT_URL = os.environ.get("HOOKSHOT_URL", "")
+    NTFY_URL = os.environ.get("NTFY_URL", "")
     PORT = int(os.environ.get("PORT", "9099"))
 
     def format_alert(alert):
         alertname = alert.get("labels", {}).get("alertname", "Unknown Alert")
         # Use host label for node alerts, fall back to instance for endpoint alerts
         identifier = alert.get("labels", {}).get("host") or alert.get("labels", {}).get("instance", "unknown")
+        severity = alert.get("labels", {}).get("severity", "info")
 
-        return f"**{alertname}** ({identifier})"
+        return f"{alertname} ({identifier}) [severity: {severity}]"
 
     class AlertmanagerHandler(BaseHTTPRequestHandler):
         def log_message(self, format, *args):
@@ -830,19 +816,25 @@ let
                 body = self.rfile.read(content_length)
                 data = json.loads(body.decode("utf-8"))
 
-                status = "🔴 **FIRING**" if data.get("status") == "firing" else "✅ **RESOLVED**"
+                status = data.get("status", "unknown")
+                is_firing = status == "firing"
+                status_text = "FIRING" if is_firing else "RESOLVED"
                 alert_count = len(data.get("alerts", []))
 
                 alerts = [format_alert(alert) for alert in data.get("alerts", [])]
-                alerts_text = "\n\n---\n\n".join(alerts)
+                alerts_text = "\n".join(alerts)
 
-                message = f"{status} - {alert_count} alert(s)\n\n{alerts_text}"
+                message = f"{status_text} - {alert_count} alert(s)\n\n{alerts_text}"
 
-                hookshot_payload = json.dumps({"text": message}).encode("utf-8")
+                # Send to ntfy with appropriate priority
+                headers = {"Content-Type": "text/plain; charset=utf-8"}
+                if is_firing:
+                    headers["Priority"] = "urgent"
+
                 req = urllib.request.Request(
-                    HOOKSHOT_URL,
-                    data=hookshot_payload,
-                    headers={"Content-Type": "application/json"}
+                    NTFY_URL,
+                    data=message.encode("utf-8"),
+                    headers=headers
                 )
 
                 with urllib.request.urlopen(req, timeout=10) as response:
@@ -857,13 +849,13 @@ let
                 self.wfile.write(f"Error: {str(e)}".encode("utf-8"))
 
     if __name__ == "__main__":
-        if not HOOKSHOT_URL:
-            print("ERROR: HOOKSHOT_URL environment variable not set")
+        if not NTFY_URL:
+            print("ERROR: NTFY_URL environment variable not set")
             exit(1)
 
         server = HTTPServer(("127.0.0.1", PORT), AlertmanagerHandler)
-        print(f"Alertmanager to Hookshot transformer listening on 127.0.0.1:{PORT}")
-        print(f"Forwarding to: {HOOKSHOT_URL}")
+        print(f"Alertmanager to ntfy transformer listening on 127.0.0.1:{PORT}")
+        print(f"Forwarding to: {NTFY_URL}")
         server.serve_forever()
   '';
 
@@ -995,50 +987,25 @@ let
             annotations:
               summary: "BTRFS scrub failed on {{ $labels.mountpoint }} ({{ $labels.host }})"
 
-      # TODO: uncomment after aspen re-install with ZFS pool
-      #- name: zfs_scrub_alerts
-      #  interval: 60s
-      #  rules:
-      #
-      #    - alert: zfsDataCorruption
-      #      expr: zfs_scrub_errors_repaired_bytes > 0
-      #      for: 1m
-      #      labels:
-      #        severity: critical
-      #      annotations:
-      #        summary: "ZFS DATA CORRUPTION detected on {{ $labels.pool }} ({{ $labels.host }}) - {{ $value }} bytes repaired"
-      #
-      #    - alert: zfsScrubNotRunning
-      #      expr: time() - zfs_scrub_last_completion_timestamp > 604800
-      #      for: 30m
-      #      labels:
-      #        severity: warning
-      #      annotations:
-      #        summary: "ZFS scrub has not completed on {{ $labels.pool }} ({{ $labels.host }}) in over 7 days"
-      #
-      #    - alert: zfsScrubFailed
-      #      expr: zfs_scrub_status == 0
-      #      for: 5m
-      #      labels:
-      #        severity: critical
-      #      annotations:
-      #        summary: "ZFS scrub failed on {{ $labels.pool }} ({{ $labels.host }})"
-      #
-      #    - alert: zfsScrubNeverRun
-      #      expr: zfs_scrub_status == 3
-      #      for: 1h
-      #      labels:
-      #        severity: warning
-      #      annotations:
-      #        summary: "ZFS scrub has never run on {{ $labels.pool }} ({{ $labels.host }})"
-      #
-      #    - alert: zfsScrubMetricsStale
-      #      expr: time() - zfs_scrub_last_completion_timestamp > 691200
-      #      for: 1h
-      #      labels:
-      #        severity: warning
-      #      annotations:
-      #        summary: "ZFS scrub metrics on {{ $labels.pool }} ({{ $labels.host }}) haven't updated in over 8 days (monitoring may be broken)"
+      - name: zfs_scrub_alerts
+        interval: 60s
+        rules:
+
+          - alert: zfsDataCorruption
+            expr: zfs_scrub_errors_repaired_bytes > 0
+            for: 1m
+            labels:
+              severity: critical
+            annotations:
+              summary: "ZFS DATA CORRUPTION detected on {{ $labels.pool }} ({{ $labels.host }}) - {{ $value }} bytes repaired"
+
+          - alert: zfsScrubFailed
+            expr: zfs_scrub_status == 0
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "ZFS scrub failed on {{ $labels.pool }} ({{ $labels.host }})"
   '';
 
 in
@@ -1054,20 +1021,18 @@ in
   };
 
   sops = {
-    secrets.chrisNotificationsWebhookUrl = {};
-    templates."alertmanager-hookshot-env".content = ''
-      HOOKSHOT_URL=${config.sops.placeholder.chrisNotificationsWebhookUrl}
+    templates."alertmanager-ntfy-env".content = ''
+      NTFY_URL=https://ntfy.${configVars.domain2}/homelab-alerts
     '';
     templates."smart-health-env".content = ''
-      WEBHOOK_URL=${config.sops.placeholder.chrisNotificationsWebhookUrl}
+      WEBHOOK_URL=https://ntfy.${configVars.domain2}/homelab-info
     '';
     templates."btrfs-health-env".content = ''
-      WEBHOOK_URL=${config.sops.placeholder.chrisNotificationsWebhookUrl}
+      WEBHOOK_URL=https://ntfy.${configVars.domain2}/homelab-info
     '';
-    # TODO: uncomment after aspen re-install with ZFS pool
-    #templates."zfs-health-env".content = ''
-    #  WEBHOOK_URL=${config.sops.placeholder.chrisNotificationsWebhookUrl}
-    #'';
+    templates."zfs-health-env".content = ''
+      WEBHOOK_URL=https://ntfy.${configVars.domain2}/homelab-info
+    '';
   };
 
   # create textfile collector directory for node_exporter at boot
@@ -1086,17 +1051,15 @@ in
           ExecStartPost = "${btrfsScrubExporter}";
         };
       };
-      alertmanager-to-hookshot = {
-        description = "Alertmanager to Matrix Hookshot Transformer";
+      alertmanager-to-ntfy = {
+        description = "Alertmanager to Ntfy Transformer";
         wantedBy = [ "multi-user.target" ];
-        after = [ "network-online.target" ];
-        wants = [ "network-online.target" ];
         serviceConfig = {
           Type = "simple";
           ExecStart = "${pkgs.python3}/bin/python3 ${transformerScript}";
           Restart = "on-failure";
           RestartSec = "10s";
-          EnvironmentFile = config.sops.templates."alertmanager-hookshot-env".path;
+          EnvironmentFile = config.sops.templates."alertmanager-ntfy-env".path;
           Environment = [ "PORT=9099" ];
           DynamicUser = true;
           NoNewPrivileges = true;
@@ -1117,8 +1080,7 @@ in
       };
       smart-health = {
         description = "Weekly SMART Disk Health Report Generator";
-        after = [ "network-online.target" "prometheus.service" ];
-        wants = [ "network-online.target" ];
+        after = [ "prometheus.service" ];
         serviceConfig = {
           Type = "oneshot";
           ExecStart = "${pkgs.python3}/bin/python3 ${smartHealthScript}";
@@ -1142,8 +1104,7 @@ in
       };
       btrfs-health = {
         description = "Weekly BTRFS Scrub Health Report Generator";
-        after = [ "network-online.target" "prometheus.service" ];
-        wants = [ "network-online.target" ];
+        after = [ "prometheus.service" ];
         serviceConfig = {
           Type = "oneshot";
           ExecStart = "${pkgs.python3}/bin/python3 ${btrfsHealthScript}";
@@ -1165,32 +1126,30 @@ in
           PrivateMounts = true;
         };
       };
-      # TODO: uncomment after aspen re-install with ZFS pool
-      #zfs-health = {
-      #  description = "Weekly ZFS Scrub Health Report Generator";
-      #  after = [ "network-online.target" "prometheus.service" ];
-      #  wants = [ "network-online.target" ];
-      #  serviceConfig = {
-      #    Type = "oneshot";
-      #    ExecStart = "${pkgs.python3}/bin/python3 ${zfsHealthScript}";
-      #    EnvironmentFile = config.sops.templates."zfs-health-env".path;
-      #    DynamicUser = true;
-      #    NoNewPrivileges = true;
-      #    PrivateTmp = true;
-      #    ProtectSystem = "strict";
-      #    ProtectHome = true;
-      #    ProtectKernelTunnels = true;
-      #    ProtectKernelModules = true;
-      #    ProtectControlGroups = true;
-      #    RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
-      #    RestrictNamespaces = true;
-      #    LockPersonality = true;
-      #    MemoryDenyWriteExecute = true;
-      #    RestrictRealtime = true;
-      #    RestrictSUIDSGID = true;
-      #    PrivateMounts = true;
-      #  };
-      #};
+      zfs-health = {
+        description = "Weekly ZFS Scrub Health Report Generator";
+        after = [ "prometheus.service" ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${pkgs.python3}/bin/python3 ${zfsHealthScript}";
+          EnvironmentFile = config.sops.templates."zfs-health-env".path;
+          DynamicUser = true;
+          NoNewPrivileges = true;
+          PrivateTmp = true;
+          ProtectSystem = "strict";
+          ProtectHome = true;
+          ProtectKernelTunnels = true;
+          ProtectKernelModules = true;
+          ProtectControlGroups = true;
+          RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
+          RestrictNamespaces = true;
+          LockPersonality = true;
+          MemoryDenyWriteExecute = true;
+          RestrictRealtime = true;
+          RestrictSUIDSGID = true;
+          PrivateMounts = true;
+        };
+      };
     };
     timers = {
       smart-health = {
@@ -1211,16 +1170,15 @@ in
           RandomizedDelaySec = "5m";  # randomize within 5 minutes to avoid load spikes
         };
       };
-      # TODO: uncomment after aspen re-install with ZFS pool
-      #zfs-health = {
-      #  description = "Weekly ZFS Scrub Health Report Timer";
-      #  wantedBy = [ "timers.target" ];
-      #  timerConfig = {
-      #    OnCalendar = "Sun 04:45:00";  # sunday 04:45 (after Mon 03:00 scrub completes)
-      #    Persistent = true;  # run on next boot if missed
-      #    RandomizedDelaySec = "5m";  # randomize within 5 minutes to avoid load spikes
-      #  };
-      #};
+      zfs-health = {
+        description = "Weekly ZFS Scrub Health Report Timer";
+        wantedBy = [ "timers.target" ];
+        timerConfig = {
+          OnCalendar = "Mon 04:00:00";  # monday 04:00 (after Mon 03:00 scrub completes)
+          Persistent = true;  # run on next boot if missed
+          RandomizedDelaySec = "5m";  # randomize within 5 minutes to avoid load spikes
+        };
+      };
     };
   };
 
@@ -1429,6 +1387,7 @@ in
                 "https://vaultwarden.${configVars.domain1}"
                 # juniper services - domain2
                 "https://alertmanager.${configVars.domain2}"
+                "https://ntfy.${configVars.domain2}"
                 "https://grafana.${configVars.domain2}"
                 "https://homepage.${configVars.domain2}"
                 "https://pihole-juniper.${configVars.domain2}/admin/login"
@@ -1520,7 +1479,7 @@ in
             resolve_timeout = "5m";
           };
           route = {
-            receiver = "matrix-webhook";
+            receiver = "ntfy";
             group_by = [ "alertname" "host" "severity" ];
             group_wait = "30s";
             group_interval = "5m";
@@ -1528,7 +1487,7 @@ in
             routes = [
               {
                 matchers = [ "alertname=~hostDown|hostUp" ];
-                receiver = "matrix-webhook";
+                receiver = "ntfy";
                 repeat_interval = "876000h"; # ~100 years = effectively never
                 group_wait = "30s";
                 group_interval = "5m";
@@ -1536,7 +1495,7 @@ in
               # Mute endpoint alerts during nightly backup window
               {
                 matchers = [ "alertname=publicEndpointDown" ];
-                receiver = "matrix-webhook";
+                receiver = "ntfy";
                 mute_time_intervals = [ "nightly-backup-window" ];
               }
             ];
@@ -1562,7 +1521,7 @@ in
           ];
           receivers = [
             {
-              name = "matrix-webhook";
+              name = "ntfy";
               webhook_configs = [
                 {
                   url = "http://127.0.0.1:9099"; # Local transformer service

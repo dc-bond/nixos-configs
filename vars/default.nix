@@ -323,13 +323,13 @@
         unbound = { ipv4 = "172.21.1.3"; };
       };
     };
-    
-    matrix-webhook = {
-      subnet = "172.21.2.0/25";
-      containers = {
-        matrix-webhook = { ipv4 = "172.21.2.2"; };
-      };
-    };
+
+    #null = {
+    #  subnet = "172.21.2.0/25";
+    #  containers = {
+    #    null = { ipv4 = "172.21.2.2"; };
+    #  };
+    #};
     
     unifi = {
       subnet = "172.21.3.0/25";
@@ -373,15 +373,15 @@
         ingredient-instruction-classifier = { ipv4 = "172.21.7.9"; };
       };
     };
-    
-    matrix-hookshot = {
-      subnet = "172.21.8.0/25";
-      containers = {
-        matrix-hookshot = { ipv4 = "172.21.8.2"; };
-        redis = { ipv4 = "172.21.8.3"; };
-      };
-    };
-    
+
+    #null = {
+    #  subnet = "172.21.8.0/25";
+    #  containers = {
+    #    null = { ipv4 = "172.21.8.2"; };
+    #    null = { ipv4 = "172.21.8.3"; };
+    #  };
+    #};
+
     #null = {
     #  subnet = "172.21.9.0/25";
     #  containers = {
@@ -610,10 +610,6 @@
       smtpPort = 587; # STARTTLS
       imapPort = 993; # TLS
     };
-  };
-
-  webhooks = {
-    matrixBackupNotifications = "https://webhooks.opticon.dev/a41ac35c-139c-4d9b-bdeb-0bf4221586d2";
   };
 
 }
