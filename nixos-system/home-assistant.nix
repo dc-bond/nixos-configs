@@ -45,7 +45,6 @@ in
     secrets = {
       mqttHassPasswd = {};
       chrisEmailPasswd = {};
-      familyNotificationsWebhookUrl = {};
     };
     templates = {
       "hass-secrets" = {
@@ -57,7 +56,6 @@ in
           notifyEmailUsername: ${configVars.users.chris.email}
           notifyEmailPasswd: ${config.sops.placeholder.chrisEmailPasswd}
           notifyEmailPort: ${toString configVars.mailservers.namecheap.smtpPort}
-          familyNotificationsWebhookUrl: ${config.sops.placeholder.familyNotificationsWebhookUrl}
         '';
         path = "/var/lib/hass/secrets.yaml";
         owner = "${config.users.users.hass.name}";

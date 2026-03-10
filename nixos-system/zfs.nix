@@ -54,7 +54,7 @@ let
           minutes="''${BASH_REMATCH[2]}"
           duration_seconds=$(( (hours * 3600) + (minutes * 60) ))
           echo "zfs_scrub_duration_seconds{pool=\"$pool\"} $duration_seconds"
-        elif [[ "$duration_line" =~ ([0-9]+) days ]]; then
+        elif [[ "$duration_line" =~ ([0-9]+)[[:space:]]days ]]; then
           days="''${BASH_REMATCH[1]}"
           # extract hours and minutes after days
           if [[ "$duration_line" =~ ([0-9]+):([0-9]+):([0-9]+) ]]; then
@@ -67,7 +67,7 @@ let
         fi
 
         # extract completion timestamp if available
-        if [[ "$scrub_status" =~ "on "(.+) ]]; then
+        if [[ "$scrub_status" =~ on[[:space:]](.+) ]]; then
           timestamp_str="''${BASH_REMATCH[1]}"
           timestamp=$(date -d "$timestamp_str" +%s 2>/dev/null || echo "0")
           if [ "$timestamp" != "0" ]; then
