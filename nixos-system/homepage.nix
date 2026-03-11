@@ -148,6 +148,13 @@ in
               ping = "https://frigate.${configVars.domain2}";
             };
           }
+          {
+            "Dawarich" = {
+              href = "https://dawarich.${configVars.domain2}/";
+              description = "Location History Tracker";
+              ping = "https://dawarich.${configVars.domain2}";
+            };
+          }
         ];
       }
       {
