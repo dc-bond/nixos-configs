@@ -163,10 +163,17 @@ in
         "extensions.autoDisableScopes" = 0; # automatically enable extensions
         "privacy.trackingprotection.enabled" = true;
         "privacy.trackingprotection.socialtracking.enabled" = true;
-			  "privacy.resistFingerprinting" = true;
+			  #"privacy.resistFingerprinting" = true; # disabled - breaks WebGL for self-hosted apps like Dawarich
 			  #"privacy.resistFingerprinting.letterboxing" = true;
 			  "privacy.globalprivacycontrol.enabled" = true;
 			  "privacy.donottrackheader.enabled" = true;
+        # WebGL settings - force enable for NixOS
+        "webgl.disabled" = false;
+        "webgl.force-enabled" = true;
+        "webgl.enable-webgl2" = true;
+        "layers.acceleration.force-enabled" = true;
+        "gfx.webrender.all" = true;
+        "gfx.webrender.enabled" = true;
         #"browser.uiCustomization.state" =
         #''
         #  {

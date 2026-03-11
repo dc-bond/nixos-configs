@@ -100,6 +100,7 @@
       "hosts/cypress/impermanence.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
+      "nixos-system/intel.nix"
       "nixos-system/rebuilds.nix"
       "nixos-system/networking.nix"
       "nixos-system/tailscale.nix" # recoverTailscale

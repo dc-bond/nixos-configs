@@ -146,7 +146,7 @@
       "nixos-system/sops.nix"
       "nixos-system/bluetooth.nix"
       "nixos-system/monitoring-client.nix"
-
+      #"nixos-system/intel.nix"
       "nixos-system/greetd.nix"
       "nixos-system/labwc.nix"
     ])
