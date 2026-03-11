@@ -97,6 +97,7 @@
       "nixos-system/traefik.nix"
       "nixos-system/matrix.nix"
       "nixos-system/vaultwarden.nix"
+      "nixos-system/oci-dawarich.nix"
       "nixos-system/homepage.nix"
     ])
   ];

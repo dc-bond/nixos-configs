@@ -324,12 +324,15 @@
       };
     };
 
-    #null = {
-    #  subnet = "172.21.2.0/25";
-    #  containers = {
-    #    null = { ipv4 = "172.21.2.2"; };
-    #  };
-    #};
+    dawarich = {
+      subnet = "172.21.2.0/25";
+      containers = {
+        dawarich-postgres = { ipv4 = "172.21.2.2"; };
+        dawarich-redis = { ipv4 = "172.21.2.3"; };
+        dawarich = { ipv4 = "172.21.2.4"; };
+        dawarich-sidekiq = { ipv4 = "172.21.2.5"; };
+      };
+    };
     
     unifi = {
       subnet = "172.21.3.0/25";
