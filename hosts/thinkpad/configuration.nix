@@ -122,6 +122,7 @@
       "nixos-system/monitoring-client.nix"
       "nixos-system/usb-phone-mount.nix"
       "nixos-system/wd-passport.nix"
+      "nixos-system/intel.nix"
       "nixos-system/greetd.nix"
       "nixos-system/hyprland.nix"
       "scripts/deploy.nix"

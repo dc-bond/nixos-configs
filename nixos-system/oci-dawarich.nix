@@ -16,9 +16,11 @@ let
 
   recoveryPlan = {
     restoreItems = [
-      "/var/lib/docker/volumes/${app}"
-      "/var/lib/docker/volumes/${app2}"
-      "/var/lib/docker/volumes/${app}-shared"
+      "/var/lib/docker/volumes/${app}-storage"   # import file attachments
+      "/var/lib/docker/volumes/${app}-public"    # user-generated exports
+      "/var/lib/docker/volumes/${app}-watched"   # auto-import watcher directory for pending imports
+      "/var/lib/docker/volumes/${app2}"          # postgres database
+      "/var/lib/docker/volumes/${app}-shared"    # redis persistent data (job queues) - prevents data loss on restart
     ];
     stopServices = [ "docker-${app}-root.target" ];
     startServices = [ "docker-${app}-root.target" ];
@@ -51,6 +53,8 @@ in
       "${app}-env".content = ''
         RAILS_ENV=production
         SELF_HOSTED=true
+        STORE_GEODATA=true
+        RAILS_LOG_TO_STDOUT=true
         APPLICATION_HOSTS=${app}.${configVars.domain2}
         APPLICATION_PROTOCOL=https
         DATABASE_HOST=${app2}
@@ -59,19 +63,30 @@ in
         DATABASE_NAME=${app}
         DATABASE_PORT=5432
         REDIS_URL=redis://${app3}:6379
-        RAILS_CACHE_DB=0
-        RAILS_JOB_QUEUE_DB=1
-        RAILS_WS_DB=2
-        BACKGROUND_PROCESSING_CONCURRENCY=5
         SECRET_KEY_BASE=${config.sops.placeholder.dawarichSecretKeyBase}
-        RAILS_MAX_THREADS=5
         TIME_ZONE=America/New_York
       '';
       "${app2}-env".content = ''
         POSTGRES_USER=${app}
         POSTGRES_PASSWORD=${config.sops.placeholder.dawarichDbPasswd}
         POSTGRES_DB=${app}
-        POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+      '';
+      "${app4}-env".content = ''
+        RAILS_ENV=production
+        SELF_HOSTED=true
+        STORE_GEODATA=true
+        RAILS_LOG_TO_STDOUT=true
+        APPLICATION_HOSTS=${app}.${configVars.domain2}
+        APPLICATION_PROTOCOL=https
+        DATABASE_HOST=${app2}
+        DATABASE_USERNAME=${app}
+        DATABASE_PASSWORD=${config.sops.placeholder.dawarichDbPasswd}
+        DATABASE_NAME=${app}
+        DATABASE_PORT=5432
+        REDIS_URL=redis://${app3}:6379
+        SECRET_KEY_BASE=${config.sops.placeholder.dawarichSecretKeyBase}
+        TIME_ZONE=America/New_York
+        BACKGROUND_PROCESSING_CONCURRENCY=10
       '';
     };
   };
@@ -79,53 +94,70 @@ in
   virtualisation.oci-containers.containers = {
 
     "${app2}" = {
-      image = "docker.io/postgis/postgis:17-3.6"; # https://hub.docker.com/r/postgis/postgis/tags - PostgreSQL 17 + PostGIS 3.6
+      image = "docker.io/postgis/postgis:17-3.5-alpine"; # https://hub.docker.com/r/postgis/postgis/tags
       autoStart = true;
       environmentFiles = [ config.sops.templates."${app2}-env".path ];
       log-driver = "journald";
-      volumes = [ "${app2}:/var/lib/postgresql/data" ];
+      volumes = [
+        "${app2}:/var/lib/postgresql/data"
+        "${app}-shared:/var/shared"
+      ];
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.containerServices.${app}.containers.${app2}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
-        "--health-cmd=pg_isready -U ${app}"
+        "--shm-size=1g"
+        "--health-cmd=pg_isready -U ${app} -d ${app}"
         "--health-interval=10s"
-        "--health-timeout=5s"
+        "--health-timeout=10s"
         "--health-retries=5"
+        "--health-start-period=30s"
       ];
     };
 
     "${app3}" = {
-      image = "docker.io/library/redis:7-alpine"; # https://hub.docker.com/_/redis
+      image = "docker.io/library/redis:7.4-alpine"; # https://hub.docker.com/_/redis
       autoStart = true;
+      cmd = [ "redis-server" ];
       log-driver = "journald";
+      volumes = [ "${app}-shared:/data" ];
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.containerServices.${app}.containers.${app3}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
-        "--health-cmd=redis-cli ping"
+        "--health-cmd=redis-cli --raw incr ping"
         "--health-interval=10s"
-        "--health-timeout=5s"
+        "--health-timeout=10s"
         "--health-retries=5"
+        "--health-start-period=30s"
       ];
     };
 
     "${app}" = {
       image = "docker.io/freikin/dawarich:1.3.2"; # https://hub.docker.com/r/freikin/dawarich
       autoStart = true;
+      cmd = [ "bin/rails" "server" "-p" "3000" "-b" "::" ];
       environmentFiles = [ config.sops.templates."${app}-env".path ];
       log-driver = "journald";
       volumes = [
-        "${app}:/var/app/data"
-        "${app}-shared:/var/app/tmp"
+        "${app}-public:/var/app/public"
+        "${app}-watched:/var/app/tmp/imports/watched"
+        "${app}-storage:/var/app/storage"
+        "${app2}:/dawarich_db_data"
       ];
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.containerServices.${app}.containers.${app}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
+        "--entrypoint=web-entrypoint.sh"
+        "--health-cmd=wget -qO - http://127.0.0.1:3000/api/v1/health | grep -q '\"status\"\\s*:\\s*\"ok\"'"
+        "--health-interval=10s"
+        "--health-timeout=10s"
+        "--health-retries=30"
+        "--health-start-period=30s"
       ];
     };
 
@@ -133,17 +165,24 @@ in
       image = "docker.io/freikin/dawarich:1.3.2"; # https://hub.docker.com/r/freikin/dawarich
       autoStart = true;
       cmd = [ "sidekiq" ];
-      environmentFiles = [ config.sops.templates."${app}-env".path ];
+      environmentFiles = [ config.sops.templates."${app4}-env".path ];
       log-driver = "journald";
       volumes = [
-        "${app}:/var/app/data"
-        "${app}-shared:/var/app/tmp"
+        "${app}-public:/var/app/public"
+        "${app}-watched:/var/app/tmp/imports/watched"
+        "${app}-storage:/var/app/storage"
       ];
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.containerServices.${app}.containers.${app4}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
+        "--entrypoint=sidekiq-entrypoint.sh"
+        "--health-cmd=pgrep -f sidekiq"
+        "--health-interval=10s"
+        "--health-timeout=10s"
+        "--health-retries=30"
+        "--health-start-period=30s"
       ];
     };
 
@@ -176,10 +215,12 @@ in
         after = [
           "docker-network-${app}.service"
           "docker-volume-${app2}.service"
+          "docker-volume-${app}-shared.service"
         ];
         requires = [
           "docker-network-${app}.service"
           "docker-volume-${app2}.service"
+          "docker-volume-${app}-shared.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -211,9 +252,11 @@ in
         };
         after = [
           "docker-network-${app}.service"
+          "docker-volume-${app}-shared.service"
         ];
         requires = [
           "docker-network-${app}.service"
+          "docker-volume-${app}-shared.service"
         ];
         partOf = [
           "docker-${app}-root.target"
@@ -232,15 +275,19 @@ in
         };
         after = [
           "docker-network-${app}.service"
-          "docker-volume-${app}.service"
-          "docker-volume-${app}-shared.service"
+          "docker-volume-${app}-public.service"
+          "docker-volume-${app}-watched.service"
+          "docker-volume-${app}-storage.service"
+          "docker-volume-${app2}.service"
           "docker-${app2}.service"
           "docker-${app3}.service"
         ];
         requires = [
           "docker-network-${app}.service"
-          "docker-volume-${app}.service"
-          "docker-volume-${app}-shared.service"
+          "docker-volume-${app}-public.service"
+          "docker-volume-${app}-watched.service"
+          "docker-volume-${app}-storage.service"
+          "docker-volume-${app2}.service"
           "docker-${app2}.service"
           "docker-${app3}.service"
         ];
@@ -252,14 +299,40 @@ in
         ];
       };
 
-      "docker-volume-${app}" = {
+      "docker-volume-${app}-public" = {
         path = [pkgs.docker];
         serviceConfig = {
           Type = "oneshot";
           RemainAfterExit = true;
         };
         script = ''
-          docker volume inspect ${app} || docker volume create ${app}
+          docker volume inspect ${app}-public || docker volume create ${app}-public
+        '';
+        partOf = ["docker-${app}-root.target"];
+        wantedBy = ["docker-${app}-root.target"];
+      };
+
+      "docker-volume-${app}-watched" = {
+        path = [pkgs.docker];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        script = ''
+          docker volume inspect ${app}-watched || docker volume create ${app}-watched
+        '';
+        partOf = ["docker-${app}-root.target"];
+        wantedBy = ["docker-${app}-root.target"];
+      };
+
+      "docker-volume-${app}-storage" = {
+        path = [pkgs.docker];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
+        script = ''
+          docker volume inspect ${app}-storage || docker volume create ${app}-storage
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
@@ -287,17 +360,21 @@ in
         };
         after = [
           "docker-network-${app}.service"
-          "docker-volume-${app}.service"
-          "docker-volume-${app}-shared.service"
+          "docker-volume-${app}-public.service"
+          "docker-volume-${app}-watched.service"
+          "docker-volume-${app}-storage.service"
           "docker-${app2}.service"
           "docker-${app3}.service"
+          "docker-${app}.service"
         ];
         requires = [
           "docker-network-${app}.service"
-          "docker-volume-${app}.service"
-          "docker-volume-${app}-shared.service"
+          "docker-volume-${app}-public.service"
+          "docker-volume-${app}-watched.service"
+          "docker-volume-${app}-storage.service"
           "docker-${app2}.service"
           "docker-${app3}.service"
+          "docker-${app}.service"
         ];
         partOf = [
           "docker-${app}-root.target"
