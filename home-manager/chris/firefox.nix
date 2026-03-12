@@ -15,6 +15,7 @@ in
   programs.firefox = {
     enable = true;
     package = pkgs.pkgs-2505.firefox-esr; # pinned to 25.05 because of bug
+    #package =
     profiles = {
       default = {
         id = 0;
@@ -163,11 +164,9 @@ in
         "extensions.autoDisableScopes" = 0; # automatically enable extensions
         "privacy.trackingprotection.enabled" = true;
         "privacy.trackingprotection.socialtracking.enabled" = true;
-			  #"privacy.resistFingerprinting" = true; # disabled - breaks WebGL for self-hosted apps like Dawarich
-			  #"privacy.resistFingerprinting.letterboxing" = true;
+			  "privacy.resistFingerprinting" = false;
 			  "privacy.globalprivacycontrol.enabled" = true;
 			  "privacy.donottrackheader.enabled" = true;
-        # WebGL settings - force enable for NixOS
         "webgl.disabled" = false;
         "webgl.force-enabled" = true;
         "webgl.enable-webgl2" = true;

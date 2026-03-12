@@ -13,9 +13,13 @@
   programs.zsh = {
     initContent =
     (lib.optionalString (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) ''
-      librewolf-private() {
-        echo "launching LibreWolf..."
-        librewolf --private-window "https://ipleak.net" "$@"
+      librewolf() {
+        echo "launching configured LibreWolf (firejail sandboxed)..."
+        /run/current-system/sw/bin/librewolf "$@"
+      }
+      librewolf-tmpfs() {
+        echo "launching ephemeral LibreWolf (firejail sandboxed + tmpfs)..."
+        librewolf-tmpfs --private-window "https://ipleak.net" "$@"
       }
       ssh-temp() {
         if [ -z "$1" ]; then
