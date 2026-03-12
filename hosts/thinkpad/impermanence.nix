@@ -53,6 +53,7 @@
         ".config/Element" # matrix e2e keys
         ".config/Nextcloud" # nextcloud sync state
         ".config/VSCodium" # codium editor state
+        ".config/Mailspring" # email client state
       ];
     };
 

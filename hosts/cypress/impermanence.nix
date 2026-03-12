@@ -49,9 +49,11 @@
         { directory = ".config/age"; mode = "0700"; } # user age key for home-manager SOPS
         "nextcloud-client" # local nextcloud directory
         ".mozilla" # firefox profiles
+        ".librewolf" # librewolf profiles
         ".config/Element" # matrix e2e keys
         ".config/Nextcloud" # nextcloud sync state
         ".config/VSCodium" # codium editor state
+        ".config/Mailspring" # email client state
       ];
     };
 
