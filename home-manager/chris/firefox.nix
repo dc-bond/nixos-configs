@@ -14,8 +14,7 @@ in
 
   programs.firefox = {
     enable = true;
-    package = pkgs.pkgs-2505.firefox-esr; # pinned to 25.05 because of bug
-    #package =
+    package = pkgs.firefox;
     profiles = {
       default = {
         id = 0;
@@ -24,7 +23,6 @@ in
         isDefault = true;
         extensions.packages = with firefox-addons; [
           ublock-origin
-          skip-redirect
           bitwarden
         ];
         search = {

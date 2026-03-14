@@ -31,16 +31,9 @@
     firejail = {
       enable = true;
       wrappedBinaries = {
-        librewolf = {
+        librewolf-tmpjail = {
           executable = "${lib.getBin pkgs.librewolf}/bin/librewolf";
-          profile = pkgs.writeText "librewolf.profile" ''
-            include ${pkgs.firejail}/etc/firejail/librewolf.profile
-            tmpfs ~/.cache/librewolf
-          '';
-        };
-        librewolf-tmpfs = {
-          executable = "${lib.getBin pkgs.librewolf}/bin/librewolf";
-          profile = pkgs.writeText "librewolf-tmpfs.profile" ''
+          profile = pkgs.writeText "librewolf-tmpjail.profile" ''
             include ${pkgs.firejail}/etc/firejail/librewolf.profile
             tmpfs ~/.librewolf
             tmpfs ~/.cache/librewolf
