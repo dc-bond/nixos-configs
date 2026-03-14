@@ -88,6 +88,7 @@
   backups = {
     startTime = "*-*-* 02:45:00"; # staggered: cypress at 2:45 AM
     prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
+    standaloneData = [ "/home/chris/nixos" ];
   };
 
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated

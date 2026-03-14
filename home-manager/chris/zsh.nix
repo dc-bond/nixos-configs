@@ -57,6 +57,23 @@
         # kill the SSH tunnel after VNC session ends
         pkill -f "ssh.*alder-vnc"
       }
+      clone-configs() {
+        local target_dir="$HOME/nixos"
+        echo "Cloning nixos config repos to $target_dir..."
+        mkdir -p "$target_dir"
+        cd "$target_dir"
+        if [ -d "nixos-configs" ]; then
+          echo "nixos-configs already exists, skipping"
+        else
+          git clone git@github.com:dc-bond/nixos-configs.git
+        fi
+        if [ -d "nixos-configs-private" ]; then
+          echo "nixos-configs-private already exists, skipping"
+        else
+          git clone git@github.com:dc-bond/nixos-configs-private.git
+        fi
+        echo "Done"
+      }
     '');
     shellAliases = {
     } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {
@@ -64,8 +81,7 @@
       finplannerdev = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/finplanner/ && nix develop";
       chrisworkoutdev = "cd /home/chris/nextcloud-client/Personal/misc/chris-workouts/ && nix develop";
       danielleworkoutdev = "cd /home/chris/nextcloud-client/Personal/misc/danielle-workouts/ && nix develop";
-      cloneconfigs = "cd $HOME/nextcloud-client/Personal/nixos && git clone https://github.com/dc-bond/nixos-configs";
-      configs = "cd $HOME/nextcloud-client/Personal/nixos";
+      configs = "cd $HOME/nixos";
       flakeupdate= "(cd $HOME/nextcloud-client/Personal/nixos/nixos-configs && nix flake update)";
       fetch-displaylink = "nix-prefetch-url --name displaylink-620.zip https://www.synaptics.com/sites/default/files/exe_files/2025-09/DisplayLink%20USB%20Graphics%20Software%20for%20Ubuntu6.2-EXE.zip";
     };
