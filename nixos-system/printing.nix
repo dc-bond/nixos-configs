@@ -8,10 +8,11 @@
 
   services.printing = {
     enable = true; # automatically opens firewall port 661
-    package = pkgs.pkgs-2505.cups; # pin to 25.05 version of cups (2.4.14)
+    #package = pkgs.pkgs-2505.cups; # pin to 25.05 version of cups (2.4.14)
+    package = pkgs.cups;
+    #drivers = [ pkgs.pkgs-2505.canon-cups-ufr2 ]; # canon printer drivers from same nixpkgs version for ABI compatibility
+    drivers = [ pkgs.canon-cups-ufr2 ];
     startWhenNeeded = true; # prevent CUPS running as a daemon and only come alive when print request comes in
-    drivers = [ pkgs.pkgs-2505.canon-cups-ufr2 ]; # canon printer drivers from same nixpkgs version for ABI compatibility
-    #drivers = [ pkgs.canon-cups-ufr2 ];
   };
 
   hardware.printers = {
