@@ -59,19 +59,19 @@
       }
       clone-configs() {
         local target_dir="$HOME/nixos"
-        echo "Cloning nixos config repos to $target_dir..."
+        if [ -d "$target_dir" ]; then
+          echo "Error: $target_dir already exists"
+          return 1
+        fi
+        echo "Creating $target_dir..."
         mkdir -p "$target_dir"
         cd "$target_dir"
-        if [ -d "nixos-configs" ]; then
-          echo "nixos-configs already exists, skipping"
-        else
-          git clone git@github.com:dc-bond/nixos-configs.git
-        fi
-        if [ -d "nixos-configs-private" ]; then
-          echo "nixos-configs-private already exists, skipping"
-        else
-          git clone git@github.com:dc-bond/nixos-configs-private.git
-        fi
+        echo "Cloning nixos-configs..."
+        git clone git@github.com:dc-bond/nixos-configs.git
+        echo "Cloning nixos-configs-private..."
+        git clone git@github.com:dc-bond/nixos-configs-private.git
+        echo "Copying CLAUDE.md to $target_dir..."
+        cp nixos-configs-private/CLAUDE.md "$target_dir/"
         echo "Done"
       }
     '');
