@@ -41,7 +41,7 @@
     rb() {
       local selected_host
       local available_hosts
-      local flake_dir="$HOME/nextcloud-client/Personal/nixos/nixos-configs"
+      local flake_dir="$HOME/nixos/nixos-configs"
 
       # get list of hosts from flake
       available_hosts=($(nix eval "$flake_dir#nixosConfigurations" --apply 'builtins.attrNames' --json 2>/dev/null | ${pkgs.jq}/bin/jq -r '.[]'))
@@ -113,7 +113,7 @@
     }
 
     rbl() {
-      local flake_dir="$HOME/nextcloud-client/Personal/nixos/nixos-configs"
+      local flake_dir="$HOME/nixos/nixos-configs"
       local current_host="$(hostname)"
       echo "→ Building from branch: $(git -C "$flake_dir" branch --show-current 2>/dev/null || echo 'unknown')"
       echo "→ Rebuilding local host $current_host (no distributed builds)..."

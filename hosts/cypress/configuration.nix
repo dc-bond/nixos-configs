@@ -89,6 +89,11 @@
     startTime = "*-*-* 02:45:00"; # staggered: cypress at 2:45 AM
     prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
     standaloneData = [ "/home/chris/nixos" ];
+    serviceHooks.preHook = [
+      # sync nixos configs to nextcloud as tertiary backup (excludes .git to avoid sync corruption)
+      "mkdir -p /home/chris/nextcloud-client/Personal/nixos-backup"
+      "${pkgs.rsync}/bin/rsync -av --delete --exclude='.git' /home/chris/nixos/ /home/chris/nextcloud-client/Personal/nixos-backup/"
+    ];
   };
 
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
