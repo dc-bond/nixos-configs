@@ -898,8 +898,8 @@ let
               severity: warning
 
           - alert: highMemoryUsage
-            expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 90
-            for: 5m
+            expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95
+            for: 15m
             labels:
               severity: warning
 
