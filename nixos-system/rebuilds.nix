@@ -35,13 +35,18 @@
     settings.connect-timeout = 5;
   };
   
-  # rb() - rebuild any host's configuration, available to all users in interactive zsh shells
-  # rbl() - rebuild local (no distributed builds) for when tailscale is down
+  # rb() - unified rebuild function
+  # builds use aspen as distributed build host by default (auto-fallback to local after 5s)
+  # force-local option explicitly disables distributed builds
   programs.zsh.interactiveShellInit = ''
     rb() {
-      local selected_host
-      local available_hosts
       local flake_dir="$HOME/nixos/nixos-configs"
+      local current_host="$(hostname)"
+      local selected_host
+      local activation
+      local build_strategy
+      local available_hosts
+      local builder_opts=""
 
       # get list of hosts from flake
       available_hosts=($(nix eval "$flake_dir#nixosConfigurations" --apply 'builtins.attrNames' --json 2>/dev/null | ${pkgs.jq}/bin/jq -r '.[]'))
@@ -51,9 +56,9 @@
         return 1
       fi
 
-      # select host (interactive or argument)
+      # 1. select target host
       if [ $# -eq 0 ]; then
-        echo "Available hosts:"
+        echo "Target host:"
         select selected_host in "''${available_hosts[@]}"; do
           if [ -n "$selected_host" ]; then
             break
@@ -68,17 +73,38 @@
         fi
       fi
 
+      # 2. select activation mode
+      echo "Activation:"
+      select activation in "switch" "boot"; do
+        if [ -n "$activation" ]; then
+          break
+        fi
+      done
+
+      # 3. select build strategy
+      echo "Build host:"
+      select build_strategy in "distributed (aspen)" "force-local"; do
+        if [ -n "$build_strategy" ]; then
+          break
+        fi
+      done
+
+      if [ "$build_strategy" = "force-local" ]; then
+        builder_opts='--option builders ""'
+      fi
+
       # show current branch
+      echo ""
       echo "→ Building from branch: $(git -C "$flake_dir" branch --show-current 2>/dev/null || echo 'unknown')"
 
-      # local rebuild
-      if [ "$selected_host" = "$(hostname)" ]; then
-        echo "→ Rebuilding local host $selected_host..."
-        sudo nixos-rebuild switch --flake "$flake_dir#$selected_host"
+      # local rebuild (target is current host)
+      if [ "$selected_host" = "$current_host" ]; then
+        echo "→ Rebuilding $selected_host ($activation, $build_strategy)..."
+        eval sudo nixos-rebuild "$activation" --flake "$flake_dir#$selected_host" $builder_opts
         return $?
       fi
 
-      # find connection for remote host
+      # remote rebuild - find SSH connection
       local ssh_target=""
 
       echo "→ Attempting Tailscale connection ($selected_host-tailscale)..."
@@ -104,20 +130,13 @@
       fi
 
       # remote rebuild
-      echo "→ Rebuilding $selected_host..."
-      nixos-rebuild switch \
+      echo "→ Rebuilding $selected_host ($activation, $build_strategy)..."
+      eval nixos-rebuild "$activation" \
         --flake "$flake_dir#$selected_host" \
         --target-host "$ssh_target" \
         --sudo \
-        --ask-sudo-password
-    }
-
-    rbl() {
-      local flake_dir="$HOME/nixos/nixos-configs"
-      local current_host="$(hostname)"
-      echo "→ Building from branch: $(git -C "$flake_dir" branch --show-current 2>/dev/null || echo 'unknown')"
-      echo "→ Rebuilding local host $current_host (no distributed builds)..."
-      sudo nixos-rebuild switch --flake "$flake_dir#$current_host" --option builders ""
+        --ask-sudo-password \
+        $builder_opts
     }
   '';
 
@@ -132,28 +151,35 @@
 # 2. Provide the rb() shell function for deploying configs to any host
 #
 # ═══════════════════════════════════════════════════════════════════════════════
-# EXECUTION FLOW: rb <hostname>
+# EXECUTION FLOW: rb [hostname]
 # ═══════════════════════════════════════════════════════════════════════════════
 #
 # 1. rb() FUNCTION (shell script)
-#    ├─ Tests SSH connectivity to target host:
+#    ├─ Prompts for target host (or accepts as argument)
+#    ├─ Prompts for activation mode:
+#    │  ├─ switch: Activate immediately
+#    │  └─ boot: Activate on next reboot
+#    ├─ Prompts for build strategy:
+#    │  ├─ distributed (aspen): Use aspen for builds (auto-fallback to local after 5s)
+#    │  └─ force-local: Build on this machine only (for when aspen is down/broken)
+#    ├─ For remote targets, tests SSH connectivity:
 #    │  ├─ Try: ssh <hostname>-tailscale (port 22)
 #    │  └─ Fallback: ssh <hostname> (custom port from configVars)
-#    └─ Calls: sudo nixos-rebuild switch --target-host <chosen-connection>
+#    └─ Calls: nixos-rebuild <activation> --target-host <ssh-target> [--option builders ""]
 
-# 2. NIXOS-REBUILD + BUILD PHASE (runs on cypress as root)
-#    ├─ Evaluates: flake configuration for target host (locally on cypress)
+# 2. NIXOS-REBUILD + BUILD PHASE (runs on workstation as root)
+#    ├─ Evaluates: flake configuration for target host (locally on workstation)
 #    ├─ Determines: what derivations need to be built
-#    ├─ Calls: nix-daemon (on cypress) to build required derivations
+#    ├─ Calls: nix-daemon (on workstation) to build required derivations
 #    │
-#    └─ NIX-DAEMON DISTRIBUTED BUILD (orchestrated by cypress):
+#    └─ NIX-DAEMON DISTRIBUTED BUILD (orchestrated by workstation):
 #       ├─ Sees: distributedBuilds = true
 #       ├─ For each derivation to build:
 #       │  ├─ Attempts: ssh chris@<aspen-tailscale-ip> (using /root/.ssh/id_builder)
 #       │  ├─ If SUCCESS → Compilation executes on aspen
-#       │  ├─ If FAIL (timeout 5s) → Compilation executes on cypress as fallback
-#       │  └─ Returns: completed derivation to cypress
-#       └─ Result: Full closure assembled on cypress, ready for deployment
+#       │  ├─ If FAIL (timeout 5s) → Compilation executes on workstation as fallback
+#       │  └─ Returns: completed derivation to workstation
+#       └─ Result: Full closure assembled on workstation, ready for deployment
 #
 # 3. NIXOS-REBUILD DEPLOYMENT
 #    ├─ Takes: completed build closure
