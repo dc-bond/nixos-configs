@@ -183,13 +183,7 @@ in
         forceImportRoot = false;
         extraPools = cfg.pools; # auto-import specified pools at boot
       };
-
-      # Optional: Limit ZFS ARC (adaptive replacement cache) memory usage
-      # By default, ZFS uses ~50% of system RAM for caching
-      # Uncomment and adjust if experiencing memory pressure with other services
-      # kernelParams = [
-      #   "zfs.zfs_arc_max=8589934592"  # Limit to 8GB (in bytes)
-      # ];
+      kernelParams = [ "zfs.zfs_arc_max=8589934592" ]; # limit zfs adaptive replacement cache memory usage to 8GB (in bytes) to avoid memory pressure with other services
     };
 
     services.zfs = {
@@ -210,12 +204,8 @@ in
       trim.enable = lib.mkDefault false; # disable for HDDs, can be enabled for SSD pools
     };
 
-    # hook into zfs scrub services to export metrics after completion
-    systemd.services = lib.mkMerge (lib.forEach cfg.pools (pool: {
-      "zfs-scrub-${pool}" = {
-        serviceConfig.ExecStartPost = lib.mkAfter "${zfsScrubExporter}";
-      };
-    }));
+    # hook into zfs scrub service to export metrics after completion
+    systemd.services.zfs-scrub.serviceConfig.ExecStartPost = lib.mkAfter "${zfsScrubExporter}";
 
   };
 
