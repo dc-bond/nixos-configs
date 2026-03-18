@@ -282,7 +282,7 @@
 
   imports = lib.flatten [
     inputs.disko.nixosModules.disko
-    #inputs.private.nixosModules.oci-communitycluster2026
+    inputs.private.nixosModules.oci-communitycluster2026
     (map configLib.relativeToRoot [
       "hosts/aspen/hardware-configuration.nix"
       "hosts/aspen/impermanence.nix"
