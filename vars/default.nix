@@ -385,12 +385,12 @@
     #  };
     #};
 
-    #null = {
-    #  subnet = "172.21.9.0/25";
-    #  containers = {
-    #    null = { ipv4 = "172.21.9.2"; };
-    #  };
-    #};
+    communitycluster2026 = {
+      subnet = "172.21.9.0/25";
+      containers = {
+        communitycluster2026 = { ipv4 = "172.21.9.2"; };
+      };
+    };
     
     searxng = {
       subnet = "172.21.10.0/25";
