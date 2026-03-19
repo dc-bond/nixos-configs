@@ -102,6 +102,8 @@ in
           };
           server.address = "tcp://:9091";
           session = {
+            inactivity = "1h";
+            expiration = "8h";
             cookies = [
               {
               domain = "${configVars.domain1}";
