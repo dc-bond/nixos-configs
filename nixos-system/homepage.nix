@@ -72,6 +72,13 @@ in
             };
           }
           {
+            "Community Cluster 2026" = {
+              href = "https://communitycluster2026.${configVars.domain1}";
+              description = "The Grand Charter of the Community";
+              ping = "https://communitycluster2026.${configVars.domain1}";
+            };
+          }
+          {
             "Jellyfin" = {
               href = "https://jellyfin.${configVars.domain2}/";
               description = "Media Server";
