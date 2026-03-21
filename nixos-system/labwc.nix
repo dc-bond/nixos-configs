@@ -42,6 +42,7 @@
       font-awesome
       nerd-fonts.sauce-code-pro
       nerd-fonts.fira-code
+      carlito
     ];
   };
 

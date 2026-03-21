@@ -62,7 +62,7 @@ in
       gnome-calculator # calculator
       loupe # image viewer
       zathura # barebones pdf viewer
-      libreoffice-still # office suite
+      libreoffice-qt6 # office suite (qt6 for native wayland support)
       element-desktop # matrix chat app
       nextcloud-client # nextcloud local syncronization client
       hyprshot # screenshot tool
