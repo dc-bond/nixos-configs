@@ -63,7 +63,7 @@
       "/var/lib/authelia-dcbond"                     # authelia sqlite db, webauthn keys, logs
       "/var/lib/redis-authelia-dcbond"               # authelia session cache
       "/var/lib/calibre-web"                         # calibre-web database
-      #"/var/lib/ollama"                              # ollama downloaded models
+      "/var/lib/private/ollama"                      # ollama downloaded models
 
       # docker - full data root persisted (image layers + all named volumes)
       { directory = "/var/lib/docker"; mode = "0710"; } # docker requires specific permissions on data root
