@@ -460,10 +460,17 @@
       };
     };
 
+    wardrobe = {
+      subnet = "172.21.19.0/25";
+      containers = {
+        wardrobe = { ipv4 = "172.21.19.2"; };
+      };
+    };
+
     #null = {
-    #  subnet = "172.21.19.0/25";
+    #  subnet = "172.21.20.0/25";
     #  containers = {
-    #    null = { ipv4 = "172.21.19.2"; };
+    #    null = { ipv4 = "172.21.20.2"; };
     #  };
     #};
 

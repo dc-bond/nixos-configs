@@ -142,6 +142,13 @@ in
             };
           }
           {
+            "Wardrobe" = {
+              href = "https://wardrobe.${configVars.domain2}/";
+              description = "Clothing Inventory";
+              ping = "https://wardrobe.${configVars.domain2}";
+            };
+          }
+          {
             "Home Assistant" = {
               href = "https://home-assistant.${configVars.domain2}/";
               description = "Smart Home Hub";
