@@ -98,6 +98,7 @@
       "nixos-system/matrix.nix"
       "nixos-system/vaultwarden.nix"
       "nixos-system/oci-dawarich.nix"
+      "nixos-system/oci-searxng.nix"
       "nixos-system/homepage.nix"
     ])
   ];
