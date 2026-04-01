@@ -96,7 +96,7 @@ let
     "address=/radarr.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/recipesage.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/sabnzbd.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
-    "address=/search.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/search.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
     "address=/sonarr.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/stirling-pdf.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/traefik-aspen.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"

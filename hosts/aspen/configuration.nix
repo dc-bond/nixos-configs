@@ -322,7 +322,6 @@
       "nixos-system/oci-fava.nix"
       "nixos-system/calibre.nix"
       "nixos-system/ollama.nix"
-      "nixos-system/oci-searxng.nix"
       "nixos-system/stirling-pdf.nix"
       "nixos-system/nginx-sites.nix"
       "nixos-system/dcbond-root.nix"
