@@ -1380,6 +1380,7 @@ in
                 "https://stirling-pdf.${configVars.domain2}"
                 "https://traefik-aspen.${configVars.domain2}"
                 "https://unifi.${configVars.domain2}"
+                "https://wardrobe.${configVars.domain2}"
                 #"https://weekly-recipes.${configVars.domain2}"
                 "https://zwavejs.${configVars.domain2}"
                 # juniper services - domain1
