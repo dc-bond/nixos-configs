@@ -868,7 +868,7 @@ let
 
           - alert: publicEndpointDown
             expr: probe_success{job="blackbox-http"} == 0
-            for: 5m
+            for: 15m
             labels:
               severity: critical
             annotations:
@@ -880,16 +880,10 @@ let
         rules:
 
           - alert: hostDown
-            expr: up{job="node", host=~"aspen|juniper|cypress|kauri"} == 0
+            expr: up{job="node", host=~"aspen|juniper"} == 0
             for: 2m
             labels:
               severity: critical
-
-          - alert: hostUp
-            expr: up{job="node", host=~"thinkpad|alder"} == 1 and up{job="node", host=~"thinkpad|alder"} offset 5m == 0
-            for: 1m
-            labels:
-              severity: info
 
           - alert: highCpuUsage
             expr: 100 - (avg by (host) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
