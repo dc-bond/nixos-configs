@@ -146,6 +146,11 @@ let
     "geo.ddc.paypal.com" # paypal
   ];
 
+  piholeBlockedDomains = [
+    "mask.icloud.com" # iCloud Private Relay - causes SERVFAIL from Unbound, return NXDOMAIN instead per Apple guidance
+    "mask-h2.icloud.com" # iCloud Private Relay HTTP/2 variant
+  ];
+
   # generate client mappings from configVars
   piholeClients = map (entry: {
     ip = entry.ip;
@@ -204,6 +209,12 @@ let
     docker exec ${app} sqlite3 /etc/pihole/gravity.db "INSERT INTO domainlist (domain, type, enabled, date_added, date_modified, comment) VALUES ('${domain}', 0, 1, $CURRENT_TIME, $CURRENT_TIME, 'Managed by Nix');"
     '') piholeAllowedDomains}
     echo "Added ${toString (lib.length piholeAllowedDomains)} allowed domains to database"
+
+    echo "Populating BLOCKLISTS from Nix configuration..."
+    ${lib.concatMapStrings (domain: ''
+    docker exec ${app} sqlite3 /etc/pihole/gravity.db "INSERT INTO domainlist (domain, type, enabled, date_added, date_modified, comment) VALUES ('${domain}', 1, 1, $CURRENT_TIME, $CURRENT_TIME, 'Managed by Nix');"
+    '') piholeBlockedDomains}
+    echo "Added ${toString (lib.length piholeBlockedDomains)} blocked domains to database"
 
     echo "Populating CLIENT MAPPINGS from Nix configuration..."
     ${lib.concatMapStrings (client: ''
