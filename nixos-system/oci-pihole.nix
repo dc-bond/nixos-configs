@@ -49,6 +49,16 @@ let
     
   in hostEntries ++ deviceEntries ++ containerEntries;
   
+  # custom unbound forward-first config - tries recursive resolution first, falls back to Quad9 DNS-over-TLS on failure
+  unboundForwardConfig = pkgs.writeText "forward-records.conf" ''
+    forward-zone:
+        name: "."
+        forward-first: yes
+        forward-tls-upstream: yes
+        forward-addr: 9.9.9.9@853#dns.quad9.net
+        forward-addr: 149.112.112.112@853#dns.quad9.net
+  '';
+
   # custom dnsmasq config file because all attempts at getting custom entries into the docker env file failed
   customDnsmasqConfig = pkgs.writeText "custom-dns.conf" ''
     ${lib.concatStringsSep "\n" (customDnsEntries ++ customCnameEntries)}
@@ -287,7 +297,7 @@ in
       image = "docker.io/mvance/${app2}:1.22.0"; # https://github.com/MatthewVance/unbound-docker
       autoStart = true;
       log-driver = "journald";
-      volumes = [ ];
+      volumes = [ "${unboundForwardConfig}:/opt/unbound/etc/unbound/forward-records.conf:ro" ];
       extraOptions = [
         "--network=${app}"
         "--ip=${configVars.containerServices.${app}.containers.${app2}.ipv4}"
