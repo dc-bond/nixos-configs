@@ -20,18 +20,18 @@ in
     llmnr = "false";
   };
 
-  environment.etc."resolv.conf" = lib.mkIf (!hostData.networking.useResolved) { # if not using systemd-resolved, than manually create resolv.conf
+  environment.etc."resolv.conf" = lib.mkIf (!hostData.networking.useResolved) { # if not using systemd-resolved, than manually create resolv.conf, use Quad9 (9.9.9.9 and 149.112.112.112) for upstream fallback DNS
     text =
       if config.networking.hostName == "juniper" # juniper's pihole listens on tailscale interface only, aspen's pihole listens on all interfaces because behind NAT
       then ''
         nameserver ${hostData.networking.tailscaleIp}
-        nameserver 1.1.1.1
         nameserver 9.9.9.9
+        nameserver 149.112.112.112
       ''
       else ''
         nameserver 127.0.0.1
-        nameserver 1.1.1.1
         nameserver 9.9.9.9
+        nameserver 149.112.112.112
       '';
   };
 
