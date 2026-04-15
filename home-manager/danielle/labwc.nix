@@ -94,6 +94,10 @@ in
     };
     gtk3.extraConfig = {
       gtk-application-prefer-dark-theme = false;  # since using materia light
+      gtk-decoration-layout = "menu:minimize,maximize,close";
+    };
+    gtk4.extraConfig = {
+      gtk-decoration-layout = "menu:minimize,maximize,close";
     };
   };
   
