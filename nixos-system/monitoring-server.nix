@@ -1381,7 +1381,6 @@ in
                 "https://matrix.${configVars.domain1}"
                 "https://vaultwarden.${configVars.domain1}"
                 # juniper services - domain2
-                "https://dawarich.${configVars.domain2}"
                 "https://alertmanager.${configVars.domain2}"
                 "https://ntfy.${configVars.domain2}"
                 "https://grafana.${configVars.domain2}"
