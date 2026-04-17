@@ -116,7 +116,6 @@ let
     "address=/zwavejs.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     # juniper services
     "address=/alertmanager.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
-    "address=/dawarich.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
     "address=/grafana.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
     "address=/homepage.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
     "address=/ntfy.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"

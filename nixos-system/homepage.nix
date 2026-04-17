@@ -142,9 +142,9 @@ in
             };
           }
           {
-            "Wardrobe" = {
+            "Chris Wardrobe" = {
               href = "https://wardrobe.${configVars.domain2}/";
-              description = "Clothing Inventory";
+              description = "Chris' Clothing Inventory System";
               ping = "https://wardrobe.${configVars.domain2}";
             };
           }
@@ -160,13 +160,6 @@ in
               href = "https://frigate.${configVars.domain2}/";
               description = "Security Camera System";
               ping = "https://frigate.${configVars.domain2}";
-            };
-          }
-          {
-            "Dawarich" = {
-              href = "https://dawarich.${configVars.domain2}/";
-              description = "Location History Tracker";
-              ping = "https://dawarich.${configVars.domain2}";
             };
           }
         ];
