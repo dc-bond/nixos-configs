@@ -14,7 +14,7 @@ This repository contains the declarative configuration for my NixOS systems.
 - 🐳 Hybrid approach: native NixOS services + OCI [docker] containers for select applications where native nix modules either don't exist or are incomplete
 - 🧩 Modular architecture facilitates quick deployment of services across different hosts
 - 🌐 Dual Pi-hole + Unbound DNS setup with automatic failover via Tailscale
-- 💾 Declarative disk management with BTRFS and LUKS encryption
+- 💾 Declarative disk management with BTRFS, ZFS, and LUKS encryption
 - 🚀 Distributed builds leverage remote server for fast parallel compilation
 
 ## Repository Structure
