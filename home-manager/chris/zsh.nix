@@ -82,8 +82,8 @@
       chrisworkoutdev = "cd /home/chris/nextcloud-client/Personal/misc/chris-workouts/ && nix develop";
       danielleworkoutdev = "cd /home/chris/nextcloud-client/Personal/misc/danielle-workouts/ && nix develop";
       configs = "cd $HOME/nixos";
-      flakeupmain= "(cd $HOME/nextcloud-client/Personal/nixos/nixos-configs && nix flake update)";
-      flakeupprivate= "(cd $HOME/nextcloud-client/Personal/nixos/nixos-configs-private && nix flake update)";
+      flakeupmain= "(cd $HOME/nixos/nixos-configs && nix flake update)";
+      flakeupprivate= "(cd $HOME/nixos/nixos-configs-private && nix flake update)";
       fetch-displaylink = "nix-prefetch-url --name displaylink-620.zip https://www.synaptics.com/sites/default/files/exe_files/2025-09/DisplayLink%20USB%20Graphics%20Software%20for%20Ubuntu6.2-EXE.zip";
     };
   };
