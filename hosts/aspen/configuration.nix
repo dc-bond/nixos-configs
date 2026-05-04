@@ -323,7 +323,6 @@
       "nixos-system/calibre.nix"
       "nixos-system/ollama.nix"
       "nixos-system/stirling-pdf.nix"
-      "nixos-system/nginx-sites.nix"
       "nixos-system/dcbond-root.nix"
       "scripts/media-transfer.nix"
       #"scripts/network-test.nix"
