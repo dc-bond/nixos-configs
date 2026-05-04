@@ -65,13 +65,6 @@ in
             };
           }
           {
-            "Gatlinburg TN 2026 Trip Itinerary" = {
-              href = "https://gatlinburg2026.dcbond.com";
-              description = "(Public Facing) Trip Planning";
-              ping = "https://gatlinburg2026.dcbond.com";
-            };
-          }
-          {
             "Community Cluster 2026" = {
               href = "https://communitycluster2026.${configVars.domain1}";
               description = "The Grand Charter of the Community";
