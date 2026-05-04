@@ -21,7 +21,7 @@
         signageos.signageos-vscode-sops
         ms-python.python
         arrterian.nix-env-selector
-        # manually install 'Open Remote - SSH' from extension marketplace, delete .vscodium-server directory on host machine before first connection
+        #anthropic.claude-code
         # manually install 'Beancount' from extension marketplace
       ];
       userSettings = {
