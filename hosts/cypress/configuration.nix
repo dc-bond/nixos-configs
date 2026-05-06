@@ -85,6 +85,14 @@
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
+  # enable nix-ld to run dynamically linked binaries (e.g., VSCodium extensions)
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      stdenv.cc.cc.lib
+    ];
+  };
+
   backups = {
     startTime = "*-*-* 02:45:00"; # staggered: cypress at 2:45 AM
     prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
