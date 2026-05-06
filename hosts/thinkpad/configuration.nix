@@ -93,6 +93,14 @@
   ];
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
+  
+  # enable nix-ld to run dynamically linked binaries (e.g., vscodium extensions)
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      stdenv.cc.cc.lib
+    ];
+  };
 
   services.logind.settings.Login.HandleLidSwitch = "ignore"; # disable suspend on laptop lid close
 

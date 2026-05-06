@@ -85,7 +85,7 @@
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
-  # enable nix-ld to run dynamically linked binaries (e.g., VSCodium extensions)
+  # enable nix-ld to run dynamically linked binaries (e.g., vscodium extensions)
   programs.nix-ld = {
     enable = true;
     libraries = with pkgs; [
