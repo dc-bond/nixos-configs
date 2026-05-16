@@ -51,13 +51,6 @@ in
             };
           }
           {
-            "Matrix" = {
-              href = "https://matrix.${configVars.domain1}/";
-              description = "(Public Facing) Chat Server";
-              ping = "https://matrix.${configVars.domain1}";
-            };
-          }
-          {
             "Vaultwarden" = {
               href = "https://vaultwarden.${configVars.domain1}/";
               description = "(Public Facing) Password Manager";
@@ -135,7 +128,7 @@ in
             };
           }
           {
-            "Chris Wardrobe" = {
+            "Wardrobe Inventory" = {
               href = "https://wardrobe.${configVars.domain2}/";
               description = "Chris' Clothing Inventory System";
               ping = "https://wardrobe.${configVars.domain2}";
@@ -192,6 +185,13 @@ in
               href = "https://pihole-juniper.${configVars.domain2}/admin/login";
               description = "DNS Ad Blocker";
               ping = "https://pihole-juniper.${configVars.domain2}";
+            };
+          }
+          {
+            "Matrix" = {
+              href = "https://matrix.${configVars.domain1}/";
+              description = "(Public Facing) Chat Server";
+              ping = "https://matrix.${configVars.domain1}";
             };
           }
           {
