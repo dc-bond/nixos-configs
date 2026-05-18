@@ -31,7 +31,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     impermanence.url = "github:nix-community/impermanence";
-    #openclaw.url = "github:openclaw/nix-openclaw";
+    openclaw.url = "github:openclaw/nix-openclaw";
     private.url = "git+ssh://git@github.com/dc-bond/nixos-configs-private";
   };
 

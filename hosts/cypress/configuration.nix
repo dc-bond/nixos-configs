@@ -109,7 +109,7 @@
 
   imports = lib.flatten [
     inputs.disko.nixosModules.disko
-    #inputs.private.nixosModules.openclaw-container
+    inputs.private.nixosModules.openclaw-container
     (map configLib.relativeToRoot [
       "hosts/cypress/hardware-configuration.nix"
       "hosts/cypress/impermanence.nix"
@@ -134,7 +134,6 @@
       "nixos-system/wd-passport.nix"
       "nixos-system/greetd.nix"
       "nixos-system/hyprland.nix"
-      "nixos-system/container-test.nix"
       "scripts/deploy.nix"
       "scripts/network-test.nix"
       "scripts/test-builds.nix"
