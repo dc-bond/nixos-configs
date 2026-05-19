@@ -480,6 +480,10 @@
 
     # nixos (systemd-nspawn) containers — 10.233.x.x range
     # structure differs from docker entries: hostAddress/localAddress are the two ends of a veth pair, not a bridge subnet with per-container IPs
+    #
+    # uidOffset allocations for `--private-users=<offset>:65536`:
+    #   openclaw  524288 — 589823
+    #   next available offset: 589824
 
     testbox = {
       hostAddress  = "10.233.99.1";
