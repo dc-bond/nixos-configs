@@ -479,7 +479,7 @@
     #};
 
     # nixos (systemd-nspawn) containers — 10.233.x.x range
-    # structure differs from docker entries: hostAddress/localAddress are the two ends of a veth pair, not a bridge subnet with per-container IPs.
+    # structure differs from docker entries: hostAddress/localAddress are the two ends of a veth pair, not a bridge subnet with per-container IPs
 
     testbox = {
       hostAddress  = "10.233.99.1";
@@ -489,6 +489,7 @@
     openclaw = {
       hostAddress  = "10.233.7.1";
       localAddress = "10.233.7.2";
+      uidOffset = 524288; # static UID/GID offset for the container's user namespace; container UID 0 → host UID 524288; container UID 1000 → host UID 525288
     };
 
   };
