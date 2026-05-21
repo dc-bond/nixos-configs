@@ -27,6 +27,18 @@
     };
   };
 
+# 22.05 nixpkgs set for legacy libraries dropped from newer releases (e.g. openssl_1_0_2 for IWD:EE), accessible through 'pkgs.pkgs-2205'
+  nixpkgs-2205-packages = final: _prev: {
+    pkgs-2205 = import inputs.nixpkgs-2205 {
+      system = final.stdenv.hostPlatform.system;
+      config = {
+        allowUnfree = true;
+        allowBroken = true;
+        permittedInsecurePackages = [ "openssl-1.0.2u" ];
+      };
+    };
+  };
+
 # to upgrade: update version + url below, run nix-prefetch-url to get new hash, then rebuild
   displaylink-pinned = final: prev: {
     linuxPackages = prev.linuxPackages // {

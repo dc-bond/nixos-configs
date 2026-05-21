@@ -23,6 +23,8 @@ let
       mkdir -p "${gameDir}/userdata"
       export XDG_DATA_HOME="${gameDir}/userdata"
       export SDL_VIDEODRIVER=''${SDL_VIDEODRIVER:-wayland}
+      # beamdog's binary links libssl.so.1.0.0 (ABI-broken in 1.1); pull from pinned 22.05 nixpkgs
+      export LD_LIBRARY_PATH=${pkgs.pkgs-2205.openssl_1_0_2.out}/lib:''${LD_LIBRARY_PATH:-}
       exec steam-run "${gameEntry}" "$@"
     '';
   };
