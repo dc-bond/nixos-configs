@@ -21,6 +21,7 @@ in
       "home-manager/shared/zsh.nix"
 
       "home-manager/${username}/zsh.nix"
+      "home-manager/${username}/icewind-dale.nix"
     ])
   ];
 
