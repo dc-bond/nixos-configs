@@ -71,6 +71,7 @@ in
       claude-code # terminal-based agentic coding assistant
       tigervnc # vnc client app
       mailspring # desktop email client
+      moonlight-qt # game streaming client (connects to sunshine server on aspen)
     ];
     pointerCursor = {
       enable = true;
