@@ -5,7 +5,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
     nixpkgs-2505.url = "github:nixos/nixpkgs/nixos-25.05";
-    nixpkgs-2205.url = "github:nixos/nixpkgs/nixos-22.05"; # last release with openssl_1_0_2, needed for ancient game binaries (e.g. IWD:EE)
+    nixpkgs-2205.url = "github:nixos/nixpkgs/nixos-21.05"; # last release with openssl_1_0_2 (removed in 22.05), needed for ancient game binaries (e.g. IWD:EE)
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
