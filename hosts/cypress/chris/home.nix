@@ -27,7 +27,6 @@ in
       "home-manager/${username}/ssh.nix"
       "home-manager/${username}/zsh.nix"
       "home-manager/${username}/hyprland.nix"
-      "home-manager/${username}/moonlight.nix"
     ])
   ];
   
