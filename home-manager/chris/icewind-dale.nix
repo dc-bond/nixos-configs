@@ -8,21 +8,21 @@
 let
   gameDir = "${config.home.homeDirectory}/games/icewind-dale-ee";
 
-  # Beamdog ships a start.sh wrapper that sets LD_LIBRARY_PATH and CWD.
-  # If extraction reveals no start.sh, point this at the bare binary instead
-  # (likely ${gameDir}/IcewindDale or similar).
-  gameEntry = "${gameDir}/start.sh";
+  # Beamdog's binary directly — start.sh wrapper adds nothing we need
+  # (it just does `cd game && chmod +x * && ./IcewindDale`).
+  gameEntry = "${gameDir}/IcewindDale";
 
   iwdLauncher = pkgs.writeShellApplication {
     name = "icewind-dale";
     runtimeInputs = [ pkgs.steam-run pkgs.coreutils ];
     text = ''
-      if [ ! -x "${gameEntry}" ]; then
+      if [ ! -f "${gameEntry}" ]; then
         echo "Icewind Dale EE not found at ${gameEntry}" >&2
         echo "Extract the GoG installer into ${gameDir} first." >&2
         exit 1
       fi
       cd "${gameDir}"
+      chmod +x "${gameEntry}"   # Beamdog ships without the +x bit (idempotent)
       # consolidate saves/config under the game dir (XDG-redirected, scoped to this process)
       mkdir -p "${gameDir}/userdata"
       export XDG_DATA_HOME="${gameDir}/userdata"
