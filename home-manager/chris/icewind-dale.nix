@@ -7,11 +7,7 @@
 
 let
   gameDir = "${config.home.homeDirectory}/games/icewind-dale-ee";
-
-  # Beamdog's binary directly — start.sh wrapper adds nothing we need
-  # (it just does `cd game && chmod +x * && ./IcewindDale`).
   gameEntry = "${gameDir}/IcewindDale";
-
   iwdLauncher = pkgs.writeShellApplication {
     name = "icewind-dale";
     runtimeInputs = [ pkgs.steam-run pkgs.coreutils ];
@@ -22,7 +18,7 @@ let
         exit 1
       fi
       cd "${gameDir}"
-      chmod +x "${gameEntry}"   # Beamdog ships without the +x bit (idempotent)
+      chmod +x "${gameEntry}" # beamdog ships without the +x bit (idempotent)
       # consolidate saves/config under the game dir (XDG-redirected, scoped to this process)
       mkdir -p "${gameDir}/userdata"
       export XDG_DATA_HOME="${gameDir}/userdata"
@@ -31,10 +27,11 @@ let
     '';
   };
 in
+
 {
 
   home.packages = [
-    pkgs.steam-run # FHS chroot providing OpenGL/SDL2/OpenAL/glibc for the Beamdog binary
+    pkgs.steam-run # FHS chroot providing OpenGL/SDL2/OpenAL/glibc for the beamdog binary
     iwdLauncher
   ];
 
