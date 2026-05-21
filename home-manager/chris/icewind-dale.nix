@@ -19,12 +19,24 @@ let
       fi
       cd "${gameDir}"
       chmod +x "${gameEntry}" # beamdog ships without the +x bit (idempotent)
-      # consolidate saves/config under the game dir (XDG-redirected, scoped to this process)
+
+      # beamdog ignores XDG_DATA_HOME and hardcodes ~/.local/share/<name>/; redirect via symlink
       mkdir -p "${gameDir}/userdata"
-      export XDG_DATA_HOME="${gameDir}/userdata"
-      export SDL_VIDEODRIVER=''${SDL_VIDEODRIVER:-wayland}
-      # beamdog's binary links libssl.so.1.0.0 (ABI-broken in 1.1); pull from pinned 22.05 nixpkgs
-      export LD_LIBRARY_PATH=${pkgs.pkgs-2205.openssl_1_0_2.out}/lib:''${LD_LIBRARY_PATH:-}
+      GAME_LINK="$HOME/.local/share/Icewind Dale - Enhanced Edition"
+      if [ -L "$GAME_LINK" ]; then
+        : # already a symlink, nothing to do
+      elif [ -d "$GAME_LINK" ]; then
+        echo "icewind-dale: migrating existing save data to ${gameDir}/userdata" >&2
+        mv "$GAME_LINK" "${gameDir}/userdata"
+        ln -s "${gameDir}/userdata" "$GAME_LINK"
+      else
+        ln -s "${gameDir}/userdata" "$GAME_LINK"
+      fi
+
+      # beamdog's SDL2 predates the Wayland backend; force XWayland (x11) or it silently fails to open a window
+      export SDL_VIDEODRIVER=''${SDL_VIDEODRIVER:-x11}
+      # beamdog's binary links libssl.so.1.0.0 (ABI-broken in 1.1); pull from pinned 21.05 nixpkgs
+      export LD_LIBRARY_PATH=${pkgs.pkgs-2105.openssl_1_0_2.out}/lib:''${LD_LIBRARY_PATH:-}
       exec steam-run "${gameEntry}" "$@"
     '';
   };
