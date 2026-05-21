@@ -31,7 +31,10 @@
     hideMounts = true;  # hide bind mounts from file manager to reduce visual clutter
 
     users.chris.directories = [
-      { directory = ".config/age"; mode = "0700"; }  # user age key for potential future home-manager sops secrets
+      { directory = ".config/age"; mode = "0700"; }        # user age key for potential future home-manager sops secrets
+      { directory = ".config/sunshine"; mode = "0700"; }   # sunshine pairing credentials, TLS certs, web UI config
+      ".local/share/sunshine"                              # sunshine supplemental state
+      "games"                                              # game binaries, assets, and saves (via symlink redirect in launchers)
     ];
 
     files = [

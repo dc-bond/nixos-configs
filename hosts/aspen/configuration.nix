@@ -304,6 +304,7 @@
       "nixos-system/mysql.nix"
       "nixos-system/traefik.nix"
       "nixos-system/nvidia.nix"
+      "nixos-system/sunshine.nix"
       "nixos-system/oci-containers.nix"
       "nixos-system/oci-pihole.nix"
       "nixos-system/lldap.nix" # recoverLldap
