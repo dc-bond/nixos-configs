@@ -30,6 +30,15 @@
       '';
       windowManager.openbox.enable = true;
       displayManager.lightdm.enable = true;
+      # AllowEmptyInitialConfiguration defaults to 640x480 with no connected monitor.
+      # Create a virtual 1920x1080 mode on DVI-D-0 at session start so games have a
+      # usable display mode to initialise against. --newmode may fail if the mode
+      # already exists (idempotent via || true).
+      displayManager.sessionCommands = ''
+        ${pkgs.xorg.xrandr}/bin/xrandr --newmode "1920x1080_60" 172.80 1920 2040 2248 2576 1080 1081 1084 1118 -hsync +vsync 2>/dev/null || true
+        ${pkgs.xorg.xrandr}/bin/xrandr --addmode DVI-D-0 1920x1080_60 2>/dev/null || true
+        ${pkgs.xorg.xrandr}/bin/xrandr --output DVI-D-0 --mode 1920x1080_60 --primary 2>/dev/null || true
+      '';
     };
 
     displayManager = {
@@ -47,6 +56,19 @@
       autoStart = true; # starts with chris's X session
       package = pkgs.pkgs-2505.sunshine;
       settings.sunshine_name = "aspen";
+      applications = {
+        env.PATH = "$(PATH):$(HOME)/.local/bin";
+        apps = [
+          {
+            name = "Desktop";
+            image-path = "desktop.png";
+          }
+          {
+            name = "Icewind Dale EE";
+            cmd = "/etc/profiles/per-user/chris/bin/icewind-dale";
+          }
+        ];
+      };
     };
 
     # uinput device node permissions for sunshine input injection back to client
