@@ -65,11 +65,11 @@
       },
       "locked": {
         "dir": "pkgs/firefox-addons",
-        "lastModified": 1779336167,
-        "narHash": "sha256-YbAbHiHmPhBVqgVvWzFOrQTkmYQ7oXOvEBNDRT6ruBA=",
+        "lastModified": 1779422567,
+        "narHash": "sha256-fE0kgDr2g9hZMIc0t9iX91VB9AaD7xtcMHf1OxEGllU=",
         "owner": "rycee",
         "repo": "nur-expressions",
-        "rev": "e4bc7d7ca24db3a7b1daac4ef0957b8148b444bf",
+        "rev": "0c2d56c5c5b6f27bdc20a984adba16b95b11c1c2",
         "type": "gitlab"
       },
       "original": {
@@ -415,11 +415,11 @@
     },
     "private": {
       "locked": {
-        "lastModified": 1779304271,
-        "narHash": "sha256-+ffcBbqe58aOsP+CI39EOHk3Ndb5PR+Rlm+TDN01a9o=",
+        "lastModified": 1779445186,
+        "narHash": "sha256-xCGydgie4jWR/jebdT77gsgAMpM4ZvBGLqNvsIvUCCw=",
         "ref": "refs/heads/main",
-        "rev": "1fcb0ac30b878413fdbc3dc9308a2fbfd5aece66",
-        "revCount": 85,
+        "rev": "27fc8743495d9998d99eca27423a5e6990ff9987",
+        "revCount": 86,
         "type": "git",
         "url": "ssh://git@github.com/dc-bond/nixos-configs-private"
       },
