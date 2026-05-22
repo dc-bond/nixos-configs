@@ -59,7 +59,7 @@ in
     volumes = [ "${app}:/usr/src/app/store" ];
     extraOptions = [
       "--network=${app}"
-      "--ip=${configVars.containerServices.${app}.containers.${app}.ipv4}"
+      "--ip=${configVars.ociServices.${app}.containers.${app}.ipv4}"
       "--tty=true"
       "--stop-signal=SIGINT"
       "--device=/dev/serial/by-id/usb-Silicon_Labs_CP2102N_USB_to_UART_Bridge_Controller_d677b47b5594eb11ba3436703d98b6d1-if00-port0:/dev/zwave"
@@ -98,7 +98,7 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
         };
         script = ''
-          docker network inspect ${app} || docker network create --subnet ${configVars.containerServices.${app}.subnet} --driver bridge --scope local --attachable ${app}
+          docker network inspect ${app} || docker network create --subnet ${configVars.ociServices.${app}.subnet} --driver bridge --scope local --attachable ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
@@ -145,7 +145,7 @@ in
         serversTransport = "default";
         servers = [
           {
-            url = "http://${configVars.containerServices.${app}.containers.${app}.ipv4}:8091";
+            url = "http://${configVars.ociServices.${app}.containers.${app}.ipv4}:8091";
           }
         ];
       };

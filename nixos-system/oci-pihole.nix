@@ -45,7 +45,7 @@ let
         ip = container.ipv4;
         hostname = containerName;
       }) service.containers
-    ) configVars.containerServices);
+    ) configVars.ociServices);
     
   in hostEntries ++ deviceEntries ++ containerEntries;
   
@@ -251,7 +251,7 @@ in
       "${app}-env".content = ''
         TZ=America/New_York
         FTLCONF_webserver_api_password=${config.sops.placeholder.piholeWebPasswd}
-        FTLCONF_dns_upstreams=${configVars.containerServices.${app}.containers.${app2}.ipv4}#53
+        FTLCONF_dns_upstreams=${configVars.ociServices.${app}.containers.${app2}.ipv4}#53
         FTLCONF_dns_port=53
         FTLCONF_webserver_port=80
         FTLCONF_webserver_interface_theme=default-dark
@@ -284,8 +284,8 @@ in
       ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.containerServices.${app}.containers.${app}.ipv4}"
-        "--dns=${configVars.containerServices.${app}.containers.${app2}.ipv4}" # use unbound directly for container's own DNS needs
+        "--ip=${configVars.ociServices.${app}.containers.${app}.ipv4}"
+        "--dns=${configVars.ociServices.${app}.containers.${app2}.ipv4}" # use unbound directly for container's own DNS needs
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -298,7 +298,7 @@ in
       volumes = [ "${unboundForwardConfig}:/opt/unbound/etc/unbound/forward-records.conf:ro" ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.containerServices.${app}.containers.${app2}.ipv4}"
+        "--ip=${configVars.ociServices.${app}.containers.${app2}.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -316,7 +316,7 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
         };
         script = ''
-          docker network inspect ${app} || docker network create --subnet ${configVars.containerServices.${app}.subnet} --driver bridge --scope local --attachable ${app}
+          docker network inspect ${app} || docker network create --subnet ${configVars.ociServices.${app}.subnet} --driver bridge --scope local --attachable ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
@@ -404,7 +404,7 @@ in
         serversTransport = "default";
         servers = [
           {
-            url = "http://${configVars.containerServices.${app}.containers.${app}.ipv4}:80";
+            url = "http://${configVars.ociServices.${app}.containers.${app}.ipv4}:80";
           }
         ];
       };

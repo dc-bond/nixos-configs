@@ -314,7 +314,7 @@
   domain3 = "professorbond.com";
   domain3Short = "professorbond";
 
-  containerServices = {
+  ociServices = {
 
     pihole = {
       subnet = "172.21.1.0/25";
@@ -330,7 +330,7 @@
     #    null = { ipv4 = "172.21.2.2"; };
     #  };
     #};
-    
+
     unifi = {
       subnet = "172.21.3.0/25";
       containers = {
@@ -338,28 +338,28 @@
         mongodb = { ipv4 = "172.21.3.3"; };
       };
     };
-    
+
     zwavejs = {
       subnet = "172.21.4.0/25";
       containers = {
         zwavejs = { ipv4 = "172.21.4.2"; };
       };
     };
-    
+
     actual = {
       subnet = "172.21.5.0/25";
       containers = {
         actual = { ipv4 = "172.21.5.2"; };
       };
     };
-    
+
     fava = {
       subnet = "172.21.6.0/25";
       containers = {
         fava = { ipv4 = "172.21.6.2"; };
       };
     };
-    
+
     recipesage = {
       subnet = "172.21.7.0/25";
       containers = {
@@ -388,49 +388,49 @@
         communitycluster2026 = { ipv4 = "172.21.9.2"; };
       };
     };
-    
+
     searxng = {
       subnet = "172.21.10.0/25";
       containers = {
         searxng = { ipv4 = "172.21.10.2"; };
       };
     };
-    
+
     traefikCerts = {
       subnet = "172.21.11.0/25";
       containers = {
         certs = { ipv4 = "172.21.11.2"; };
       };
     };
-    
+
     media-server = {
       subnet = "172.21.12.0/25";
       containers = {
         media-server-vpn = { ipv4 = "172.21.12.2"; };
       };
     };
-    
+
     frigate = {
       subnet = "172.21.13.0/25";
       containers = {
         frigate = { ipv4 = "172.21.13.2"; };
       };
     };
-    
+
     #null = {
     #  subnet = "172.21.14.0/25";
     #  containers = {
     #    null = { ipv4 = "172.21.14.2"; };
     #  };
     #};
-    
+
     #null = {
     #  subnet = "172.21.15.0/25";
     #  containers = {
     #    null = { ipv4 = "172.21.15.2"; };
     #  };
     #};
-    
+
     librechat = {
       subnet = "172.21.16.0/25";
       containers = {
@@ -441,7 +441,7 @@
         rag_api = { ipv4 = "172.21.16.6"; };
       };
     };
-    
+
     n8n = {
       subnet = "172.21.17.0/25";
       containers = {
@@ -449,7 +449,7 @@
         "n8n-postgres" = { ipv4 = "172.21.17.3"; };
       };
     };
-    
+
     finplanner = {
       subnet = "172.21.18.0/25";
       containers = {
@@ -478,12 +478,15 @@
     #  };
     #};
 
-    # nixos (systemd-nspawn) containers — 10.233.x.x range
-    # structure differs from docker entries: hostAddress/localAddress are the two ends of a veth pair, not a bridge subnet with per-container IPs
-    #
-    # uidOffset allocations for `--private-users=<offset>:65536`:
-    #   openclaw  524288 — 589823
-    #   next available offset: 589824
+  };
+
+  # systemd-nspawn containers — 10.233.x.x range
+  # structure differs from ociServices: hostAddress/localAddress are the two ends of a veth pair, not a bridge subnet with per-container IPs
+  #
+  # uidOffset allocations for `--private-users=<offset>:65536`:
+  #   openclaw  524288 — 589823
+  #   next available offset: 589824
+  nspawnServices = {
 
     testbox = {
       hostAddress  = "10.233.99.1";

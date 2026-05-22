@@ -83,7 +83,7 @@ in
       environmentFiles = [ config.sops.templates."${app1}-env".path ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.containerServices.${app}.containers.${app1}.ipv4}"
+        "--ip=${configVars.ociServices.${app}.containers.${app1}.ipv4}"
         "--sysctl=net.ipv6.conf.all.disable_ipv6=1"
         "--cap-add=NET_ADMIN"
         "--privileged"
@@ -99,42 +99,42 @@ in
       #  "traefik.http.routers.${app2}.tls" = "true";
       #  "traefik.http.routers.${app2}.tls.options" = "tls-13@file";
       #  "traefik.http.routers.${app2}.middlewares" = "trusted-allow@file,secure-headers@file";
-      #  "traefik.http.services.${app2}.loadbalancer.server.url" = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:8080";
+      #  "traefik.http.services.${app2}.loadbalancer.server.url" = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:8080";
       #  "traefik.http.routers.${app3}.service" = "${app3}";
       #  "traefik.http.routers.${app3}.entrypoints" = "websecure";
       #  "traefik.http.routers.${app3}.rule" = "Host(`${app3}.${configVars.domain2}`)";
       #  "traefik.http.routers.${app3}.tls" = "true";
       #  "traefik.http.routers.${app3}.tls.options" = "tls-13@file";
       #  "traefik.http.routers.${app3}.middlewares" = "trusted-allow@file,secure-headers@file";
-      #  "traefik.http.services.${app3}.loadbalancer.server.url" = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:8989";
+      #  "traefik.http.services.${app3}.loadbalancer.server.url" = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:8989";
       #  "traefik.http.routers.${app4}.service" = "${app4}";
       #  "traefik.http.routers.${app4}.entrypoints" = "websecure";
       #  "traefik.http.routers.${app4}.rule" = "Host(`${app4}.${configVars.domain2}`)";
       #  "traefik.http.routers.${app4}.tls" = "true";
       #  "traefik.http.routers.${app4}.tls.options" = "tls-13@file";
       #  "traefik.http.routers.${app4}.middlewares" = "trusted-allow@file,secure-headers@file";
-      #  "traefik.http.services.${app4}.loadbalancer.server.url" = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:7878";
+      #  "traefik.http.services.${app4}.loadbalancer.server.url" = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:7878";
       #  "traefik.http.routers.${app5}.service" = "${app5}";
       #  "traefik.http.routers.${app5}.entrypoints" = "websecure";
       #  "traefik.http.routers.${app5}.rule" = "Host(`${app5}.${configVars.domain2}`)";
       #  "traefik.http.routers.${app5}.tls" = "true";
       #  "traefik.http.routers.${app5}.tls.options" = "tls-13@file";
       #  "traefik.http.routers.${app5}.middlewares" = "trusted-allow@file,secure-headers@file";
-      #  "traefik.http.services.${app5}.loadbalancer.server.url" = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:9696";
+      #  "traefik.http.services.${app5}.loadbalancer.server.url" = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:9696";
       #  "traefik.http.routers.${app6}.service" = "${app6}";
       #  "traefik.http.routers.${app6}.entrypoints" = "websecure";
       #  "traefik.http.routers.${app6}.rule" = "Host(`${app6}.${configVars.domain2}`)";
       #  "traefik.http.routers.${app6}.tls" = "true";
       #  "traefik.http.routers.${app6}.tls.options" = "tls-13@file";
       #  "traefik.http.routers.${app6}.middlewares" = "trusted-allow@file,secure-headers@file";
-      #  "traefik.http.services.${app6}.loadbalancer.server.url" = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:5055";
+      #  "traefik.http.services.${app6}.loadbalancer.server.url" = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:5055";
       #  "traefik.http.routers.${app7}.service" = "${app7}";
       #  "traefik.http.routers.${app7}.entrypoints" = "websecure";
       #  "traefik.http.routers.${app7}.rule" = "Host(`${app7}.${configVars.domain2}`)";
       #  "traefik.http.routers.${app7}.tls" = "true";
       #  "traefik.http.routers.${app7}.tls.options" = "tls-13@file";
       #  "traefik.http.routers.${app7}.middlewares" = "jellyfin-trusted-allow@file,secure-headers@file";
-      #  "traefik.http.services.${app7}.loadbalancer.server.url" = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:8096";
+      #  "traefik.http.services.${app7}.loadbalancer.server.url" = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:8096";
       #};
     };
 
@@ -266,7 +266,7 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
         };
         script = ''
-          docker network inspect ${app} || docker network create --subnet ${configVars.containerServices.${app}.subnet} --driver bridge --scope local --attachable ${app}
+          docker network inspect ${app} || docker network create --subnet ${configVars.ociServices.${app}.subnet} --driver bridge --scope local --attachable ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
@@ -578,27 +578,27 @@ in
     services = {
       ${app2}.loadBalancer = {
         serversTransport = "default";
-        servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:8080"; }];
+        servers = [{ url = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:8080"; }];
       };
       ${app3}.loadBalancer = {
         serversTransport = "default";
-        servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:8989"; }];
+        servers = [{ url = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:8989"; }];
       };
       ${app4}.loadBalancer = {
         serversTransport = "default";
-        servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:7878"; }];
+        servers = [{ url = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:7878"; }];
       };
       ${app5}.loadBalancer = {
         serversTransport = "default";
-        servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:9696"; }];
+        servers = [{ url = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:9696"; }];
       };
       ${app6}.loadBalancer = {
         serversTransport = "default";
-        servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:5055"; }];
+        servers = [{ url = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:5055"; }];
       };
       ${app7}.loadBalancer = {
         serversTransport = "default";
-        servers = [{ url = "http://${configVars.containerServices.${app}.containers.${app1}.ipv4}:8096"; }];
+        servers = [{ url = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:8096"; }];
       };
     };
   };
