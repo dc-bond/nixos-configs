@@ -29,16 +29,16 @@
         EndSection
       '';
       windowManager.openbox.enable = true;
-      displayManager.lightdm = {
-        enable = true;
-        autoLogin = {
-          enable = true;
-          user = "chris"; # autologin so graphical-session.target (and sunshine) starts at boot
-        };
-      };
+      displayManager.lightdm.enable = true;
     };
 
-    displayManager.defaultSession = "none+openbox"; # no DE, just openbox WM
+    displayManager = {
+      defaultSession = "none+openbox"; # no DE, just openbox WM
+      autoLogin = {
+        enable = true;
+        user = "chris"; # autologin so graphical-session.target (and sunshine) starts at boot
+      };
+    };
 
     # pinned to pkgs-2505: 25.11 has a known crash regression on X11 capture
     # https://github.com/NixOS/nixpkgs/issues/475181 - remove pin once fixed upstream
