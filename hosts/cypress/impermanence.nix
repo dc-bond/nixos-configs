@@ -53,7 +53,6 @@
         ".config/Nextcloud" # nextcloud sync state
         ".config/VSCodium" # codium editor state
         ".config/Mailspring" # email client state
-        "games" # game installs (e.g. icewind-dale-ee) plus their saves/config (launcher sets XDG_DATA_HOME inside the game dir to consolidate everything here)
       ];
     };
 
