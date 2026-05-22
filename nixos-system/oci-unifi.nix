@@ -123,7 +123,7 @@ in
       ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.containerServices.unifi.containers.controller.ipv4}"
+        "--ip=${configVars.ociServices.unifi.containers.controller.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -140,7 +140,7 @@ in
       ];
       extraOptions = [
         "--network=${app}"
-        "--ip=${configVars.containerServices.unifi.containers.mongodb.ipv4}"
+        "--ip=${configVars.ociServices.unifi.containers.mongodb.ipv4}"
         "--tty=true"
         "--stop-signal=SIGINT"
       ];
@@ -178,7 +178,7 @@ in
         serversTransport = "unifi-insecure"; # uses self-signed cert, needs insecureSkipVerify
         servers = [
           {
-            url = "https://${configVars.containerServices.unifi.containers.controller.ipv4}:8443";
+            url = "https://${configVars.ociServices.unifi.containers.controller.ipv4}:8443";
           }
         ];
       };
@@ -195,7 +195,7 @@ in
           ExecStop = "${pkgs.docker}/bin/docker network rm -f ${app}";
         };
         script = ''
-          docker network inspect ${app} || docker network create --subnet ${configVars.containerServices.unifi.subnet} --driver bridge --scope local --attachable ${app}
+          docker network inspect ${app} || docker network create --subnet ${configVars.ociServices.unifi.subnet} --driver bridge --scope local --attachable ${app}
         '';
         partOf = ["docker-${app}-root.target"];
         wantedBy = ["docker-${app}-root.target"];
