@@ -82,7 +82,7 @@
 
   # uinput kernel module + group membership required for sunshine to inject input events
   boot.kernelModules = [ "uinput" ];
-  users.users.chris.extraGroups = [ "input" "uinput" ];
+  users.users.chris.extraGroups = [ "input" ];
   security.rtkit.enable = true; # realtime scheduling priority for pipewire
 
   # no firewall rules needed: tailscale0 is fully trusted via tailscale.nix and sunshine only accessed through tailscale, so traffic never hits enp4s0 firewall
