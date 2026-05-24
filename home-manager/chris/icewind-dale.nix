@@ -64,7 +64,7 @@ in
     name = "Icewind Dale: Enhanced Edition";
     comment = "Icewind Dale EE (Beamdog) via steam-run";
     exec = "${iwdLauncher}/bin/icewind-dale";
-    icon = "applications-games";
+    icon = "${gameDir}/icon.png"; # 128x128 PNG from GOG, stored alongside the game binary
     type = "Application";
     categories = [ "Game" "RolePlaying" ];
     terminal = false;
