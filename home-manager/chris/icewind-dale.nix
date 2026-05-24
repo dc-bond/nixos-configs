@@ -10,7 +10,7 @@ let
   gameEntry = "${gameDir}/IcewindDale";
   iwdLauncher = pkgs.writeShellApplication {
     name = "icewind-dale";
-    runtimeInputs = [ pkgs.steam-run pkgs.coreutils ];
+    runtimeInputs = [ pkgs.steam-run pkgs.coreutils pkgs.pulseaudio ];
     text = ''
       if [ ! -f "${gameEntry}" ]; then
         echo "Icewind Dale EE not found at ${gameEntry}" >&2
@@ -32,6 +32,17 @@ let
       else
         ln -s "${gameDir}/userdata" "$GAME_LINK"
       fi
+
+      # Sunshine creates sink-sunshine-stereo and sets it as the PA default on a separate
+      # thread, racing with the game's OpenAL init.  If the game wins, it opens the NVIDIA
+      # HDMI sink (goes nowhere) and Sunshine captures silence.  Poll until the sink exists
+      # (up to 5 s) so the game always opens the right device from the start.
+      for _ in 1 2 3 4 5 6 7 8 9 10; do
+        if pactl list sinks short 2>/dev/null | grep -q "sink-sunshine-stereo"; then
+          break
+        fi
+        sleep 0.5
+      done
 
       # beamdog's SDL2 predates the Wayland backend; force XWayland (x11) or it silently fails to open a window
       export SDL_VIDEODRIVER=''${SDL_VIDEODRIVER:-x11}
