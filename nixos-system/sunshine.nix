@@ -74,12 +74,9 @@
         env.PATH = "$(PATH):$(HOME)/.local/bin";
         apps = [
           {
-            name = "Desktop";
-            image-path = "desktop.png";
-          }
-          {
             name = "Icewind Dale";
             cmd = "/etc/profiles/per-user/chris/bin/icewind-dale";
+            image-path = "/home/chris/games/icewind-dale-ee/icon.png";
           }
         ];
       };
