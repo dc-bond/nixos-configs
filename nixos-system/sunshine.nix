@@ -9,36 +9,48 @@
 
     # headless X session for game streaming
     # videoDrivers = ["nvidia"] already declared in nvidia.nix; composes cleanly here
-    # AllowEmptyInitialConfiguration lets the NVIDIA driver init without a physical display connected
     # openbox is the minimal WM that gives game windows a surface to render into
     xserver = {
       enable = true;
-      extraConfig = ''
-        Section "Device"
-          Identifier "nvidia-virtual-display"
-          Driver "nvidia"
-          Option "AllowEmptyInitialConfiguration"
-        EndSection
-        Section "Screen"
-          Identifier "screen0"
-          DefaultDepth 24
-          SubSection "Display"
-            Depth 24
-            Virtual 1920 1080
-          EndSubSection
-        EndSection
+      # deviceSection/monitorSection/screenSection inject into the NixOS-generated sections
+      # that are wired to the ServerLayout — extraConfig adds orphaned sections Xorg ignores.
+      #
+      # ConnectedMonitor "DFP-0": tells NVIDIA to report the first digital output (DVI-D-0)
+      # as connected even with no physical monitor.  SDL2 uses XRandR to enumerate available
+      # displays; without a connected output it returns "No available displays" and
+      # SDL_CreateWindow fails → no GL context → DrawInit_GL segfault.
+      #
+      # ModeValidation: bypass EDID checks that would reject the custom modeline because
+      # there is no real monitor providing EDID data.
+      #
+      # AllowEmptyInitialConfiguration: fallback if the fake-connected CRTC fails to
+      # initialise — allows X to start with a minimal config rather than aborting.
+      deviceSection = ''
+        Option "AllowEmptyInitialConfiguration"
+        Option "ConnectedMonitor" "DFP-0"
+        Option "ModeValidation" "NoEdidModes, NoDFPNativeResolutionCheck, NoVirtualSizeCheck, NoMaxSizeCheck, NoHorizSyncCheck, NoVertRefreshCheck, NoWidthAlignmentCheck"
+      '';
+      # Declare a synthetic 1920x1080 monitor so the Screen/Modes reference resolves.
+      monitorSection = ''
+        HorizSync 15-85
+        VertRefresh 24-75
+        Modeline "1920x1080_60" 172.800 1920 2040 2248 2576 1080 1081 1084 1118 -hsync +vsync
+      '';
+      # Put the CRTC into 1920x1080_60 at X startup so SDL2 sees the mode immediately,
+      # without needing session-level xrandr commands.
+      # Monitor "Monitor[0]" links explicitly to the monitorSection above so the
+      # Modeline is reachable by the Modes "1920x1080_60" directive.
+      screenSection = ''
+        Monitor "Monitor[0]"
+        DefaultDepth 24
+        SubSection "Display"
+          Depth 24
+          Modes "1920x1080_60"
+          Virtual 1920 1080
+        EndSubSection
       '';
       windowManager.openbox.enable = true;
       displayManager.lightdm.enable = true;
-      # AllowEmptyInitialConfiguration defaults to 640x480 with no connected monitor.
-      # Create a virtual 1920x1080 mode on DVI-D-0 at session start so games have a
-      # usable display mode to initialise against. --newmode may fail if the mode
-      # already exists (idempotent via || true).
-      displayManager.sessionCommands = ''
-        ${pkgs.xorg.xrandr}/bin/xrandr --newmode "1920x1080_60" 172.80 1920 2040 2248 2576 1080 1081 1084 1118 -hsync +vsync 2>/dev/null || true
-        ${pkgs.xorg.xrandr}/bin/xrandr --addmode DVI-D-0 1920x1080_60 2>/dev/null || true
-        ${pkgs.xorg.xrandr}/bin/xrandr --output DVI-D-0 --mode 1920x1080_60 --primary 2>/dev/null || true
-      '';
     };
 
     displayManager = {
@@ -55,7 +67,9 @@
       enable = true;
       autoStart = true; # starts with chris's X session
       package = pkgs.pkgs-2505.sunshine;
-      settings.sunshine_name = "aspen";
+      settings = {
+        sunshine_name = "aspen";
+      };
       applications = {
         env.PATH = "$(PATH):$(HOME)/.local/bin";
         apps = [
@@ -64,7 +78,7 @@
             image-path = "desktop.png";
           }
           {
-            name = "Icewind Dale EE";
+            name = "Icewind Dale";
             cmd = "/etc/profiles/per-user/chris/bin/icewind-dale";
           }
         ];
@@ -100,6 +114,23 @@
       };
     };
 
+  };
+
+  # PipeWire services are socket-activated by default: they start only when something first
+  # uses the PipeWire socket.  Sunshine's stream startup is the first caller, so WirePlumber
+  # (which manages the PA metadata needed for set-default-sink) starts at the same moment
+  # Sunshine tries to call set-default-sink → PA_ERR_NOTSUPPORTED → no audio.
+  # Fix: start all three eagerly with graphical-session.target so WirePlumber is fully
+  # initialised well before any stream attempt.  Sunshine is also ordered after them so
+  # it cannot race on first connect.
+  systemd.user.services = {
+    pipewire.wantedBy      = [ "graphical-session.target" ];
+    pipewire-pulse.wantedBy = [ "graphical-session.target" ];
+    wireplumber.wantedBy   = [ "graphical-session.target" ];
+    sunshine = {
+      after = [ "wireplumber.service" "pipewire-pulse.service" ];
+      wants = [ "wireplumber.service" "pipewire-pulse.service" ];
+    };
   };
 
   # uinput kernel module + group membership required for sunshine to inject input events
