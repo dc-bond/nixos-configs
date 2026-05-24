@@ -194,6 +194,16 @@
     #         };
     #       };
     #
+    #       "root/games" = {
+    #         type = "zfs_fs";
+    #         mountpoint = "/home/chris/games";
+    #         options = {
+    #           mountpoint = "legacy";       # systemd manages mounting via fileSystems
+    #           recordsize = "128K";         # suited to game binaries and ROM files (smaller than media 1M)
+    #           compression = "lz4";         # ROMs and binaries compress well
+    #         };
+    #       };
+    #
     #       "root/reserved" = { # theoretically prevent fragmentation by proactively setting aside a chunk of space, then delete if approaching capacity to free up that space
     #         type = "zfs_fs";
     #         options = {
@@ -245,6 +255,14 @@
     };
     "/storage-zfs/borgbackup" = {
       device = "storage/root/borgbackup";
+      fsType = "zfs";
+      options = [ "nofail" ];
+    };
+
+    # games: mounted directly from ZFS — no impermanence binding needed
+    # dataset created imperatively: see commented-out disko config above for provenance
+    "/home/chris/games" = {
+      device = "storage/root/games";
       fsType = "zfs";
       options = [ "nofail" ];
     };
