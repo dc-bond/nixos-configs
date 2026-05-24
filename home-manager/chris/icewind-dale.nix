@@ -22,6 +22,7 @@ let
 
       # beamdog ignores XDG_DATA_HOME and hardcodes ~/.local/share/<name>/; redirect via symlink
       mkdir -p "${gameDir}/userdata"
+      mkdir -p "$HOME/.local/share" # tmpfs root: parent dir may not exist after a fresh reboot
       GAME_LINK="$HOME/.local/share/Icewind Dale - Enhanced Edition"
       if [ -L "$GAME_LINK" ]; then
         : # already a symlink, nothing to do
