@@ -8,7 +8,7 @@
 let
   snesDir = "${config.home.homeDirectory}/games/snes";
 
-  # Build retroarch with snes9x core and settings baked in via wrapper (same mechanism
+  # build retroarch with snes9x core and settings baked in via wrapper (same mechanism
   # as programs.retroarch in the home-manager module, but done inline so the launcher
   # can reference the final package directly in runtimeInputs without circular dependency)
   retroarchWithSnes = pkgs.retroarch-bare.wrapper {
@@ -19,19 +19,15 @@ let
       video_driver              = "gl";
       video_fullscreen          = "true";
       video_windowed_fullscreen = "true"; # borderless — avoids exclusive-mode quirks on virtual display
-
       # audio: PipeWire pulse compat, same as IWD:EE
       audio_driver              = "pulse";
       audio_enable              = "true";
-
       # persist saves/states on ZFS, not ~/.config/retroarch
       savefile_directory        = "${snesDir}/saves";
       savestate_directory       = "${snesDir}/states";
-
       # input: udev for direct evdev (works headless without a DE); auto-map USB gamepads
       input_driver              = "udev";
       input_autodetect_enable   = "true";
-
       # default ROM browser path
       rgui_browser_directory    = "${snesDir}/roms";
     };
