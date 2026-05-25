@@ -22,6 +22,7 @@ in
 
       "home-manager/${username}/zsh.nix"
       "home-manager/${username}/icewind-dale.nix"
+      "home-manager/${username}/retroarch.nix"
     ])
   ];
 

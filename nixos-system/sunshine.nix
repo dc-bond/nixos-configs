@@ -78,6 +78,12 @@
             cmd = "/etc/profiles/per-user/chris/bin/icewind-dale";
             image-path = "/home/chris/games/icewind-dale-ee/icon.png";
           }
+          {
+            name = "SNES";
+            cmd = "/etc/profiles/per-user/chris/bin/retroarch-snes";
+            # image-path: drop a suitable PNG at this path (128×128) to show art in Moonlight
+            # image-path = "/home/chris/games/snes/icon.png";
+          }
         ];
       };
     };
