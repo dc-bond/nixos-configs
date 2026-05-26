@@ -38,9 +38,11 @@ let
   # so retroarch/pulse always opens the right device from the start
   retroarchLauncher = pkgs.writeShellApplication {
     name = "retroarch-snes";
-    runtimeInputs = [ retroarchWithSnes pkgs.pulseaudio ];
+    runtimeInputs = [ retroarchWithSnes pkgs.pulseaudio pkgs.coreutils ];
     text = ''
-      # poll up to 5 s for sunshine's audio sink before launching
+      # sunshine creates sink-sunshine-stereo and sets it as the PA default on a separate
+      # thread, racing with retroarch's audio init; poll until the sink exists (up to 5 s)
+      # so retroarch always opens the right device from the start
       for _ in 1 2 3 4 5 6 7 8 9 10; do
         if pactl list sinks short 2>/dev/null | grep -q "sink-sunshine-stereo"; then
           break
