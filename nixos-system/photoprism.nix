@@ -46,6 +46,12 @@ in
   systemd.services."${app}" = {
     requires = [ "mysql.service" ];
     after = [ "mysql.service" ];
+    unitConfig = {
+      # Ensure the ZFS-backed originals path is mounted before starting.
+      # Without this, photoprism races against the ZFS mount on boot (e.g. after
+      # a power outage) and exhausts its restart budget before the dataset appears.
+      RequiresMountsFor = [ config.services.photoprism.originalsPath ];
+    };
   };
 
   #serviceHealth.${app} = {
