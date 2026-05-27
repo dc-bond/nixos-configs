@@ -187,6 +187,7 @@ in
         "$mod, j, movefocus, d"
         "$mod, F1, exec, ddcutil -d 1 setvcp 60 0x11" # switch monitor input to HDMI1
         "$mod, F2, exec, ddcutil -d 1 setvcp 60 0x12" # switch monitor input to HDMI2
+        "$mod, Pause, exec, hyprctl dispatch dpms toggle" # toggle monitor on/off
         #"$mod, F3, exec, ddcutil -d 1 setvcp 60 0x0f" # switch monitor input to DP1
         ] ++ lib.optional (osConfig.networking.hostName == "thinkpad") "$mod, F8, exec, rfkill toggle wlan" ++ [
         "$mod, F10, exec, rfkill toggle bluetooth"
