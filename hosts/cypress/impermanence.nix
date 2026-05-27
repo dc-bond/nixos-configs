@@ -53,6 +53,8 @@
         ".config/Nextcloud" # nextcloud sync state
         ".config/VSCodium" # codium editor state
         ".config/Mailspring" # email client state
+        ".config/Moonlight Game Streaming Project" # moonlight stream settings
+        ".local/share/Moonlight Game Streaming Project" # moonlight pairing certs
       ];
     };
 
