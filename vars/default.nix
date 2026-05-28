@@ -485,7 +485,8 @@
   #
   # uidOffset allocations for `--private-users=<offset>:65536`:
   #   openclaw  524288 — 589823
-  #   next available offset: 589824
+  #   hermes    589824 — 655359
+  #   next available offset: 655360
   nspawnServices = {
 
     testbox = {
@@ -497,6 +498,12 @@
       hostAddress  = "10.233.7.1";
       localAddress = "10.233.7.2";
       uidOffset = 524288; # static UID/GID offset for the container's user namespace; container UID 0 → host UID 524288; container UID 1000 → host UID 525288
+    };
+
+    hermes = {
+      hostAddress  = "10.233.8.1";
+      localAddress = "10.233.8.2";
+      uidOffset = 589824; # static UID/GID offset for the container's user namespace; container UID 0 → host UID 589824; container UID 1000 → host UID 590824
     };
 
   };
