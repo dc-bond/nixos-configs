@@ -33,6 +33,7 @@
     };
     impermanence.url = "github:nix-community/impermanence";
     openclaw.url = "github:openclaw/nix-openclaw";
+    hermes-agent.url = "github:NousResearch/hermes-agent";
     private.url = "git+ssh://git@github.com/dc-bond/nixos-configs-private";
   };
 
