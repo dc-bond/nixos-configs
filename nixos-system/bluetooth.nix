@@ -11,9 +11,14 @@
     settings = {
       General = {
         FastConnectable = true; # faster reconnection for paired devices (uses more power)
-        # enable LL privacy for hardware-accelerated address resolution (faster BLE reconnection)
-        # https://github.com/bluez/bluez/blob/master/src/main.conf
-        KernelExperimental = "15c0a148-c273-11ea-b3de-0242ac130004";
+        # NOTE: LL Privacy (KernelExperimental LE address resolution) was REMOVED 2026-05-31.
+        # On this Intel adapter it stalled the post-disconnect passive scan, so BLE reconnects
+        # (esp. the MX Anywhere 3S) took longer the more uptime cypress had (instant after reboot,
+        # ~9-15s after days). btmon proved the delay was entirely the scan gap before the mouse's
+        # advertisement was heard; once heard, connect+encrypt+HID took ~120ms. It resets on reboot
+        # because the stall is controller-internal state that accumulates over uptime.
+        # Despite the upstream comment claiming it speeds reconnection, it did the opposite here.
+        # KernelExperimental = "15c0a148-c273-11ea-b3de-0242ac130004"; # LL privacy
       };
       Policy = {
         AutoEnable = true;

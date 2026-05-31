@@ -70,8 +70,6 @@
         git clone git@github.com:dc-bond/nixos-configs.git
         echo "Cloning nixos-configs-private..."
         git clone git@github.com:dc-bond/nixos-configs-private.git
-        echo "Copying CLAUDE.md to $target_dir..."
-        cp nixos-configs-private/CLAUDE.md "$target_dir/"
         echo "Done"
       }
     '');
