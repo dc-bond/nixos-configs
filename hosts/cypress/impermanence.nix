@@ -47,6 +47,7 @@
       directories = [
         { directory = ".local/share/keyrings"; mode = "0700"; } # gnome keyring secrets like nextcloud client login, etc.
         { directory = ".config/age"; mode = "0700"; } # user age key for home-manager SOPS
+        { directory = ".claude"; mode = "0700"; } # claude code state: settings, credentials, agent memory, session history
         "nextcloud-client" # local nextcloud directory
         ".mozilla" # firefox profiles
         ".config/Element" # matrix e2e keys
