@@ -109,7 +109,7 @@
 
   imports = lib.flatten [
     inputs.disko.nixosModules.disko
-    #inputs.private.nixosModules.nspawn-hermes
+    inputs.private.nixosModules.nspawn-hermes
     (map configLib.relativeToRoot [
       "hosts/cypress/hardware-configuration.nix"
       "hosts/cypress/impermanence.nix"
