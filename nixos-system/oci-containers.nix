@@ -16,6 +16,7 @@ in
     oci-containers.backend = "docker";
     docker = {
       enable = true;
+      #package = pkgs.docker_29;
       autoPrune.enable = true;
       storageDriver = "overlay2"; # current docker recommendation, does not create nested btrfs subvolumes
       daemon.settings = {
