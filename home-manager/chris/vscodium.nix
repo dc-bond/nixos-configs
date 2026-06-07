@@ -21,7 +21,7 @@
         signageos.signageos-vscode-sops
         ms-python.python
         arrterian.nix-env-selector
-        #anthropic.claude-code
+        anthropic.claude-code
         # manually install 'Beancount' from extension marketplace
       ];
       userSettings = {

@@ -68,8 +68,7 @@ in
       nextcloud-client # nextcloud local syncronization client
       hyprshot # screenshot tool
       pwvucontrol # pipewire audio volume control app
-      claude-code # terminal-based agentic coding assistant
-      tigervnc # vnc client app
+tigervnc # vnc client app
       mailspring # desktop email client
       moonlight-qt # game streaming client (connects to sunshine server on aspen)
     ];

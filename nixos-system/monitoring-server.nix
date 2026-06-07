@@ -1045,6 +1045,13 @@ in
           ExecStartPost = "${btrfsScrubExporter}";
         };
       };
+      # order promtail relative to the local loki so it starts after loki is listening, and (because
+      # systemd reverses ordering on shutdown) stops *before* loki - letting promtail flush buffered
+      # logs to a still-running loki and exit within TimeoutStopSec
+      promtail = {
+        after = [ "loki.service" ];
+        wants = [ "loki.service" ];
+      };
       alertmanager-to-ntfy = {
         description = "Alertmanager to Ntfy Transformer";
         wantedBy = [ "multi-user.target" ];
@@ -1199,6 +1206,11 @@ in
         };
         clients = [{
           url = "http://127.0.0.1:3030/loki/api/v1/push";
+          # bound the shutdown drain: default backoff is 10 retries with exponential backoff, which
+          # blows past the 10s TimeoutStopSec when loki is unreachable and fails the unit on restart.
+          # promtail's WAL persists positions across restarts, so capping retries is a safe trade.
+          backoff_config.max_retries = 2;
+          timeout = "2s";
         }];
         scrape_configs = [
           {
