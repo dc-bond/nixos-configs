@@ -32,9 +32,13 @@
           "confirmDragAndDrop" = false;
           "confirmDelete" = false;
         };
-        "extensions.experimental.affinity" = {
-          "asvetliakov.vscode-neovim" = 1;
-        };      
+        "extensions" = {
+          "extensions.autoCheckUpdates" = false;
+          "extensions.autoUpdate" = false;
+          "experimental.affinity" = {
+            "asvetliakov.vscode-neovim" = 1;
+          };
+        };
         "workbench" = {
           "colorTheme" = "Nord";
           "iconTheme" = "material-icon-theme";
