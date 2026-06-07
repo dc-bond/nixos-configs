@@ -39,6 +39,11 @@
     };
   };
 
+# pin docker so all 'pkgs.docker' references (oci-* systemd units, etc.) use the specified engine
+  docker-pinned = final: prev: {
+    docker = prev.docker_29;
+  };
+
 # to upgrade: update version + url below, run nix-prefetch-url to get new hash, then rebuild
   displaylink-pinned = final: prev: {
     linuxPackages = prev.linuxPackages // {

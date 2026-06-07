@@ -132,6 +132,9 @@ in
         };
         clients = [{
           url = "http://${configVars.hosts.juniper.networking.tailscaleIp}:3030/loki/api/v1/push";
+          # bound the shutdown drain so an unreachable loki can't hang promtail past its TimeoutStopSec and fail a rebuild
+          backoff_config.max_retries = 2;
+          timeout = "2s";
         }];
         scrape_configs = [
           {
