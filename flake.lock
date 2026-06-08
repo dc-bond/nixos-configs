@@ -23,11 +23,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1780290312,
-        "narHash": "sha256-eTAlX0CwgB84Ts3GaBd944A3DRXVMzgA0EqroZBISUo=",
+        "lastModified": 1780894562,
+        "narHash": "sha256-c3430xwxwhHipl3jigUGMMBfpaMylDqytW/kdmB3ZGs=",
         "owner": "nix-community",
         "repo": "disko",
-        "rev": "115e5211780054d8a890b41f0b7734cafad54dfe",
+        "rev": "24fed06cac83bcc44ac8efbb57cab1a82fa0bedc",
         "type": "github"
       },
       "original": {
@@ -65,11 +65,11 @@
       },
       "locked": {
         "dir": "pkgs/firefox-addons",
-        "lastModified": 1780804967,
-        "narHash": "sha256-Z2nOP600ATQLLHHemhHtYDjWyAqgLrVsozznIkvnkYY=",
+        "lastModified": 1780891365,
+        "narHash": "sha256-4O+fULvUThihOytQaDjryaax3Sjv1Y8gq2PK3QlZV6Q=",
         "owner": "rycee",
         "repo": "nur-expressions",
-        "rev": "f15cdd20d0845728919ad067ff43bdd334b4b344",
+        "rev": "592edd5a1637efcbd727d98ef528a4256850cfed",
         "type": "gitlab"
       },
       "original": {
@@ -192,11 +192,11 @@
         "uv2nix": "uv2nix_2"
       },
       "locked": {
-        "lastModified": 1780835822,
-        "narHash": "sha256-bnhBVavy1i4Q257rFQeEwe+KJVpR+J2Bhtm5Urhxxlw=",
+        "lastModified": 1780943393,
+        "narHash": "sha256-hvAv/XCAeTiyGlYlose2V+zHwFtk+SQD+XBtO7miziA=",
         "owner": "NousResearch",
         "repo": "hermes-agent",
-        "rev": "e2cc24e3311da5575f9e0df256e14e62ff39dab2",
+        "rev": "5916248dc0fcede1430af44a5b7f39a507a0eba4",
         "type": "github"
       },
       "original": {
@@ -316,11 +316,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1780243769,
-        "narHash": "sha256-x5UQuRsH3MqI0U9afaXSNqzTPSeZlRLvFAav2Ux1pNw=",
+        "lastModified": 1780749050,
+        "narHash": "sha256-3av0pIjlOWQ6rDbNOmpUSvbNnJkGORQKKjb4LtCZsIY=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "331800de5053fcebacf6813adb5db9c9dca22a0c",
+        "rev": "a799d3e3886da994fa307f817a6bc705ae538eeb",
         "type": "github"
       },
       "original": {
@@ -385,11 +385,11 @@
     },
     "private": {
       "locked": {
-        "lastModified": 1780662020,
-        "narHash": "sha256-mHbNaoNgkUouc3QGxQf1kSvwStp1K/xObjbBEfbomPM=",
+        "lastModified": 1780866299,
+        "narHash": "sha256-c1KdyjUVQxpe2u+h4en0Kx1nGguj3mxjz3fAXVeNNzM=",
         "ref": "refs/heads/main",
-        "rev": "9f8c7645a3018b7cfba3ca4c2363bf456e9843db",
-        "revCount": 104,
+        "rev": "13e4ed0edcec61ae6011b84941d36fe249d6555e",
+        "revCount": 105,
         "type": "git",
         "url": "ssh://git@github.com/dc-bond/nixos-configs-private"
       },
