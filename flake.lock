@@ -192,11 +192,11 @@
         "uv2nix": "uv2nix_2"
       },
       "locked": {
-        "lastModified": 1780943393,
-        "narHash": "sha256-hvAv/XCAeTiyGlYlose2V+zHwFtk+SQD+XBtO7miziA=",
+        "lastModified": 1780945914,
+        "narHash": "sha256-0XURRmvM/yGvr1xc3T6fbMzwd1tElCFnKWRkbeouW7M=",
         "owner": "NousResearch",
         "repo": "hermes-agent",
-        "rev": "5916248dc0fcede1430af44a5b7f39a507a0eba4",
+        "rev": "2f510ca8e07b570ad3fdc491400432a96494aaf3",
         "type": "github"
       },
       "original": {
@@ -385,11 +385,11 @@
     },
     "private": {
       "locked": {
-        "lastModified": 1780866299,
-        "narHash": "sha256-c1KdyjUVQxpe2u+h4en0Kx1nGguj3mxjz3fAXVeNNzM=",
+        "lastModified": 1780946085,
+        "narHash": "sha256-6cezoIyg+A4fjJI/XruuNUCPMLMg3nRM+zZ0ca8JS3g=",
         "ref": "refs/heads/main",
-        "rev": "13e4ed0edcec61ae6011b84941d36fe249d6555e",
-        "revCount": 105,
+        "rev": "ea17400a7f54dd758c033441f3f2019630f81699",
+        "revCount": 106,
         "type": "git",
         "url": "ssh://git@github.com/dc-bond/nixos-configs-private"
       },
