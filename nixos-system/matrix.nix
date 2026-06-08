@@ -110,7 +110,7 @@ in
             smtp_user: ${configVars.users.chris.email}
             smtp_pass: ${config.sops.placeholder.chrisEmailPasswd}
             notif_from: "Bond Encrypted Communications <noreply@dcbond.com>"
-          encryption_enabled_by_default_for_room_type: off  # TEMPORARILY DISABLED for hermes bot room creation — REVERT to "all" after capturing room ID (Phase 4b)
+          encryption_enabled_by_default_for_room_type: off
           user_directory:
               enabled: true
               search_all_users: true
