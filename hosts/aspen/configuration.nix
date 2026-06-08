@@ -302,7 +302,7 @@
     inputs.disko.nixosModules.disko
     inputs.private.nixosModules.oci-communitycluster2026
     inputs.private.nixosModules.oci-wardrobe
-    #inputs.private.nixosModules.nspawn-hermes # autoStart=false until Phase 5 smoke + Phase 4 matrix wiring lands; manual start via `systemctl start container@hermes` for testing
+    inputs.private.nixosModules.nspawn-hermes # autoStart=false until Phase 5 smoke + Phase 4 matrix wiring lands; manual start via `systemctl start container@hermes` for testing
     (map configLib.relativeToRoot [
       "hosts/aspen/hardware-configuration.nix"
       "hosts/aspen/impermanence.nix"
