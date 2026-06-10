@@ -214,10 +214,20 @@ in
       };
     };
 
-    config = { config, pkgs, lib, ... }: {
+    config = { config, pkgs, lib, ... }:
+    let
+      # sidecar python interpreter for CalDAV (and future python tooling the agent needs).
+      # extraPythonPackages can't carry caldav — see comment under services.hermes-agent below.
+      # named `caldav-python` to avoid any ambiguity with the venv's python; agent shells out via terminal.
+      caldavPython = pkgs.python3.withPackages (ps: with ps; [ caldav ]);
+    in {
       imports = [ inputs.hermes-agent.nixosModules.default ];
       system.stateVersion = "25.11";
       nixpkgs.overlays = [ inputs.hermes-agent.overlays.default ]; # pkgs.hermes-agent (uv2nix venv) needs this
+
+      environment.systemPackages = [
+        (pkgs.writeShellScriptBin "caldav-python" ''exec ${caldavPython}/bin/python3 "$@"'')
+      ];
 
       # stable UID to match host idmap target
       users = {
@@ -236,11 +246,14 @@ in
         createUser = false; # declare the user above (stable UID for idmap)
         addToSystemPackages = true; # `hermes` CLI on PATH for smoke testing
         extraDependencyGroups = [ "anthropic" "matrix" ]; # native anthropic provider + matrix channel
-        # extraPythonPackages NOT USED: hermes-agent pins its own nixpkgs (nixos-unstable, different
-        # python312 derivation than ours), so `pkgs.python312Packages.X.pythonModule != hermes-py312`
-        # and `requiredPythonModules` silently filters our packages out, affected skills (e.g.
-        # nextcloud CalDAV) use raw HTTP + stdlib instead, revisit if upstream follows consumer's
-        # nixpkgs or exposes its venv python via passthru
+        # extraPythonPackages NOT USED: upstream's installPhase runs a sealed-venv collision check
+        # that errors out if any package in the extras closure (including transitive deps) shares
+        # a canonical name with a package in the venv. caldav drags in requests / lxml / click /
+        # urllib3 / idna / certifi / charset-normalizer — all near-certain venv collisions — so it
+        # can't enter this way (and same applies to most non-trivial python libs). Sidecar
+        # interpreter on PATH (caldav-python, defined in the let block above) is the workaround;
+        # agent shells out via terminal backend. Only revisit if upstream loosens the collision
+        # rules or splits the venv.
 
         # stateDir defaults to /var/lib/hermes; HERMES_HOME = stateDir/.hermes; workingDirectory = stateDir/workspace
         environmentFiles = [ "/run/secrets/${name}-env" ];
@@ -381,9 +394,13 @@ in
               principal: PROPFIND on the root with `current-user-principal`, then PROPFIND on the
               principal with `calendar-home-set`. Don't try to build the calendars path yourself.
 
-              Note: the Python `caldav` library is **not** importable in your venv (ABI mismatch
-              between hermes-agent's pinned python312 and ours). Use raw HTTP with `requests` +
-              `xml.etree` (stdlib) instead.
+              Note: the Python `caldav` library is **not** importable in your own interpreter —
+              your venv is sealed. A sidecar interpreter `caldav-python` is on PATH with the
+              `caldav` library (and its transitive deps: `requests`, `lxml`, `icalendar`,
+              `recurring_ical_events`, `vobject`, `python-dateutil`, etc). Use it via the
+              terminal tool: `caldav-python -c '...'` or `caldav-python script.py`. Treat it as a
+              CLI shell-out, not as something you can `import` in-process. For simple PROPFINDs,
+              raw HTTP with `requests` + `xml.etree` (stdlib, already in your venv) is also fine.
 
             ## Local context
 
