@@ -1,9 +1,9 @@
-# Hermes Agent (Nous Research, MIT) as a personal AI gateway in a hardened systemd-nspawn sandbox.
+# Hermes Agent as a personal AI gateway in a hardened systemd-nspawn sandbox.
 # Upstream: https://hermes-agent.nousresearch.com/docs/ — long-running gateway, progressive-
 # disclosure skills (DESCRIPTION/SKILL.md), self-improving memory (MEMORY/USER.md), cron, and
 # multi-channel messaging. Primary UX here is Matrix chat from Element.
 #
-# Containment: the nspawn container IS the security boundary. The agent is unconstrained inside
+# Containment: the nspawn container is the security boundary. The agent is unconstrained inside
 # (full tool surface incl. terminal, approvals.mode = off). The host enforces:
 #   1. systemd.network routing-policy-rule pinning container src → table main (primary defense:
 #      drops all LAN/tailnet routes; only the default gateway + explicit /32s remain).
@@ -15,7 +15,7 @@
 #      confines caps to a host-side unprivileged UID).
 #
 # State: /persist/var/lib/hermes/ holds the entire HERMES_HOME (config, memory, skills, sessions,
-# cron, runtime DB), persisted by impermanence. Borg integration deferred (drafted below).
+# cron, runtime DB), persisted by impermanence
 #
 # Deviations from upstream services.hermes-agent: extraDependencyGroups = [ "anthropic" "matrix" ];
 # createUser = false (stable UID for idmap); UMask mkForce 0022 (vs module's 0007) so the operator
@@ -26,9 +26,8 @@
 #   - inputs.hermes-agent in flake.nix
 #   - nspawnServices.hermes in vars/default.nix (hostAddress, localAddress, uidOffset)
 #   - sops secrets: anthropicApiKey, matrixHermesBotToken, nextcloudHermesCaldavPasswd
-#   - Matrix bot user @hermes:<domain1> registered + invited to a dedicated unencrypted room
-#     (room ID set in MATRIX_HOME_ROOM/ALLOWED_ROOMS/FREE_RESPONSE_ROOMS below)
-#   - Nextcloud app password for the operator
+#   - matrix bot user @hermes:<domain1> registered + invited to a dedicated unencrypted room
+#   - nextcloud app password for the operator
 
 {
   config,
