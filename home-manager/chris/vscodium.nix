@@ -33,8 +33,8 @@
           "confirmDelete" = false;
         };
         "extensions" = {
-          "extensions.autoCheckUpdates" = false;
-          "extensions.autoUpdate" = false;
+          "autoCheckUpdates" = false;
+          "autoUpdate" = false;
           "experimental.affinity" = {
             "asvetliakov.vscode-neovim" = 1;
           };
