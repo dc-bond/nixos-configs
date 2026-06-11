@@ -34,12 +34,11 @@
         echo "Opening SSH tunnel to kauri (port 5900)..."
         ssh -f -N kauri-vnc && \
         sleep 1 && \
-        echo "Launching VNC viewer (press F8 for menu)..." && \
+        echo "Launching VNC viewer (press Ctrl+Alt+M for menu)..." && \
         vncviewer localhost:5900 \
           ViewOnly=0 \
           AcceptClipboard=1 \
-          SendClipboard=1 \
-          MenuKey=F8
+          SendClipboard=1
         # kill the SSH tunnel after VNC session ends
         pkill -f "ssh.*kauri-vnc"
       }
@@ -48,12 +47,11 @@
         echo "Opening SSH tunnel to alder (port 5901)..."
         ssh -f -N alder-vnc && \
         sleep 1 && \
-        echo "Launching VNC viewer (press F8 for menu)..." && \
+        echo "Launching VNC viewer (press Ctrl+Alt+M for menu)..." && \
         vncviewer localhost:5901 \
           ViewOnly=0 \
           AcceptClipboard=1 \
-          SendClipboard=1 \
-          MenuKey=F8
+          SendClipboard=1
         # kill the SSH tunnel after VNC session ends
         pkill -f "ssh.*alder-vnc"
       }
