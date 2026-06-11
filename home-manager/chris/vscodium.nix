@@ -35,9 +35,9 @@
         "extensions" = {
           "autoCheckUpdates" = false;
           "autoUpdate" = false;
-          "experimental.affinity" = {
-            "asvetliakov.vscode-neovim" = 1;
-          };
+        };
+        "extensions.experimental.affinity" = {
+          "asvetliakov.vscode-neovim" = 1;
         };
         "workbench" = {
           "colorTheme" = "Nord";
