@@ -22,6 +22,19 @@
 # can read agent state via group; MESSAGING_CWD env null'd in favor of settings.terminal.cwd;
 # TimeoutStopSec = 240 (drain_timeout is 180s). extraPythonPackages unused — see inline note.
 #
+# Cost / prompt caching (audited 2026-06-11, not yet wired): upstream's anthropic_adapter
+# (agent/anthropic_adapter.py, build_anthropic_kwargs) PASS-THROUGHS cache_control on system /
+# tools / tool_result blocks, but prompt_builder.py concatenates SOUL.md + AGENTS.md + skill
+# DESCRIPTIONs + env hints + capability block into a single string `system=` and never emits
+# a breakpoint. Net: every turn re-bills the full ~8–15K static prefix at $3/1M (Sonnet 4.6).
+# Estimated 40–60% spend reduction available; min cacheable prefix 2048 tok (cleared easily).
+# No upstream config knob exists; enabling requires either an upstream PR adding a `caching:`
+# flag, a flake-input patch wrapping the system into a TextBlockParam list with cache_control,
+# or a provider-profile override hook. See [[hermes-prompt-caching]] memory for the full audit
+# (silent invalidators to check first: datetime.now in env hints, non-deterministic skill
+# ordering, bundled-skill re-seed cadence). Pin inputs.hermes-agent before patching — currently
+# unpinned, so any patch would silently break on `nix flake update`.
+#
 # Requires:
 #   - inputs.hermes-agent in flake.nix
 #   - nspawnServices.hermes in vars/default.nix (hostAddress, localAddress, uidOffset)
@@ -429,7 +442,8 @@ in
         settings = {
           model = {
             provider = "anthropic";
-            default = "claude-sonnet-4-6";
+            # default = "claude-sonnet-4-6";
+            default = "claude-haiku-4-5";
           };
           approvals = {
             mode = "off"; # unattended chat — container is the boundary
