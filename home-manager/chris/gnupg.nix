@@ -36,6 +36,19 @@
     };
   };
 
-}
+  # impermanence rebuilds ~/.gnupg on every boot, so the signing subkey's smartcard shadow stub in is missing until scdaemon first talks to the card - probe the yubikey on login so the stub exists before the first git commit signing attempt
+  systemd.user.services.gpg-yubikey-learn = {
+    Unit = {
+      Description = "Probe YubiKey so gpg-agent learns smartcard keygrips";
+      After = [ "gpg-agent.service" "graphical-session.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.gnupg}/bin/gpg --card-status";
+      SuccessExitStatus = [ 0 2 ]; # don't fail if yubikey not plugged in
+    };
+    Install.WantedBy = [ "graphical-session.target" ];
+  };
 
-      #{ source = (configLib.relativeToRoot "home-manager/chris/chrisGpgKey.pub"); trust = 5; }
+}
