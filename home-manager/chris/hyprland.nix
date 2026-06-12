@@ -134,6 +134,29 @@ tigervnc # vnc client app
     components = [ "secrets" ];
   };
 
+  # idle daemon: lock screen at 9 min, DPMS off all monitors at 10 min, wake on input
+  services.hypridle = {
+    enable = true;
+    settings = {
+      general = {
+        lock_cmd = "${pkgs.procps}/bin/pidof hyprlock || ${pkgs.hyprlock}/bin/hyprlock";
+        before_sleep_cmd = "${pkgs.systemd}/bin/loginctl lock-session";
+        after_sleep_cmd = "${pkgs.hyprland}/bin/hyprctl dispatch dpms on";
+      };
+      listener = [
+        {
+          timeout = 540;
+          on-timeout = "${pkgs.systemd}/bin/loginctl lock-session";
+        }
+        {
+          timeout = 600;
+          on-timeout = "${pkgs.hyprland}/bin/hyprctl dispatch dpms off";
+          on-resume = "${pkgs.hyprland}/bin/hyprctl dispatch dpms on";
+        }
+      ];
+    };
+  };
+
   # wrap desktopReload in a systemd user service so timer can automatically cycle wallpaper, otherwise desktopReload called directly from startup script and hotkeys
   systemd.user = {
     services.desktopReload = {
