@@ -100,6 +100,13 @@ in
             };
           }
           {
+            "Vikunja" = {
+              href = "https://vikunja.${configVars.domain2}/";
+              description = "Task & Project Manager";
+              ping = "https://vikunja.${configVars.domain2}";
+            };
+          }
+          {
             "SearXNG" = {
               href = "https://search.${configVars.domain2}/";
               description = "Private Search Engine";
