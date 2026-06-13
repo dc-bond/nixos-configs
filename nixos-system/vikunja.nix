@@ -42,7 +42,7 @@ in
     };
     templates = {
       "${app}-env".content = ''
-        VIKUNJA_SERVICE_JWTSECRET=${config.sops.placeholder.vikunjaJwtSecret}
+        VIKUNJA_SERVICE_SECRET=${config.sops.placeholder.vikunjaJwtSecret}
       '';
     };
   };
