@@ -47,9 +47,23 @@ in
     };
   };
 
-  systemd.services.${app} = {
+  environment.systemPackages = with pkgs; [ recoverScript ];
+
+  systemd.services."${app}" = {
     requires = [ "postgresql.target" ];
     after = [ "postgresql.target" ];
+  };
+
+  backups.serviceHooks = {
+    preHook = lib.mkAfter [
+      "systemctl stop ${app}.service"
+      "sleep 2"
+      "systemctl start postgresqlBackup-${app}.service"
+      "while systemctl is-active --quiet postgresqlBackup-${app}.service; do sleep 1; done"
+    ];
+    postHook = lib.mkAfter [
+      "systemctl start ${app}.service"
+    ];
   };
 
   services = {
@@ -65,8 +79,8 @@ in
       database = {
         type = "postgres";
         host = "/run/postgresql"; # unix socket -> peer auth as user "vikunja"
-        user = app;
-        database = app;
+        user = "${app}";
+        database = "${app}";
       };
       settings = {
         service = {
@@ -82,21 +96,25 @@ in
     };
 
     postgresql = {
-      ensureDatabases = [ app ];
+      ensureDatabases = [ "${app}" ];
       ensureUsers = [
         {
-          name = app;
+          name = "${app}";
           ensureDBOwnership = true;
           ensureClauses.login = true;
         }
       ];
     };
 
+    postgresqlBackup = { databases = [ "${app}" ]; };
+
+    borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
+
     traefik.dynamicConfigOptions.http = {
       routers.${app} = {
-        entrypoints = [ "websecure" ];
+        entrypoints = ["websecure"];
         rule = "Host(`${app}.${configVars.domain2}`)";
-        service = app;
+        service = "${app}";
         middlewares = [
           "maintenance-page"
           "trusted-allow"
@@ -113,37 +131,14 @@ in
           serversTransport = "default";
           passHostHeader = true;
           servers = [
-            { url = "http://127.0.0.1:${toString appPort}"; }
+          {
+            url = "http://127.0.0.1:${toString appPort}";
+          }
           ];
         };
       };
     };
 
   };
-
-  # ---------------------------------------------------------------------------
-  # Phase 2: enable after smoke test passes
-  # ---------------------------------------------------------------------------
-  # Backup integration: dump postgres + include state dir in borgbackup.
-  # Homepage tile lives in nixos-system/homepage.nix; uncomment the block there
-  # at the same time as enabling these.
-  #
-  # environment.systemPackages = with pkgs; [ recoverScript ];
-  #
-  # backups.serviceHooks = {
-  #   preHook = lib.mkAfter [
-  #     "systemctl stop ${app}.service"
-  #     "sleep 2"
-  #     "systemctl start postgresqlBackup-${app}.service"
-  #     "while systemctl is-active --quiet postgresqlBackup-${app}.service; do sleep 1; done"
-  #   ];
-  #   postHook = lib.mkAfter [
-  #     "systemctl start ${app}.service"
-  #   ];
-  # };
-  #
-  # services.postgresqlBackup.databases = [ app ];
-  # services.borgbackup.jobs."${config.networking.hostName}".paths =
-  #   lib.mkAfter recoveryPlan.restoreItems;
 
 }

@@ -25,7 +25,7 @@
 # Requires:
 #   - inputs.hermes-agent in flake.nix
 #   - nspawnServices.hermes in vars/default.nix (hostAddress, localAddress, uidOffset)
-#   - sops secrets: anthropicApiKey, matrixHermesBotToken, nextcloudHermesCaldavPasswd
+#   - sops secrets: anthropicApiKey, matrixHermesBotToken, nextcloudHermesCaldavPasswd, vikunjaApiToken
 #   - matrix bot user @hermes:<domain1> registered + invited to a dedicated unencrypted room
 #   - nextcloud app password for the operator
 
@@ -80,11 +80,13 @@ in
     secrets.anthropicApiKey = {};
     secrets.matrixHermesBotToken = {};
     secrets.nextcloudHermesCaldavPasswd = {};
+    secrets.vikunjaApiToken = {}; # chris's account-wide token; agent acts as the operator
     templates."${name}-env" = {
       content = ''
         ANTHROPIC_API_KEY=${config.sops.placeholder.anthropicApiKey}
         MATRIX_ACCESS_TOKEN=${config.sops.placeholder.matrixHermesBotToken}
         NEXTCLOUD_CALDAV_PASSWORD=${config.sops.placeholder.nextcloudHermesCaldavPasswd}
+        VIKUNJA_API_TOKEN=${config.sops.placeholder.vikunjaApiToken}
       '';
       mode = "0400";
       owner = "hermes-mapped";
@@ -274,6 +276,9 @@ in
           # current-user-principal resolves canonical path; internal user ID has a space)
           NEXTCLOUD_CALDAV_URL = "https://nextcloud.${configVars.domain1}/remote.php/dav/";
           NEXTCLOUD_CALDAV_USER = "chris@${configVars.domain1}";
+          # vikunja API: container reaches traefik on host's veth IP — local-host destination,
+          # INPUT chain permits :443, no FORWARD allowlist change. Token is account-wide for chris.
+          VIKUNJA_API_URL = "https://vikunja.${configVars.domain2}/api/v1";
         };
 
         # inline documents (string form = written as content, not file copy); SOUL.md/AGENTS.md live
@@ -365,6 +370,8 @@ in
               reached over Tailscale).
             - **Nextcloud:** `https://nextcloud.${configVars.domain1}` (operator's calendar; the
               hostname is pinned to the host's veth IP — local-host destination, bypasses FORWARD).
+            - **Vikunja:** `https://vikunja.${configVars.domain2}` (operator's task manager;
+              same host-local trick as Nextcloud — pinned to the host's veth IP, bypasses FORWARD).
             - **Everything else:** rejected. `web_search` and `web_fetch` fail.
 
             ## Channels
@@ -381,7 +388,7 @@ in
 
             ## Connected services
 
-            Credentials in your environment for two outbound services:
+            Credentials in your environment for three outbound services:
 
             - **Matrix** (your only inbound channel): `MATRIX_HOMESERVER`, `MATRIX_ACCESS_TOKEN`,
               `MATRIX_USER_ID`. Managed by the gateway.
@@ -401,6 +408,32 @@ in
               terminal tool: `caldav-python -c '...'` or `caldav-python script.py`. Treat it as a
               CLI shell-out, not as something you can `import` in-process. For simple PROPFINDs,
               raw HTTP with `requests` + `xml.etree` (stdlib, already in your venv) is also fine.
+
+            - **Vikunja** (task manager): `VIKUNJA_API_URL`, `VIKUNJA_API_TOKEN`. REST API for
+              chris's projects, tasks, labels, and saved filters. The token is account-wide and
+              acts as chris — treat any action you take as authorized by him. Auth via
+              `Authorization: Bearer $VIKUNJA_API_TOKEN`.
+
+              Mental model of the data: **projects** contain **tasks**; tasks have `done` (bool)
+              and `done_at` (RFC3339, sentinel `0001-01-01T00:00:00Z` when not done). Tasks can
+              have subtasks via the "subtask" relation. **Labels** are global across projects.
+              **Saved filters** are virtual projects with Vikunja's filter DSL (e.g.
+              `done = false && due_date < now+24h`).
+
+              Two project semantics live in the same DB and you must distinguish them:
+              - **Workflow projects** (Inbox, Rental conversion, etc.): outstanding work is
+                exactly `done = false`. Completed items are hard-deleted via `DELETE /tasks/{id}`
+                so there's no "completed but still around" third state to reason about.
+              - **Inventory projects** (Grocery list and similar recurring lists): items stay in
+                place when checked off and get resurrected by setting `done = false`. Don't
+                delete them when marking done.
+
+              When listing tasks for "what's on chris's plate," always pass an explicit filter:
+              `GET /projects/{id}/tasks?filter=done = false`. Don't assume the server filters
+              by default — it doesn't. Use `curl` from the terminal tool; no SDK is bundled.
+
+              If you create new projects on chris's behalf, default to workflow semantics unless
+              the user describes a recurring/reusable list.
 
             ## Local context
 
@@ -429,8 +462,8 @@ in
         settings = {
           model = {
             provider = "anthropic";
-            # default = "claude-sonnet-4-6";
-            default = "claude-haiku-4-5";
+            default = "claude-sonnet-4-6";
+            #default = "claude-haiku-4-5";
           };
           approvals = {
             mode = "off"; # unattended chat — container is the boundary
@@ -497,7 +530,10 @@ in
       # nextcloud.<domain1> → aspen's veth IP (local host, bypasses FORWARD chain), traefik SNI handles cert+routing
       networking.hosts = {
         "${juniperTailnetIp}" = [ "matrix.${configVars.domain1}" ];
-        "${configVars.nspawnServices.${name}.hostAddress}" = [ "nextcloud.${configVars.domain1}" ];
+        "${configVars.nspawnServices.${name}.hostAddress}" = [
+          "nextcloud.${configVars.domain1}"
+          "vikunja.${configVars.domain2}"
+        ];
       };
 
       # local TZ for "tomorrow at 3pm" interpretation; CalDAV stores UTC+VTIMEZONE
