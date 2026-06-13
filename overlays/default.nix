@@ -44,6 +44,13 @@
     docker = prev.docker_29;
   };
 
+# nixpkgs #530874 — matrix-synapse-unwrapped postPatch has a typo'd attrs version pattern that fails to match upstream pyproject.toml; original substitution is a no-op anyway, drop it until upstream fix lands
+  matrix-synapse-attrs-fix = _final: prev: {
+    matrix-synapse-unwrapped = prev.matrix-synapse-unwrapped.overrideAttrs (_: {
+      postPatch = "";
+    });
+  };
+
 # to upgrade: update version + url below, run nix-prefetch-url to get new hash, then rebuild
   displaylink-pinned = final: prev: {
     linuxPackages = prev.linuxPackages // {
