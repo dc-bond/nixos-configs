@@ -111,6 +111,7 @@ let
     "address=/stirling-pdf.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/traefik-aspen.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/unifi.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/vikunja.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/wardrobe.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/zwavejs.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     # juniper services
