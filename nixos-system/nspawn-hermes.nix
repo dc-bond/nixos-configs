@@ -410,20 +410,30 @@ in
               raw HTTP with `requests` + `xml.etree` (stdlib, already in your venv) is also fine.
 
             - **Vikunja** (task manager): `VIKUNJA_API_URL`, `VIKUNJA_API_TOKEN`. REST API for
-              chris's projects, tasks, labels, and saved filters. The token is account-wide and
-              acts as chris — treat any action you take as authorized by him. Auth via
-              `Authorization: Bearer $VIKUNJA_API_TOKEN`. The full operational reference is in
-              your skill `productivity/vikunja-tasks/` (SKILL.md + references/).
+              chris's projects, tasks, labels, comments, relations, and saved filters. The
+              token is account-wide and acts as chris — treat any action you take as
+              authorized by him. Auth via `Authorization: Bearer $VIKUNJA_API_TOKEN`. The
+              full operational reference is in your skill `productivity/vikunja-tasks/`
+              (SKILL.md + references/vikunja-api-cheatsheet.md).
 
               Mental model: **projects** contain **tasks**; tasks have `done` (bool) and a
-              `done_at` timestamp the server manages. Tasks can have subtasks. **Labels** are
-              global across projects. **Saved filters** are virtual projects with negative IDs
-              (e.g. the "Today" filter at id -2).
+              `done_at` timestamp the server manages. Tasks can have **comments** (append-only
+              progress notes), **subtasks** and other relations (`blocked_by`, `blocks`,
+              `relates`, etc.), **recurrence** via `repeat_after`/`repeat_mode`, and
+              **labels** (global across projects). **Saved filters** are virtual projects
+              with negative IDs (e.g. the "Today" filter at id -2).
 
               The only completion model is the `done` boolean. Mark done → `POST /tasks/{id}`
               with `{"done": true}`. Un-complete → `{"done": false}`. **Never** call
               `DELETE /tasks/{id}` unless chris explicitly says "delete" or "remove" (vs.
               "done" or "complete").
+
+              **Task-title style is load-bearing**: every task title must be lowercase and
+              concise (just a few words). Anything longer — context, instructions, contract
+              paragraph references — goes in the task's `description` or as a comment, not
+              the title. Compress sentence-cased input before passing to the API. Park the
+              detail. Project titles and label titles follow their own conventions; this
+              rule is task-titles only.
 
               One quirk worth remembering: list endpoints do NOT filter by `done` by default —
               the web UI hides done tasks, the API returns them. Always pass
