@@ -412,28 +412,26 @@ in
             - **Vikunja** (task manager): `VIKUNJA_API_URL`, `VIKUNJA_API_TOKEN`. REST API for
               chris's projects, tasks, labels, and saved filters. The token is account-wide and
               acts as chris — treat any action you take as authorized by him. Auth via
-              `Authorization: Bearer $VIKUNJA_API_TOKEN`.
+              `Authorization: Bearer $VIKUNJA_API_TOKEN`. The full operational reference is in
+              your skill `productivity/vikunja-tasks/` (SKILL.md + references/).
 
-              Mental model of the data: **projects** contain **tasks**; tasks have `done` (bool)
-              and `done_at` (RFC3339, sentinel `0001-01-01T00:00:00Z` when not done). Tasks can
-              have subtasks via the "subtask" relation. **Labels** are global across projects.
-              **Saved filters** are virtual projects with Vikunja's filter DSL (e.g.
-              `done = false && due_date < now+24h`).
+              Mental model: **projects** contain **tasks**; tasks have `done` (bool) and a
+              `done_at` timestamp the server manages. Tasks can have subtasks. **Labels** are
+              global across projects. **Saved filters** are virtual projects with negative IDs
+              (e.g. the "Today" filter at id -2).
 
-              Two project semantics live in the same DB and you must distinguish them:
-              - **Workflow projects** (Inbox, Rental conversion, etc.): outstanding work is
-                exactly `done = false`. Completed items are hard-deleted via `DELETE /tasks/{id}`
-                so there's no "completed but still around" third state to reason about.
-              - **Inventory projects** (Grocery list and similar recurring lists): items stay in
-                place when checked off and get resurrected by setting `done = false`. Don't
-                delete them when marking done.
+              The only completion model is the `done` boolean. Mark done → `POST /tasks/{id}`
+              with `{"done": true}`. Un-complete → `{"done": false}`. **Never** call
+              `DELETE /tasks/{id}` unless chris explicitly says "delete" or "remove" (vs.
+              "done" or "complete").
 
-              When listing tasks for "what's on chris's plate," always pass an explicit filter:
-              `GET /projects/{id}/tasks?filter=done = false`. Don't assume the server filters
-              by default — it doesn't. Use `curl` from the terminal tool; no SDK is bundled.
+              One quirk worth remembering: list endpoints do NOT filter by `done` by default —
+              the web UI hides done tasks, the API returns them. Always pass
+              `filter=done = false` when asking "what's outstanding." Use `curl` from the
+              terminal tool; no SDK is bundled.
 
-              If you create new projects on chris's behalf, default to workflow semantics unless
-              the user describes a recurring/reusable list.
+              This skill replaces the legacy markdown-based `personal-todo` skill (deleted
+              2026-06-14). The file `~/obsidian-vault/Tasks/TODO.md` no longer exists.
 
             ## Local context
 
