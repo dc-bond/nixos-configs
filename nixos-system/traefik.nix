@@ -367,6 +367,7 @@ in
                   "${configVars.devices.chrisIphone15.tailscaleIp}"
                   "${configVars.devices.daniellePixel7a.tailscaleIp}"
                   "${configVars.devices.sydneyIphone6.tailscaleIp}"
+                  "${configVars.nspawnServices.hermes.localAddress}" # hermes nspawn container - acts as chris for vikunja API etc.
                 ];
               };
             };
