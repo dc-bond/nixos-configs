@@ -440,6 +440,27 @@ in
               `filter=done = false` when asking "what's outstanding." Use `curl` from the
               terminal tool; no SDK is bundled.
 
+              **Reachability mental model** (in case you ever see a 4xx and want to diagnose):
+              your traffic to `vikunja.opticon.dev` goes container → host veth IP → Traefik
+              on aspen → vikunja backend. Three failure layers, distinguished by what you see:
+
+              - Network-layer block (host egress allowlist): curl reports
+                `Connection refused` / `Connection timed out` / `No route to host`. No HTTP
+                response. The host firewall dropped the packet. Vikunja is host-local
+                (INPUT chain, not FORWARD), so this layer does NOT apply to vikunja — never
+                blame the egress allowlist for a vikunja error.
+              - Reverse-proxy-layer block (Traefik `trusted-allow` middleware): curl returns
+                HTTP 403 with body `"Forbidden"`. Your source IP isn't in Traefik's allowlist.
+                Your container IP IS configured to pass this check; if you see a 403 anyway,
+                surface it to chris with the curl verbose output rather than retrying or
+                trying to "fix" the firewall.
+              - Application-layer block (Vikunja auth): HTTP 401 (bad/missing token) or
+                403 with a JSON body that includes `"code":` and a Vikunja error code. Fix
+                by re-checking the auth header or re-reading the cheatsheet.
+
+              An HTTP response code means the request completed TCP+TLS+HTTP — i.e. the
+              network layer worked. Don't conflate "got a 4xx" with "firewall blocked me."
+
               This skill replaces the legacy markdown-based `personal-todo` skill (deleted
               2026-06-14). The file `~/obsidian-vault/Tasks/TODO.md` no longer exists.
 
