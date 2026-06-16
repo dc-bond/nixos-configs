@@ -192,7 +192,7 @@ in
 
   # autoStart=true: gateway is a permanent fixture, juniper-route ordering guarantees /32 in place before container start
   containers.${name} = {
-    autoStart = true;
+    autoStart = false;
     ephemeral = true; # rootfs is tmpfs; only bind mounts persist
     privateNetwork = true;
     hostAddress = configVars.nspawnServices.${name}.hostAddress;
