@@ -76,6 +76,7 @@ in
       "systemctl stop ${app}.service"
       "sleep 2"
       "systemctl start postgresqlBackup-${app}.service"
+      "while systemctl is-active --quiet postgresqlBackup-${app}.service; do sleep 1; done"
     ];
     postHook = lib.mkAfter [
       "systemctl start ${app}.service"

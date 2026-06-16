@@ -39,10 +39,12 @@ in
   sops = {
     secrets = {
       vikunjaJwtSecret = {};
+      chrisEmailPasswd = {};
     };
     templates = {
       "${app}-env".content = ''
         VIKUNJA_SERVICE_SECRET=${config.sops.placeholder.vikunjaJwtSecret}
+        VIKUNJA_MAILER_PASSWORD=${config.sops.placeholder.chrisEmailPasswd}
       '';
     };
   };
@@ -91,6 +93,16 @@ in
         };
         log = {
           level = "INFO";
+        };
+        mailer = {
+          enabled = true;
+          host = configVars.mailservers.namecheap.smtpHost;
+          port = configVars.mailservers.namecheap.smtpPort;
+          authtype = "login";
+          username = configVars.users.chris.email;
+          fromemail = "Vikunja <${configVars.users.chris.email}>";
+          forcessl = false;
+          skiptlsverify = false;
         };
       };
     };

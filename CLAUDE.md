@@ -10,13 +10,13 @@ This is a production NixOS configuration managing a multi-host homelab and VPS i
 
 ## IMPORTANT: Command Execution Context
 
-**Claude only runs on cypress or thinkpad** - Claude should NOT directly execute commands when working on configurations for other hosts (aspen, juniper, kauri). The execution context will be incorrect.
+**Claude only runs on workstations (cypress or thinkpad).** Do NOT run host-changing commands (`nixos-rebuild`, package installs, service restarts that alter state) directly against aspen/juniper/kauri — the user drives those rebuilds through their normal flow.
 
-**Instead, follow this workflow:**
-1. **Claude suggests commands** for the user to run on the target host
-2. **User manually executes** the commands on the appropriate host
-3. **User provides feedback** (logs, command output, error messages)
-4. **Claude analyzes** the results and provides next steps
+**However, Claude has SSH access to all hosts via Tailscale** and should use it directly for read-only investigation: log checks, `systemctl status`, file inspection, backup verification, etc. Don't ask the user to paste log output you can fetch yourself with `ssh <host> '<command>'`. Use `sudo` over SSH where needed.
+
+**Rule of thumb:**
+- **Read-only / diagnostic**: SSH in and run it yourself.
+- **State-changing on a remote host**: suggest the command, let the user run it as part of their rebuild/deploy workflow.
 
 
 ## High-Level Architecture
