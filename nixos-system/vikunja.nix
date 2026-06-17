@@ -100,7 +100,7 @@ in
           port = configVars.mailservers.namecheap.smtpPort;
           authtype = "login";
           username = configVars.users.chris.email;
-          fromemail = "Vikunja <${configVars.users.chris.email}>";
+          fromemail = "task-reminders@dcbond.com";
           forcessl = false;
           skiptlsverify = false;
         };
