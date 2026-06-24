@@ -193,6 +193,11 @@ in
         "dunst"
         "sleep 1 && desktopReload" # generate pywal colors and start waybar
         "sleep 1 && nextcloud"
+        "[workspace 1 silent] firefox"
+        "[workspace 2 silent] alacritty"
+        "[workspace 3 silent] codium"
+        "[workspace 4 silent] element-desktop --password-store=gnome-libsecret"
+        "[workspace 5 silent] mailspring --password-store=gnome-libsecret"
       ];
       bind = [
         "$mod, RETURN, exec, alacritty"
@@ -266,10 +271,6 @@ in
       windowrulev2 = [
         "size 1154 706, class:(com.saivert.pwvucontrol)"
         "size 451 607, class:(org.gnome.Calculator)"
-        #"workspace 1 silent, class:^(firefox-esr)$"
-        #"workspace 2 silent, class:^(Alacritty)$"
-        #"workspace 3 silent, class:^(VSCodium)$"
-        #"workspace 10 silent, class:^(Element)$"
       ];
       windowrule = [
         "float, class:^(com.saivert.pwvucontrol)$"
