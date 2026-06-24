@@ -39,6 +39,7 @@ in
 
   imports = [
     inputs.private.nixosModules.home-assistant-automations
+    inputs.private.nixosModules.home-assistant-lovelace
   ];
 
   sops = {
