@@ -195,7 +195,8 @@ in
         "sleep 1 && nextcloud"
         "[workspace 1 silent] firefox"
         "[workspace 2 silent] alacritty"
-        "[workspace 3 silent] codium"
+        # codium re-execs through a wrapper, breaking the [workspace N silent] dispatcher prefix, so we launch then poll until the window appears and move it once
+        "codium & for i in $(seq 1 30); do sleep 0.5; hyprctl clients | grep -q \"class: VSCodium\" && { hyprctl dispatch movetoworkspacesilent \"3,class:^(VSCodium)$\"; break; }; done"
         "[workspace 4 silent] element-desktop --password-store=gnome-libsecret"
         "[workspace 5 silent] mailspring --password-store=gnome-libsecret"
       ];
