@@ -210,3 +210,4 @@ The repository uses a **centralized configuration** approach where almost all ho
 8. **Traefik labels** - OCI services need proper labels for reverse proxy routing
 9. **Check private modules** - Some features may be in the private config repo
 10. **Working directory** - Main config is in `nixos-configs/` subdirectory
+11. **Commit messages** - Plain concise subject line, lowercase imperative. Do **not** append `Co-Authored-By: Claude ...` trailers.
