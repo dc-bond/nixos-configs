@@ -47,6 +47,15 @@ in
     desktop = null;
   };
 
+# default applications - tmpfs root wipes ~/.config/mimeapps.list each boot, so manage it declaratively
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "application/pdf" = "firefox.desktop";
+      "x-scheme-handler/mailspring" = "Mailspring.desktop";
+    };
+  };
+
 # start/re-start services after system rebuild
   systemd.user.startServices = "sd-switch";
 
