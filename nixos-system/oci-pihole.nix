@@ -99,6 +99,7 @@ let
     "address=/home-assistant.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/jellyfin.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/jellyseerr.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/metube.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/n8n.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/photos.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/pihole-aspen.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
