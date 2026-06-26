@@ -79,6 +79,13 @@ in
             };
           }
           {
+            "MeTube" = {
+              href = "https://metube.${configVars.domain2}/";
+              description = "YouTube Downloader";
+              ping = "https://metube.${configVars.domain2}";
+            };
+          }
+          {
             "Photoprism" = {
               href = "https://photos.${configVars.domain2}/";
               description = "Photo Gallery";

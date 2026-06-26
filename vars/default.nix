@@ -417,12 +417,12 @@
       };
     };
 
-    #null = {
-    #  subnet = "172.21.14.0/25";
-    #  containers = {
-    #    null = { ipv4 = "172.21.14.2"; };
-    #  };
-    #};
+    metube = {
+      subnet = "172.21.14.0/25";
+      containers = {
+        metube = { ipv4 = "172.21.14.2"; };
+      };
+    };
 
     #null = {
     #  subnet = "172.21.15.0/25";
