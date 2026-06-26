@@ -34,7 +34,7 @@ in
   services.borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
 
   virtualisation.oci-containers.containers."${app}" = {
-    image = "ghcr.io/alexta69/${app}:2026-06-20"; # https://github.com/alexta69/metube/releases
+    image = "ghcr.io/alexta69/${app}:2026.06.20"; # https://github.com/alexta69/metube/releases
     autoStart = true;
     log-driver = "journald";
     environment = {
