@@ -61,6 +61,7 @@
       "/var/lib/mosquitto"                           # mqtt broker state
       "/var/lib/private/photoprism"                  # photoprism state (DynamicUser service)
       "/var/lib/private/lldap"                       # lldap state (DynamicUser service)
+      "/var/lib/private/vikunja"                     # vikunja uploaded files - avatars, task attachments (DynamicUser service)
       "/var/lib/authelia-dcbond"                     # authelia sqlite db, webauthn keys, logs
       "/var/lib/redis-authelia-dcbond"               # authelia session cache
       "/var/lib/calibre-web"                         # calibre-web database
