@@ -45,6 +45,9 @@
 
     # user-level persistence
     users.chris = {
+      files = [
+        ".claude.json" # claude code global state (account, migrations, mcp servers, project list) - lives outside .claude/ so needs separate entry
+      ];
       directories = [
         { directory = ".local/share/keyrings"; mode = "0700"; } # gnome keyring secrets like nextcloud client login, etc.
         { directory = ".config/age"; mode = "0700"; } # user age key for home-manager SOPS
