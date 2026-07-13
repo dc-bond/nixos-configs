@@ -397,7 +397,6 @@ let
         "Bash(sed *)"
         "Bash(xargs *)"
         "Bash(strings *)"
-        "Bash(python3 *)"
         "Bash(hostname)"
         "Bash(whoami)"
         "Bash(date)"
