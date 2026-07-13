@@ -372,6 +372,7 @@ let
         "WebFetch(domain:search.nixos.org)"
         "Bash(ls *)"
         "Bash(ls)"
+        "Bash(cd *)"
         "Bash(cat *)"
         "Bash(pwd)"
         "Bash(stat *)"
