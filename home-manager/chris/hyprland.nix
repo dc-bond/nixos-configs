@@ -69,7 +69,7 @@ in
       hyprshot # screenshot tool
       pwvucontrol # pipewire audio volume control app
       tigervnc # vnc client app
-      mailspring # desktop email client
+      thunderbird # desktop email client
       moonlight-qt # game streaming client (connects to sunshine server on aspen)
     ];
     pointerCursor = {
@@ -109,23 +109,6 @@ in
     type = "Application";
     categories = [ "Network" "InstantMessaging" "Chat" ];
     mimeType = [ "x-scheme-handler/element" ];
-  };
-
-  # override mailspring desktop entry to specify keyring backend
-  xdg.desktopEntries.Mailspring = {
-    name = "Mailspring";
-    comment = "The best email app for people and teams at work";
-    genericName = "Mail Client";
-    exec = "mailspring --password-store=gnome-libsecret %U";
-    icon = "mailspring";
-    type = "Application";
-    startupNotify = true;
-    categories = [ "GNOME" "GTK" "Network" "Email" ];
-    mimeType = [ "x-scheme-handler/mailto" "x-scheme-handler/mailspring" ];
-    settings = {
-      StartupWMClass = "Mailspring";
-      Keywords = "email;internet;";
-    };
   };
 
   # start gnome-keyring daemon for secure password storage (system-level module actually enables, this home-manager module runs daemon on hyprland login)
@@ -198,7 +181,7 @@ in
         # codium re-execs through a wrapper, breaking the [workspace N silent] dispatcher prefix, so we launch then poll until the window appears and move it once
         "codium & for i in $(seq 1 30); do sleep 0.5; hyprctl clients | grep -q \"class: VSCodium\" && { hyprctl dispatch movetoworkspacesilent \"3,class:^(VSCodium)$\"; break; }; done"
         "[workspace 4 silent] element-desktop --password-store=gnome-libsecret"
-        "[workspace 5 silent] mailspring --password-store=gnome-libsecret"
+        "[workspace 5 silent] thunderbird"
       ];
       bind = [
         "$mod, RETURN, exec, alacritty"
