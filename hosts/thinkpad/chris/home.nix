@@ -53,7 +53,7 @@ in
     enable = true;
     defaultApplications = {
       "application/pdf" = "firefox.desktop";
-      "x-scheme-handler/mailspring" = "Mailspring.desktop";
+      "x-scheme-handler/mailto" = "thunderbird.desktop";
     };
   };
 
