@@ -53,7 +53,7 @@
         ".config/Element" # matrix e2e keys
         ".config/Nextcloud" # nextcloud sync state
         ".config/VSCodium" # codium editor state
-        ".config/Mailspring" # email client state
+        ".thunderbird" # email client: accounts, mail cache, contacts, calendars, openpgp keys
         ".config/Moonlight Game Streaming Project" # moonlight stream settings
         ".local/share/Moonlight Game Streaming Project" # moonlight pairing certs
       ];
