@@ -70,7 +70,6 @@ in
       pwvucontrol # pipewire audio volume control app
       tigervnc # vnc client app
       moonlight-qt # game streaming client (connects to sunshine server on aspen)
-      xfce.thunar # gtk file manager
     ];
     pointerCursor = {
       enable = true;
