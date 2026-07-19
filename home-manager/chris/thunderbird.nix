@@ -25,6 +25,10 @@ let
   '';
 
   nextcloudDav = "https://nextcloud.${configVars.domain1}/remote.php/dav";
+  # nextcloud DAV principal path segment is the user's login name, URL-encoded.
+  # for chris that's the fullName ("Chris Bond") -- verified via `nextcloud-occ dav:list-calendars`.
+  # do NOT use the email address here; it authenticates but the collection URIs are keyed by principal.
+  nextcloudPrincipal = builtins.replaceStrings [ " " ] [ "%20" ] configVars.users.chris.fullName;
 in
 
 {
@@ -103,12 +107,15 @@ in
     };
   };
 
-  accounts.calendar.accounts.nextcloud = {
+  # TB registers one calendar per accounts.calendar entry from a specific
+  # collection URL, not the home-collection. add more entries here to expose
+  # other Nextcloud calendars in TB; get UUIDs from `nextcloud-occ dav:list-calendars "Chris Bond"` on aspen.
+  accounts.calendar.accounts."Chris Personal" = {
     primary = true;
     remote = {
       type = "caldav";
-      url = "${nextcloudDav}/calendars/chris@${configVars.domain1}/";
-      userName = "chris@${configVars.domain1}";
+      url = "${nextcloudDav}/calendars/${nextcloudPrincipal}/1ABA8967-F750-4631-AF2F-038CD16D74A7/";
+      userName = configVars.users.chris.email;
     };
     thunderbird = {
       enable = true;
@@ -116,11 +123,11 @@ in
     };
   };
 
-  accounts.contact.accounts.nextcloud = {
+  accounts.contact.accounts."Chris Contacts" = {
     remote = {
       type = "carddav";
-      url = "${nextcloudDav}/addressbooks/users/chris@${configVars.domain1}/";
-      userName = "chris@${configVars.domain1}";
+      url = "${nextcloudDav}/addressbooks/users/${nextcloudPrincipal}/contacts/";
+      userName = configVars.users.chris.email;
     };
     thunderbird = {
       enable = true;
