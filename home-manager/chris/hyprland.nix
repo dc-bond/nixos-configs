@@ -69,8 +69,8 @@ in
       hyprshot # screenshot tool
       pwvucontrol # pipewire audio volume control app
       tigervnc # vnc client app
-      thunderbird # desktop email client
       moonlight-qt # game streaming client (connects to sunshine server on aspen)
+      xfce.thunar # gtk file manager
     ];
     pointerCursor = {
       enable = true;
@@ -182,6 +182,7 @@ in
         "codium & for i in $(seq 1 30); do sleep 0.5; hyprctl clients | grep -q \"class: VSCodium\" && { hyprctl dispatch movetoworkspacesilent \"3,class:^(VSCodium)$\"; break; }; done"
         "[workspace 4 silent] element-desktop --password-store=gnome-libsecret"
         "[workspace 5 silent] thunderbird"
+        "[workspace 6 silent] thunar"
       ];
       bind = [
         "$mod, RETURN, exec, alacritty"

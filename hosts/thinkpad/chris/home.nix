@@ -28,6 +28,7 @@ in
       "home-manager/${username}/zsh.nix"
       "home-manager/${username}/hyprland.nix"
       "home-manager/${username}/claude-code.nix"
+      "home-manager/${username}/thunderbird.nix"
     ])
   ];
 
