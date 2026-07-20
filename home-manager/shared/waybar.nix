@@ -14,6 +14,62 @@ let
   hasDock = hostData.networking.dockInterface != null;
   hasEthernet = hostData.networking.ethernetInterface != null;
 
+  memoryScript = pkgs.writeShellScript "waybar-memory" ''
+    exec ${pkgs.gawk}/bin/awk '
+      BEGIN {
+        while ((getline line < "/proc/meminfo") > 0) {
+          split(line, f, /[: ]+/); m[f[1]] = f[2]
+        }
+        close("/proc/meminfo")
+
+        psi_some = 0; psi_full = 0
+        while ((getline line < "/proc/pressure/memory") > 0) {
+          if (match(line, /avg10=[0-9.]+/)) {
+            v = substr(line, RSTART+6, RLENGTH-6) + 0
+            if (line ~ /^some/) psi_some = v; else psi_full = v
+          }
+        }
+        close("/proc/pressure/memory")
+
+        total = m["MemTotal"];   avail = m["MemAvailable"]
+        swapT = m["SwapTotal"];  swapF = m["SwapFree"]
+        used = total - avail;    swap_used = swapT - swapF
+
+        used_pct     = int(100 * used / total)
+        swap_pct     = (swapT > 0) ? int(100 * swap_used / swapT) : 0
+        pressure_pct = int(100 * (used + swap_used) / total)
+        if (pressure_pct > 100) pressure_pct = 100
+
+        cls = "normal"
+        if (psi_full > 5  || pressure_pct >= 90) cls = "critical"
+        else if (psi_some > 10 || pressure_pct >= 75) cls = "warning"
+
+        gib = "%.1f"
+        used_g       = sprintf(gib, used/1048576)
+        total_g      = sprintf(gib, total/1048576)
+        swap_used_g  = sprintf(gib, swap_used/1048576)
+        swap_total_g = sprintf(gib, swapT/1048576)
+        anon_g       = sprintf(gib, m["AnonPages"]/1048576)
+        cached_g     = sprintf(gib, (m["Cached"]+m["Buffers"]+m["SReclaimable"])/1048576)
+        shmem_g      = sprintf(gib, m["Shmem"]/1048576)
+
+        text = pressure_pct "% 󰘚"
+
+        tt  = "RAM       " used_pct     "%  (" used_g      " / " total_g      " GiB)\n"
+        tt  = tt "Swap      " swap_pct  "%  (" swap_used_g " / " swap_total_g " GiB)\n"
+        tt  = tt "Pressure  " pressure_pct "%   (RAM + swapped-out anon)\n"
+        tt  = tt "PSI some/full avg10: " psi_some " / " psi_full "\n\n"
+        tt  = tt "Anon:     " anon_g   " GiB   (unreclaimable, apps)\n"
+        tt  = tt "Cached:   " cached_g " GiB   (reclaimable file cache)\n"
+        tt  = tt "Shmem:    " shmem_g  " GiB   (tmpfs / shared)"
+
+        gsub(/\n/, "\\n", tt)
+        printf "{\"text\":\"%s\",\"tooltip\":\"%s\",\"class\":\"%s\",\"percentage\":%d}\n", \
+          text, tt, cls, pressure_pct
+      }
+    '
+  '';
+
 in
 
 {
@@ -39,7 +95,7 @@ in
       
       "modules-right" = [
         "tray"
-        "memory"
+        "custom/memory"
         "disk"
         "cpu"
         "temperature"
@@ -95,9 +151,11 @@ in
         "spacing" = 15;
       };
 
-      "memory" = {
-        "format" = "{percentage}% 󰘚";
-        "tooltip-format" = "RAM Usage";
+      "custom/memory" = {
+        "exec" = "${memoryScript}";
+        "return-type" = "json";
+        "interval" = 5;
+        "format" = "{}";
         "on-click" = "${pkgs.alacritty}/bin/alacritty -e ${pkgs.btop}/bin/btop";
       };
       
@@ -337,7 +395,7 @@ in
       #tray,
       #temperature,
       #cpu,
-      #memory,
+      #custom-memory,
       #disk,
       #custom-public-ip {
           color: #ffffff;
@@ -348,11 +406,29 @@ in
           border: 1px solid rgba(255, 255, 255, 0.1);
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
-      
+
+      #custom-memory.warning {
+          color: #000000;
+          background: linear-gradient(135deg, rgba(255, 200, 0, 0.85) 0%, rgba(255, 140, 0, 0.85) 100%);
+          border: 1px solid rgba(255, 200, 0, 0.9);
+      }
+
+      #custom-memory.critical {
+          color: #ffffff;
+          background: linear-gradient(135deg, rgba(220, 40, 40, 0.9) 0%, rgba(140, 20, 20, 0.9) 100%);
+          border: 1px solid rgba(255, 80, 80, 0.9);
+          animation: memory-pulse 1.5s ease-in-out infinite alternate;
+      }
+
+      @keyframes memory-pulse {
+          from { box-shadow: 0 0 0 rgba(255, 80, 80, 0); }
+          to   { box-shadow: 0 0 12px rgba(255, 80, 80, 0.7); }
+      }
+
       #tray:hover,
       #temperature:hover,
       #cpu:hover,
-      #memory:hover,
+      #custom-memory:hover,
       #disk:hover,
       #custom-public-ip:hover {
           background: linear-gradient(135deg, @color11 0%, @color1 100%);

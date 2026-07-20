@@ -54,7 +54,7 @@
                     };
                     "/swap" = {
                       mountpoint = "/swap";
-                      swap.swapfile.size = "4G"; # 0.5x RAM - adequate OOM protection without hibernation
+                      swap.swapfile.size = "8G"; # cold-page overflow behind zram; larger than RAM is fine — no hibernation on impermanence hosts
                     };
                   };
                 };
@@ -132,6 +132,7 @@
       "nixos-system/wd-passport.nix"
       "nixos-system/intel.nix"
       "nixos-system/oom.nix"
+      "nixos-system/zram.nix"
       "nixos-system/greetd.nix"
       "nixos-system/hyprland.nix"
       "scripts/deploy.nix"
