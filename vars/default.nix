@@ -484,19 +484,12 @@
   # structure differs from ociServices: hostAddress/localAddress are the two ends of a veth pair, not a bridge subnet with per-container IPs
   #
   # uidOffset allocations for `--private-users=<offset>:65536`:
-  #   hermes    524288 — 589823
-  #   next available offset: 589824
+  #   next available offset: 524288
   nspawnServices = {
 
     testbox = {
       hostAddress  = "10.233.99.1";
       localAddress = "10.233.99.2";
-    };
-
-    hermes = {
-      hostAddress  = "10.233.8.1";
-      localAddress = "10.233.8.2";
-      uidOffset = 524288; # static UID/GID offset for the container's user namespace; container UID 0 → host UID 524288; container UID 1000 → host UID 525288
     };
 
   };

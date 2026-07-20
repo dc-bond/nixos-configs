@@ -32,7 +32,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     impermanence.url = "github:nix-community/impermanence";
-    hermes-agent.url = "github:NousResearch/hermes-agent";
     private.url = "git+ssh://git@github.com/dc-bond/nixos-configs-private";
   };
 
