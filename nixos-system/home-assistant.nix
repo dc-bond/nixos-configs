@@ -45,6 +45,7 @@ in
   sops = {
     secrets = {
       mqttHassPasswd = {};
+      mqttZ2mPasswd = {}; # mosquitto user for zigbee2mqtt (oci-zigbee2mqtt.nix)
       chrisEmailPasswd = {};
     };
     templates = {
@@ -151,6 +152,10 @@ in
           users.hass = {
             acl = [ "readwrite #" ];
             passwordFile = "${config.sops.secrets.mqttHassPasswd.path}";
+          };
+          users.zigbee2mqtt = {
+            acl = [ "readwrite #" ];
+            passwordFile = "${config.sops.secrets.mqttZ2mPasswd.path}";
           };
         }
       ];

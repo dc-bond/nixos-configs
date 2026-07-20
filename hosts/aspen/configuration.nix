@@ -332,6 +332,7 @@
       "nixos-system/home-assistant.nix" # recoverHome-assistant
       "nixos-system/oci-frigate.nix"
       "nixos-system/oci-zwavejs.nix" # recoverZwavejs
+      "nixos-system/oci-zigbee2mqtt.nix" # recoverZigbee2mqtt
       "nixos-system/oci-unifi.nix" # recoverUnifi
       "nixos-system/oci-media-server.nix" # recoverMedia-server
       "nixos-system/oci-metube.nix" # recoverMetube

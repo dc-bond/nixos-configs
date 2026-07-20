@@ -273,6 +273,13 @@
       ipv4 = "192.168.4.14";
       tailscaleIp = null;
     };
+    # SMLIGHT SLZB-06 POE Zigbee coordinator, reachable at :6638 over TCP
+    # (SLZB-OS "Zigbee2MQTT (TCP)" mode). Assign a static DHCP lease in Unifi
+    # for the device's MAC and update this IP to match.
+    slzb06 = {
+      ipv4 = "192.168.1.???"; # TODO: set after SLZB-06 is on the LAN and DHCP-reserved
+      tailscaleIp = null;
+    };
     carrierThermostat = {
       ipv4 = "192.168.4.2";
       tailscaleIp = null;
@@ -343,6 +350,13 @@
       subnet = "172.21.4.0/25";
       containers = {
         zwavejs = { ipv4 = "172.21.4.2"; };
+      };
+    };
+
+    zigbee2mqtt = {
+      subnet = "172.21.21.0/25";
+      containers = {
+        zigbee2mqtt = { ipv4 = "172.21.21.2"; };
       };
     };
 
