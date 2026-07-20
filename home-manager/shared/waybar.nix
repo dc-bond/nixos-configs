@@ -31,13 +31,38 @@ let
         }
         close("/proc/pressure/memory")
 
+        # Zram (optional, per-host): sum logical (orig_data_size) and physical (mem_used_total)
+        # across all zram devices. On hosts without zram, /sys/block/zram* does not exist;
+        # getline returns -1, the loop body is skipped, and both vars stay 0 — so the
+        # pressure formula and tooltip degrade cleanly to a swap-only or RAM-only picture.
+        # Physical cost is already counted in MemTotal - MemAvailable; only the *savings*
+        # (logical - physical) are additional working set beyond current RAM.
+        zram_logical_b = 0; zram_physical_b = 0
+        for (i = 0; i < 8; i++) {
+          p = "/sys/block/zram" i "/mm_stat"
+          rc = (getline z < p)
+          if (rc > 0) {
+            split(z, zf, " ")
+            zram_logical_b  += zf[1]
+            zram_physical_b += zf[3]
+            close(p)
+          }
+        }
+        zram_logical  = int(zram_logical_b  / 1024)
+        zram_physical = int(zram_physical_b / 1024)
+
         total = m["MemTotal"];   avail = m["MemAvailable"]
         swapT = m["SwapTotal"];  swapF = m["SwapFree"]
-        used = total - avail;    swap_used = swapT - swapF
+        used = total - avail
+        swap_used_total = swapT - swapF
+
+        disk_swap_used = swap_used_total - zram_logical
+        if (disk_swap_used < 0) disk_swap_used = 0
+        zram_savings = zram_logical - zram_physical
+        if (zram_savings < 0) zram_savings = 0
 
         used_pct     = int(100 * used / total)
-        swap_pct     = (swapT > 0) ? int(100 * swap_used / swapT) : 0
-        pressure_pct = int(100 * (used + swap_used) / total)
+        pressure_pct = int(100 * (used + zram_savings + disk_swap_used) / total)
         if (pressure_pct > 100) pressure_pct = 100
 
         cls = "normal"
@@ -45,23 +70,30 @@ let
         else if (psi_some > 10 || pressure_pct >= 75) cls = "warning"
 
         gib = "%.1f"
-        used_g       = sprintf(gib, used/1048576)
-        total_g      = sprintf(gib, total/1048576)
-        swap_used_g  = sprintf(gib, swap_used/1048576)
-        swap_total_g = sprintf(gib, swapT/1048576)
-        anon_g       = sprintf(gib, m["AnonPages"]/1048576)
-        cached_g     = sprintf(gib, (m["Cached"]+m["Buffers"]+m["SReclaimable"])/1048576)
-        shmem_g      = sprintf(gib, m["Shmem"]/1048576)
+        used_g          = sprintf(gib, used/1048576)
+        total_g         = sprintf(gib, total/1048576)
+        anon_g          = sprintf(gib, m["AnonPages"]/1048576)
+        cached_g        = sprintf(gib, (m["Cached"]+m["Buffers"]+m["SReclaimable"])/1048576)
+        shmem_g         = sprintf(gib, m["Shmem"]/1048576)
+        zram_logical_g  = sprintf(gib, zram_logical/1048576)
+        zram_physical_g = sprintf(gib, zram_physical/1048576)
+        disk_swap_g     = sprintf(gib, disk_swap_used/1048576)
 
         text = pressure_pct "% 󰘚"
 
-        tt  = "RAM       " used_pct     "%  (" used_g      " / " total_g      " GiB)\n"
-        tt  = tt "Swap      " swap_pct  "%  (" swap_used_g " / " swap_total_g " GiB)\n"
-        tt  = tt "Pressure  " pressure_pct "%   (RAM + swapped-out anon)\n"
-        tt  = tt "PSI some/full avg10: " psi_some " / " psi_full "\n\n"
-        tt  = tt "Anon:     " anon_g   " GiB   (unreclaimable, apps)\n"
-        tt  = tt "Cached:   " cached_g " GiB   (reclaimable file cache)\n"
-        tt  = tt "Shmem:    " shmem_g  " GiB   (tmpfs / shared)"
+        tt  = "RAM        " used_pct     "%  (" used_g " / " total_g " GiB)\n"
+        tt  = tt "Pressure   " pressure_pct "%   (RAM + swapped-out working set)\n"
+        tt  = tt "PSI 10s    some " psi_some "  full " psi_full "\n\n"
+        tt  = tt "Anon       " anon_g   " GiB   apps (unreclaimable)\n"
+        tt  = tt "Cached     " cached_g " GiB   file cache (reclaimable)\n"
+        tt  = tt "Shmem      " shmem_g  " GiB   tmpfs / shared"
+
+        if (zram_logical > 0) {
+          tt = tt "\n\nZram       " zram_logical_g " GiB logical -> " zram_physical_g " GiB in RAM"
+          if (disk_swap_used > 0) tt = tt "\nDisk swap  " disk_swap_g " GiB used"
+        } else if (swapT > 0 && swap_used_total > 0) {
+          tt = tt "\n\nSwap       " disk_swap_g " GiB used"
+        }
 
         gsub(/\n/, "\\n", tt)
         printf "{\"text\":\"%s\",\"tooltip\":\"%s\",\"class\":\"%s\",\"percentage\":%d}\n", \
