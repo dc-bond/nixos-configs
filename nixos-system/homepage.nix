@@ -292,6 +292,13 @@ in
               ping = "https://zwavejs.${configVars.domain2}";
             };
           }
+          {
+            "Zigbee" = {
+              href = "https://zigbee2mqtt.${configVars.domain2}/";
+              description = "Zigbee Controller";
+              ping = "https://zigbee2mqtt.${configVars.domain2}";
+            };
+          }
         ];
       }
     ];

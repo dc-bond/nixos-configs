@@ -114,6 +114,7 @@ let
     "address=/unifi.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/vikunja.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/wardrobe.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/zigbee2mqtt.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/zwavejs.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     # juniper services
     "address=/alertmanager.${configVars.domain2}/${configVars.hosts.juniper.networking.tailscaleIp}"
