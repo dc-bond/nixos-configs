@@ -32,8 +32,8 @@ in
       ext4 = true;
     };
 
-    kernel.sysctl = { 
-      "vm.swappiness" = 30;
+    kernel.sysctl = {
+      "vm.swappiness" = lib.mkDefault 30; # baseline for disk-swap-only hosts; zram.nix raises this to 180 on hosts that import it
       "kernel.kptr_restrict" = 2;         # hide kernel pointers
       "net.core.bpf_jit_harden" = 2;      # harden BPF JIT compiler
       #"kernel.dmesg_restrict" = 1;        # restrict dmesg access
