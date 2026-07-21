@@ -14,6 +14,42 @@ let
   hasDock = hostData.networking.dockInterface != null;
   hasEthernet = hostData.networking.ethernetInterface != null;
 
+  tailscaleHosts = [ "thinkpad" "kauri" "juniper" "aspen" ];
+
+  tailscaleHostsScript = pkgs.writeShellScript "waybar-tailscale-hosts" ''
+    HOSTS="${lib.concatStringsSep " " tailscaleHosts}"
+    STATUS=$(${pkgs.tailscale}/bin/tailscale status --json 2>/dev/null)
+
+    text=""
+    tooltip="Tailscale VPN Peers"
+
+    if [ -z "$STATUS" ]; then
+      for h in $HOSTS; do
+        text="$text<span foreground='#77767b'>$h</span>  "
+      done
+      tooltip="Tailscale not running"
+      printf '{"text":"%s","tooltip":"%s","class":"down"}\n' "''${text% }" "$tooltip"
+      exit 0
+    fi
+
+    for h in $HOSTS; do
+      online=$(printf '%s' "$STATUS" | ${pkgs.jq}/bin/jq -r --arg h "$h" '
+        ([.Self] + [.Peer[]? // empty])
+        | map(select(.HostName == $h))
+        | if length == 0 then "unknown" else (.[0].Online | tostring) end
+      ')
+      case "$online" in
+        true)  color="#00ff00"; label="online" ;;
+        false) color="#ff5555"; label="offline" ;;
+        *)     color="#77767b"; label="not in tailnet" ;;
+      esac
+      text="$text<span foreground='$color'>$h</span>  "
+      tooltip="$tooltip\n  $h: $label"
+    done
+
+    printf '{"text":"%s","tooltip":"%s","class":"ok"}\n' "''${text%  }" "$tooltip"
+  '';
+
   memoryScript = pkgs.writeShellScript "waybar-memory" ''
     exec ${pkgs.gawk}/bin/awk '
       BEGIN {
@@ -137,6 +173,7 @@ in
         "pulseaudio"
         "bluetooth"
         "network#tailscale"
+        "custom/tailscale-hosts"
       ] ++ lib.optionals hasWifi [
         "network#wifi"
       ] ++ lib.optionals hasDock [
@@ -287,7 +324,15 @@ in
         "tooltip-format-disconnected" = "Bond VPN: Disconnected";
         "on-click" = "${pkgs.alacritty}/bin/alacritty -e zsh -c 'sudo ${pkgs.tailscale}/bin/tailscale up --ssh --accept-routes --reset && ${pkgs.tailscale}/bin/tailscale status; echo; read -k 1 \"?Press any key to continue...\"; exec zsh'";
       };
-    
+
+      "custom/tailscale-hosts" = {
+        "exec" = "${tailscaleHostsScript}";
+        "return-type" = "json";
+        "interval" = 15;
+        "format" = "{}";
+        "on-click" = "${pkgs.alacritty}/bin/alacritty -e zsh -c '${pkgs.tailscale}/bin/tailscale status; echo; read -k 1 \"?Press any key to continue...\"; exec zsh'";
+      };
+
       "network#wifi" = {
         "interface" = hostData.networking.wifiInterface;
         "format-wifi" = "{icon}  {signalStrength}%";
@@ -618,6 +663,23 @@ in
           border: 1px solid rgba(119, 118, 123, 0.2);
       }
       
+      /* ===== TAILSCALE HOSTS ===== */
+
+      #custom-tailscale-hosts {
+          background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+          padding: 4px 14px;
+          margin: 4px 4px;
+          border-radius: 12px;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      #custom-tailscale-hosts:hover {
+          background: linear-gradient(135deg, @color11 0%, @color1 100%);
+          border: 1px solid @color11;
+          box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+      }
+
       /* ===== PULSEAUDIO ===== */
       
       #pulseaudio {
