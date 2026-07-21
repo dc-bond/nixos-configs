@@ -59,10 +59,14 @@
         src = final.requireFile {
           name = "displaylink-620.zip";
           url = "https://www.synaptics.com/sites/default/files/exe_files/2025-09/DisplayLink%20USB%20Graphics%20Software%20for%20Ubuntu6.2-EXE.zip";
-          hash = "sha256-JQO7eEz4pdoPkhcn9tIuy5R4KyfsCniuw6eXw/rLaYE="; # only updated when pulling newer package, 'nix has to-sri --type sha256 <hash-from-prefetch-output>'
+          hash = "sha256-JQO7eEz4pdoPkhcn9tIuy5R4KyfsCniuw6eXw/rLaYE="; # only updated when pulling newer package, 'nix hash to-sri --type sha256 <hash-from-prefetch-output>'
           message = ''
             DisplayLink 6.2 is pinned in overlays/default.nix
-            Run this command on build host (e.g. cypress) to download and add to nix store:
+            Run this command on the host that INVOKES nixos-rebuild (e.g. thinkpad),
+            not the remote builder (aspen). requireFile is a fixed-output derivation
+            that Nix realises on the evaluating host; distributed builds and
+            builders-use-substitutes do not help here because the remote builder
+            is not configured as a substituter for the caller.
             nix-prefetch-url --name displaylink-620.zip https://www.synaptics.com/sites/default/files/exe_files/2025-09/DisplayLink%20USB%20Graphics%20Software%20for%20Ubuntu6.2-EXE.zip
           '';
         };
