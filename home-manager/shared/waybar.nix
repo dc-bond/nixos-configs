@@ -24,6 +24,7 @@ let
     { label = "aspen";           match = "aspen"; }
     { label = "chris-iphone";    match = "chris-iphone-15"; }
     { label = "danielle-iphone"; match = "danielle-iphone-17"; }
+    { label = "sydney-ipad";     match = "sydney-ipad-a16"; }
   ];
 
   tailscaleHostsScript = pkgs.writeShellScript "waybar-tailscale-hosts" ''
