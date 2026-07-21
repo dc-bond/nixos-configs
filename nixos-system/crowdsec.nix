@@ -74,7 +74,7 @@ in
               reason = "trusted internal networks";
               cidr = [
                 "100.64.0.0/10" # tailscale vpn range
-              ] ++ lib.optional (config.networking.hostName == "aspen") "192.168.1.0/24"; # home lan including uptime-kuma pings to internal services not routed through cloudflare
+              ] ++ lib.optional (config.networking.hostName == "aspen") "192.168.1.0/24"; # home lan - trust internal traffic hitting aspen directly (not via cloudflare)
               #ip = [
               #  "" # don't want to expose home wan here so using imperative approach below
               #];
@@ -141,18 +141,3 @@ in
   };
 
 }
-
-# imperative whitelist home wan ip (for uptime-kuma pings routed through cloudflare to public-facing services) TO-DO - make this more declarative somehow
-
-# create an allowlist if it doesn't exist
-  # sudo cscli allowlist create home-wan -d 'Home WAN IP'
-
-# add WAN IP
-  # sudo cscli allowlist add home-wan <insert>
-
-# view it
-  # sudo cscli allowlist inspect home-wan
-
-# when IP changes, delete old and add new
-  # sudo cscli allowlist delete home-wan <old-IP>
-  # sudo cscli allowlist add home-wan <new-IP>

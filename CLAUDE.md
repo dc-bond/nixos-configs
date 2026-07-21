@@ -193,7 +193,7 @@ The repository uses a **centralized configuration** approach where almost all ho
 - **DNS**: Pi-hole + Unbound (ad blocking + recursive DNS)
 - **Auth**: Authelia (SSO), LLDAP (LDAP directory)
 - **Storage**: Nextcloud, Photoprism, Calibre
-- **Monitoring**: Prometheus, Grafana, Uptime Kuma
+- **Monitoring**: Prometheus, Grafana, Alertmanager (Uptime Kuma retired — deprecated to `nixos-configs-private/deprecated/`; backup dead-man's-switch now handled by node_exporter textfile collector + prometheus `backupStale` alert)
 - **Home Automation**: Home Assistant, Frigate, Zwavejs
 - **Media**: Jellyfin, Sonarr, Radarr, Prowlarr, SABnzbd
 - **Productivity**: Actual Budget, Fava, RecipeSage, N8N, LibreChat
