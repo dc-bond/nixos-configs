@@ -27,47 +27,50 @@ let
     { label = "sydney-ipad";     match = "sydney-ipad-a16"; }
   ];
 
-  tailscaleHostsScript = pkgs.writeShellScript "waybar-tailscale-hosts" ''
+  # Pad labels to uniform width so the peer list in the tooltip aligns cleanly.
+  tailscaleHostsLabelWidth =
+    lib.foldl' (m: h: lib.max m (lib.stringLength h.label)) 0 tailscaleHosts;
+
+  tailscaleScript = pkgs.writeShellScript "waybar-tailscale" ''
     STATUS=$(${pkgs.tailscale}/bin/tailscale status --json 2>/dev/null)
 
-    text=""
-    tooltip="Tailscale VPN Peers"
-
-    render_host() {
-      local label="$1" color="$2" state="$3"
-      text="$text<span foreground='$color'>$label</span>  "
-      tooltip="$tooltip\n  $label: $state"
-    }
-
     if [ -z "$STATUS" ]; then
-      ${lib.concatMapStringsSep "\n    " (h:
-        "render_host ${lib.escapeShellArg h.label} '#77767b' 'tailscale down'"
-      ) tailscaleHosts}
-      tooltip="Tailscale not running"
-      printf '{"text":"%s","tooltip":"%s","class":"down"}\n' "''${text%  }" "$tooltip"
+      printf '{"text":"󰦞","tooltip":"Bond VPN: Disconnected","class":"disconnected"}\n'
       exit 0
     fi
 
-    check_host() {
+    SELF_ONLINE=$(printf '%s' "$STATUS" | ${pkgs.jq}/bin/jq -r '.Self.Online // false')
+    SELF_IP=$(printf '%s' "$STATUS" | ${pkgs.jq}/bin/jq -r '.Self.TailscaleIPs[0] // ""')
+
+    if [ "$SELF_ONLINE" != "true" ]; then
+      printf '{"text":"󰦞","tooltip":"Bond VPN: Disconnected","class":"disconnected"}\n'
+      exit 0
+    fi
+
+    tooltip="Bond IPv4 Private VPN Address: $SELF_IP\n\nPeers:"
+
+    append_peer() {
       local label="$1" match="$2"
-      local online
+      local online padded color state
       online=$(printf '%s' "$STATUS" | ${pkgs.jq}/bin/jq -r --arg m "$match" '
         ([.Self] + [.Peer[]? // empty])
         | map(select(.DNSName | startswith($m + ".")))
         | if length == 0 then "unknown" else (.[0].Online | tostring) end
       ')
       case "$online" in
-        true)  render_host "$label" '#00ff00' online ;;
-        false) render_host "$label" '#ff5555' offline ;;
-        *)     render_host "$label" '#77767b' 'not in tailnet' ;;
+        true)  color="#00ff00"; state="online" ;;
+        false) color="#ff5555"; state="offline" ;;
+        *)     color="#77767b"; state="not in tailnet" ;;
       esac
+      padded=$(printf "%-${toString tailscaleHostsLabelWidth}s" "$label")
+      tooltip="$tooltip\n  <span foreground='$color'>$padded</span>  $state"
     }
 
     ${lib.concatMapStringsSep "\n    " (h:
-      "check_host ${lib.escapeShellArg h.label} ${lib.escapeShellArg h.match}"
+      "append_peer ${lib.escapeShellArg h.label} ${lib.escapeShellArg h.match}"
     ) tailscaleHosts}
 
-    printf '{"text":"%s","tooltip":"%s","class":"ok"}\n' "''${text%  }" "$tooltip"
+    printf '{"text":"󰴳","tooltip":"%s","class":"connected"}\n' "$tooltip"
   '';
 
   memoryScript = pkgs.writeShellScript "waybar-memory" ''
@@ -192,8 +195,7 @@ in
         "battery"
         "pulseaudio"
         "bluetooth"
-        "network#tailscale"
-        "custom/tailscale-hosts"
+        "custom/tailscale"
       ] ++ lib.optionals hasWifi [
         "network#wifi"
       ] ++ lib.optionals hasDock [
@@ -335,22 +337,13 @@ in
         "interval" = 5;
       };
       
-      "network#tailscale" = {
-        "interface" = "tailscale0";
-        "format" = "󰴳";
-        "format-disconnected" = "󰦞";
-        "format-linked" = "󰦞";
-        "tooltip-format" = "Bond IPv4 Private VPN Address: {ipaddr}";
-        "tooltip-format-disconnected" = "Bond VPN: Disconnected";
-        "on-click" = "${pkgs.alacritty}/bin/alacritty -e zsh -c 'sudo ${pkgs.tailscale}/bin/tailscale up --ssh --accept-routes --reset && ${pkgs.tailscale}/bin/tailscale status; echo; read -k 1 \"?Press any key to continue...\"; exec zsh'";
-      };
-
-      "custom/tailscale-hosts" = {
-        "exec" = "${tailscaleHostsScript}";
+      "custom/tailscale" = {
+        "exec" = "${tailscaleScript}";
         "return-type" = "json";
         "interval" = 15;
         "format" = "{}";
-        "on-click" = "${pkgs.alacritty}/bin/alacritty -e zsh -c '${pkgs.tailscale}/bin/tailscale status; echo; read -k 1 \"?Press any key to continue...\"; exec zsh'";
+        "tooltip" = true;
+        "on-click" = "${pkgs.alacritty}/bin/alacritty -e zsh -c 'sudo ${pkgs.tailscale}/bin/tailscale up --ssh --accept-routes --reset && ${pkgs.tailscale}/bin/tailscale status; echo; read -k 1 \"?Press any key to continue...\"; exec zsh'";
       };
 
       "network#wifi" = {
@@ -683,21 +676,28 @@ in
           border: 1px solid rgba(119, 118, 123, 0.2);
       }
       
-      /* ===== TAILSCALE HOSTS ===== */
+      /* ===== TAILSCALE ===== */
 
-      #custom-tailscale-hosts {
-          background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+      #custom-tailscale {
+          color: #00ff00;
+          background: linear-gradient(135deg, rgba(0, 255, 0, 0.15) 0%, rgba(0, 255, 0, 0.05) 100%);
           padding: 4px 14px;
           margin: 4px 4px;
           border-radius: 12px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid rgba(0, 255, 0, 0.3);
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       }
 
-      #custom-tailscale-hosts:hover {
+      #custom-tailscale:hover {
           background: linear-gradient(135deg, @color11 0%, @color1 100%);
           border: 1px solid @color11;
           box-shadow: 0 2px 8px rgba(255, 255, 255, 0.2);
+      }
+
+      #custom-tailscale.disconnected {
+          color: #77767b;
+          background: linear-gradient(135deg, rgba(119, 118, 123, 0.08) 0%, rgba(119, 118, 123, 0.04) 100%);
+          border: 1px solid rgba(119, 118, 123, 0.2);
       }
 
       /* ===== PULSEAUDIO ===== */
