@@ -14,38 +14,57 @@ let
   hasDock = hostData.networking.dockInterface != null;
   hasEthernet = hostData.networking.ethernetInterface != null;
 
-  tailscaleHosts = [ "thinkpad" "kauri" "juniper" "aspen" ];
+  # Label shown in the bar + DNSName short-name used to match the tailscale
+  # status entry. Match on DNSName's first label (unique per tailnet node) — not
+  # HostName, since iOS devices all report HostName="localhost".
+  tailscaleHosts = [
+    { label = "thinkpad";        match = "thinkpad"; }
+    { label = "kauri";           match = "kauri"; }
+    { label = "juniper";         match = "juniper"; }
+    { label = "aspen";           match = "aspen"; }
+    { label = "chris-iphone";    match = "chris-iphone-15"; }
+    { label = "danielle-iphone"; match = "danielle-iphone-17"; }
+  ];
 
   tailscaleHostsScript = pkgs.writeShellScript "waybar-tailscale-hosts" ''
-    HOSTS="${lib.concatStringsSep " " tailscaleHosts}"
     STATUS=$(${pkgs.tailscale}/bin/tailscale status --json 2>/dev/null)
 
     text=""
     tooltip="Tailscale VPN Peers"
 
+    render_host() {
+      local label="$1" color="$2" state="$3"
+      text="$text<span foreground='$color'>$label</span>  "
+      tooltip="$tooltip\n  $label: $state"
+    }
+
     if [ -z "$STATUS" ]; then
-      for h in $HOSTS; do
-        text="$text<span foreground='#77767b'>$h</span>  "
-      done
+      ${lib.concatMapStringsSep "\n    " (h:
+        "render_host ${lib.escapeShellArg h.label} '#77767b' 'tailscale down'"
+      ) tailscaleHosts}
       tooltip="Tailscale not running"
-      printf '{"text":"%s","tooltip":"%s","class":"down"}\n' "''${text% }" "$tooltip"
+      printf '{"text":"%s","tooltip":"%s","class":"down"}\n' "''${text%  }" "$tooltip"
       exit 0
     fi
 
-    for h in $HOSTS; do
-      online=$(printf '%s' "$STATUS" | ${pkgs.jq}/bin/jq -r --arg h "$h" '
+    check_host() {
+      local label="$1" match="$2"
+      local online
+      online=$(printf '%s' "$STATUS" | ${pkgs.jq}/bin/jq -r --arg m "$match" '
         ([.Self] + [.Peer[]? // empty])
-        | map(select(.HostName == $h))
+        | map(select(.DNSName | startswith($m + ".")))
         | if length == 0 then "unknown" else (.[0].Online | tostring) end
       ')
       case "$online" in
-        true)  color="#00ff00"; label="online" ;;
-        false) color="#ff5555"; label="offline" ;;
-        *)     color="#77767b"; label="not in tailnet" ;;
+        true)  render_host "$label" '#00ff00' online ;;
+        false) render_host "$label" '#ff5555' offline ;;
+        *)     render_host "$label" '#77767b' 'not in tailnet' ;;
       esac
-      text="$text<span foreground='$color'>$h</span>  "
-      tooltip="$tooltip\n  $h: $label"
-    done
+    }
+
+    ${lib.concatMapStringsSep "\n    " (h:
+      "check_host ${lib.escapeShellArg h.label} ${lib.escapeShellArg h.match}"
+    ) tailscaleHosts}
 
     printf '{"text":"%s","tooltip":"%s","class":"ok"}\n' "''${text%  }" "$tooltip"
   '';
