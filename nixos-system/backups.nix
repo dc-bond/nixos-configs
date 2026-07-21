@@ -54,35 +54,19 @@ let
     echo "cloud backup completed successfully"
   '';
 
-  backupSuccessWebhookScript = pkgs.writeShellScriptBin "backupSuccessWebhook" ''
+  # record last successful backup timestamp for prometheus node_exporter textfile collector;
+  # dead-man's-switch pattern: silence on success, alertmanager fires backupStale if metric goes >25h stale
+  backupSuccessScript = pkgs.writeShellScriptBin "backupSuccess" ''
     #!/bin/bash
-    TIMESTAMP="$(date "+%Y-%m-%d %H:%M:%S")"
-    ${pkgs.curl}/bin/curl \
-      -d "Backup Success - ${config.networking.hostName}
-      Time: $TIMESTAMP
-      Local backup and cloud sync completed successfully." \
-      https://ntfy.${configVars.domain2}/homelab-info
-  '';
-
-  backupSuccessEmailScript = pkgs.writeShellScriptBin "backupSuccessEmail" ''
-    #!/bin/bash
-
+    set -euo pipefail
+    DIR="/var/lib/prometheus/node-exporter-text-files"
+    TMP="$DIR/borgbackup.prom.$$"
     {
-      echo "Subject: Nightly Backup SUCCESS - ${config.networking.hostName}"
-      echo "To: ${configVars.users.chris.email}"
-      echo "From: ${configVars.users.chris.email}"
-      echo ""
-      echo "Time: $(date "+%Y-%m-%d %H:%M:%S")"
-    } | ${pkgs.msmtp}/bin/msmtp \
-      --host=${configVars.mailservers.namecheap.smtpHost} \
-      --port=${toString configVars.mailservers.namecheap.smtpPort} \
-      --auth=on \
-      --user=${configVars.users.chris.email} \
-      --passwordeval "cat ${chrisEmailPasswd}" \
-      --tls=on \
-      --tls-starttls=on \
-      --from=${configVars.users.chris.email} \
-      -t
+      echo "# HELP borgbackup_last_success_timestamp_seconds Unix time of last successful borg+cloud backup"
+      echo "# TYPE borgbackup_last_success_timestamp_seconds gauge"
+      echo "borgbackup_last_success_timestamp_seconds $(date +%s)"
+    } > "$TMP"
+    mv "$TMP" "$DIR/borgbackup.prom"
   '';
 
   backupFailureWebhookScript = pkgs.writeShellScriptBin "backupFailureWebhook" ''
@@ -1151,9 +1135,8 @@ in
       initLocalRepoScript
       cloudBackupScript
       backupFailureEmailScript
-      backupSuccessEmailScript
       backupFailureWebhookScript
-      backupSuccessWebhookScript
+      backupSuccessScript
       inspectLocalBackupsScript
       inspectRemoteBackupsScript
       downloadRemoteBackupScript
@@ -1232,17 +1215,20 @@ in
             EnvironmentFile = "${rcloneConf}";
           };
           unitConfig = {
-            OnSuccess = "backupSuccessWebhook.service";
+            OnSuccess = "backupSuccess.service";
             OnFailure = "backupFailureEmail.service backupFailureWebhook.service";
           };
         };
 
-        "backupSuccessEmail" = {
-          description = "send backup success notification";
+        # success path is silent to the user - writes a prometheus textfile metric with the
+        # current timestamp; the monitoring-server backupStale alert fires if >25h passes
+        # without an update (dead-man's-switch pattern)
+        "backupSuccess" = {
+          description = "record successful backup timestamp for prometheus";
           wantedBy = lib.mkForce [];
           serviceConfig = {
             Type = "oneshot";
-            ExecStart = "${backupSuccessEmailScript}/bin/backupSuccessEmail";
+            ExecStart = "${backupSuccessScript}/bin/backupSuccess";
           };
         };
 
@@ -1255,17 +1241,8 @@ in
           };
         };
 
-        "backupSuccessWebhook" = {
-          description = "send backup success webhook notification to matrix";
-          wantedBy = lib.mkForce [];
-          serviceConfig = {
-            Type = "oneshot";
-            ExecStart = "${backupSuccessWebhookScript}/bin/backupSuccessWebhook";
-          };
-        };
-
         "backupFailureWebhook" = {
-          description = "send backup failure webhook notification to matrix";
+          description = "send backup failure webhook notification to ntfy";
           wantedBy = lib.mkForce [];
           serviceConfig = {
             Type = "oneshot";

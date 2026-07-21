@@ -1000,6 +1000,36 @@ let
               severity: critical
             annotations:
               summary: "ZFS scrub failed on {{ $labels.pool }} ({{ $labels.host }})"
+
+      # dead-man's-switch monitoring for nightly backups: each host's cloudBackup OnSuccess
+      # writes borgbackup_last_success_timestamp_seconds via node_exporter textfile collector.
+      # if the metric is stale or missing entirely, we alert - this catches silent failures
+      # (host down, systemd OnSuccess didn't fire, metric never written) that the existing
+      # OnFailure notification path would miss.
+      - name: backup_alerts
+        interval: 60s
+        rules:
+
+          - alert: backupStale
+            expr: time() - borgbackup_last_success_timestamp_seconds > 90000  # 25h
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Backup on {{ $labels.host }} has not succeeded in >25h - check `jlogs cloudBackup` on that host"
+
+          # per-host absent() list - update when adding/removing a backup-enabled host
+          - alert: backupMetricAbsent
+            expr: |
+              absent(borgbackup_last_success_timestamp_seconds{host="aspen"})
+              or absent(borgbackup_last_success_timestamp_seconds{host="juniper"})
+              or absent(borgbackup_last_success_timestamp_seconds{host="thinkpad"})
+              or absent(borgbackup_last_success_timestamp_seconds{host="kauri"})
+            for: 30m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Backup timestamp metric absent for one or more hosts - check prometheus /alerts for which"
   '';
 
 in
