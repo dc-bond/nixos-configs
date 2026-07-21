@@ -75,8 +75,10 @@ in
     preHook = lib.mkAfter [
       "systemctl stop ${app}.service"
       "sleep 2"
-      "systemctl start postgresqlBackup-${app}.service"
-      "while systemctl is-active --quiet postgresqlBackup-${app}.service; do sleep 1; done"
+      # fail-fast on dump errors so silent DB backup failures surface via the existing
+      # OnFailure email/ntfy path instead of borg archiving a stale .prev.sql.gz
+      "systemctl start --wait postgresqlBackup-${app}.service || exit 1"
+      "test -s /var/backup/postgresql/${app}.sql.gz || exit 1"
     ];
     postHook = lib.mkAfter [
       "systemctl start ${app}.service"

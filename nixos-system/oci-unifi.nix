@@ -64,7 +64,8 @@ in
   };
   
   backups.serviceHooks = {
-    preHook = lib.mkAfter [ "systemctl stop docker-${app}-root.target" ];
+    # fail-fast if container stop fails so borg doesn't cold-copy a live-writing data volume
+    preHook = lib.mkAfter [ "systemctl stop docker-${app}-root.target || exit 1" ];
     postHook = lib.mkAfter [ "systemctl start docker-${app}-root.target" ];
   };
 

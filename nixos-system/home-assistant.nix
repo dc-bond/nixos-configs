@@ -79,8 +79,10 @@ in
       "systemctl stop ${app}.service"
       "systemctl stop mosquitto.service"
       "sleep 2"
-      "systemctl start postgresqlBackup-hass.service"
-      "while systemctl is-active --quiet postgresqlBackup-hass.service; do sleep 1; done"
+      # fail-fast on dump errors so silent DB backup failures surface via the existing
+      # OnFailure email/ntfy path instead of borg archiving a stale .prev.sql.gz
+      "systemctl start --wait postgresqlBackup-hass.service || exit 1"
+      "test -s /var/backup/postgresql/hass.sql.gz || exit 1"
     ];
     postHook = lib.mkAfter [
       "systemctl start mosquitto.service"

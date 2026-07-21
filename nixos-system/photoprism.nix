@@ -65,8 +65,10 @@ in
     preHook = lib.mkAfter [
       "systemctl stop ${app}.service"
       "sleep 2"
-      "systemctl start mysql-backup.service"
-      "while systemctl is-active --quiet mysql-backup.service; do sleep 1; done"
+      # fail-fast on dump errors so silent DB backup failures surface via the existing
+      # OnFailure email/ntfy path instead of borg archiving a stale .prev dump
+      "systemctl start --wait mysql-backup.service || exit 1"
+      "test -s /var/backup/mysql/${app}.gz || exit 1"
     ];
     postHook = lib.mkAfter [
       "systemctl start ${app}.service"
