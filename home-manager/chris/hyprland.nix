@@ -255,11 +255,18 @@ in
       windowrulev2 = [
         "size 1154 706, class:(com.saivert.pwvucontrol)"
         "size 451 607, class:(org.gnome.Calculator)"
+        # thunderbird compose/reply shares the `thunderbird` class with the main
+        # window, so match on the title prefix (identical for new mail, replies,
+        # and forwards). centered because the window is big enough that the
+        # default cursor-position placement lands poorly.
+        "size 1200 800, title:^(Write: .*)$"
       ];
       windowrule = [
         "float, class:^(com.saivert.pwvucontrol)$"
         "float, class:^(org.gnome.Calculator)$"
         "float, class:^(com.nextcloud.desktopclient.nextcloud)$"
+        "float, title:^(Write: .*)$"
+        "center, title:^(Write: .*)$"
       ];
       input = {
         kb_layout = "us";
