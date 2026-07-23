@@ -1001,30 +1001,31 @@ let
             annotations:
               summary: "ZFS scrub failed on {{ $labels.pool }} ({{ $labels.host }})"
 
-      # dead-man's-switch monitoring for nightly backups: each host's cloudBackup OnSuccess
-      # writes borgbackup_last_success_timestamp_seconds via node_exporter textfile collector.
-      # if the metric is stale or missing entirely, we alert - this catches silent failures
-      # (host down, systemd OnSuccess didn't fire, metric never written) that the existing
-      # OnFailure notification path would miss.
+      # dead-man's-switch monitoring for nightly backups on always-on hosts (aspen, juniper).
+      # each host's cloudBackup OnSuccess writes borgbackup_last_success_timestamp_seconds via
+      # node_exporter textfile collector; if the metric is stale or absent, we alert.
+      #
+      # workstations (thinkpad, kauri) are intentionally excluded: they still emit the metric
+      # so we can see "last backup" in grafana, but a laptop being closed at 02:40 is expected
+      # behavior, not an incident. borgbackup timers on workstations are non-persistent
+      # (opportunistic - if awake at 02:40/02:50, back up; otherwise skip until tomorrow).
       - name: backup_alerts
         interval: 60s
         rules:
 
           - alert: backupStale
-            expr: time() - borgbackup_last_success_timestamp_seconds > 90000  # 25h
+            expr: time() - borgbackup_last_success_timestamp_seconds{host=~"aspen|juniper"} > 90000  # 25h
             for: 5m
             labels:
               severity: critical
             annotations:
               summary: "Backup on {{ $labels.host }} has not succeeded in >25h - check `jlogs cloudBackup` on that host"
 
-          # per-host absent() list - update when adding/removing a backup-enabled host
+          # per-host absent() list - update when adding/removing an always-on backup host
           - alert: backupMetricAbsent
             expr: |
               absent(borgbackup_last_success_timestamp_seconds{host="aspen"})
               or absent(borgbackup_last_success_timestamp_seconds{host="juniper"})
-              or absent(borgbackup_last_success_timestamp_seconds{host="thinkpad"})
-              or absent(borgbackup_last_success_timestamp_seconds{host="kauri"})
             for: 30m
             labels:
               severity: critical
