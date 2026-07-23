@@ -1,20 +1,20 @@
-{ 
+{
   inputs,
   config,
-  pkgs, 
-  ... 
-}: 
+  pkgs,
+  ...
+}:
 
 let
   firefox-addons = inputs.firefox-addons.packages.${pkgs.stdenv.hostPlatform.system};
-  username = builtins.baseNameOf ./.;
+  username = config.home.username;
 in
 
 {
 
   programs.firefox = {
     enable = true;
-    package = pkgs.firefox-esr;
+    package = pkgs.firefox;
     profiles = {
       default = {
         id = 0;
@@ -23,7 +23,6 @@ in
         isDefault = true;
         extensions.packages = with firefox-addons; [
           ublock-origin
-          skip-redirect
           bitwarden
         ];
         search = {
@@ -79,9 +78,9 @@ in
           };
         };
       };
-    }; 
+    };
     policies = {
-      BackgroundAppUpdate = false; 
+      BackgroundAppUpdate = false;
       DisableFirefoxStudies = true;
       DisableFirefoxAccounts = false; # firefox sync
       DisableFirefoxScreenshots = true;
@@ -101,6 +100,11 @@ in
       HttpsOnlyMode = "force_enabled";
       DontCheckDefaultBrowser = true;
       HardwareAcceleration = true; # enabling exposes points for fingerprinting?
+      Homepage = {
+        URL = "https://homepage.opticon.dev";
+        Locked = true;
+        StartPage = "homepage";
+      };
       OfferToSaveLogins = false;
       AutofillAddressEnabled = false;
       AutofillCreditCardEnabled = false;
@@ -118,7 +122,10 @@ in
         Locked = true;
       };
       Preferences = {
-        "browser.startup.homepage" = "https://search.opticon.dev";
+        "browser.startup.page" = 1; # 0 = blank, 1 = home, 3 = restore previous session
+        "browser.startup.homepage" = "https://homepage.opticon.dev";
+        "browser.newtabpage.enabled" = true;
+        "browser.startup.homepage_override.mstone" = "ignore"; # Prevent "What's New" page overrides
         "browser.urlbar.suggest.quicksuggest.sponsored" = false;
         "browser.urlbar.suggest.openpage" = false;
         "browser.urlbar.suggest.recentsearches" = false;
@@ -155,10 +162,15 @@ in
         "extensions.autoDisableScopes" = 0; # automatically enable extensions
         "privacy.trackingprotection.enabled" = true;
         "privacy.trackingprotection.socialtracking.enabled" = true;
-			  "privacy.resistFingerprinting" = true;
-			  #"privacy.resistFingerprinting.letterboxing" = true;
+			  "privacy.resistFingerprinting" = false;
 			  "privacy.globalprivacycontrol.enabled" = true;
 			  "privacy.donottrackheader.enabled" = true;
+        "webgl.disabled" = false;
+        "webgl.force-enabled" = true;
+        "webgl.enable-webgl2" = true;
+        "layers.acceleration.force-enabled" = true;
+        "gfx.webrender.all" = true;
+        "gfx.webrender.enabled" = true;
         #"browser.uiCustomization.state" =
         #''
         #  {
@@ -344,6 +356,6 @@ in
       };
       UseSystemPrintDialog = false; # use firefox print-preview instead of system print popup dialogue
     };
-  }; 
-  
+  };
+
 }
