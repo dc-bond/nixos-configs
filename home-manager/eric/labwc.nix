@@ -50,7 +50,7 @@ in
       "home-manager/shared/hyprlock.nix"
       "home-manager/shared/gammastep.nix"
       "home-manager/shared/chromium.nix"
-      #"home-manager/${username}/firefox.nix"
+      "home-manager/shared/firefox.nix"
     ])
   ];
 

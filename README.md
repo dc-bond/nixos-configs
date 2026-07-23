@@ -39,10 +39,12 @@ nixos-configs/
 │   └── [40+ other modules]
 │
 ├── home-manager/                # User-specific configurations
+│   ├── shared/
+│   │   ├── firefox.nix
+│   │   └── [other programs]
 │   └── <user>/
 │       ├── plasma.nix
 │       ├── alacritty.nix
-│       ├── firefox.nix
 │       └── [other programs]
 │
 ├── lib/                         # Custom functions and utilities
