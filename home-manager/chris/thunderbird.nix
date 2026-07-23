@@ -84,26 +84,22 @@ in
   accounts.email.accounts.privateemail.thunderbird = {
     enable = true;
     profiles = [ "chris" ];
-    # runs per identity so we can key the prefs by the generated identity id
+    # nixpkgs hm thunderbird module keys identity prefs as `mail.identity.id_<hash>.*`
+    # (see the option's example in nixpkgs). perIdentitySettings must reuse the
+    # `id_` prefix or the overrides land on dead pref names TB never reads.
+    #
+    # openpgp posture is not repeated here: the hm module already writes
+    # is_gnupg_key_id, openpgp_key_id, attachPgpKey=false, autoEncryptDrafts=true,
+    # protectSubject=true, e2etechpref=0, encryptionpolicy=0, sign_mail=false
+    # from `identity.gpg.key` + signByDefault in email.nix. autocrypt headers
+    # advertise the pubkey to PGP-aware correspondents without visible noise.
     perIdentitySettings = id: {
-      "mail.identity.${id}.htmlSigFormat" = true;
-      "mail.identity.${id}.htmlSigText" = htmlSignature;
-      "mail.identity.${id}.sig_bottom" = false;
-      "mail.identity.${id}.sig_on_fwd" = true;
-      "mail.identity.${id}.reply_on_top" = 1;
-      # openpgp posture (private key lives on yubikey; TB delegates via gpgme):
-      # bind identity to the master fingerprint, prefer openpgp over s/mime,
-      # autocrypt for gradual adoption, protected headers when encrypting,
-      # opportunistic policy (never refuse to send unencrypted).
-      "mail.identity.${id}.is_gnupg_key_id" = true;
-      "mail.identity.${id}.openpgp_key_id" = "0x${configVars.users.chris.gpgKeyFingerprint}";
-      "mail.identity.${id}.attachPgpKey" = false;
-      "mail.identity.${id}.sign_mail" = false;
-      "mail.identity.${id}.encryptionpolicy" = 0;
-      "mail.identity.${id}.e2etechpref" = 0;
-      "mail.identity.${id}.autoEncryptDrafts" = true;
-      "mail.identity.${id}.protectSubject" = true;
-      "mail.identity.${id}.sendAutocryptHeaders" = true;
+      "mail.identity.id_${id}.htmlSigFormat" = true;
+      "mail.identity.id_${id}.htmlSigText" = htmlSignature;
+      "mail.identity.id_${id}.sig_bottom" = false;
+      "mail.identity.id_${id}.sig_on_fwd" = true;
+      "mail.identity.id_${id}.reply_on_top" = 1;
+      "mail.identity.id_${id}.sendAutocryptHeaders" = true;
     };
   };
 
