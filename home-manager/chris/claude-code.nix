@@ -359,113 +359,13 @@ let
     '';
   };
 
-  settings = {
-    permissions = {
-      allow = [
-        "Read"
-        "Edit"
-        "Write"
-        "WebSearch"
-        "WebFetch(domain:github.com)"
-        "WebFetch(domain:raw.githubusercontent.com)"
-        "WebFetch(domain:api.github.com)"
-        "WebFetch(domain:search.nixos.org)"
-        "Bash(ls *)"
-        "Bash(ls)"
-        "Bash(cd *)"
-        "Bash(cat *)"
-        "Bash(pwd)"
-        "Bash(stat *)"
-        "Bash(file *)"
-        "Bash(wc *)"
-        "Bash(find *)"
-        "Bash(tree *)"
-        "Bash(tree)"
-        "Bash(head *)"
-        "Bash(tail *)"
-        "Bash(rg *)"
-        "Bash(grep *)"
-        "Bash(which *)"
-        "Bash(readlink *)"
-        "Bash(echo *)"
-        "Bash(echo)"
-        "Bash(printf *)"
-        "Bash(sort *)"
-        "Bash(uniq *)"
-        "Bash(cut *)"
-        "Bash(tr *)"
-        "Bash(awk *)"
-        "Bash(sed *)"
-        "Bash(xargs *)"
-        "Bash(strings *)"
-        "Bash(hostname)"
-        "Bash(whoami)"
-        "Bash(date)"
-        "Bash(date *)"
-        "Bash(uname *)"
-        "Bash(id)"
-        "Bash(id *)"
-        "Bash(uptime)"
-        "Bash(env)"
-        "Bash(true)"
-        "Bash(false)"
-        "Bash(git status)"
-        "Bash(git status *)"
-        "Bash(git diff *)"
-        "Bash(git log *)"
-        "Bash(git show *)"
-        "Bash(git branch *)"
-        "Bash(git branch)"
-        "Bash(git remote *)"
-        "Bash(git remote)"
-        "Bash(git config --get *)"
-        "Bash(git add *)"
-        "Bash(nix eval *)"
-        "Bash(nix derivation *)"
-        "Bash(nix search *)"
-        "Bash(nix flake show *)"
-        "Bash(nix-store --query *)"
-        "Bash(nix why-depends *)"
-        "Bash(systemctl --user status *)"
-        "Bash(systemctl status *)"
-        "Bash(journalctl *)"
-        "Bash(ssh aspen *)"
-        "Bash(ssh juniper *)"
-        "Bash(ssh kauri *)"
-        "Bash(curl * vikunja.opticon.dev *)"
-      ];
-      deny = [
-        "Bash(rm -rf *)"
-        "Bash(sudo rm *)"
-        "Bash(git push --force *)"
-        "Bash(git push -f *)"
-        "Bash(git reset --hard *)"
-        "Bash(nixos-rebuild switch *)"
-        "Bash(nixos-rebuild boot *)"
-      ];
-      additionalDirectories = [ ];
-    };
-    model = "opus";
-    effortLevel = "high";
-    hooks = {
-      PreToolUse = [
-        {
-          matcher = "Bash";
-          hooks = [
-            {
-              type = "command";
-              command = "${approveHook}/bin/approve-compound-bash";
-              timeout = 5;
-            }
-          ];
-        }
-      ];
-    };
-  };
-
 in
 
 {
-  home.file.".claude/settings.json".source =
-    (pkgs.formats.json { }).generate "claude-settings.json" settings;
+  # ~/.claude/settings.json itself is a plain persisted file (managed by the user, not by nix)
+  # so it can be mutated in-place. The hook binary stays a nix-managed derivation, exposed here
+  # via a stable symlink so settings.json can reference a fixed path — home-manager re-points
+  # the symlink to the current derivation on every activation.
+  home.file.".local/bin/claude-approve-compound-bash".source =
+    "${approveHook}/bin/approve-compound-bash";
 }
