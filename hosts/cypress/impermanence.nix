@@ -44,10 +44,18 @@
 
     # user-level persistence
     users.chris = {
+      files = [
+        ".claude.json" # claude code: user id, oauth account, per-project trust dialog state, migration flags
+        ".claude/.credentials.json" # claude code: oauth access + refresh tokens (re-login required if lost)
+        ".claude/settings.json" # claude code: global settings — permissions allow/deny, model, effortLevel, PreToolUse hook wiring
+      ];
       directories = [
         { directory = ".local/share/keyrings"; mode = "0700"; } # gnome keyring secrets like nextcloud client login, etc.
         { directory = ".config/age"; mode = "0700"; } # user age key for home-manager SOPS
-        { directory = ".claude"; mode = "0700"; } # claude code state: settings, credentials, agent memory, session history
+        { directory = ".claude/projects"; mode = "0700"; } # claude code: session transcripts + per-project auto-memory (chris's hand-refined MEMORY.md)
+        { directory = ".claude/agent-memory"; mode = "0700"; } # claude code: cross-project subagent memory
+        { directory = ".claude/backups"; mode = "0700"; } # claude code: auto-rotated snapshots of ~/.claude.json
+        { directory = ".claude/file-history"; mode = "0700"; } # claude code: edit-undo history
         "nextcloud-client" # local nextcloud directory
         ".mozilla" # firefox profiles
         ".config/Element" # matrix e2e keys
