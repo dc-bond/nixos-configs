@@ -30,6 +30,10 @@ in
       config = {
         allowUnfree = true;
         allowBroken = true;
+        permittedInsecurePackages = [
+          "librewolf-152.0.2-1"
+          "librewolf-unwrapped-152.0.2-1"
+        ];
       };
     };
 
