@@ -1,7 +1,6 @@
 {
   config,
   pkgs,
-  inputs,
   ...
 }:
 
@@ -25,7 +24,7 @@
         # manually install 'Beancount' from extension marketplace
       ]) ++ [
         # pinned to unstable: stable's 2.1.140 predates auto mode (needs >=2.1.207)
-        inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.vscode-extensions.anthropic.claude-code
+        pkgs.unstable.vscode-extensions.anthropic.claude-code
       ];
       userSettings = {
         "files.autoSave" = "off";
