@@ -1,8 +1,9 @@
-{ 
-  config, 
-  pkgs, 
-  ... 
-}: 
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
 
@@ -12,7 +13,7 @@
     enable = true;
     package = pkgs.vscodium;
     profiles.default = {
-      extensions = with pkgs.vscode-extensions; [
+      extensions = (with pkgs.vscode-extensions; [
         bbenoist.nix
         asvetliakov.vscode-neovim
         arcticicestudio.nord-visual-studio-code
@@ -21,8 +22,10 @@
         signageos.signageos-vscode-sops
         ms-python.python
         arrterian.nix-env-selector
-        anthropic.claude-code
         # manually install 'Beancount' from extension marketplace
+      ]) ++ [
+        # pinned to unstable: stable's 2.1.140 predates auto mode (needs >=2.1.207)
+        inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.vscode-extensions.anthropic.claude-code
       ];
       userSettings = {
         "files.autoSave" = "off";
