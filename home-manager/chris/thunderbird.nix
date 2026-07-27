@@ -131,4 +131,18 @@ in
     };
   };
 
+  # Nextcloud's auto-generated system address book (one read-only card per user
+  # account); synced for autocomplete since these never land in the personal book.
+  accounts.contact.accounts."Company Directory" = {
+    remote = {
+      type = "carddav";
+      url = "${nextcloudDav}/addressbooks/system/system/system/";
+      userName = configVars.users.chris.email;
+    };
+    thunderbird = {
+      enable = true;
+      profiles = [ "chris" ];
+    };
+  };
+
 }
