@@ -29,7 +29,7 @@
         "files.autoSave" = "off";
         "redhat.telemetry.enabled" = false;
         "window.restoreWindows" = "one";
-        "claudeCode.useTerminal" = true;
+        "claudeCode.useTerminal" = true; # only enables the Ctrl+Escape "open in terminal" shortcut; New Session button stays native UI
         "explorer" = {
           "confirmDragAndDrop" = false;
           "confirmDelete" = false;
