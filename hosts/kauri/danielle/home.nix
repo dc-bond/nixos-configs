@@ -10,6 +10,19 @@
 
 let
   username = builtins.baseNameOf ./.;
+  claudeSettings = pkgs.writeText "claude-settings.json" (builtins.toJSON {
+    permissions.deny = [
+      "Bash(nixos-rebuild *)"
+      "Bash(sudo nixos-rebuild *)"
+      "Bash(nix build *)"
+      "Bash(sudo nix build *)"
+      "Bash(nix-collect-garbage *)"
+      "Bash(sudo nix-collect-garbage *)"
+    ];
+    model = "sonnet";
+    theme = "dark";
+    tui = "fullscreen";
+  });
 in
 
 {
@@ -35,8 +48,19 @@ in
       brightnessctl # screen brightness control
       ddcutil # query and change monitor settings via DDC/CI (requires system hardware.i2c.enable)
       wlr-randr # wayland display configuration tool for wlroots compositors
+      unstable.claude-code # claude code CLI (pinned to unstable for parity with vscodium extension)
     ];
   };
+
+# seed claude code settings with sensible defaults on first run only, then leave user-editable (in-app /config writes must persist)
+# guard on -s (non-empty), not -e: under impermanence the persisted settings.json is bind-mounted as an empty placeholder before activation, which must still be seeded
+  home.activation.seedClaudeSettings = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    if [ ! -s "$HOME/.claude/settings.json" ]; then
+      run mkdir -p "$HOME/.claude"
+      run cp ${claudeSettings} "$HOME/.claude/settings.json"
+      run chmod 600 "$HOME/.claude/settings.json"
+    fi
+  '';
 
 # define default folders in home directory
   xdg.userDirs = {
