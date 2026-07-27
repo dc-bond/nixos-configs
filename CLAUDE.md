@@ -54,6 +54,27 @@ The repository uses a **centralized configuration** approach where almost all ho
    - Access user config: `configVars.users.chris`
    - Access container subnets: `configVars.ociServices.pihole.subnet`
 
+### Where to put a package or module
+
+Two questions decide placement:
+
+1. **Scope**: does root and/or every user need this, or only one specific user?
+2. **Declarativeness**: does it have declarative Nix config beyond just "install the package"?
+
+Placement follows:
+
+| | System-wide | User-scoped |
+|---|---|---|
+| **Has declarative config** | Own module in `nixos-system/<name>.nix` | Own module in `home-manager/<user>/<name>.nix`, or `home-manager/shared/<name>.nix` if identical for every user |
+| **No declarative config** | Append to `environment.systemPackages` in the host's `configuration.nix` | Append to `home.packages` in the user's `home.nix` — or, for GUI apps, to the DE umbrella (`home-manager/<user>/hyprland.nix` or `labwc.nix`), since GUI apps only run inside a DE |
+
+Conventions and exceptions:
+
+- **DE umbrella is a graphical-apps bucket.** `chris/hyprland.nix`, `danielle/labwc.nix`, etc. hold GUI packages that would never run headless. CLI tools go in `home.packages` in `home.nix` regardless of whether they need a graphical session (e.g. `brightnessctl`, `ddcutil`).
+- **Small packages inseparable from a module can be co-located** rather than following the strict rule. Example: `eza` and `pfetch` live in `home-manager/shared/zsh.nix` because the zsh aliases in that file reference them.
+- **Mild duplication across users is fine.** A package needed by two of three users just gets listed twice; do not invent a "some-users" shared bucket.
+- **System-wide is the right choice when root also uses the tool** for maintenance (`dig`, `rsync`, `jq`, `btop`, etc.). Do not move a genuinely dual-use tool to user scope just because one user uses it most.
+
 ### Critical Files
 
 - **`vars/default.nix`**: Single source of truth for all configuration metadata

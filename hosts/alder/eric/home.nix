@@ -31,6 +31,10 @@ in
   home = {
     username = username;
     homeDirectory = "/home/${username}";
+    packages = with pkgs; [
+      brightnessctl # screen brightness control
+      ddcutil # query and change monitor settings via DDC/CI (requires system hardware.i2c.enable)
+    ];
   };
 
 # define default folders in home directory

@@ -103,10 +103,7 @@
     unzip # utility to unzip directories
     btop # system monitor
     nmap # network scanning
-    brightnessctl # screen brightness application
-    ddcutil # query and change monitor settings using DDC/CI and USB
-    i2c-tools # hardware interface tools required by ddcutil
-    wlr-randr # wayland display configuration tool for wlroots compositors
+    i2c-tools # hardware interface tools required by ddcutil (per-user ddcutil in home.packages)
   ];
 
   backups = {
