@@ -23,8 +23,7 @@
         arrterian.nix-env-selector
         # manually install 'Beancount' from extension marketplace
       ]) ++ [
-        # pinned to unstable: stable's 2.1.140 predates auto mode (needs >=2.1.207)
-        pkgs.unstable.vscode-extensions.anthropic.claude-code
+        pkgs.unstable.vscode-extensions.anthropic.claude-code # pinned to unstable for parity with claude-code CLI
       ];
       userSettings = {
         "files.autoSave" = "off";
