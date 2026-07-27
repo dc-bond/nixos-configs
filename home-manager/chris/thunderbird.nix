@@ -29,6 +29,10 @@ let
   # for chris that's the fullName ("Chris Bond") -- verified via `nextcloud-occ dav:list-calendars`.
   # do NOT use the email address here; it authenticates but the collection URIs are keyed by principal.
   nextcloudPrincipal = builtins.replaceStrings [ " " ] [ "%20" ] configVars.users.chris.fullName;
+
+  # base IMAP URL for special-folder identity prefs (TB ignores accounts.email
+  # `folders`, so Sent/Drafts must be pinned per-identity). host matches email.nix.
+  imapUrl = "imap://${builtins.replaceStrings [ "@" ] [ "%40" ] configVars.users.chris.email}@${configVars.mailservers.namecheap.smtpHost}";
 in
 
 {
@@ -77,6 +81,24 @@ in
         "mailnews.tags.$label4.color" = "#3333FF";
         "mailnews.tags.$label5.tag" = "Later";
         "mailnews.tags.$label5.color" = "#993399";
+        # appearance
+        "mail.appearance.accentColor" = "teal";
+        "mail.citation_color" = "#26a269";
+        "mail.threadpane.listview" = 1; # table layout, not cards
+        # confirmation prompts already dismissed in the UI
+        "mailnews.emptyTrash.dontAskAgain" = true;
+        "mail.prompt_purge_threshold" = false;
+        "mail.close_message_window.on_delete" = true;
+        "calendar.item.promptDelete" = false;
+        "mail.shell.checkDefaultClient" = false;
+        # compose
+        "mail.collect_email_address_outgoing" = false; # never auto-fill Collected Addresses
+        "mail.compose.autosaveinterval" = 2;
+        "mail.compose.big_attachments.notify" = false;
+        # privacy / security
+        "mailnews.message_display.disable_remote_image" = true; # block remote images (tracking pixels)
+        "mail.phishing.detection.enabled" = false;
+        "network.trr.mode" = 5; # DoH off, use system resolver
       };
     };
   };
@@ -100,6 +122,11 @@ in
       "mail.identity.id_${id}.sig_on_fwd" = true;
       "mail.identity.id_${id}.reply_on_top" = 1;
       "mail.identity.id_${id}.sendAutocryptHeaders" = true;
+      # pin server special folders instead of relying on TB auto-detect
+      "mail.identity.id_${id}.fcc_folder" = "${imapUrl}/Sent";
+      "mail.identity.id_${id}.fcc_folder_picker_mode" = "1";
+      "mail.identity.id_${id}.draft_folder" = "${imapUrl}/Drafts";
+      "mail.identity.id_${id}.drafts_folder_picker_mode" = "1";
     };
   };
 
@@ -116,6 +143,7 @@ in
     thunderbird = {
       enable = true;
       profiles = [ "chris" ];
+      color = "#26a269";
     };
   };
 
