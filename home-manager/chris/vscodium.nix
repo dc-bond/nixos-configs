@@ -29,6 +29,7 @@
         "files.autoSave" = "off";
         "redhat.telemetry.enabled" = false;
         "window.restoreWindows" = "one";
+        "claudeCode.useTerminal" = true;
         "explorer" = {
           "confirmDragAndDrop" = false;
           "confirmDelete" = false;
