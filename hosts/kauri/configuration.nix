@@ -113,6 +113,14 @@
 
   hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
 
+  # enable nix-ld to run dynamically linked binaries (e.g., vscodium extensions)
+  programs.nix-ld = {
+    enable = true;
+    libraries = with pkgs; [
+      stdenv.cc.cc.lib
+    ];
+  };
+
   services = {
     xserver.videoDrivers = [ # enable displaylink for USB dock displays
       "displaylink" # should pull pinned version from overlay automatically

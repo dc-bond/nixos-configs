@@ -51,6 +51,7 @@ in
       "home-manager/shared/gammastep.nix"
       "home-manager/shared/chromium.nix"
       "home-manager/shared/firefox.nix"
+      "home-manager/${username}/vscodium.nix"
     ])
   ];
 
@@ -270,6 +271,9 @@ in
           </item>
           <item label="Office Suite">
             <action name="Execute" command="libreoffice" />
+          </item>
+          <item label="Code Editor">
+            <action name="Execute" command="codium" />
           </item>
           <separator />
           <item label="Reload Wallpaper">
