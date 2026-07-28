@@ -75,12 +75,22 @@
         ];
       };
 
-  in 
-  
+  in
+
   {
     inherit configVars;
     overlays = import ./overlays {inherit inputs;}; # custom packages and mods exported as overlays
     nixosConfigurations = lib.mapAttrs (hostname: _: mkHost hostname) configVars.hosts; # auto-generate all hosts defined in configVars
+
+    # learning + verification artifacts, built on demand (no host imports these)
+    #   nix build .#learnVm      → interactive driver for scripts/learn-nixostest.nix
+    packages.x86_64-linux =
+      let
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        learnTest = import ./scripts/learn-nixostest.nix { inherit pkgs; };
+      in {
+        learnVm = learnTest.driverInteractive;
+      };
   };
 
 }
