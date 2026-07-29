@@ -93,6 +93,19 @@
         builder_opts='--option builders ""'
       fi
 
+      # kauri pins a DisplayLink source via requireFile (overlays/default.nix), which is a
+      # fixed-output derivation realised on the EVALUATING host (this machine), not the
+      # remote builder - so it must already be cached here regardless of build_strategy.
+      # Hash must match overlays/default.nix's displaylink-pinned overlay; keep in sync.
+      if [ "$selected_host" = "kauri" ]; then
+        echo "→ Ensuring pinned DisplayLink source is cached locally..."
+        nix-prefetch-url \
+          "https://www.synaptics.com/sites/default/files/exe_files/2025-09/DisplayLink%20USB%20Graphics%20Software%20for%20Ubuntu6.2-EXE.zip" \
+          "sha256-JQO7eEz4pdoPkhcn9tIuy5R4KyfsCniuw6eXw/rLaYE=" \
+          --type sha256 \
+          --name displaylink-620.zip >/dev/null
+      fi
+
       # show current branch
       echo ""
       echo "→ Building from branch: $(git -C "$flake_dir" branch --show-current 2>/dev/null || echo 'unknown')"
