@@ -73,7 +73,7 @@ in
         
         cameras:
           front:
-            enabled: true
+            enabled: false # cameras disconnected for move (2026-07) — re-enable on reconnect
             ffmpeg:
               inputs:
                 - path: rtsp://127.0.0.1:8554/front
@@ -90,7 +90,7 @@ in
               height: 576
               fps: 5
           garage:
-            enabled: true
+            enabled: false # cameras disconnected for move (2026-07) — re-enable on reconnect
             ffmpeg:
               inputs:
                 - path: rtsp://127.0.0.1:8554/garage
@@ -107,7 +107,7 @@ in
               height: 576
               fps: 5
           gym:
-            enabled: true
+            enabled: false # cameras disconnected for move (2026-07) — re-enable on reconnect
             ffmpeg:
               inputs:
                 - path: rtsp://127.0.0.1:8554/gym
@@ -130,7 +130,7 @@ in
             record: preset-record-generic-audio-copy # adds audio to record streams
         
         birdseye: # global birdseye configuration for all cameras
-          enabled: true
+          enabled: false # no cameras enabled during move (2026-07) — re-enable on reconnect
           restream: true # restream to http://192.168.1.2:8554/birdseye?
           mode: continuous
         
