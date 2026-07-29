@@ -52,7 +52,7 @@ host via `nixos-system/foundation.nix` (`nixpkgs.overlays`).
 
 | Package | What it does | Revert trigger |
 |---|---|---|
-| `matrix-synapse-unwrapped` | Blanks a typo'd `postPatch` that fails to match upstream `pyproject.toml`; the original substitution was a no-op anyway ([nixpkgs#530874](https://github.com/NixOS/nixpkgs/issues/530874)) | Upstream fix lands — then delete the overlay |
+| `matrix-synapse-unwrapped` | Blanks a typo'd `postPatch` that fails to match upstream `pyproject.toml`; the original substitution was a no-op anyway ([nixpkgs#530874](https://github.com/NixOS/nixpkgs/issues/530874)). Also sets `doCheck = false`: synapse 1.155.0's trial suite aborts with `twisted.protocols.amp.TooLong` under `trial -jN` on an oversized debug log line ([twisted#12482](https://github.com/twisted/twisted/issues/12482)) — a test-harness flake, not a runtime defect. The `postPatch` override already forces synapse to build locally (never substituted), so the suite runs on every rebuild here. | `postPatch`: nixpkgs#530874 fix lands. `doCheck`: 25.11 backports [synapse#19832](https://github.com/element-hq/synapse/pull/19832) or bumps past 1.155.0 — then restore checks. |
 | `displaylink` | Pinned to **6.2** with a manual `requireFile` src + hash | Manual bump only; hash is mirrored in `nixos-system/rebuilds.nix` — keep the two in sync |
 | `docker` | Pinned to the `docker_29` engine so all `pkgs.docker` references (oci-* units) use it | Deliberate engine pin; revisit on major docker bump |
 
