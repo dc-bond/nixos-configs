@@ -79,6 +79,7 @@ Conventions and exceptions:
 
 - **`vars/default.nix`**: Single source of truth for all configuration metadata
 - **`README.md`**
+- **`DEVIATIONS.md`**: Registry of everything that is not a stock `nixos-25.11` build — cross-channel package pulls (`pkgs.unstable`/`pkgs-2505`/`pkgs-2105`), version pins, overlays, insecure-package allowances, and config-level upstream-bug workarounds, each with a revert trigger
 - **`nixos-system/networking.nix`**
 - **`flake.nix`**: Flake entrypoint with `mkHost` auto-generation function
 - **`lib/default.nix`**: Custom helper functions
@@ -232,3 +233,4 @@ Conventions and exceptions:
 9. **Check private modules** - Some features may be in the private config repo
 10. **Working directory** - Main config is in `nixos-configs/` subdirectory
 11. **Commit messages** - Plain concise subject line, lowercase imperative. Do **not** append `Co-Authored-By: Claude ...` trailers.
+12. **Track deviations from stock 25.11** - Any cross-channel pull, version pin, overlay, insecure-package allowance, or upstream-bug workaround belongs in `DEVIATIONS.md`. Add/update its row (with a revert trigger) in the same commit as the code change.
