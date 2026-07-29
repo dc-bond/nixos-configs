@@ -23,7 +23,16 @@ in
         isDefault = true;
         extensions.packages = with firefox-addons; [
           ublock-origin
-          bitwarden
+          # TEMP: pin Bitwarden to 2026.6.1 — 2026.7.0 renders an empty vault against
+          # Vaultwarden 1.36.0 (server-side fix is 1.37.0, not yet backported to 25.11).
+          # Revert to plain `bitwarden` once the server is on 1.37.0.
+          (bitwarden.overrideAttrs (_: {
+            name = "bitwarden-2026.6.1";
+            src = pkgs.fetchurl {
+              url = "https://addons.mozilla.org/firefox/downloads/file/4875950/bitwarden_password_manager-2026.6.1.xpi";
+              sha256 = "7ba16c3d422ab287db17b014a4683bace36341e471e4d4fd58ac2b616c6ac17d";
+            };
+          }))
         ];
         search = {
           force = true;
