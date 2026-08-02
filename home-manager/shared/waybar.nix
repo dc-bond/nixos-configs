@@ -81,11 +81,19 @@ let
         }
         close("/proc/meminfo")
 
-        psi_some = 0; psi_full = 0
+        # Capture both avg10 (responsive) and avg60 (smoothed). The danger tiers
+        # below key off avg60 so a momentary spike (e.g. a Nix build) does not
+        # flip the bar red; avg10 is kept for the tooltip.
+        psi_some10 = 0; psi_full10 = 0; psi_some60 = 0; psi_full60 = 0
         while ((getline line < "/proc/pressure/memory") > 0) {
+          is_full = (line ~ /^full/)
           if (match(line, /avg10=[0-9.]+/)) {
             v = substr(line, RSTART+6, RLENGTH-6) + 0
-            if (line ~ /^some/) psi_some = v; else psi_full = v
+            if (is_full) psi_full10 = v; else psi_some10 = v
+          }
+          if (match(line, /avg60=[0-9.]+/)) {
+            v = substr(line, RSTART+6, RLENGTH-6) + 0
+            if (is_full) psi_full60 = v; else psi_some60 = v
           }
         }
         close("/proc/pressure/memory")
@@ -96,7 +104,10 @@ let
         # pressure formula and tooltip degrade cleanly to a swap-only or RAM-only picture.
         # Physical cost is already counted in MemTotal - MemAvailable; only the *savings*
         # (logical - physical) are additional working set beyond current RAM.
-        zram_logical_b = 0; zram_physical_b = 0
+        # disksize is the logical capacity of the zram swap: once logical usage
+        # reaches it, new swap spills to the lower-priority disk swapfile — the
+        # key "getting serious" threshold on this box.
+        zram_logical_b = 0; zram_physical_b = 0; zram_cap_b = 0
         for (i = 0; i < 8; i++) {
           p = "/sys/block/zram" i "/mm_stat"
           rc = (getline z < p)
@@ -105,10 +116,13 @@ let
             zram_logical_b  += zf[1]
             zram_physical_b += zf[3]
             close(p)
+            d = "/sys/block/zram" i "/disksize"
+            if ((getline ds < d) > 0) { zram_cap_b += ds; close(d) }
           }
         }
         zram_logical  = int(zram_logical_b  / 1024)
         zram_physical = int(zram_physical_b / 1024)
+        zram_cap      = int(zram_cap_b      / 1024)
 
         total = m["MemTotal"];   avail = m["MemAvailable"]
         swapT = m["SwapTotal"];  swapF = m["SwapFree"]
@@ -124,11 +138,48 @@ let
         pressure_pct = int(100 * (used + zram_savings + disk_swap_used) / total)
         if (pressure_pct > 100) pressure_pct = 100
 
-        cls = "normal"
-        if (psi_full > 5  || pressure_pct >= 90) cls = "critical"
-        else if (psi_some > 10 || pressure_pct >= 75) cls = "warning"
+        # How full the fast (zram) swap tier is, logically, and how much of it
+        # remains before pages spill to the slow disk swapfile.
+        zram_fill_pct = (zram_cap > 0) ? int(100 * zram_logical / zram_cap) : 0
+        zram_headroom = zram_cap - zram_logical
+        if (zram_headroom < 0) zram_headroom = 0
 
+        # Thrash-risk tiers, ordered worst-first. These answer "should I close an
+        # app / reboot", not "how much is committed" (that is pressure_pct, kept
+        # in the tooltip). The precursors to real trouble on this box are:
+        #   - processes actually stalling on memory (PSI full, smoothed)
+        #   - zram logically near full, so swap is about to / is spilling to disk
+        #   - a large amount already spilled to the slow disk swapfile (sustained
+        #     overflow — worth a reboot)
+        #   - available memory genuinely near zero
+        # The live MED signals are zram fill % and PSI; a *small* residual
+        # disk_swap is deliberately NOT a trigger (it is a session high-water mark
+        # that never drains back, so it would latch the bar yellow all session).
+        # avail/disk_swap are KiB; 1048576 KiB = 1 GiB.
+        cls = "normal"; risk = "LOW"
+        if (psi_full60 > 1 || disk_swap_used > 1048576 || avail < total * 0.05) {
+          cls = "critical"; risk = "HIGH"
+        } else if ((zram_cap > 0 && zram_fill_pct >= 80) || psi_some60 > 5) {
+          cls = "warning"; risk = "MED"
+        }
+
+        # One-line reason for the current tier, most-specific trigger first.
         gib = "%.1f"
+        avail_g       = sprintf(gib, avail/1048576)
+        disk_swap_g   = sprintf(gib, disk_swap_used/1048576)
+        zram_headroom_g = sprintf(gib, zram_headroom/1048576)
+        if (risk == "HIGH") {
+          if (psi_full60 > 1)             reason = "processes stalling on memory (PSI full " psi_full60 ")"
+          else if (disk_swap_used > 1048576) reason = disk_swap_g " GiB spilled to disk swap"
+          else                            reason = "only " avail_g " GiB available"
+        } else if (risk == "MED") {
+          if (zram_cap > 0 && zram_fill_pct >= 80) reason = "zram " zram_fill_pct "% full - near disk spill"
+          else                                     reason = "pressure building (PSI some " psi_some60 ")"
+        } else {
+          if (zram_cap > 0) reason = zram_headroom_g " GiB zram headroom before disk spill"
+          else              reason = "plenty of headroom"
+        }
+
         used_g          = sprintf(gib, used/1048576)
         total_g         = sprintf(gib, total/1048576)
         anon_g          = sprintf(gib, m["AnonPages"]/1048576)
@@ -136,27 +187,29 @@ let
         shmem_g         = sprintf(gib, m["Shmem"]/1048576)
         zram_logical_g  = sprintf(gib, zram_logical/1048576)
         zram_physical_g = sprintf(gib, zram_physical/1048576)
-        disk_swap_g     = sprintf(gib, disk_swap_used/1048576)
+        zram_cap_g      = sprintf(gib, zram_cap/1048576)
 
-        text = pressure_pct "% 󰘚"
+        # Headline is honest RAM% — the colour carries the thrash-risk signal.
+        text = used_pct "% 󰘚"
 
-        tt  = "RAM        " used_pct     "%  (" used_g " / " total_g " GiB)\n"
-        tt  = tt "Pressure   " pressure_pct "%   (RAM + swapped-out working set)\n"
-        tt  = tt "PSI 10s    some " psi_some "  full " psi_full "\n\n"
+        tt  = "Thrash risk  " risk "  (" reason ")\n\n"
+        tt  = tt "RAM        " used_pct     "%  (" used_g " / " total_g " GiB)\n"
+        tt  = tt "Committed  " pressure_pct "%   (RAM + swapped-out working set)\n"
+        tt  = tt "PSI 60s    some " psi_some60 "  full " psi_full60 "\n\n"
         tt  = tt "Anon       " anon_g   " GiB   apps (unreclaimable)\n"
         tt  = tt "Cached     " cached_g " GiB   file cache (reclaimable)\n"
         tt  = tt "Shmem      " shmem_g  " GiB   tmpfs / shared"
 
         if (zram_logical > 0) {
-          tt = tt "\n\nZram       " zram_logical_g " GiB logical -> " zram_physical_g " GiB in RAM"
-          if (disk_swap_used > 0) tt = tt "\nDisk swap  " disk_swap_g " GiB used"
+          tt = tt "\n\nZram       " zram_logical_g " / " zram_cap_g " GiB (" zram_fill_pct "% full) -> " zram_physical_g " GiB in RAM"
+          if (disk_swap_used > 0) tt = tt "\nDisk swap  " disk_swap_g " GiB used   (slow tier - zram overflow)"
         } else if (swapT > 0 && swap_used_total > 0) {
           tt = tt "\n\nSwap       " disk_swap_g " GiB used"
         }
 
         gsub(/\n/, "\\n", tt)
         printf "{\"text\":\"%s\",\"tooltip\":\"%s\",\"class\":\"%s\",\"percentage\":%d}\n", \
-          text, tt, cls, pressure_pct
+          text, tt, cls, used_pct
       }
     '
   '';
