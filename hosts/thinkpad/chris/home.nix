@@ -21,6 +21,7 @@ in
       "home-manager/shared/neovim.nix"
       "home-manager/shared/zsh.nix"
 
+      "home-manager/${username}/claude-code.nix"
       "home-manager/${username}/git.nix"
       "home-manager/${username}/pass.nix"
       "home-manager/${username}/gnupg.nix"
@@ -39,7 +40,6 @@ in
     packages = with pkgs; [
       brightnessctl # screen brightness control
       ddcutil # query and change monitor settings via DDC/CI (requires system hardware.i2c.enable)
-      unstable.claude-code # claude code CLI (pinned to unstable for parity with vscodium extension)
     ];
   };
 
