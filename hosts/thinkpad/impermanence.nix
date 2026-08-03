@@ -48,7 +48,7 @@
       files = [
         ".claude.json" # claude code: user id, oauth account, per-project trust dialog state, migration flags
         ".claude/.credentials.json" # claude code: oauth access + refresh tokens (re-login required if lost)
-        ".claude/settings.json" # claude code: global settings — permissions (defaultMode=auto + allow/deny/ask lists), autoMode.environment trust context, model, effortLevel
+        # .claude/settings.json is now declarative (home-manager symlinks it read-only from the store — see home-manager/chris/claude-code.nix); do not persist it
       ];
       directories = [
         { directory = ".local/share/keyrings"; mode = "0700"; } # gnome keyring secrets like nextcloud client login, etc.
