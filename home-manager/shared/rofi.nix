@@ -10,12 +10,9 @@
   home.packages = [
     pkgs.rofi-bluetooth # rofi bluetooth manager
     (pkgs.writeShellScriptBin "rofiPowerMenu" ''
-      choice=$(printf "Lock\nSuspend\nLogout\nReboot\nShutdown" | ${pkgs.rofi}/bin/rofi -dmenu -i -p "Power Menu")
-      
+      choice=$(printf "Suspend\nLogout\nReboot\nShutdown" | ${pkgs.rofi}/bin/rofi -dmenu -i -p "Power Menu")
+
       case "$choice" in
-        Lock)
-          ${pkgs.hyprlock}/bin/hyprlock
-          ;;
         Suspend)
           systemctl suspend
           ;;
