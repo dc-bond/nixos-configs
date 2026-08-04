@@ -48,15 +48,12 @@
       files = [
         ".claude.json" # claude code: user id, oauth account, per-project trust dialog state, migration flags
         ".claude/.credentials.json" # claude code: oauth access + refresh tokens (re-login required if lost)
-        ".claude/settings.json" # claude code: global settings (model, theme, tui, permissions deny-list) — seeded once by home.activation, then user-editable
+        # .claude/settings.json is now declarative (home-manager symlinks it read-only from the store — see home-manager/danielle/claude-code.nix); do not persist it
       ];
       directories = [
         { directory = ".local/share/keyrings"; mode = "0700"; } # gnome keyring secrets like nextcloud client login, etc.
         { directory = ".config/age"; mode = "0700"; } # user age key for home-manager SOPS
         { directory = ".claude/projects"; mode = "0700"; } # claude code: session transcripts + per-project auto-memory
-        { directory = ".claude/agent-memory"; mode = "0700"; } # claude code: cross-project subagent memory
-        { directory = ".claude/backups"; mode = "0700"; } # claude code: auto-rotated snapshots of ~/.claude.json
-        { directory = ".claude/file-history"; mode = "0700"; } # claude code: edit-undo history
         "nextcloud-client" # local nextcloud directory
         "downloads" # browser downloads
         "documents" # xdg documents directory
