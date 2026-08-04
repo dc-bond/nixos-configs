@@ -35,10 +35,9 @@ pinned to a specific non-channel version.
 `claude-code` is pinned to unstable so the CLI and the VSCodium extension stay
 on matching versions:
 
-- `home-manager/chris/claude-code.nix` (thinkpad) —
+- `home-manager/chris/claude-code.nix` (thinkpad + cypress),
+  `home-manager/danielle/claude-code.nix` (kauri) —
   `programs.claude-code.package = pkgs.unstable.claude-code` (CLI, declarative module)
-- `hosts/cypress/chris/home.nix`, `hosts/kauri/danielle/home.nix` —
-  `unstable.claude-code` (CLI)
 - `home-manager/chris/vscodium.nix`, `home-manager/danielle/vscodium.nix` —
   `pkgs.unstable.vscode-extensions.anthropic.claude-code`
 
@@ -46,7 +45,8 @@ on matching versions:
 `claude-code` is current enough that parity no longer requires unstable.
 
 `mcp-nixos` (the NixOS/Home Manager MCP server wired into `claude-code` in
-`home-manager/chris/claude-code.nix`) is pulled from unstable: 25.11 ships only
+`home-manager/chris/claude-code.nix` and `home-manager/danielle/claude-code.nix`)
+is pulled from unstable: 25.11 ships only
 `1.0.3`, which predates the 2.x unified `nix()` tool surface and most data
 sources. Uses `pkgs.unstable.mcp-nixos` (2.4.x).
 
