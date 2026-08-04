@@ -9,20 +9,10 @@
   programs.claude-code = {
     enable = true;
     package = pkgs.unstable.claude-code; # pinned to unstable for parity with the VSCodium extension (see DEVIATIONS.md)
-
-    # MCP servers are baked into a wrapped `claude` binary via `--mcp-config`.
-    # mcp-nixos serves live NixOS/Home Manager package + option data over stdio
-    # so lookups don't hallucinate. Referenced by store path, so it does not need
-    # a separate home.packages entry.
     mcpServers.nixos = {
       type = "stdio";
       command = lib.getExe pkgs.unstable.mcp-nixos; # 25.11 ships only 1.0.3; unstable for the 2.x tool surface (see DEVIATIONS.md)
     };
-
-    # Declarative ~/.claude/settings.json — home-manager symlinks it read-only
-    # into the store, so drop it from the impermanence persist list. Runtime state
-    # (per-project trust, "always allow" grants, project MCP registrations) still
-    # lives in the writable ~/.claude.json, which impermanence persists separately.
     settings = {
       permissions = {
         allow = [
@@ -52,7 +42,7 @@
         "Trusted internal domains: *.opticon.dev and *.dcbond.com — the operator's own self-hosted services behind Traefik, reachable on the LAN and over the Tailscale tailnet — plus the tailnet hosts aspen, juniper, kauri, cypress, thinkpad. These are his own infrastructure; reaching them, including read-only SSH diagnostics, is internal, not an external destination."
         "Key internal services (self-hosted on the domains above, administered read-only over Tailscale SSH): Nextcloud (file storage/sync), Vaultwarden, Home Assistant, Pi-hole + Unbound DNS, Prometheus/Grafana/Alertmanager, Traefik, Authelia + LLDAP SSO, Jellyfin and the *arr media stack. There is no private package registry — Nix pulls from nixpkgs and flake inputs."
         "Sensitive data locations & audiences: everything under ~/nextcloud-client and its Nextcloud counterpart (personal and family financial, housing/lease, insurance, and personal records) is personal/entrusted data. Cleared audience: chris, his household, and his own self-hosted services (this data already lives in his Nextcloud). Copying or sending it anywhere else — external email, third-party sites, public repos, pastes, arbitrary web endpoints — is out-of-place egress, even though he sometimes hand-delivers a drafted document to a specific outside party himself."
-        "Additional context — standing operator preferences (he approves ~95% of prompts and wants routine work uninterrupted, but wants these kept gated): he performs ALL system rebuilds/activations and remote state changes himself — nixos-rebuild, nix builds, garbage collection, and service restarts/deploys on the servers (rebuild/build/GC are also hard-denied); Claude edits configuration and runs read-only diagnostics only. Apply the ordinary Linux-sysadmin/developer red lines otherwise: gate irreversible or bulk file deletion, destructive disk/filesystem operations, credential/secret exposure, rerouting package installs, force-pushing or rewriting shared git history, and the personal-data egress above."
+        "Additional context — standing operator preferences (he approves most prompts and wants routine work uninterrupted, but wants these kept gated): he performs ALL system rebuilds/activations and remote state changes himself — nixos-rebuild, nix builds, garbage collection, and service restarts/deploys on the servers (rebuild/build/GC are also hard-denied); Claude edits configuration and runs read-only diagnostics only. Apply the ordinary Linux-sysadmin/developer red lines otherwise: gate irreversible or bulk file deletion, destructive disk/filesystem operations, credential/secret exposure, rerouting package installs, force-pushing or rewriting shared git history, and the personal-data egress above."
       ];
       tui = "fullscreen";
       model = "opus";
