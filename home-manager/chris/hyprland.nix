@@ -47,7 +47,6 @@ in
       "home-manager/shared/alacritty.nix"
       "home-manager/shared/rofi.nix"
       "home-manager/shared/waybar.nix"
-      "home-manager/shared/hyprlock.nix"
       "home-manager/shared/gammastep.nix"
       "home-manager/shared/firefox.nix"
       "home-manager/${username}/thunderbird.nix"
@@ -117,22 +116,16 @@ in
     components = [ "secrets" ];
   };
 
-  # idle daemon: lock screen at 9 min, DPMS off all monitors at 10 min, wake on input
+  # idle daemon: DPMS off all monitors at 5 min, wake on input - no screen locking anywhere
   services.hypridle = {
     enable = true;
     settings = {
       general = {
-        lock_cmd = "${pkgs.procps}/bin/pidof hyprlock || ${pkgs.hyprlock}/bin/hyprlock";
-        before_sleep_cmd = "${pkgs.systemd}/bin/loginctl lock-session";
         after_sleep_cmd = "${pkgs.hyprland}/bin/hyprctl dispatch dpms on";
       };
       listener = [
         {
-          timeout = 540;
-          on-timeout = "${pkgs.systemd}/bin/loginctl lock-session";
-        }
-        {
-          timeout = 600;
+          timeout = 300;
           on-timeout = "${pkgs.hyprland}/bin/hyprctl dispatch dpms off";
           on-resume = "${pkgs.hyprland}/bin/hyprctl dispatch dpms on";
         }

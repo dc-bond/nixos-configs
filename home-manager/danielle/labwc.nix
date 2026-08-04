@@ -47,7 +47,6 @@ in
       "home-manager/shared/alacritty.nix"
       "home-manager/shared/rofi.nix"
       "home-manager/shared/waybar.nix"
-      "home-manager/shared/hyprlock.nix"
       "home-manager/shared/gammastep.nix"
       "home-manager/shared/chromium.nix"
       "home-manager/shared/firefox.nix"
@@ -281,9 +280,6 @@ in
           </item>
           <separator />
           <menu id="power-menu" label="Exit">
-            <item label="Lock Screen">
-              <action name="Execute" command="hyprlock" />
-            </item>
             <item label="Suspend">
               <action name="Execute" command="systemctl suspend" />
             </item>
