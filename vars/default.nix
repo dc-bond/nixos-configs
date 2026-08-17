@@ -242,7 +242,7 @@
       tailscaleIp = null;
     };
     unifiSwitch8 = {
-      ipv4 = "192.168.1.199";
+      ipv4 = "192.168.1.243";
       tailscaleIp = null;
     };
     unifiSwitch8Lite = {
@@ -270,7 +270,7 @@
       tailscaleIp = null;
     };
     hueBridge = {
-      ipv4 = "192.168.4.14";
+      ipv4 = "192.168.1.250";
       tailscaleIp = null;
     };
     # SMLIGHT SLZB-06 POE Zigbee coordinator, reachable at :6638 over TCP
