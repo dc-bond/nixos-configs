@@ -221,13 +221,13 @@
       ipv4 = "192.168.1.100";
       tailscaleIp = "100.123.43.13";
     };
-    daniellePixel7a = {
-      ipv4 = "192.168.1.99";
-      tailscaleIp = "100.91.224.34";
+    danielleIphone17 = {
+      ipv4 = null; # TODO: set once a static DHCP lease is reserved in Unifi
+      tailscaleIp = "100.116.223.73";
     };
-    sydneyIphone6 = {
-      ipv4 = "192.168.1.127";
-      tailscaleIp = "100.122.145.11";
+    sydneyIpadA16 = {
+      ipv4 = "192.168.1.249";
+      tailscaleIp = "100.92.77.28";
     };
     rokuGym = {
       ipv4 = "192.168.4.9";
