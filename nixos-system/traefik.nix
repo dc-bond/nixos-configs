@@ -365,8 +365,8 @@ in
                   "${configVars.hosts.alder.networking.tailscaleIp}"
                   "${configVars.hosts.kauri.networking.tailscaleIp}"
                   "${configVars.devices.chrisIphone15.tailscaleIp}"
-                  "${configVars.devices.daniellePixel7a.tailscaleIp}"
-                  "${configVars.devices.sydneyIphone6.tailscaleIp}"
+                  "${configVars.devices.danielleIphone17.tailscaleIp}"
+                  "${configVars.devices.sydneyIpadA16.tailscaleIp}"
                 ];
               };
             };
