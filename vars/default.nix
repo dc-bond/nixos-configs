@@ -222,7 +222,7 @@
       tailscaleIp = "100.123.43.13";
     };
     danielleIphone17 = {
-      ipv4 = null; # TODO: set once a static DHCP lease is reserved in Unifi
+      ipv4 = "192.168.1.241";
       tailscaleIp = "100.116.223.73";
     };
     sydneyIpadA16 = {
