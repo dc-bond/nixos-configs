@@ -107,6 +107,7 @@ in
         "mobile_app"
         "notify"
         "smtp"
+        "airgradient" # indoor/outdoor air monitors (configVars.devices.{indoor,outdoor}AirMonitor); local polling, UI config flow
       ];
       config = {
         http = {
