@@ -192,7 +192,7 @@
         ethernetInterface = null;
         wifiInterface = "wlan0";
         dockInterface = null;
-        ipv4 = "192.168.4.15";
+        ipv4 = null; # remote host, no LAN address - reachable over tailscale only
         tailscaleIp = "100.68.185.99";
         tailscale = {
           role = "client";
@@ -217,7 +217,7 @@
   
   devices = {
     chrisIphone15 = {
-      ipv4 = "192.168.1.100";
+      ipv4 = "192.168.1.216";
       tailscaleIp = "100.123.43.13";
     };
     danielleIphone17 = {
@@ -272,13 +272,21 @@
       ipv4 = "192.168.1.250";
       tailscaleIp = null;
     };
+    indoorAirMonitor = {
+      ipv4 = "192.168.1.247";
+      tailscaleIp = null;
+    };
+    outdoorAirMonitor = {
+      ipv4 = "192.168.1.246";
+      tailscaleIp = null;
+    };
     # SMLIGHT SLZB-06 POE Zigbee coordinator, reachable at :6638 over TCP
     # (SLZB-OS "Zigbee2MQTT (TCP)" mode). Assign a static DHCP lease in Unifi
     # for the device's MAC and update this IP to match.
-    # slzb06 = {            # not yet installed - uncomment once the device is on the LAN and DHCP-reserved
-    #   ipv4 = null;
-    #   tailscaleIp = null;
-    # };
+    slzb06 = {              # set ipv4 once the device is on the LAN and DHCP-reserved, then re-enable oci-zigbee2mqtt.nix on aspen
+      ipv4 = null;
+      tailscaleIp = null;
+    };
     # teslaMegatron = {     # lived on the retired Tesla VLAN - uncomment with a 192.168.1.x address once the car joins Opticon-Home
     #   ipv4 = null;
     #   tailscaleIp = null;
