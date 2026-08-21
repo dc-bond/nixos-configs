@@ -26,7 +26,6 @@
           role = "exit-node";
           advertiseRoutes = [
             "192.168.1.0/24"
-            "192.168.4.0/27"
           ];
           defaultExitNode = null;
         };
@@ -229,12 +228,12 @@
       ipv4 = "192.168.1.249";
       tailscaleIp = "100.92.77.28";
     };
-    rokuGym = {
-      ipv4 = "192.168.4.9";
-      tailscaleIp = null;
-    };
-    rokuLivingroom = {
-      ipv4 = "192.168.4.10";
+    # rokuGym = {           # not migrated off the retired IOT VLAN - re-add with a 192.168.1.x address if it comes back
+    #   ipv4 = null;
+    #   tailscaleIp = null;
+    # };
+    roku65tv = {            # formerly rokuLivingroom, migrated from the retired IOT VLAN
+      ipv4 = "192.168.1.242";
       tailscaleIp = null;
     };
     unifiUsg = {
@@ -276,24 +275,16 @@
     # SMLIGHT SLZB-06 POE Zigbee coordinator, reachable at :6638 over TCP
     # (SLZB-OS "Zigbee2MQTT (TCP)" mode). Assign a static DHCP lease in Unifi
     # for the device's MAC and update this IP to match.
-    slzb06 = {
-      ipv4 = "192.168.1.???"; # TODO: set after SLZB-06 is on the LAN and DHCP-reserved
-      tailscaleIp = null;
-    };
-    carrierThermostat = {
-      ipv4 = "192.168.4.2";
-      tailscaleIp = null;
-    };
-    teslaMegatron = {
-      ipv4 = "192.168.3.8";
-      tailscaleIp = null;
-    };
-    teslaWallCharger = {
-      ipv4 = "192.168.3.9";
-      tailscaleIp = null;
-    };
+    # slzb06 = {            # not yet installed - uncomment once the device is on the LAN and DHCP-reserved
+    #   ipv4 = null;
+    #   tailscaleIp = null;
+    # };
+    # teslaMegatron = {     # lived on the retired Tesla VLAN - uncomment with a 192.168.1.x address once the car joins Opticon-Home
+    #   ipv4 = null;
+    #   tailscaleIp = null;
+    # };
     canonPrinter3rdFloor = {
-      ipv4 = "192.168.4.17";
+      ipv4 = "192.168.1.245";
       tailscaleIp = null;
     };
     danielleSurfacePro = {
@@ -306,10 +297,6 @@
     };
     danielleWorkLaptopWifi = {
       ipv4 = "192.168.1.154";
-      tailscaleIp = null;
-    };
-    sydneyAmazonTablet = {
-      ipv4 = "192.168.4.7";
       tailscaleIp = null;
     };
   };
