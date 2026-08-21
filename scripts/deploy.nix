@@ -14,7 +14,10 @@ let
   mkDeployScript = hostname: hostConfig:
     let
       users = hostConfig.users;
-      ipv4 = hostConfig.networking.ipv4;
+      # remote hosts (e.g. alder) have no LAN address and are reached over tailscale instead
+      ipv4 = if hostConfig.networking.ipv4 != null
+             then hostConfig.networking.ipv4
+             else hostConfig.networking.tailscaleIp;
       useDiskEncryption = hostConfig.hardware.diskEncryption or false;
       usesImpermanence = hostConfig.usesImpermanence or false;
 
