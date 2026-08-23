@@ -59,7 +59,7 @@ in
 
     # centralized logging configuration
     services.journald = {
-      storage = "persistent"; # write logs to /var/log/journal (survives reboots on impermanence hosts)
+      storage = "persistent"; # write logs to /var/log/journal — NOTE: on impermanence hosts this only survives reboots if the host also persists "/var/log/journal" (see aspen/thinkpad impermanence.nix); without that bind mount the journal sits on the tmpfs root and SystemMaxUse below is charged against RAM
       extraConfig = ''
         SystemMaxUse=2G
         MaxRetentionSec=2week

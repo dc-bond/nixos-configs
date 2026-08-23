@@ -40,6 +40,7 @@
       "/var/lib/bluetooth"  # bluetooth pairings
       "/var/lib/tailscale"  # tailscale node identity at /var/lib/tailscale/tailscaled.state after first tailnet connection using one-time authKey
       "/var/lib/prometheus/node-exporter-text-files"  # persist btrfs scrub metrics between weekly scrubs
+      "/var/log/journal" # journald storage is "persistent" (foundation.nix); without this bind mount it lands on the tmpfs root, so logs are lost on reboot AND SystemMaxUse=2G is charged against RAM
     ];
 
     # user-level persistence
