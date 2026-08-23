@@ -137,7 +137,9 @@ let
         # actually stored. That gap — SwapCached-worth of zram slots, routinely
         # several hundred MiB — got misattributed to the disk swapfile and could
         # trip the 1 GiB HIGH threshold on its own with the disk tier nearly idle.
-        # Per-device Used still counts that device's own cached slots, but that
+        # Per-device Used still counts cached slots belonging to that device
+        # (note: no apostrophes in this block - the awk program is single-quoted
+        # inside writeShellScript, so one would terminate it), but that
         # matches the high-water-mark semantic this tier wants, and the kernel
         # exposes no per-device SwapCached breakdown to refine it further.
         disk_swap_used = 0
