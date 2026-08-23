@@ -129,8 +129,26 @@ let
         used = total - avail
         swap_used_total = swapT - swapF
 
-        disk_swap_used = swap_used_total - zram_logical
-        if (disk_swap_used < 0) disk_swap_used = 0
+        # Disk-swap usage is read straight from /proc/swaps (Used column, KiB),
+        # summing every non-zram backing store. It is deliberately NOT derived as
+        # (SwapTotal - SwapFree) - zram_logical: SwapTotal/SwapFree count swap
+        # *slots*, which stay allocated for pages that are also still resident in
+        # RAM (SwapCached), whereas zram mm_stat orig_data_size counts only pages
+        # actually stored. That gap — SwapCached-worth of zram slots, routinely
+        # several hundred MiB — got misattributed to the disk swapfile and could
+        # trip the 1 GiB HIGH threshold on its own with the disk tier nearly idle.
+        # Per-device Used still counts that device's own cached slots, but that
+        # matches the high-water-mark semantic this tier wants, and the kernel
+        # exposes no per-device SwapCached breakdown to refine it further.
+        disk_swap_used = 0
+        while ((getline line < "/proc/swaps") > 0) {
+          if (line ~ /^Filename/) continue
+          split(line, sw, " ")
+          if (sw[1] ~ /^\/dev\/zram[0-9]+$/) continue
+          disk_swap_used += sw[4]
+        }
+        close("/proc/swaps")
+
         zram_savings = zram_logical - zram_physical
         if (zram_savings < 0) zram_savings = 0
 
