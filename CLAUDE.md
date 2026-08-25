@@ -197,7 +197,7 @@ Conventions and exceptions:
 **OCI Container Services** (`oci-*.nix` modules)
 - DNS: `oci-pihole.nix`
 - Media: `oci-media-server.nix` (Jellyfin, Sonarr, Radarr)
-- Home Automation: `oci-frigate.nix`, `oci-zwavejs.nix`
+- Home Automation: `oci-frigate.nix`, `oci-zwavejs.nix` (`zigbee2mqtt.nix` is a native service, not OCI)
 - Productivity: `oci-actual.nix`, `oci-fava.nix`, `oci-n8n.nix`, `oci-librechat.nix`
 - Infrastructure: `oci-unifi.nix`, `oci-searxng.nix`
 
@@ -216,7 +216,7 @@ Conventions and exceptions:
 - **Auth**: Authelia (SSO), LLDAP (LDAP directory)
 - **Storage**: Nextcloud, Photoprism, Calibre
 - **Monitoring**: Prometheus, Grafana, Alertmanager (Uptime Kuma retired — deprecated to `nixos-configs-private/deprecated/`; backup dead-man's-switch now handled by node_exporter textfile collector + prometheus `backupStale` alert)
-- **Home Automation**: Home Assistant, Frigate, Zwavejs
+- **Home Automation**: Home Assistant, Frigate, Zwavejs, Zigbee2MQTT (SLZB-06MG24U coordinator; the Hue bridge it replaced was decommissioned 2026-08-25)
 - **Media**: Jellyfin, Sonarr, Radarr, Prowlarr, SABnzbd
 - **Productivity**: Actual Budget, Fava, RecipeSage, N8N, LibreChat
 - **Security**: Vaultwarden, CrowdSec

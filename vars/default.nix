@@ -268,10 +268,6 @@
       ipv4 = "192.168.1.30";
       tailscaleIp = null;
     };
-    hueBridge = {
-      ipv4 = "192.168.1.250";
-      tailscaleIp = null;
-    };
     indoorAirMonitor = {
       ipv4 = "192.168.1.247";
       tailscaleIp = null;

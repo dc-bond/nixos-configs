@@ -104,7 +104,6 @@ in
         "default_config"
         "mqtt"
         "zwave_js"
-        "hue"
         "mobile_app"
         "notify"
         "smtp"
