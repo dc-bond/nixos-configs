@@ -26,6 +26,13 @@ let
   app = "zigbee2mqtt";
   dataDir = "/var/lib/${app}";
 
+  # default fade for on/off, brightness, colour and colour temp, in seconds.
+  # set as a device/group *option* rather than per-command: zigbee-herdsman's
+  # getTransition falls back to options.transition when a message carries none,
+  # so this covers dashboard taps, scene recalls and automations alike. without
+  # it every change snaps instantly, where the hue bridge always faded.
+  transitionSecs = 1.0;
+
   # one zigbee multicast group per physical fixture, members are friendly names
   # from settings.devices below. zigbee groups rather than home assistant light
   # groups: a group command is one unacked multicast where an HA group is N
@@ -54,7 +61,10 @@ let
   };
 
   groupSettings = lib.mapAttrs' (name: g:
-    lib.nameValuePair (toString g.id) { friendly_name = name; }
+    lib.nameValuePair (toString g.id) {
+      friendly_name = name;
+      transition = transitionSecs;
+    }
   ) fixtureGroups;
   recoveryPlan = {
     restoreItems = [
@@ -146,12 +156,14 @@ in
         # every start. a newly paired device writes itself into configuration.yaml
         # at join time and reverts to its bare IEEE name on the next restart until
         # added here, which keeps this file the source of truth rather than a seed.
+        # transition is set on the members as well as the groups: scenes address
+        # individual bulbs, group on/off addresses the group.
         devices = {
-          "0x0017880102dc50e9" = { friendly_name = "Basement/Triple Lamp Short"; };
-          "0x00178801028e5a54" = { friendly_name = "Basement/Triple Lamp Medium"; };
-          "0x0017880102dc511c" = { friendly_name = "Basement/Triple Lamp Long"; };
-          "0x001788010c6b174f" = { friendly_name = "Dining Room/Chris Desk Backlight L"; };
-          "0x001788010c625697" = { friendly_name = "Dining Room/Chris Desk Backlight R"; };
+          "0x0017880102dc50e9" = { friendly_name = "Basement/Triple Lamp Short"; transition = transitionSecs; };
+          "0x00178801028e5a54" = { friendly_name = "Basement/Triple Lamp Medium"; transition = transitionSecs; };
+          "0x0017880102dc511c" = { friendly_name = "Basement/Triple Lamp Long"; transition = transitionSecs; };
+          "0x001788010c6b174f" = { friendly_name = "Dining Room/Chris Desk Backlight L"; transition = transitionSecs; };
+          "0x001788010c625697" = { friendly_name = "Dining Room/Chris Desk Backlight R"; transition = transitionSecs; };
         };
 
         # only the groups themselves are declarable - zigbee2mqtt 2.x dropped
