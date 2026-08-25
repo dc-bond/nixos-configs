@@ -20,6 +20,21 @@
 # A group is the same path without an element, so `Basement/Triple Lamp` and
 # `Basement/Triple Lamp Short` slugify to distinct entity ids. Renaming changes
 # the entity id, so update referencing automations in the same commit.
+#
+# adopting a device - stop home assistant FIRST, the ordering is the point:
+#   1. systemctl stop home-assistant
+#   2. permit join in the frontend, then power-cycle the device to pair it
+#   3. note the IEEE from the join log, add it to `devices` below with a
+#      convention name, and to `fixtureGroups` if it joins a multi-radio fixture
+#   4. nixos-rebuild switch (restarts home assistant)
+# home assistant fixes an entity id at creation and never rewrites it, so if it
+# is running at step 2 the device lands as light.0x0017880102dc50e9 forever and
+# has to be renamed or deleted afterwards. Stopped, it first sees the device
+# already named and derives the right id.
+#
+# ex-hue devices were never cleanly unpaired from the bridge before it was
+# decommissioned, so each needs a Touchlink or vendor power-cycle reset before
+# it will join. See nixos-configs-private/hue-backup/hue-devices-reference.nix.
 
 let
 
