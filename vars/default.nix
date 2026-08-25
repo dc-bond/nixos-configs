@@ -280,11 +280,11 @@
       ipv4 = "192.168.1.246";
       tailscaleIp = null;
     };
-    # SMLIGHT SLZB-06 POE Zigbee coordinator, reachable at :6638 over TCP
-    # (SLZB-OS "Zigbee2MQTT (TCP)" mode). Assign a static DHCP lease in Unifi
-    # for the device's MAC and update this IP to match.
-    slzb06 = {              # set ipv4 once the device is on the LAN and DHCP-reserved, then re-enable oci-zigbee2mqtt.nix on aspen
-      ipv4 = null;
+    # SMLIGHT SLZB-06MG24U POE Zigbee coordinator, reachable at :6638 over TCP
+    # (SLZB-OS "Zigbee2MQTT (TCP)" mode). Static DHCP lease reserved in Unifi.
+    # EFR32MG24 radio -> zigbee2mqtt must use the 'ember' adapter, not 'zstack'.
+    slzb06 = {
+      ipv4 = "192.168.1.210";
       tailscaleIp = null;
     };
     # teslaMegatron = {     # lived on the retired Tesla VLAN - uncomment with a 192.168.1.x address once the car joins Opticon-Home
@@ -345,13 +345,6 @@
       subnet = "172.21.4.0/25";
       containers = {
         zwavejs = { ipv4 = "172.21.4.2"; };
-      };
-    };
-
-    zigbee2mqtt = {
-      subnet = "172.21.21.0/25";
-      containers = {
-        zigbee2mqtt = { ipv4 = "172.21.21.2"; };
       };
     };
 

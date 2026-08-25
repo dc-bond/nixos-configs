@@ -27,6 +27,7 @@ pinned to a specific non-channel version.
 | `nixos-system/sunshine.nix` | `sunshine` | `pkgs.pkgs-2505` (25.05) | 25.11 has an x11-capture crash regression ([nixpkgs#475181](https://github.com/NixOS/nixpkgs/issues/475181)) | Fix lands in 25.11 |
 | `nixos-system/crowdsec.nix` | `crowdsec` | `pkgs.unstable` | Newer release than 25.11 ships | 25.11 catches up / no longer needed |
 | `nixos-system/crowdsec.nix` | `crowdsec-firewall-bouncer` | `pkgs.unstable` | Kept in lockstep with `crowdsec` above | Same as `crowdsec` |
+| `nixos-system/zigbee2mqtt.nix` | `zigbee2mqtt` | `pkgs.unstable` (2.13.0 at time of writing vs 2.6.3 in 25.11) | Current `ember` driver work for the SLZB-06MG24U's EFR32MG24 radio; 25.11's 2.6.3 predates several EmberZNet fixes | 25.11 ships ≥2.13.x — then drop back to `pkgs.zigbee2mqtt` |
 | `home-manager/chris/icewind-dale.nix` | `openssl_1_0_2` | `pkgs.pkgs-2105` (21.05) | Beamdog game binary links libssl 1.0.0, removed from nixpkgs after 21.05 | **Permanent** by nature (legacy ABI) |
 | `nixos-system/foundation.nix` | `librewolf` | `permittedInsecurePackages` (`librewolf-152.0.2-1`) | Allows a build flagged insecure so librewolf stays installable | Newer non-flagged librewolf in channel |
 
