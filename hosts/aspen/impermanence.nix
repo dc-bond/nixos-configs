@@ -59,6 +59,7 @@
       "/var/lib/redis-nextcloud"                     # nextcloud redis cache
       "/var/lib/hass"                                # home assistant config, automations
       "/var/lib/mosquitto"                           # mqtt broker state
+      "/var/lib/zigbee2mqtt"                         # zigbee network state - device database, coordinator backup
       "/var/lib/private/photoprism"                  # photoprism state (DynamicUser service)
       "/var/lib/private/lldap"                       # lldap state (DynamicUser service)
       "/var/lib/private/vikunja"                     # vikunja uploaded files - avatars, task attachments (DynamicUser service)

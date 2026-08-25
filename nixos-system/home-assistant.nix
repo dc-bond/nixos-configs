@@ -45,7 +45,7 @@ in
   sops = {
     secrets = {
       mqttHassPasswd = {};
-      mqttZ2mPasswd = {}; # mosquitto user for zigbee2mqtt (oci-zigbee2mqtt.nix)
+      mqttZ2mPasswd = {}; # mosquitto user for zigbee2mqtt (zigbee2mqtt.nix)
       chrisEmailPasswd = {};
     };
     templates = {
