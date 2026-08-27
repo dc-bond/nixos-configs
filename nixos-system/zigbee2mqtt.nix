@@ -179,6 +179,19 @@ in
           "0x0017880102dc511c" = { friendly_name = "Basement/Triple Lamp Long"; transition = transitionSecs; };
           "0x001788010c6b174f" = { friendly_name = "Dining Room/Chris Desk Backlight L"; transition = transitionSecs; };
           "0x001788010c625697" = { friendly_name = "Dining Room/Chris Desk Backlight R"; transition = transitionSecs; };
+
+          # pending fixtures, placeholder names until locations are chosen. renaming
+          # later needs the ha device deleted first so the entity id re-derives.
+          # LCT016 shares its z2m model with the LCT014s; only model_id separates them.
+          "0x0017880103d6552f" = { friendly_name = "Unassigned/Color Bulb LCT016"; transition = transitionSecs; };
+          "0x001788010ce32eda" = { friendly_name = "Unassigned/Color Bulb LCA007"; transition = transitionSecs; };
+          "0x001788010c59b68b" = { friendly_name = "Unassigned/Lightstrip LCL001"; transition = transitionSecs; };
+          "0x0017880104e5920d" = { friendly_name = "Unassigned/Dimmer RWL020"; }; # switch, transition is a light option
+          # the three RWL022s are identical hardware; numbering is arbitrary, match
+          # the tape labels by pressing a button and watching the action topic
+          "0x001788010d2905f0" = { friendly_name = "Unassigned/Dimmer RWL022 1"; };
+          "0x001788010d2ba2cc" = { friendly_name = "Unassigned/Dimmer RWL022 2"; };
+          "0x001788010e29213d" = { friendly_name = "Unassigned/Dimmer RWL022 3"; };
         };
 
         # only the groups themselves are declarable - zigbee2mqtt 2.x dropped
