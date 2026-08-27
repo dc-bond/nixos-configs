@@ -26,10 +26,18 @@
 # never rewrites it. to rename a fixture:
 #   1. change friendly_name here
 #   2. nixos-rebuild switch - z2m restarts and rewrites the retained discovery
-#   3. THEN delete the device in home assistant (settings > devices > mqtt)
-#   4. restart home assistant, it re-creates from the corrected payload
-# deleting before step 2 races the stale payload and re-pins the old id. this
-# bit 2 of 7 entities per device on 2026-08-25 and all of them on 2026-08-27.
+#   3. THEN delete the device in home assistant (settings > devices > mqtt).
+#      this also clears the retained discovery topics, so nothing will recreate
+#      the entity on its own
+#   4. systemctl restart zigbee2mqtt - republishes discovery under the new name,
+#      which a running home assistant picks up live. restarting home assistant
+#      instead does nothing: there is no retained payload left for it to replay
+# deleting before step 2 races the stale payload and re-pins the old id - that
+# is what put all 7 entities of every device adopted 2026-08-27 under bare ieee
+# ids. the `effect` and `linkquality` entities are a separate and harmless case:
+# home assistant disables them by default, and a disabled entity always takes a
+# bare ieee id no matter what the payload says. ignore those two rather than
+# chasing them - every other entity is what scenes and automations reference.
 #
 # adopting a device - stop home assistant FIRST, the ordering is the point:
 #   1. systemctl stop home-assistant
