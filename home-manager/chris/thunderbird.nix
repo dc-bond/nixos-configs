@@ -10,6 +10,11 @@
 let
   # HTML signature rendered inline on every outgoing mail. Kept here (not read from
   # a file) so the whole thunderbird identity is a single declarative artifact.
+  # the two trailing divs are deliberate: with sig_bottom=false TB drops the sig
+  # straight onto the quoted reply block with no separation. first is a rule to
+  # visually close the block, second a blank line. both carry &nbsp; because an
+  # empty <div>/<br> collapses to zero height and renders nothing; font-size/
+  # line-height 0 on the rule keeps its nbsp from adding a stray text line.
   htmlSignature = ''
     <div style="font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #1f2937; font-size: 14px; line-height: 1.4;">
       <span style="display: inline-block; padding-right: 14px; border-right: 3px solid #2563eb; vertical-align: middle;">
@@ -22,6 +27,8 @@ let
         <span style="display: block; color: #64748b; font-size: 12px; margin-top: 2px;">dcbond.com</span>
       </span>
     </div>
+    <div style="border-top: 1px solid #e2e8f0; max-width: 320px; margin-top: 10px; font-size: 0; line-height: 0;">&nbsp;</div>
+    <div style="line-height: 1.4;">&nbsp;</div>
   '';
 
   nextcloudDav = "https://nextcloud.${configVars.domain1}/remote.php/dav";
