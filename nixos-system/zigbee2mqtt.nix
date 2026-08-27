@@ -18,8 +18,18 @@
 #   Element  only for fixtures with more than one radio; physical position
 #            (L/R) where one exists, otherwise 1/2/3
 # A group is the same path without an element, so `Basement/Triple Lamp` and
-# `Basement/Triple Lamp Short` slugify to distinct entity ids. Renaming changes
-# the entity id, so update referencing automations in the same commit.
+# `Basement/Triple Lamp Short` slugify to distinct entity ids.
+#
+# renaming a device does NOT fix its home assistant entity id. discovery is
+# retained and keyed by ieee, but only the payload's object_id carries the
+# friendly name, and home assistant pins an entity id at first discovery and
+# never rewrites it. to rename a fixture:
+#   1. change friendly_name here
+#   2. nixos-rebuild switch - z2m restarts and rewrites the retained discovery
+#   3. THEN delete the device in home assistant (settings > devices > mqtt)
+#   4. restart home assistant, it re-creates from the corrected payload
+# deleting before step 2 races the stale payload and re-pins the old id. this
+# bit 2 of 7 entities per device on 2026-08-25 and all of them on 2026-08-27.
 #
 # adopting a device - stop home assistant FIRST, the ordering is the point:
 #   1. systemctl stop home-assistant
@@ -179,14 +189,13 @@ in
           "0x0017880102dc511c" = { friendly_name = "Basement/Triple Lamp Long"; transition = transitionSecs; };
           "0x001788010c6b174f" = { friendly_name = "Dining Room/Chris Desk Backlight L"; transition = transitionSecs; };
           "0x001788010c625697" = { friendly_name = "Dining Room/Chris Desk Backlight R"; transition = transitionSecs; };
+          "0x0017880103d6552f" = { friendly_name = "Master Bathroom/Ceiling"; transition = transitionSecs; }; # LCT016, not an LCT014 despite the shared z2m model
+          "0x0017880104e5920d" = { friendly_name = "Master Bathroom/Dimmer"; }; # switch, transition is a light option
 
           # pending fixtures, placeholder names until locations are chosen. renaming
-          # later needs the ha device deleted first so the entity id re-derives.
-          # LCT016 shares its z2m model with the LCT014s; only model_id separates them.
-          "0x0017880103d6552f" = { friendly_name = "Unassigned/Color Bulb LCT016"; transition = transitionSecs; };
+          # one needs the ha device deleted after the rebuild, see the header.
           "0x001788010ce32eda" = { friendly_name = "Unassigned/Color Bulb LCA007"; transition = transitionSecs; };
           "0x001788010c59b68b" = { friendly_name = "Unassigned/Lightstrip LCL001"; transition = transitionSecs; };
-          "0x0017880104e5920d" = { friendly_name = "Unassigned/Dimmer RWL020"; }; # switch, transition is a light option
           # the three RWL022s are identical hardware; numbering is arbitrary, match
           # the tape labels by pressing a button and watching the action topic
           "0x001788010d2905f0" = { friendly_name = "Unassigned/Dimmer RWL022 1"; };
