@@ -304,11 +304,11 @@
     },
     "private": {
       "locked": {
-        "lastModified": 1787876211,
-        "narHash": "sha256-q5hXPlbOD1/eKU+0vyXn2mOYCxo8b8xLV1svmlvyFxE=",
+        "lastModified": 1787876351,
+        "narHash": "sha256-JxFYh6XRXX5QvNVKH3KpLSJ/x5FuSphRZ7i5Zi6dYFI=",
         "ref": "refs/heads/main",
-        "rev": "ccad5209f7266699166646da8e8e766a1050921d",
-        "revCount": 145,
+        "rev": "13c6d43e722cc3e50d22605113b15843ff26f1e6",
+        "revCount": 146,
         "type": "git",
         "url": "ssh://git@github.com/dc-bond/nixos-configs-private"
       },
