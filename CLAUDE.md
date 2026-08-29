@@ -172,7 +172,7 @@ Conventions and exceptions:
 
 ### Secrets Management
 
-- **SOPS** with **age** encryption (not PGP)
+- **SOPS**, encrypted to both age recipients and chris's PGP key (see `.sops.yaml`)
 - Encrypted secrets file: `secrets.yaml`
 - Per-host age keys: `/etc/age/${hostname}-age.key`
 - Secrets decrypted at boot to `/run/secrets/`
@@ -184,6 +184,23 @@ Conventions and exceptions:
   };
   # Reference: config.sops.secrets.secretName.path
   ```
+
+**AI agent access to `secrets.yaml`**
+
+chris's user key is PGP on a YubiKey with OpenPGP touch policy `dec = on`, so
+every decrypt blocks until the key is physically tapped. That presence gating is
+what makes targeted reads acceptable — it does not make bulk reads acceptable.
+
+- **Allowed:** `sops -d --extract '["someKey"]'` for a specific key; `sops set`
+  to add or update a key; grepping the *encrypted* file for key names.
+- **Prohibited:** bare `sops -d secrets.yaml` (dumps all ~90 values); writing
+  decrypted output to any file; echoing a plaintext secret into terminal
+  output; copying decrypted content anywhere outside the file. Never save an
+  unencrypted copy of the file, even to a scratchpad.
+- Bind values to shell variables rather than printing them, and redirect
+  sanity-check decrypts to `/dev/null`.
+- Tool output is written verbatim to plaintext transcripts under
+  `~/.claude/projects/`, so anything printed persists on disk indefinitely.
 
 ### Service Organization
 
@@ -235,3 +252,4 @@ Conventions and exceptions:
 11. **Commit messages** - Plain concise subject line, lowercase imperative. Do **not** append `Co-Authored-By: Claude ...` trailers.
 12. **Track deviations from stock 25.11** - Any cross-channel pull, version pin, overlay, insecure-package allowance, or upstream-bug workaround belongs in `DEVIATIONS.md`. Add/update its row (with a revert trigger) in the same commit as the code change.
 13. **Use the `nixos` MCP for nix facts** - For any nixpkgs package or NixOS / home-manager / nix-darwin option question (does a package/option exist, its name, type, default, or available versions), call the `nixos` MCP tools (`mcp__nixos__nix`, `mcp__nixos__nix_versions`) first and treat their output as source of truth. Do **not** answer these from training memory, and do **not** `WebSearch`/`WebFetch` for package or option facts the MCP can supply. Web search stays fine for things outside the MCP's scope (upstream bugs, discussions, release notes).
+14. **`secrets.yaml` reads are selective only** - Targeted `sops -d --extract '["key"]'` and `sops set` are fine (chris's YubiKey gates every decrypt on a physical touch). Never run a bare `sops -d` on the whole file, never write decrypted output to a file, and never echo a plaintext secret value into terminal output - tool output persists verbatim in `~/.claude/projects/` transcripts. See **Secrets Management** above.
