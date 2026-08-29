@@ -81,7 +81,7 @@ in
   };
 
   services.traefik.dynamicConfigOptions.http.middlewares.jellyfin-trusted-allow.ipAllowList.sourceRange = [
-    "192.168.1.0/24" # home LAN (includes the rokus since the iot VLAN was retired)
+    "192.168.1.0/24" # home LAN (includes the rokus)
     "${configVars.hosts.aspen.networking.tailscaleIp}" # server - for blackbox monitoring
     "${configVars.hosts.juniper.networking.tailscaleIp}" # server - for blackbox monitoring
     "${configVars.hosts.thinkpad.networking.tailscaleIp}"
