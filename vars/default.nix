@@ -228,11 +228,11 @@
       ipv4 = "192.168.1.249";
       tailscaleIp = "100.92.77.28";
     };
-    # rokuGym = {           # not migrated off the retired IOT VLAN - re-add with a 192.168.1.x address if it comes back
-    #   ipv4 = null;
-    #   tailscaleIp = null;
-    # };
-    roku65tv = {            # formerly rokuLivingroom, migrated from the retired IOT VLAN
+    roku45tv = {
+      ipv4 = "192.168.1.239";
+      tailscaleIp = null;
+    };
+    roku65tv = {
       ipv4 = "192.168.1.242";
       tailscaleIp = null;
     };
@@ -276,6 +276,16 @@
       ipv4 = "192.168.1.246";
       tailscaleIp = null;
     };
+    # Rainforest EAGLE 3 smart meter gateway, static lease reserved in Unifi.
+    # Local API is EAGLE-200 compatible; credentials are the cloud ID and install
+    # code off the device label, both in secrets.yaml (eagle3CloudId /
+    # eagle3InstallCode) - they stay out of this public repo.
+    # Zigbee radio binds to the utility meter's SEP network, not to zigbee2mqtt;
+    # HA reads it over the EAGLE-200 local API instead (rainforest_eagle).
+    eagle3 = {
+      ipv4 = "192.168.1.211";
+      tailscaleIp = null;
+    };
     # SMLIGHT SLZB-06MG24U POE Zigbee coordinator, reachable at :6638 over TCP
     # (SLZB-OS "Zigbee2MQTT (TCP)" mode). Static DHCP lease reserved in Unifi.
     # EFR32MG24 radio -> zigbee2mqtt must use the 'ember' adapter, not 'zstack'.
@@ -283,10 +293,11 @@
       ipv4 = "192.168.1.210";
       tailscaleIp = null;
     };
-    # teslaMegatron = {     # lived on the retired Tesla VLAN - uncomment with a 192.168.1.x address once the car joins Opticon-Home
-    #   ipv4 = null;
-    #   tailscaleIp = null;
-    # };
+    # tesla, joins Opticon-Home once the new garage has wifi coverage
+    teslaMegatron = {
+      ipv4 = null; # TODO: set after the car joins Opticon-Home
+      tailscaleIp = null;
+    };
     canonPrinter3rdFloor = {
       ipv4 = "192.168.1.245";
       tailscaleIp = null;
