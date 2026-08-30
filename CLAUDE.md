@@ -233,7 +233,7 @@ what makes targeted reads acceptable — it does not make bulk reads acceptable.
 - **Auth**: Authelia (SSO), LLDAP (LDAP directory)
 - **Storage**: Nextcloud, Photoprism, Calibre
 - **Monitoring**: Prometheus, Grafana, Alertmanager (Uptime Kuma retired — deprecated to `nixos-configs-private/deprecated/`; backup dead-man's-switch now handled by node_exporter textfile collector + prometheus `backupStale` alert)
-- **Home Automation**: Home Assistant, Frigate, Zwavejs, Zigbee2MQTT (SLZB-06MG24U coordinator; the Hue bridge it replaced was decommissioned 2026-08-25)
+- **Home Automation**: Home Assistant, Frigate, Zwavejs, Zigbee2MQTT (SLZB-06MG24U coordinator)
 - **Media**: Jellyfin, Sonarr, Radarr, Prowlarr, SABnzbd
 - **Productivity**: Actual Budget, Fava, RecipeSage, N8N, LibreChat
 - **Security**: Vaultwarden, CrowdSec

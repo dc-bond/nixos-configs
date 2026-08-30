@@ -18,7 +18,8 @@
 #   Element  only for fixtures with more than one radio; physical position
 #            (L/R) where one exists, otherwise 1/2/3
 # A group is the same path without an element, so `Basement/Triple Lamp` and
-# `Basement/Triple Lamp Short` slugify to distinct entity ids.
+# `Basement/Triple Lamp Short` slugify to distinct entity ids. Devices whose
+# location is not chosen yet sit under `Unassigned/`.
 #
 # renaming a device does NOT fix its home assistant entity id. discovery is
 # retained and keyed by ieee, but only the payload's object_id carries the
@@ -32,12 +33,11 @@
 #   4. systemctl restart zigbee2mqtt - republishes discovery under the new name,
 #      which a running home assistant picks up live. restarting home assistant
 #      instead does nothing: there is no retained payload left for it to replay
-# deleting before step 2 races the stale payload and re-pins the old id - that
-# is what put all 7 entities of every device adopted 2026-08-27 under bare ieee
-# ids. the `effect` and `linkquality` entities are a separate and harmless case:
-# home assistant disables them by default, and a disabled entity always takes a
-# bare ieee id no matter what the payload says. ignore those two rather than
-# chasing them - every other entity is what scenes and automations reference.
+# deleting before step 2 races the stale payload and re-pins the old id. the
+# `effect` and `linkquality` entities are a separate and harmless case: home
+# assistant disables them by default, and a disabled entity always takes a bare
+# ieee id no matter what the payload says. ignore those two rather than chasing
+# them - every other entity is what scenes and automations reference.
 #
 # adopting a device - stop home assistant FIRST, the ordering is the point:
 #   1. systemctl stop home-assistant
@@ -45,14 +45,12 @@
 #   3. note the IEEE from the join log, add it to `devices` below with a
 #      convention name, and to `fixtureGroups` if it joins a multi-radio fixture
 #   4. nixos-rebuild switch (restarts home assistant)
-# home assistant fixes an entity id at creation and never rewrites it, so if it
-# is running at step 2 the device lands as light.0x0017880102dc50e9 forever and
-# has to be renamed or deleted afterwards. Stopped, it first sees the device
-# already named and derives the right id.
+# if home assistant is running at step 2 the device lands as
+# light.0x0017880102dc50e9 forever and needs the rename procedure above.
+# stopped, it first sees the device already named and derives the right id.
 #
-# ex-hue devices were never cleanly unpaired from the bridge before it was
-# decommissioned, so each needs a Touchlink or vendor power-cycle reset before
-# it will join. See nixos-configs-private/hue-backup/hue-devices-reference.nix.
+# ex-hue devices need a Touchlink or vendor power-cycle reset before they will
+# join. See nixos-configs-private/hue-backup/hue-devices-reference.nix.
 
 let
 
@@ -63,7 +61,7 @@ let
   # set as a device/group *option* rather than per-command: zigbee-herdsman's
   # getTransition falls back to options.transition when a message carries none,
   # so this covers dashboard taps, scene recalls and automations alike. without
-  # it every change snaps instantly, where the hue bridge always faded.
+  # it every change snaps instantly.
   transitionSecs = 1.0;
 
   # one zigbee multicast group per physical fixture, members are friendly names
@@ -204,6 +202,11 @@ in
           # one needs the ha device deleted after the rebuild, see the header.
           "0x001788010ce32eda" = { friendly_name = "Unassigned/Color Bulb LCA007"; transition = transitionSecs; };
           "0x001788010c59b68b" = { friendly_name = "Unassigned/Lightstrip LCL001"; transition = transitionSecs; };
+          # white-only: scene roles need color_temp_kelvin, not xy_color. destined
+          # for the 3rd floor ceiling and the closet; which ieee is which is not
+          # known - toggle one and watch which bulb responds before assigning
+          "0x001788010d757ff2" = { friendly_name = "Unassigned/White Bulb LWA025 1"; transition = transitionSecs; };
+          "0x001788010d757c69" = { friendly_name = "Unassigned/White Bulb LWA025 2"; transition = transitionSecs; };
           # the three RWL022s are identical hardware; numbering is arbitrary, match
           # the tape labels by pressing a button and watching the action topic
           "0x001788010d2905f0" = { friendly_name = "Unassigned/Dimmer RWL022 1"; };
