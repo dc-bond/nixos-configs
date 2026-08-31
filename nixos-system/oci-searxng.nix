@@ -15,13 +15,36 @@ in
   sops = {
     secrets.searxngSecretKey = {};
     templates."${app}-settings".content = ''
-      use_default_settings: true
+      use_default_settings:
+        engines:
+          remove:
+            - wikidata # sparql endpoint 403s the vps ip
       server:
         secret_key: "${config.sops.placeholder.searxngSecretKey}"
       search:
         formats:
           - html
           - json
+      # curated to engines that answer from a datacenter ip
+      engines:
+        - name: brave
+          disabled: true
+        - name: duckduckgo
+          disabled: true
+        - name: startpage
+          disabled: true
+        - name: google
+          weight: 2
+        - name: bing
+          disabled: false
+          weight: 2
+        - name: duckduckgo web
+          disabled: false
+          weight: 2
+        - name: gmx
+          disabled: false
+        - name: mwmbl
+          disabled: false
     '';
   };
   
