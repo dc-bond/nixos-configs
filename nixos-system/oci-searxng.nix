@@ -12,26 +12,24 @@ in
 
 {
 
-  environment = {
-    etc."searxng/settings.yml" = {
-      text = ''
-        use_default_settings: true
-        server:
-          secret_key: "searxng-testing12345"
-        search:
-          formats:
-            - html
-            - json
-      '';
-      mode = "0644";
-    };
+  sops = {
+    secrets.searxngSecretKey = {};
+    templates."${app}-settings".content = ''
+      use_default_settings: true
+      server:
+        secret_key: "${config.sops.placeholder.searxngSecretKey}"
+      search:
+        formats:
+          - html
+          - json
+    '';
   };
   
   virtualisation.oci-containers.containers."${app}" = {
-    image = "docker.io/${app}/${app}:2025.8.1-3d96414"; # https://hub.docker.com/r/searxng/searxng/tags
+    image = "docker.io/${app}/${app}:2026.8.29-d226b78bc"; # https://hub.docker.com/r/searxng/searxng/tags
     autoStart = true;
     log-driver = "journald";
-    volumes = [ "/etc/searxng/settings.yml:/etc/searxng/settings.yml:ro" ];
+    volumes = [ "${config.sops.templates."${app}-settings".path}:/etc/searxng/settings.yml:ro" ];
     environment = { SEARXNG_BASE_URL = "https://search.${configVars.domain2}"; };
     extraOptions = [
       "--tmpfs=/etc/searxng"
