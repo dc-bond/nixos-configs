@@ -3,10 +3,8 @@
   ... 
 }: 
 
-# baseline admin cli present on every host — these carry no configuration of their own, so
-# they lived as an identical copy-pasted block in each host's configuration.nix and drifted
-# (jq missing on kauri/alder, zip missing on thinkpad). centralised here so every host gets
-# the same set; host-specific tools still belong in that host's configuration.nix
+# baseline admin cli for every host — no configuration of their own, just binaries on PATH.
+# tools only one host needs belong in that host's configuration.nix
 {
 
   environment.systemPackages = with pkgs; [
