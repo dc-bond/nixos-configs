@@ -11,15 +11,27 @@
 # on the LAN in SLZB-OS "Zigbee2MQTT (TCP)" mode at configVars.devices.slzb06.ipv4
 #
 # device naming convention, follow for everything added to this network:
-#   <Area>/<Fixture> <Element>
-#   Area     room, Title Case. `/` is a zigbee2mqtt topic separator, so this
-#            becomes an MQTT topic segment and a frontend folder
-#   Fixture  the physical object, vendor-neutral - this network mixes Hue and non-Hue
-#   Element  only for fixtures with more than one radio; physical position
-#            (L/R) where one exists, otherwise 1/2/3
-# A group is the same path without an element, so `Basement/Triple Lamp` and
-# `Basement/Triple Lamp Short` slugify to distinct entity ids. Devices whose
-# location is not chosen yet sit under `Unassigned/`.
+#   <area>/<fixture>-<element>
+# all lower case, hyphens for spaces. this is an identifier, not a display
+# string: home assistant takes its display names from the dashboard, which sets
+# `name` on every row, so nothing user-facing reads these.
+#   area     room. `/` is a zigbee2mqtt topic separator, so this becomes an
+#            MQTT topic segment and a frontend folder
+#   fixture  the physical object, vendor-neutral - this network mixes Hue and non-Hue
+#            qualify it by position or role where a room has, or will have,
+#            more than one fixture - `sink-downlight`, `chris-desk-backlight`.
+#            a bare noun like `ceiling` is only unambiguous while the room
+#            has exactly one light
+#   element  only for fixtures with more than one radio; physical position
+#            (l/r) where one exists, otherwise 1/2/3
+# A group is the same path without an element, so `basement/triple-lamp` and
+# `basement/triple-lamp-short` slugify to distinct entity ids. Devices whose
+# location is not chosen yet sit under `unassigned/`.
+#
+# home assistant slugifies `/`, `-` and space alike to `_`, so the entity id is
+# the same whatever separators the name uses: `master-bathroom/ceiling` and
+# `Master Bathroom/Ceiling` both give light.master_bathroom_ceiling. renaming
+# between the two styles therefore does NOT move an entity - see below.
 #
 # renaming a device does NOT fix its home assistant entity id. discovery is
 # retained and keyed by ieee, but only the payload's object_id carries the
@@ -74,19 +86,19 @@ let
   # silently renumbers existing groups and orphans their members. pick the next
   # free integer for a new fixture and never reuse one.
   fixtureGroups = {
-    "Dining Room/Chris Desk Backlight" = {
+    "dining-room/chris-desk-backlight" = {
       id = 1;
       members = [
-        "Dining Room/Chris Desk Backlight L"
-        "Dining Room/Chris Desk Backlight R"
+        "dining-room/chris-desk-backlight-l"
+        "dining-room/chris-desk-backlight-r"
       ];
     };
-    "Basement/Triple Lamp" = {
+    "basement/triple-lamp" = {
       id = 2;
       members = [
-        "Basement/Triple Lamp Short"
-        "Basement/Triple Lamp Medium"
-        "Basement/Triple Lamp Long"
+        "basement/triple-lamp-short"
+        "basement/triple-lamp-medium"
+        "basement/triple-lamp-long"
       ];
     };
   };
@@ -190,28 +202,37 @@ in
         # transition is set on the members as well as the groups: scenes address
         # individual bulbs, group on/off addresses the group.
         devices = {
-          "0x0017880102dc50e9" = { friendly_name = "Basement/Triple Lamp Short"; transition = transitionSecs; };
-          "0x00178801028e5a54" = { friendly_name = "Basement/Triple Lamp Medium"; transition = transitionSecs; };
-          "0x0017880102dc511c" = { friendly_name = "Basement/Triple Lamp Long"; transition = transitionSecs; };
-          "0x001788010c6b174f" = { friendly_name = "Dining Room/Chris Desk Backlight L"; transition = transitionSecs; };
-          "0x001788010c625697" = { friendly_name = "Dining Room/Chris Desk Backlight R"; transition = transitionSecs; };
-          "0x0017880103d6552f" = { friendly_name = "Master Bathroom/Ceiling"; transition = transitionSecs; }; # LCT016, not an LCT014 despite the shared z2m model
-          "0x0017880104e5920d" = { friendly_name = "Master Bathroom/Dimmer"; }; # switch, transition is a light option
+          "0x0017880102dc50e9" = { friendly_name = "basement/triple-lamp-short"; transition = transitionSecs; };
+          "0x00178801028e5a54" = { friendly_name = "basement/triple-lamp-medium"; transition = transitionSecs; };
+          "0x0017880102dc511c" = { friendly_name = "basement/triple-lamp-long"; transition = transitionSecs; };
+          "0x001788010c6b174f" = { friendly_name = "dining-room/chris-desk-backlight-l"; transition = transitionSecs; };
+          "0x001788010c625697" = { friendly_name = "dining-room/chris-desk-backlight-r"; transition = transitionSecs; };
+          "0x0017880103d6552f" = { friendly_name = "master-bathroom/ceiling"; transition = transitionSecs; }; # LCT016, not an LCT014 despite the shared z2m model
+          "0x0017880104e5920d" = { friendly_name = "master-bathroom/dimmer"; }; # switch, transition is a light option
+          "0x001788010ce32eda" = { friendly_name = "kitchen/sink-downlight"; transition = transitionSecs; }; # LCA007, full colour: xy plus 153-500 mired (2000-6535K)
+
+          # the RWL022s are gen 2 to the bathroom's gen 1 RWL020, but z2m maps both
+          # onto the same four-button action vocabulary, so their automations are
+          # identical in shape. They also emit recall_0/recall_1 from the hue
+          # button, which nothing consumes.
+          # Which physical unit each ieee is was confirmed on 2026-09-02 by pressing
+          # each dimmer and watching its action topic: the kitchen unit was the one
+          # formerly labelled RWL022 3, the basement unit RWL022 1.
+          "0x001788010d2905f0" = { friendly_name = "basement/dimmer"; }; # switch, transition is a light option
+          "0x001788010e29213d" = { friendly_name = "kitchen/dimmer"; }; # switch, transition is a light option
 
           # pending fixtures, placeholder names until locations are chosen. renaming
           # one needs the ha device deleted after the rebuild, see the header.
-          "0x001788010ce32eda" = { friendly_name = "Unassigned/Color Bulb LCA007"; transition = transitionSecs; };
-          "0x001788010c59b68b" = { friendly_name = "Unassigned/Lightstrip LCL001"; transition = transitionSecs; };
-          # white-only: scene roles need color_temp_kelvin, not xy_color. destined
-          # for the 3rd floor ceiling and the closet; which ieee is which is not
-          # known - toggle one and watch which bulb responds before assigning
-          "0x001788010d757ff2" = { friendly_name = "Unassigned/White Bulb LWA025 1"; transition = transitionSecs; };
-          "0x001788010d757c69" = { friendly_name = "Unassigned/White Bulb LWA025 2"; transition = transitionSecs; };
-          # the three RWL022s are identical hardware; numbering is arbitrary, match
-          # the tape labels by pressing a button and watching the action topic
-          "0x001788010d2905f0" = { friendly_name = "Unassigned/Dimmer RWL022 1"; };
-          "0x001788010d2ba2cc" = { friendly_name = "Unassigned/Dimmer RWL022 2"; };
-          "0x001788010e29213d" = { friendly_name = "Unassigned/Dimmer RWL022 3"; };
+          # the lightstrip is white AND colour ambiance despite the bare model name
+          # - xy, hs and 150-500 mired - so it can carry the full five scene roles.
+          "0x001788010c59b68b" = { friendly_name = "unassigned/lightstrip-lcl001"; transition = transitionSecs; };
+          # these two really are brightness-only: no color_xy and no color_temp
+          # either, so their scene roles can vary brightness and nothing else.
+          # destined for the 3rd floor ceiling and the closet; which ieee is which
+          # is not known - toggle one and watch which bulb responds before assigning
+          "0x001788010d757ff2" = { friendly_name = "unassigned/white-bulb-lwa025-1"; transition = transitionSecs; };
+          "0x001788010d757c69" = { friendly_name = "unassigned/white-bulb-lwa025-2"; transition = transitionSecs; };
+          "0x001788010d2ba2cc" = { friendly_name = "unassigned/dimmer-rwl022-2"; };
         };
 
         # only the groups themselves are declarable - zigbee2mqtt 2.x dropped
