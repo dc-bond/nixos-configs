@@ -73,25 +73,6 @@
     prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
   };
 
-  environment.systemPackages = with pkgs; [
-    age # encryption tool
-    mkpasswd # password hashing tool
-    dig # dns lookup tool
-    wget # download tool
-    rsync # sync tool
-    jq # json parser tool
-    usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
-    nix-tree # table view of package dependencies
-    ethtool # network tools
-    inetutils # more network tools like telnet
-    unzip # utility to unzip directories
-    btop # system monitor
-    nmap # network scanning
-    i2c-tools # hardware interface tools required by ddcutil (per-user ddcutil in home.packages)
-  ];
-
-  hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
-  
   # enable nix-ld to run dynamically linked binaries (e.g., vscodium extensions)
   programs.nix-ld = {
     enable = true;
@@ -112,6 +93,7 @@
       "hosts/thinkpad/impermanence.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
+      "nixos-system/base-tools.nix"
       "nixos-system/rebuilds.nix"
       "nixos-system/networking.nix"
       "nixos-system/tailscale.nix" # recoverTailscale
@@ -119,6 +101,7 @@
       "nixos-system/sshd.nix"
       "nixos-system/audio.nix"
       "nixos-system/zsh.nix"
+      "nixos-system/workstation-tools.nix"
       "nixos-system/yubikey.nix"
       "nixos-system/printing.nix"
       "nixos-system/backups.nix"
@@ -132,6 +115,7 @@
       "nixos-system/oom.nix"
       "nixos-system/zram.nix"
       "nixos-system/greetd.nix"
+      "nixos-system/ddcutil.nix"
       "nixos-system/hyprland.nix"
       "scripts/deploy.nix"
       "scripts/network-test.nix"

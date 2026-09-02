@@ -90,25 +90,6 @@
     iwd.restartIfChanged = false;
   };
 
-  environment.systemPackages = with pkgs; [
-    age # encryption tool
-    mkpasswd # password hashing tool
-    dig # dns lookup tool
-    wget # download tool
-    rsync # sync tool
-    usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
-    nix-tree # table view of package dependencies
-    ethtool # network tools
-    inetutils # more network tools like telnet
-    zip # zip compression utility
-    unzip # utility to unzip directories
-    btop # system monitor
-    nmap # network scanning
-    i2c-tools # hardware interface tools required by ddcutil (per-user ddcutil in home.packages)
-  ];
-
-  hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
-
   backups = {
     startTime = "*-*-* 02:55:00"; # staggered: alder at 2:55 AM
     prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
@@ -126,6 +107,7 @@
       #"hosts/alder/impermanence.nix" # FRESH INSTALL ONLY - uncomment on fresh install
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
+      "nixos-system/base-tools.nix"
       "nixos-system/networking.nix"
       "nixos-system/tailscale.nix"
       "nixos-system/users.nix"

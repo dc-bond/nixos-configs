@@ -87,6 +87,9 @@ in
 
 {
 
+  # smartctl for investigating disks by hand on the same hosts that ship smart metrics below
+  environment.systemPackages = lib.optional (hostData.hardware.enableSmartMonitoring or false) pkgs.smartmontools;
+
   services = {
 
     smartd = lib.mkIf (hostData.hardware.enableSmartMonitoring or false) {
