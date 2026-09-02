@@ -76,15 +76,29 @@ let
   # it every change snaps instantly.
   transitionSecs = 1.0;
 
-  # one zigbee multicast group per physical fixture, members are friendly names
-  # from settings.devices below. zigbee groups rather than home assistant light
-  # groups: a group command is one unacked multicast where an HA group is N
-  # unicasts each needing an ack, which matters on a weak uplink. single source
-  # of truth for both the groups settings block and the reconciliation unit.
+  # zigbee multicast groups, members are friendly names from settings.devices
+  # below. zigbee groups rather than home assistant light groups: a group
+  # command is one unacked multicast where an HA group is N unicasts each
+  # needing an ack, which matters on a weak uplink. single source of truth for
+  # both the groups settings block and the reconciliation unit.
+  #
+  # two kinds live here:
+  #   fixture  the radios of one physical object - `basement/triple-lamp`.
+  #            its scenes address the MEMBERS, because each bulb in the fixture
+  #            takes a different colour
+  #   zone     distinct fixtures driven as one space - `kitchen/ambient`. its
+  #            scenes address the GROUP entity, because every member takes the
+  #            same colour, so adding a fixture to the zone needs only a line
+  #            here and no scene edits at all
+  #
   # ids are explicit, never derived from attrset order: attrNames sorts
   # alphabetically, so deriving them means any rename that changes sort order
   # silently renumbers existing groups and orphans their members. pick the next
-  # free integer for a new fixture and never reuse one.
+  # free integer for a new group and never reuse one.
+  #
+  # a device can only be in one group: the reconciliation unit below does
+  # remove_all then add per member, so listing a device in two groups leaves it
+  # in whichever is processed last.
   fixtureGroups = {
     "dining-room/chris-desk-backlight" = {
       id = 1;
@@ -99,6 +113,15 @@ let
         "basement/triple-lamp-short"
         "basement/triple-lamp-medium"
         "basement/triple-lamp-long"
+      ];
+    };
+    # zone, not a fixture - see above. more lightstrips join by being added
+    # here; the scenes address kitchen/ambient itself and need no edit.
+    "kitchen/ambient" = {
+      id = 3;
+      members = [
+        "kitchen/sink-downlight"
+        "kitchen/under-cabinet"
       ];
     };
   };
@@ -199,8 +222,8 @@ in
         # every start. a newly paired device writes itself into configuration.yaml
         # at join time and reverts to its bare IEEE name on the next restart until
         # added here, which keeps this file the source of truth rather than a seed.
-        # transition is set on the members as well as the groups: scenes address
-        # individual bulbs, group on/off addresses the group.
+        # transition is set on the members as well as the groups: fixture scenes
+        # address individual bulbs, zone scenes and on/off address the group.
         devices = {
           "0x0017880102dc50e9" = { friendly_name = "basement/triple-lamp-short"; transition = transitionSecs; };
           "0x00178801028e5a54" = { friendly_name = "basement/triple-lamp-medium"; transition = transitionSecs; };
@@ -220,14 +243,12 @@ in
           # formerly labelled RWL022 3, the basement unit RWL022 1.
           "0x001788010d2905f0" = { friendly_name = "basement/dimmer"; }; # switch, transition is a light option
           "0x001788010e29213d" = { friendly_name = "kitchen/dimmer"; }; # switch, transition is a light option
+          "0x001788010c59b68b" = { friendly_name = "kitchen/under-cabinet"; transition = transitionSecs; }; # LCL001 lightstrip, gamut C like the LCA007
 
           # pending fixtures, placeholder names until locations are chosen. renaming
           # one needs the ha device deleted after the rebuild, see the header.
-          # the lightstrip is white AND colour ambiance despite the bare model name
-          # - xy, hs and 150-500 mired - so it can carry the full five scene roles.
-          "0x001788010c59b68b" = { friendly_name = "unassigned/lightstrip-lcl001"; transition = transitionSecs; };
-          # these two really are brightness-only: no color_xy and no color_temp
-          # either, so their scene roles can vary brightness and nothing else.
+          # these two are brightness-only: no color_xy and no color_temp either, so
+          # their scene roles can vary brightness and nothing else.
           # destined for the 3rd floor ceiling and the closet; which ieee is which
           # is not known - toggle one and watch which bulb responds before assigning
           "0x001788010d757ff2" = { friendly_name = "unassigned/white-bulb-lwa025-1"; transition = transitionSecs; };
