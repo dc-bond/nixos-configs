@@ -22,7 +22,7 @@
   # after initial provisioning, drives are managed via fileSystems + services.zfsExtended (zfs) or fileSystems only (ext4)
   disko.devices = {
     disk = {
-      
+
       disk0 = {
         type = "disk";
         device = configVars.hosts.${config.networking.hostName}.hardware.disk0;
@@ -284,17 +284,6 @@
     ];
   };
 
-  environment.systemPackages = with pkgs; [
-    wget # download tool
-    usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
-    smartmontools # provides smartctl command for disk health monitoring
-    rsync # sync tool
-    btop # system monitor
-    jq # json parser tool
-    tmux # terminal multiplexer for persistent sessions
-    dig # dns lookup tool
-  ];
-
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "25.11";
 
@@ -307,6 +296,7 @@
       "hosts/aspen/impermanence.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
+      "nixos-system/base-tools.nix"
       "nixos-system/networking.nix"
       #"nixos-system/crowdsec.nix"
       "nixos-system/users.nix"

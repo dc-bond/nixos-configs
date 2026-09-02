@@ -39,7 +39,6 @@ in
     homeDirectory = "/home/${username}";
     packages = with pkgs; [
       brightnessctl # screen brightness control
-      ddcutil # query and change monitor settings via DDC/CI (requires system hardware.i2c.enable)
     ];
   };
 

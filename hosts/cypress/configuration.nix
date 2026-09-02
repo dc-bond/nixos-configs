@@ -61,28 +61,6 @@
 
   bulkStorage.path = lib.mkIf (config.hardware.wdPassport.enable or false) "/storage-ext4-external";
 
-  environment.systemPackages = with pkgs; [
-    age # encryption tool
-    mkpasswd # password hashing tool
-    dig # dns lookup tool
-    wget # download tool
-    rsync # sync tool
-    jq # json parser tool
-    bc # calculator for network-test script timing
-    usbutils # package that provides 'lsusb' tool to see usb peripherals plugged in
-    smartmontools # provides smartctl command for disk health monitoring
-    nix-tree # table view of package dependencies
-    ethtool # network tools
-    inetutils # more network tools like telnet
-    zip # zip compression utility
-    unzip # utility to unzip directories
-    btop # system monitor
-    nmap # network scanning
-    i2c-tools # hardware interface tools required by ddcutil (per-user ddcutil in home.packages)
-  ];
-
-  hardware.i2c.enable = true; # enable i2c kernel module for ddcutil functionality
-
   # enable nix-ld to run dynamically linked binaries (e.g., vscodium extensions)
   programs.nix-ld = {
     enable = true;
@@ -112,6 +90,7 @@
       "hosts/cypress/impermanence.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
+      "nixos-system/base-tools.nix"
       "nixos-system/intel.nix"
       "nixos-system/rebuilds.nix"
       "nixos-system/networking.nix"
@@ -130,6 +109,7 @@
       "nixos-system/usb-phone-mount.nix"
       "nixos-system/wd-passport.nix"
       "nixos-system/greetd.nix"
+      "nixos-system/ddcutil.nix"
       "nixos-system/hyprland.nix"
       "scripts/deploy.nix"
       "scripts/network-test.nix"

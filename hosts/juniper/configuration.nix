@@ -65,12 +65,6 @@
     borgDir = "/var/lib/borgbackup"; # juniper does not use impermanence
   };
 
-  environment.systemPackages = with pkgs; [
-    rsync # sync tool
-    btop # system monitor
-    jq # json parser tool
-  ];
-
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "24.11";
 
@@ -80,6 +74,7 @@
       "hosts/juniper/hardware-configuration.nix"
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
+      "nixos-system/base-tools.nix"
       "nixos-system/networking.nix"
       "nixos-system/crowdsec.nix"
       "nixos-system/tailscale.nix"
