@@ -19,6 +19,8 @@
           "Bash(nix eval *)"
           "Bash(nix-instantiate --parse *)"
           "Bash(nix-instantiate --eval *)"
+          "Bash(nix-shell -p *)"
+          "Bash(nix shell nixpkgs#*)"
           "Bash(tailscale status *)"
         ];
         deny = [
