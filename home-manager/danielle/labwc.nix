@@ -10,34 +10,6 @@
 
 let
   username = builtins.baseNameOf ./.;
-  wallpaperDir = pkgs.runCommand "wallpapers" {} ''
-    mkdir -p $out
-    cp -r ${inputs.self}/wallpaper/* $out/
-  '';
-  desktopReloadScript = pkgs.writeShellScriptBin "desktopReload" ''
-    # select random wallpaper and create color scheme
-    ${pkgs.pywal}/bin/wal -s -t -q -i ${wallpaperDir}
-    
-    # load current pywal color scheme
-    source "$HOME/.cache/wal/colors.sh"
-    
-    # copy color file to waybar folder
-    ${pkgs.coreutils}/bin/cp ~/.cache/wal/colors-waybar.css ~/.config/waybar/
-    ${pkgs.coreutils}/bin/cp $wallpaper ~/.cache/current_wallpaper.jpg
-    
-    # get wallpaper image name
-    newwall=$(${pkgs.coreutils}/bin/echo $wallpaper | ${pkgs.gnused}/bin/sed "s|~/nixos-configs/wallpaper/||g")
-    
-    # set the new wallpaper
-    ${pkgs.swww}/bin/swww img $wallpaper --transition-step 20 --transition-fps=20
-    
-    # reload waybar
-    ${pkgs.procps}/bin/pkill waybar || true
-    ${pkgs.waybar}/bin/waybar &
-
-    # send notification
-    #${pkgs.dunst}/bin/dunstify "Wallpaper and Taskbar Reloaded"
-  '';
 in
 
 {
@@ -45,6 +17,7 @@ in
   imports = lib.flatten [
     (map configLib.relativeToRoot [
       "home-manager/shared/alacritty.nix"
+      "home-manager/shared/desktop-plumbing.nix"
       "home-manager/shared/rofi.nix"
       "home-manager/shared/waybar.nix"
       "home-manager/shared/gammastep.nix"
@@ -56,18 +29,9 @@ in
 
   home = {
     packages = with pkgs; [
-      desktopReloadScript
-      swww # animated wallpaper for wayland window managers
-      pywal # color theme changer
-      dunst # notification daemon
-      gnome-calculator # calculator
-      loupe # image viewer
-      zathura # barebones pdf viewer
       libreoffice-qt6 # office suite (qt6 for native wayland support)
       element-desktop # matrix chat app
       nextcloud-client # nextcloud local syncronization client
-      hyprshot # screenshot tool
-      pwvucontrol # pipewire audio volume control app
     ];
     pointerCursor = {
       enable = true;
@@ -110,33 +74,6 @@ in
     type = "Application";
     categories = [ "Network" "InstantMessaging" "Chat" ];
     mimeType = [ "x-scheme-handler/element" ];
-  };
-
-  # wrap desktopReload in a systemd user service so timer can automatically cycle wallpaper, otherwise desktopReload called directly from startup script and hotkeys
-  systemd.user = {
-    services.desktopReload = {
-      Unit = {
-        Description = "Reload desktop theme and wallpaper";
-        After = [ "graphical-session.target" ];
-      };
-      Service = {
-        Type = "oneshot";
-        ExecStart = "${desktopReloadScript}/bin/desktopReload";
-        KillMode = "process"; # don't kill backgrounded waybar when script exits
-      };
-    };
-    timers.desktopReload = {
-      Unit = {
-        Description = "Desktop reload timer";
-      };
-      Timer = {
-        OnCalendar = "hourly";
-        Persistent = true;
-      };
-      Install = {
-        WantedBy = [ "timers.target" ];
-      };
-    };
   };
 
   xdg.configFile = {
