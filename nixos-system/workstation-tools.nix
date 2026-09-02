@@ -4,9 +4,7 @@
 }: 
 
 # cli tooling reached for by hand and by claude code during interactive work — kept host-wide
-# rather than behind 'nix-shell -p' so the tools are simply present, with no wrapper to remember
-# on every invocation; most of these are already in the store as transitive dependencies, so
-# listing them here costs symlinks rather than disk
+# rather than behind 'nix-shell -p' so there is no wrapper to remember on every invocation
 {
 
   environment.systemPackages = with pkgs; [
@@ -25,7 +23,7 @@
     qpdf # merge, split, rotate and decrypt pdfs
     ghostscript # pdf compression and flattening
     imagemagick # image conversion and resizing
-    tesseract # ocr — 1.1 gib of language packs, but cached; '.override { enableLanguages = [ "eng" ]; }' trims it at the cost of a local source build
+    tesseract # ocr — ships all language packs; overriding enableLanguages trims it but forces a local source build
 
     # data and diagnostics
     yq-go # yaml equivalent of jq for home-assistant, zigbee2mqtt and compose files
