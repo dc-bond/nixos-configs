@@ -4,15 +4,26 @@
   ...
 }:
 
+let
+
+  # single source of truth for the mcp server set - consumed by the wrapper's
+  # --mcp-config, by enabledMcpjsonServers below, and by zsh.nix clone-configs
+  # which mirrors it into ~/nixos/.mcp.json for the VSCodium extension
+  mcpServers = {
+    nixos = {
+      type = "stdio";
+      command = lib.getExe pkgs.unstable.mcp-nixos; # 25.11 ships only 1.0.3; unstable for the 2.x tool surface (see DEVIATIONS.md)
+    };
+  };
+
+in
+
 {
 
   programs.claude-code = {
     enable = true;
     package = pkgs.unstable.claude-code; # pinned to unstable for parity with the VSCodium extension (see DEVIATIONS.md)
-    mcpServers.nixos = {
-      type = "stdio";
-      command = lib.getExe pkgs.unstable.mcp-nixos; # 25.11 ships only 1.0.3; unstable for the 2.x tool surface (see DEVIATIONS.md)
-    };
+    inherit mcpServers;
     settings = {
       permissions = {
         allow = [
@@ -33,7 +44,7 @@
         ];
         defaultMode = "auto";
       };
-      enabledMcpjsonServers = [ "nixos" ]; # pre-approve the mcp-nixos server in ~/nixos/.mcp.json (see zsh.nix clone-configs)
+      enabledMcpjsonServers = lib.attrNames mcpServers; # pre-approve every declared server in ~/nixos/.mcp.json (see zsh.nix clone-configs)
       effortLevel = "high";
       theme = "dark";
       autoMode.environment = [
