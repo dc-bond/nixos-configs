@@ -120,13 +120,11 @@
         ''} "$target_dir/CLAUDE.md"
         # project-scoped mcp config: the VSCodium claude-code extension spawns its own
         # bundled binary, bypassing the home-manager wrapper's --mcp-config flag, so
-        # mcp-nixos only reaches the extension via .mcp.json at the project root
+        # servers only reach the extension via .mcp.json at the project root.
+        # mirrored from claude-code.nix rather than re-declared, so the two can't drift
         echo "Writing .mcp.json pointer..."
         install -m 644 ${pkgs.writeText "nixos-top-mcp.json" (builtins.toJSON {
-          mcpServers.nixos = {
-            type = "stdio";
-            command = lib.getExe pkgs.unstable.mcp-nixos;
-          };
+          inherit (config.programs.claude-code) mcpServers;
         })} "$target_dir/.mcp.json"
         echo "Done"
       }
