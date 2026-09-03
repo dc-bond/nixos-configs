@@ -10,13 +10,34 @@ This is a production NixOS configuration managing a multi-host homelab and VPS i
 
 ## IMPORTANT: Command Execution Context
 
-**Claude only runs on workstations (cypress or thinkpad).** Do NOT run host-changing commands (`nixos-rebuild`, package installs, service restarts that alter state) directly against aspen/juniper/kauri — the user drives those rebuilds through their normal flow.
+**Claude runs on workstations (cypress or thinkpad)** but has Tailscale SSH with `sudo` to every
+other host. Use it. Don't ask the user to paste output, or to run a command, that Claude can run
+itself with `ssh <host> '<command>'`.
 
-**However, Claude has SSH access to all hosts via Tailscale** and should use it directly for read-only investigation: log checks, `systemctl status`, file inspection, backup verification, etc. Don't ask the user to paste log output you can fetch yourself with `ssh <host> '<command>'`. Use `sudo` over SSH where needed.
+The line is not "does this change state" — it is "does this build, could it sever Claude's own way
+back in, or does it destroy something".
 
-**Rule of thumb:**
-- **Read-only / diagnostic**: SSH in and run it yourself.
-- **State-changing on a remote host**: suggest the command, let the user run it as part of their rebuild/deploy workflow.
+**Run it directly, no need to ask:**
+
+- **Read-only / diagnostic** — logs, `systemctl status`, file inspection, DB peeks, backup
+  verification.
+- **Application service lifecycle** — `systemctl restart|reload|start|stop` on app units
+  (`home-assistant`, `jellyfin`, `zigbee2mqtt`, `docker-*` containers, …) and `daemon-reload`.
+  A restart is recoverable, so just do it.
+- **Reversible writes** — a file edit that can be restored, clearing a cache, a config reload.
+
+**Suggest the command instead of running it:**
+
+- **Builds and rebuilds** — `nixos-rebuild` (switch/boot/test), `nix build`, `nix-collect-garbage`.
+  These belong to the user's rebuild flow.
+- **Restarts of units that carry access or the LAN** — `tailscaled`, `sshd`, networking,
+  pihole/unbound, `traefik`. These are "just a restart" but a failed `tailscaled` restart on aspen
+  locks Claude out of the very host it would need to fix, and pihole is LAN DNS for the house.
+- **Destructive or hard to reverse** — `rm`/`mv` of real data, database writes and migrations,
+  `borg prune|delete|check --repair`, `docker volume rm`, disk/partition operations, anything
+  touching secrets/keys/certs, `reboot`/`poweroff`.
+
+The same rule applies to all three hosts; juniper being a public VPS does not make it stricter.
 
 
 ## High-Level Architecture
