@@ -118,6 +118,16 @@
           To change it, edit the `pkgs.writeText` block in
           [nixos-configs/home-manager/chris/zsh.nix](nixos-configs/home-manager/chris/zsh.nix).
         ''} "$target_dir/CLAUDE.md"
+        # project-scoped mcp config: the VSCodium claude-code extension spawns its own
+        # bundled binary, bypassing the home-manager wrapper's --mcp-config flag, so
+        # mcp-nixos only reaches the extension via .mcp.json at the project root
+        echo "Writing .mcp.json pointer..."
+        install -m 644 ${pkgs.writeText "nixos-top-mcp.json" (builtins.toJSON {
+          mcpServers.nixos = {
+            type = "stdio";
+            command = lib.getExe pkgs.unstable.mcp-nixos;
+          };
+        })} "$target_dir/.mcp.json"
         echo "Done"
       }
     '');

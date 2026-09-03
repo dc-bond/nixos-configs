@@ -33,6 +33,7 @@
         ];
         defaultMode = "auto";
       };
+      enabledMcpjsonServers = [ "nixos" ]; # pre-approve the mcp-nixos server in ~/nixos/.mcp.json (see zsh.nix clone-configs)
       effortLevel = "high";
       theme = "dark";
       autoMode.environment = [
