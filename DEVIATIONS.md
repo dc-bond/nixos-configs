@@ -85,6 +85,7 @@ around a specific bug. Each should be revisited when its linked issue closes.
 | `nixos-system/yubikey.nix` | pcsclite polkit access-group workaround | [nixpkgs#121121](https://github.com/NixOS/nixpkgs/issues/121121) |
 | `nixos-system/foundation.nix` | `nix.settings.nix-path = config.nix.nixPath` | [nix#9574](https://github.com/NixOS/nix/issues/9574) |
 | `nixos-system/home-assistant.nix` | `doInstallCheck = false` on the HA package override | Drop when the install-check no longer fails |
+| `nixos-system/home-assistant.nix` | `energy_panel_hide` custom integration removes the built-in Energy sidebar panel. HA offers no declarative way to hide it: `energy/async_setup` calls `frontend.async_register_built_in_panel` unconditionally in the same call that sets up the websocket API the `energy-*` cards and `EnergyCostSensor` depend on, and the component's `CONFIG_SCHEMA` is `cv.empty_config_schema`. The lovelace Energy view already renders the panel's content, so the panel is a duplicate. | HA gains a supported panel-visibility option (a `frontend` config key, or a per-panel `show_in_sidebar`) — then drop the custom integration |
 
 ---
 
