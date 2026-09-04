@@ -49,11 +49,16 @@ let
   # hass.data[DATA_PANELS] and fires EVENT_PANELS_UPDATED - nothing else is
   # touched, and the api, cost sensors and cards all keep working.
   #
-  # The `version` key is mandatory; the loader blocks custom integrations
-  # without one outright. Expect one "custom integration ... has not been tested"
-  # warning per startup - that is the loader announcing any custom integration,
-  # not a fault in this one.
-  energyPanelHide = pkgs.runCommand "ha-energy-panel-hide" { } ''
+  # This must go through services.home-assistant.customComponents rather than a
+  # tmpfiles symlink: the module's pre-start script deletes every symlink under
+  # custom_components/ that points into /nix/store, then recreates only the ones
+  # from that option, so a hand-planted symlink is removed on the next restart.
+  #
+  # The `version` key in the manifest is mandatory - HA's loader blocks custom
+  # integrations without one outright. Expect one "custom integration ... has not
+  # been tested" warning per startup; that is the loader announcing any custom
+  # integration, not a fault in this one.
+  energyPanelHideSrc = pkgs.runCommand "energy-panel-hide-src" { } ''
     mkdir -p $out
     cp ${pkgs.writeText "manifest.json" (builtins.toJSON {
       domain = "energy_panel_hide";
@@ -90,6 +95,13 @@ let
           return True
     ''} $out/__init__.py
   '';
+
+  energyPanelHide = pkgs.buildHomeAssistantComponent {
+    owner = "dc-bond";
+    domain = "energy_panel_hide";
+    version = "1.0.0";
+    src = energyPanelHideSrc;
+  };
 
 in
 
@@ -128,14 +140,6 @@ in
 
   environment.systemPackages = with pkgs; [ recoverScript ];
 
-  # custom_components/ already exists at 0700 hass:hass; the rule keeps it that
-  # way rather than loosening it. Python cannot write __pycache__ into the store
-  # symlink and degrades silently to no bytecode cache, which is fine for a file
-  # this size.
-  systemd.tmpfiles.rules = [
-    "d /var/lib/hass/custom_components 0700 hass hass -"
-    "L+ /var/lib/hass/custom_components/energy_panel_hide - - - - ${energyPanelHide}"
-  ];
 
   systemd.services."${app}" = {
     requires = [ "postgresql.target" ];
@@ -167,6 +171,7 @@ in
         }).overrideAttrs (oldAttrs: {
           doInstallCheck = false;
         });
+      customComponents = [ energyPanelHide ];
       extraComponents = [
         "default_config"
         "mqtt"
