@@ -33,6 +33,64 @@ let
     dbType = recoveryPlan.db.type;
   };
 
+  # Removes the built-in Energy panel from the sidebar. The lovelace Energy view
+  # renders the same content through energy-* cards and adds live demand on top,
+  # so the panel is a duplicate entry - but it cannot be switched off from
+  # configuration.yaml. energy/async_setup calls
+  # frontend.async_register_built_in_panel unconditionally, in the same call
+  # that sets up the websocket api those cards and EnergyCostSensor depend on,
+  # and the component's CONFIG_SCHEMA is cv.empty_config_schema. Dropping
+  # `energy` from the config below would take all three with it.
+  #
+  # A custom integration is the supported hook. `dependencies` guarantees the
+  # ordering: setup.py awaits every dependency future before running a
+  # component's own async_setup, so energy is fully registered by the time this
+  # fires. async_remove_panel then pops the one entry out of
+  # hass.data[DATA_PANELS] and fires EVENT_PANELS_UPDATED - nothing else is
+  # touched, and the api, cost sensors and cards all keep working.
+  #
+  # The `version` key is mandatory; the loader blocks custom integrations
+  # without one outright. Expect one "custom integration ... has not been tested"
+  # warning per startup - that is the loader announcing any custom integration,
+  # not a fault in this one.
+  energyPanelHide = pkgs.runCommand "ha-energy-panel-hide" { } ''
+    mkdir -p $out
+    cp ${pkgs.writeText "manifest.json" (builtins.toJSON {
+      domain = "energy_panel_hide";
+      name = "Energy Panel Hide";
+      version = "1.0.0";
+      documentation = "https://github.com/dc-bond/nixos-configs";
+      dependencies = [ "energy" ];
+      codeowners = [ ];
+      iot_class = "calculated";
+    })} $out/manifest.json
+    cp ${pkgs.writeText "__init__.py" ''
+      """Remove the built-in Energy panel from the sidebar.
+
+      The lovelace Energy view renders the panel's content through energy-*
+      cards, so the sidebar entry is a duplicate. The energy integration
+      registers it unconditionally, so removing it afterwards is the only way to
+      drop the panel while keeping the websocket api that those cards and
+      EnergyCostSensor need.
+      """
+
+      from homeassistant.components import frontend
+      from homeassistant.core import HomeAssistant
+      from homeassistant.helpers import config_validation as cv
+      from homeassistant.helpers.typing import ConfigType
+
+      DOMAIN = "energy_panel_hide"
+
+      CONFIG_SCHEMA = cv.empty_config_schema(DOMAIN)
+
+
+      async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+          """Drop the energy panel once the energy integration has registered it."""
+          frontend.async_remove_panel(hass, "energy")
+          return True
+    ''} $out/__init__.py
+  '';
+
 in
 
 {
@@ -69,6 +127,15 @@ in
   };
 
   environment.systemPackages = with pkgs; [ recoverScript ];
+
+  # custom_components/ already exists at 0700 hass:hass; the rule keeps it that
+  # way rather than loosening it. Python cannot write __pycache__ into the store
+  # symlink and degrades silently to no bytecode cache, which is fine for a file
+  # this size.
+  systemd.tmpfiles.rules = [
+    "d /var/lib/hass/custom_components 0700 hass hass -"
+    "L+ /var/lib/hass/custom_components/energy_panel_hide - - - - ${energyPanelHide}"
+  ];
 
   systemd.services."${app}" = {
     requires = [ "postgresql.target" ];
@@ -187,6 +254,10 @@ in
         # empty_config_schema - the sources and rates are stored in .storage and
         # set through the UI, so there is nothing to declare here.
         energy = { };
+        # Loads the custom integration built in the let block above, whose only
+        # job is to remove the duplicate Energy sidebar panel. See the comment
+        # there for why this cannot be done from configuration.yaml directly.
+        energy_panel_hide = { };
         "automation ui" = "!include automations.yaml";
         #"automation nixos" defined in private repo via inputs.private.nixosModules.home-assistant-automations, merged in with ui-generated automations
         mobile_app = "";
