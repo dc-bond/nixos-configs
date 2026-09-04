@@ -119,6 +119,48 @@ in
           ];
         };
         recorder.db_url = "postgresql://@/hass";
+
+        # The eagle's summation sensor is the meter's lifetime register - it read
+        # ~152 MWh at install, nearly all of it the previous owners' - so it is
+        # useless as a displayed number. utility_meter derives per-cycle totals
+        # from it. periodically_resetting is false because the register is
+        # monotonic and never rolls back to zero.
+        utility_meter = {
+          electricity_daily = {
+            source = "sensor.eagle_200_total_energy_delivered";
+            cycle = "daily";
+            periodically_resetting = false;
+          };
+          electricity_monthly = {
+            source = "sensor.eagle_200_total_energy_delivered";
+            cycle = "monthly";
+            periodically_resetting = false;
+          };
+        };
+
+        # Rolling 24h max/min over instantaneous demand. Peak is what drives a
+        # demand charge; the min approximates always-on load, so a rise in it
+        # means something new is drawing continuously. sampling_size must cover
+        # the window - the eagle polls every 30s, so 24h is 2880 samples, and
+        # the default of 20 would only look back ten minutes.
+        sensor = [
+          {
+            platform = "statistics";
+            name = "Electricity Peak Demand";
+            entity_id = "sensor.eagle_200_power_demand";
+            state_characteristic = "value_max";
+            sampling_size = 2880;
+            max_age.hours = 24;
+          }
+          {
+            platform = "statistics";
+            name = "Electricity Baseline Load";
+            entity_id = "sensor.eagle_200_power_demand";
+            state_characteristic = "value_min";
+            sampling_size = 2880;
+            max_age.hours = 24;
+          }
+        ];
         # `history` is in the package via default_config in extraComponents, but
         # extraComponents only builds a component in - it does not enable it, and
         # nothing here ever set default_config. Without this key the integration
