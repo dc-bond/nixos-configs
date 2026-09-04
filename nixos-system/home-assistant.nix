@@ -119,6 +119,15 @@ in
           ];
         };
         recorder.db_url = "postgresql://@/hass";
+        # `history` is in the package via default_config in extraComponents, but
+        # extraComponents only builds a component in - it does not enable it, and
+        # nothing here ever set default_config. Without this key the integration
+        # never loads and every history-graph / statistics-graph card renders
+        # "History integration disabled" instead of a chart. Enabled on its own
+        # rather than via default_config, which would also pull in cloud,
+        # bluetooth, ssdp/zeroconf/usb discovery, go2rtc and ~20 more.
+        # Deps (http, recorder) are both already configured above.
+        history = { };
         "automation ui" = "!include automations.yaml";
         #"automation nixos" defined in private repo via inputs.private.nixosModules.home-assistant-automations, merged in with ui-generated automations
         mobile_app = "";
