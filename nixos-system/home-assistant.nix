@@ -138,11 +138,15 @@ in
           };
         };
 
-        # Rolling 24h max/min over instantaneous demand. Peak is what drives a
-        # demand charge; the min approximates always-on load, so a rise in it
-        # means something new is drawing continuously. sampling_size must cover
-        # the window - the eagle polls every 30s, so 24h is 2880 samples, and
-        # the default of 20 would only look back ten minutes.
+        # Rolling 24h peak/baseline over instantaneous demand. Peak is what
+        # drives a demand charge; the 5th percentile approximates always-on
+        # load, so a rise in it means something new is drawing continuously.
+        # Baseline is a percentile rather than value_min because an extremum
+        # latches onto a single sample for the whole window - the sag before
+        # the 2026-09-03 outage pinned it at 0.528 kW off four samples out of
+        # 1395. sampling_size must cover the window - the eagle polls every
+        # 30s, so 24h is 2880 samples, and the default of 20 would only look
+        # back ten minutes.
         sensor = [
           {
             platform = "statistics";
@@ -156,7 +160,8 @@ in
             platform = "statistics";
             name = "Electricity Baseline Load";
             entity_id = "sensor.eagle_200_power_demand";
-            state_characteristic = "value_min";
+            state_characteristic = "percentile";
+            percentile = 5;
             sampling_size = 2880;
             max_age.hours = 24;
           }
