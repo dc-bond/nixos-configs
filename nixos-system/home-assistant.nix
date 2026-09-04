@@ -120,11 +120,16 @@ in
         };
         recorder.db_url = "postgresql://@/hass";
 
-        # The eagle's summation sensor is the meter's lifetime register - it read
-        # ~152 MWh at install, nearly all of it the previous owners' - so it is
-        # useless as a displayed number. utility_meter derives per-cycle totals
-        # from it. periodically_resetting is false because the register is
-        # monotonic and never rolls back to zero.
+        # The eagle's summation sensor is the meter's cumulative register. It
+        # reads ~152 MWh while the utility bills off a five-digit display: the
+        # 2026-08-26 statement read 51,790.24 against 152,207.945 in HA nine days
+        # later, a clean 100,000 offset plus 418 kWh of real use. So the physical
+        # register has wrapped once and the eagle keeps counting past it - the
+        # sensor itself is monotonic and does not wrap. Either way ~50 MWh of it
+        # predates us (moved in 2026-08-06, ~43 kWh/day), so it is useless as a
+        # displayed number. utility_meter derives per-cycle totals from it.
+        # periodically_resetting is false because the register is monotonic and
+        # never rolls back to zero.
         utility_meter = {
           electricity_daily = {
             source = "sensor.eagle_200_total_energy_delivered";
