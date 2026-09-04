@@ -219,8 +219,12 @@ let
     sleep 5 
     
     echo "Clearing existing database entries for declarative state..."
+    # gravity/antigravity reference adlist(id) without ON DELETE CASCADE, so they must be cleared
+    # first; the *_by_group tables cascade. pihole -g repopulates gravity further below.
+    sql "DELETE FROM gravity;"
+    sql "DELETE FROM antigravity;"
     sql "DELETE FROM adlist;"
-    sql "DELETE FROM domainlist;"  
+    sql "DELETE FROM domainlist;"
     sql "DELETE FROM client;"
     
     echo "Populating ADLISTS from Nix configuration..."
