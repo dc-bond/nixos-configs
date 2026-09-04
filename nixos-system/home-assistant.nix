@@ -170,6 +170,13 @@ in
         # bluetooth, ssdp/zeroconf/usb discovery, go2rtc and ~20 more.
         # Deps (http, recorder) are both already configured above.
         history = { };
+        # Same story as history: energy registers its sidebar panel inside
+        # async_setup, so without this key there is no Energy item in the sidebar
+        # and no way to configure grid consumption at all. Deps (websocket_api,
+        # history, recorder) are all satisfied above. Its schema is
+        # empty_config_schema - the sources and rates are stored in .storage and
+        # set through the UI, so there is nothing to declare here.
+        energy = { };
         "automation ui" = "!include automations.yaml";
         #"automation nixos" defined in private repo via inputs.private.nixosModules.home-assistant-automations, merged in with ui-generated automations
         mobile_app = "";
