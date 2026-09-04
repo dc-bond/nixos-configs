@@ -10,6 +10,7 @@ let
 
   app = "pihole";
   app2 = "unbound";
+  unboundIp = configVars.ociServices.${app}.containers.${app2}.ipv4;
   
   # generate hostname mappings from configVars
   allHostMappings = let
@@ -57,6 +58,20 @@ let
         forward-tls-upstream: yes
         forward-addr: 9.9.9.9@853#dns.quad9.net
         forward-addr: 149.112.112.112@853#dns.quad9.net
+  '';
+
+  # docker-${app2}.service is Type=simple, so systemd marks it started when `docker run` forks, not
+  # when unbound answers - block until it actually resolves
+  waitForUnbound = pkgs.writeShellScript "wait-for-${app2}" ''
+    deadline=$(( SECONDS + 120 ))
+    until ${pkgs.dnsutils}/bin/dig +short +timeout=2 +tries=1 @${unboundIp} cloudflare.com >/dev/null 2>&1; do
+      if [ "$SECONDS" -ge "$deadline" ]; then
+        echo "unbound at ${unboundIp} not answering after 120s" >&2
+        exit 1
+      fi
+      sleep 2
+    done
+    echo "unbound at ${unboundIp} is resolving"
   '';
 
   # custom dnsmasq config file because all attempts at getting custom entries into the docker env file failed
@@ -171,65 +186,64 @@ let
   # systemd script to initialize pihole declaratively
   piholeInitScript = pkgs.writeShellScriptBin "pihole-init" ''
     #!/bin/bash
+    set -euo pipefail # without this the script exits 0 even if every sqlite statement failed
 
     CURRENT_TIME=$(date +%s)
 
+    # use the image's bundled sqlite3 - `apk add` would need working dns in a path that only runs when dns is suspect
+    sql() { docker exec ${app} pihole-FTL sqlite3 /etc/pihole/gravity.db "$@"; }
+
+    echo "Verifying unbound is resolving before configuring Pi-hole..."
+    ${waitForUnbound}
+
+    # pihole's healthcheck has StartPeriod=0 and Retries=3, so `unhealthy` is expected before FTL is
+    # serving - poll to the deadline rather than failing on the first unhealthy reading
     echo "Waiting for Pi-hole container to be healthy..."
-    timeout=300  # 5 minutes max
-    while [ $timeout -gt 0 ]; do
-      health_status=$(docker inspect --format='{{.State.Health.Status}}' ${app} 2>/dev/null)
+    deadline=$(( SECONDS + 300 ))
+    while true; do
+      health_status=$(docker inspect --format='{{.State.Health.Status}}' ${app} 2>/dev/null || echo unknown)
       if [ "$health_status" = "healthy" ]; then
         echo "Container is healthy, proceeding with configuration..."
         break
-      elif [ "$health_status" = "unhealthy" ]; then
-        echo "Container is unhealthy, checking logs..."
-        docker logs --tail 10 ${app}
-        exit 1
-      else
-        echo "Container health status: $health_status, waiting... ($timeout seconds left)"
-        sleep 5
-        timeout=$((timeout - 5))
       fi
+      if [ "$SECONDS" -ge "$deadline" ]; then
+        echo "ERROR: container not healthy after 300s (last status: $health_status)"
+        docker logs --tail 50 ${app}
+        exit 1
+      fi
+      sleep 5
     done
-    
-    if [ $timeout -le 0 ]; then
-      echo "ERROR: Container did not become healthy within 5 minutes"
-      exit 1
-    fi
-
-    echo "Installing sqlite3..."
-    docker exec ${app} sh -c 'if ! command -v sqlite3 &> /dev/null; then apk add sqlite; fi'
     
     echo "Temporarily disabling Pi-hole to avoid database locks..."
     docker exec ${app} pihole disable
     sleep 5 
     
     echo "Clearing existing database entries for declarative state..."
-    docker exec ${app} sqlite3 /etc/pihole/gravity.db "DELETE FROM adlist;"
-    docker exec ${app} sqlite3 /etc/pihole/gravity.db "DELETE FROM domainlist;"  
-    docker exec ${app} sqlite3 /etc/pihole/gravity.db "DELETE FROM client;"
+    sql "DELETE FROM adlist;"
+    sql "DELETE FROM domainlist;"  
+    sql "DELETE FROM client;"
     
     echo "Populating ADLISTS from Nix configuration..."
     ${lib.concatMapStrings (url: ''
-    docker exec ${app} sqlite3 /etc/pihole/gravity.db "INSERT INTO adlist (address, enabled, date_added, date_modified, comment, date_updated, number, invalid_domains, status) VALUES ('${url}', 1, $CURRENT_TIME, $CURRENT_TIME, 'Managed by Nix', 0, 0, 0, 0);"
+    sql "INSERT INTO adlist (address, enabled, date_added, date_modified, comment, date_updated, number, invalid_domains, status) VALUES ('${url}', 1, $CURRENT_TIME, $CURRENT_TIME, 'Managed by Nix', 0, 0, 0, 0);"
     '') piholeAdlists}
     echo "Added ${toString (lib.length piholeAdlists)} adlists to database"
     
     echo "Populating ALLOWLISTS from Nix configuration..."
     ${lib.concatMapStrings (domain: ''
-    docker exec ${app} sqlite3 /etc/pihole/gravity.db "INSERT INTO domainlist (domain, type, enabled, date_added, date_modified, comment) VALUES ('${domain}', 0, 1, $CURRENT_TIME, $CURRENT_TIME, 'Managed by Nix');"
+    sql "INSERT INTO domainlist (domain, type, enabled, date_added, date_modified, comment) VALUES ('${domain}', 0, 1, $CURRENT_TIME, $CURRENT_TIME, 'Managed by Nix');"
     '') piholeAllowedDomains}
     echo "Added ${toString (lib.length piholeAllowedDomains)} allowed domains to database"
 
     echo "Populating BLOCKLISTS from Nix configuration..."
     ${lib.concatMapStrings (domain: ''
-    docker exec ${app} sqlite3 /etc/pihole/gravity.db "INSERT INTO domainlist (domain, type, enabled, date_added, date_modified, comment) VALUES ('${domain}', 1, 1, $CURRENT_TIME, $CURRENT_TIME, 'Managed by Nix');"
+    sql "INSERT INTO domainlist (domain, type, enabled, date_added, date_modified, comment) VALUES ('${domain}', 1, 1, $CURRENT_TIME, $CURRENT_TIME, 'Managed by Nix');"
     '') piholeBlockedDomains}
     echo "Added ${toString (lib.length piholeBlockedDomains)} blocked domains to database"
 
     echo "Populating CLIENT MAPPINGS from Nix configuration..."
     ${lib.concatMapStrings (client: ''
-    docker exec ${app} sqlite3 /etc/pihole/gravity.db "INSERT INTO client (ip, date_added, date_modified, comment) VALUES ('${client.ip}', $CURRENT_TIME, $CURRENT_TIME, '${client.comment}');"
+    sql "INSERT INTO client (ip, date_added, date_modified, comment) VALUES ('${client.ip}', $CURRENT_TIME, $CURRENT_TIME, '${client.comment}');"
     '') piholeClients}
     echo "Added ${toString (lib.length piholeClients)} client mappings to database"
     
@@ -330,6 +344,11 @@ in
           RestartMaxDelaySec = lib.mkOverride 500 "1m";
           RestartSec = lib.mkOverride 500 "100ms";
           RestartSteps = lib.mkOverride 500 9;
+          # ExecStartPost must finish before the start job completes, so every After= on this unit
+          # now waits for a resolving upstream; TimeoutStartSec is mandatory because the module
+          # ships TimeoutStartSec=0 and a blocking probe would otherwise hang boot indefinitely
+          ExecStartPost = "${waitForUnbound}";
+          TimeoutStartSec = lib.mkForce "180s"; # mkForce - module sets 0 at default priority
         };
         after = [
           "docker-network-${app}.service"
@@ -369,12 +388,17 @@ in
         path = [ pkgs.docker ];
         serviceConfig = {
           Type = "oneshot";
+          ExecStartPre = "${waitForUnbound}"; # re-verify immediately before touching pihole
           ExecStart = "${piholeInitScript}/bin/pihole-init";
           RemainAfterExit = true;
-          TimeoutStartSec = "300s";
+          TimeoutStartSec = "600s"; # 19 lists / ~1.9M domains needs headroom
+          # a transient boot-time failure (upstream list down, slow start) should self-heal rather
+          # than leave pihole serving an empty gravity db until the next rebuild
+          Restart = "on-failure";
+          RestartSec = "30s";
         };
-        after = [ "docker-${app}.service" ];
-        requires = [ "docker-${app}.service" ];
+        after = [ "docker-${app}.service" "docker-${app2}.service" ];
+        requires = [ "docker-${app}.service" "docker-${app2}.service" ];
         wantedBy = [ "docker-${app}-root.target" ];
       };
     };
