@@ -1031,6 +1031,41 @@ let
               severity: critical
             annotations:
               summary: "Backup timestamp metric absent for one or more hosts - check prometheus /alerts for which"
+
+      # pihole serves dns happily with an empty gravity db and still reports "blocking enabled", so
+      # both uptime and the web-ui probe stay green while nothing is actually filtered - watch the
+      # blocklist itself. the containers are stateless by design (gravity is rebuilt on every
+      # recreation), so the thresholds tolerate a boot-time rebuild window.
+      - name: dns_alerts
+        interval: 60s
+        rules:
+
+          - alert: piholeGravityLow
+            expr: pihole_gravity_domains < 1000000
+            for: 15m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Pi-hole on {{ $labels.host }} has only {{ $value }} gravity domains - ad filtering is degraded or absent"
+
+          # per-host absent() list - update when adding/removing a pihole host
+          - alert: piholeGravityMetricAbsent
+            expr: |
+              absent(pihole_gravity_domains{host="aspen"})
+              or absent(pihole_gravity_domains{host="juniper"})
+            for: 30m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Pi-hole gravity metric absent for one or more hosts - check `systemctl status pihole-gravity-exporter` on that host"
+
+          - alert: piholeAdlistDownloadFailed
+            expr: pihole_adlist_enabled - pihole_adlist_ok > 0
+            for: 30m
+            labels:
+              severity: warning
+            annotations:
+              summary: "{{ $value }} Pi-hole adlist(s) on {{ $labels.host }} failed to download - check `pihole -g` output"
   '';
 
 in

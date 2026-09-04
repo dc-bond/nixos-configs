@@ -74,6 +74,58 @@ let
     echo "unbound at ${unboundIp} is resolving"
   '';
 
+  # gravity lives only in the container writable layer, so an empty blocklist is indistinguishable
+  # from a healthy one from outside - pihole still serves dns and still reports "blocking enabled".
+  # export the row counts so prometheus can tell the two apart
+  gravityExporter = pkgs.writeShellScript "${app}-gravity-exporter.sh" ''
+    #!/usr/bin/env bash
+    set -euo pipefail
+
+    TEXTFILE_DIR="/var/lib/prometheus/node-exporter-text-files"
+    METRICS_FILE="$TEXTFILE_DIR/${app}_gravity.prom.$$"
+    FINAL_FILE="$TEXTFILE_DIR/${app}_gravity.prom"
+
+    mkdir -p "$TEXTFILE_DIR"
+
+    query() {
+      ${pkgs.docker}/bin/docker exec ${app} pihole-FTL sqlite3 /etc/pihole/gravity.db "$1" 2>/dev/null
+    }
+
+    # a failed query must not be published as zero domains - emit success=0 and leave the count
+    # off entirely so the absent() alert fires instead of a false "gravity empty"
+    if gravity=$(query "SELECT COUNT(*) FROM gravity;") && [ -n "$gravity" ]; then
+      adlist_total=$(query "SELECT COUNT(*) FROM adlist;")
+      adlist_enabled=$(query "SELECT COUNT(*) FROM adlist WHERE enabled = 1;")
+      adlist_ok=$(query "SELECT COUNT(*) FROM adlist WHERE enabled = 1 AND status = 1;")
+      {
+        echo "# HELP pihole_gravity_domains domains in the gravity blocklist"
+        echo "# TYPE pihole_gravity_domains gauge"
+        echo "pihole_gravity_domains $gravity"
+        echo "# HELP pihole_adlist_total configured adlists"
+        echo "# TYPE pihole_adlist_total gauge"
+        echo "pihole_adlist_total $adlist_total"
+        echo "# HELP pihole_adlist_enabled enabled adlists"
+        echo "# TYPE pihole_adlist_enabled gauge"
+        echo "pihole_adlist_enabled $adlist_enabled"
+        echo "# HELP pihole_adlist_ok enabled adlists whose last download succeeded"
+        echo "# TYPE pihole_adlist_ok gauge"
+        echo "pihole_adlist_ok $adlist_ok"
+        echo "# HELP pihole_gravity_exporter_success whether the gravity db query succeeded"
+        echo "# TYPE pihole_gravity_exporter_success gauge"
+        echo "pihole_gravity_exporter_success 1"
+      } > "$METRICS_FILE"
+    else
+      {
+        echo "# HELP pihole_gravity_exporter_success whether the gravity db query succeeded"
+        echo "# TYPE pihole_gravity_exporter_success gauge"
+        echo "pihole_gravity_exporter_success 0"
+      } > "$METRICS_FILE"
+    fi
+
+    # atomic move to prevent partial reads
+    mv "$METRICS_FILE" "$FINAL_FILE"
+  '';
+
   # custom dnsmasq config file because all attempts at getting custom entries into the docker env file failed
   customDnsmasqConfig = pkgs.writeText "custom-dns.conf" ''
     ${lib.concatStringsSep "\n" (customDnsEntries ++ customCnameEntries)}
@@ -400,10 +452,26 @@ in
           # than leave pihole serving an empty gravity db until the next rebuild
           Restart = "on-failure";
           RestartSec = "30s";
+          ExecStartPost = "${gravityExporter}"; # publish fresh counts as soon as gravity completes
         };
         after = [ "docker-${app}.service" "docker-${app2}.service" ];
         requires = [ "docker-${app}.service" "docker-${app2}.service" ];
         wantedBy = [ "docker-${app}-root.target" ];
+      };
+      "${app}-gravity-exporter" = {
+        description = "Export Pi-hole gravity metrics for node_exporter";
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${gravityExporter}";
+        };
+      };
+    };
+    timers."${app}-gravity-exporter" = {
+      description = "Pi-hole Gravity Metrics Export Timer";
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "10m"; # let the boot-time gravity rebuild finish before first sample
+        OnUnitActiveSec = "5m";
       };
     };
     targets."docker-${app}-root" = {
