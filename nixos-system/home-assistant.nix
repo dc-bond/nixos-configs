@@ -213,6 +213,17 @@ in
             cycle = "monthly";
             periodically_resetting = false;
           };
+          # Cycles the cost sensor the energy integration creates once a price is
+          # set on the grid consumption source. That sensor does not exist until
+          # then, so this meter reads unavailable and the dashboard's "Cost /
+          # Today" row reads unknown - both light up on their own when the price
+          # lands, with no config change. Same shape as the energy meters above:
+          # the cost sensor is TOTAL and accumulates, so it never resets to zero.
+          electricity_cost_daily = {
+            source = "sensor.eagle_200_total_energy_delivered_cost";
+            cycle = "daily";
+            periodically_resetting = false;
+          };
         };
 
         # Rolling 24h peak/baseline over instantaneous demand. Peak is what
