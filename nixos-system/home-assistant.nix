@@ -375,9 +375,16 @@ in
               '';
             }
             # utility_meter carries the previous cycle's total on its own
-            # last_period attribute, so a completed day/month needs no extra
-            # meter to remember it. The attribute is a string, hence the float
-            # cast; it reads 0 until the first cycle after a restart rolls over.
+            # last_period attribute, so a completed period needs no extra meter
+            # to remember it. The attribute is a string, hence the float cast.
+            #
+            # Guarded on > 0, not >= 0. A meter that has never completed a cycle
+            # reports last_period = 0, and rendering that as a real zero is how
+            # "Last Bill" came out as $8.86 - the fixed charge on top of nothing
+            # - on the first boot after the bill-cycle meter was added. Zero is
+            # not a possible reading here: the house never stops drawing its
+            # ~0.6 kW baseline, so a genuine zero period cannot occur and 0 can
+            # only ever mean "no completed period yet".
             {
               name = "Electricity Yesterday";
               unique_id = "electricity_yesterday";
@@ -386,7 +393,7 @@ in
               icon = "mdi:calendar-arrow-left";
               state = ''
                 {% set v = state_attr('sensor.electricity_daily', 'last_period') | float(-1) %}
-                {{ v | round(1) if v >= 0 else none }}
+                {{ v | round(1) if v > 0 else none }}
               '';
             }
             {
@@ -397,7 +404,7 @@ in
               icon = "mdi:calendar-arrow-left";
               state = ''
                 {% set v = state_attr('sensor.electricity_bill_cycle', 'last_period') | float(-1) %}
-                {{ v | round(1) if v >= 0 else none }}
+                {{ v | round(1) if v > 0 else none }}
               '';
             }
             # Degree days against a 65F base, the usual US balance point. Cooling
@@ -506,7 +513,7 @@ in
               icon = "mdi:file-document-check-outline";
               state = ''
                 {% set kwh = state_attr('sensor.electricity_bill_cycle', 'last_period') | float(-1) %}
-                {{ (${toString duquesne.fixed} + kwh * ${toString duquesne.marginal}) | round(2) if kwh >= 0 else none }}
+                {{ (${toString duquesne.fixed} + kwh * ${toString duquesne.marginal}) | round(2) if kwh > 0 else none }}
               '';
             }
           ];
