@@ -294,6 +294,31 @@ in
             sampling_size = 2880;
             max_age.hours = 24;
           }
+          # 24h rolling mean of demand - the trend line laid over the live trace
+          # on each demand graph. Same window and sizing as the two sensors
+          # above: the eagle polls every 30s, so 24h is 2880 samples.
+          #
+          # This trace replaced peak and baseline on the graphs. Those two are
+          # envelope values, and an envelope cannot be squiggly by construction:
+          # a rolling max only moves when a new extreme arrives or the old one
+          # ages out of the window, so it draws as plateaus with steps. Measured
+          # 2026-09-08, peak held 1.990 kW for six straight hours and then
+          # 2.620 kW for four more, while demand over the same 112 buckets took
+          # 63 distinct values to peak's 32 and baseline's 24. Flat is the
+          # correct behaviour for an envelope and the wrong shape for a line
+          # sitting next to a live signal, so peak and baseline are numbers on
+          # the card now and this is what the graphs draw instead - the same
+          # live-plus-rolling-mean pairing pmGraph uses for particulates.
+          {
+            platform = "statistics";
+            name = "Electricity Demand 24h";
+            unique_id = "electricity_demand_24h";
+            entity_id = "sensor.eagle_200_power_demand";
+            state_characteristic = "mean";
+            precision = 2;
+            sampling_size = 2880;
+            max_age.hours = 24;
+          }
           # Daily mean outdoor temperature, the denominator behind the degree-day
           # sensors below. The airgradient outdoor monitor changed state 691
           # times in 24h, so 1500 leaves headroom on a volatile day - same sizing
