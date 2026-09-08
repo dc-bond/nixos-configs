@@ -103,6 +103,40 @@ let
     src = energyPanelHideSrc;
   };
 
+  # Duquesne Light RS-Residential tariff, taken off the 2026-08-26 statement
+  # (actual-read service period 2026-08-06 -> 2026-08-26, 858.125 kWh). These
+  # are published tariff rates - nothing account-identifying lives here.
+  #
+  # The bill splits into two per-kWh groups and one fixed charge:
+  #   DLC     customer charge $8.67/mo + distribution $/kWh + DSIC surcharge
+  #   Supply  supply $/kWh + transmission $/kWh
+  #
+  # DSIC is levied on (customer charge + distribution) only, not on the whole
+  # bill: 2.17% x ($8.67 + $85.96) = $2.05, which is the line exactly as printed.
+  # Reading it as a whole-bill surcharge overstates it by about 2.3x.
+  duquesne = rec {
+    customerCharge = 8.67; # $/month, charged even at zero usage
+    distribution = 0.100169; # $/kWh
+    supply = 0.109568; # $/kWh
+    transmission = 0.031841; # $/kWh
+    dsicRate = 0.0217; # on customer charge + distribution
+
+    # What one more kWh actually costs, and the number the cost sensors below
+    # multiply by. Explicitly NOT the "Price to Compare" printed on the bill:
+    # that is supply + transmission only ($0.141409) and excludes delivery, so
+    # using it would understate every cost row by 42%.
+    marginal = distribution * (1 + dsicRate) + supply + transmission;
+
+    # The part of the bill that does not move with usage.
+    fixed = customerCharge * (1 + dsicRate);
+
+    # Reconciliation against the statement, as a check on the model above:
+    #   fixed + 858.125 x marginal = $8.86 + $209.17 = $218.03
+    # against $217.93 billed. The $0.10 gap is the printed Pennsylvania Tax
+    # Adjustment (-$0.09) plus per-line rounding - 0.05%, so it is left
+    # unmodelled rather than fudged. Effective all-in rate was $0.25396/kWh.
+  };
+
 in
 
 {
@@ -208,9 +242,27 @@ in
             cycle = "daily";
             periodically_resetting = false;
           };
+          # Calendar month. Kept for its long-term statistics, but no longer
+          # shown on a card: the bill cycle below answers the same question
+          # against the period the utility actually bills, and two rows labelled
+          # "this month" reading differently is worse than either alone.
           electricity_monthly = {
             source = "sensor.eagle_200_total_energy_delivered";
             cycle = "monthly";
+            periodically_resetting = false;
+          };
+          # The billed period. The 2026-08-26 statement read on the 26th against
+          # a prior read of 2026-08-06 - that first period is short only because
+          # service started on the 6th, so the cycle anchor is the 26th. offset
+          # counts days after the 1st, so 25 puts the reset on the 26th.
+          #
+          # This is what the cost projection runs on. Projecting a bill from a
+          # calendar month would forecast a period the utility never bills, and
+          # would be wrong by however far the 26th sits from the 1st.
+          electricity_bill_cycle = {
+            source = "sensor.eagle_200_total_energy_delivered";
+            cycle = "monthly";
+            offset.days = 25;
             periodically_resetting = false;
           };
         };
@@ -292,23 +344,32 @@ in
                 {{ (used / elapsed) | round(1) if (used >= 0 and elapsed >= 0.04) else none }}
               '';
             }
-            # Same extrapolation over the calendar month. next_month is computed
-            # by stepping off day 1 rather than adding a fixed 30 days, so
-            # February and the 31-day months both come out right. The window is
-            # the calendar month, not the Duquesne statement cycle - the meter
-            # has no idea when that starts, because the utility sends every
-            # billing-period field empty (verified against the device's own
-            # device_query: zigbee:CurrentBillingPeriodStart is blank).
+            # Same extrapolation over the billed period. Cycle bounds are derived
+            # from the 26th rather than read off the meter's last_reset attribute
+            # so the sensor stands alone and cannot be thrown by a restart before
+            # the first rollover.
+            #
+            # Stepping to the neighbouring cycle goes through .replace(day=26)
+            # rather than adding a fixed 30 days, so short and long months both
+            # land right: -28 days always falls in the previous month (Mar 26 ->
+            # Feb 26) and +32 always in the next (Feb 26 -> Mar 30 -> Mar 26).
+            #
+            # None of this can be learned from the meter. The utility sends every
+            # billing-period field empty over zigbee - verified against the
+            # device's own device_query, where zigbee:CurrentBillingPeriodStart
+            # and CurrentBillingPeriodDuration are both blank - so the 26th is
+            # asserted here and must be corrected by hand if a statement moves.
             {
-              name = "Electricity Projected This Month";
-              unique_id = "electricity_projected_this_month";
+              name = "Electricity Projected Bill Cycle";
+              unique_id = "electricity_projected_bill_cycle";
               unit_of_measurement = "kWh";
               state_class = "measurement";
               icon = "mdi:calendar-arrow-right";
               state = ''
-                {% set used = states('sensor.electricity_monthly') | float(-1) %}
-                {% set start = now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) %}
-                {% set next = (start + timedelta(days=32)).replace(day=1) %}
+                {% set used = states('sensor.electricity_bill_cycle') | float(-1) %}
+                {% set anchor = now().replace(day=26, hour=0, minute=0, second=0, microsecond=0) %}
+                {% set start = anchor if now() >= anchor else (anchor - timedelta(days=28)).replace(day=26) %}
+                {% set next = (start + timedelta(days=32)).replace(day=26) %}
                 {% set frac = (now() - start).total_seconds() / (next - start).total_seconds() %}
                 {{ (used / frac) | round | int if (used >= 0 and frac >= 0.02) else none }}
               '';
@@ -329,13 +390,13 @@ in
               '';
             }
             {
-              name = "Electricity Last Month";
-              unique_id = "electricity_last_month";
+              name = "Electricity Last Bill Cycle";
+              unique_id = "electricity_last_bill_cycle";
               unit_of_measurement = "kWh";
               state_class = "measurement";
               icon = "mdi:calendar-arrow-left";
               state = ''
-                {% set v = state_attr('sensor.electricity_monthly', 'last_period') | float(-1) %}
+                {% set v = state_attr('sensor.electricity_bill_cycle', 'last_period') | float(-1) %}
                 {{ v | round(1) if v >= 0 else none }}
               '';
             }
@@ -381,6 +442,71 @@ in
                 {% set kwh = states('sensor.electricity_projected_today') | float(-1) %}
                 {% set dd = states('sensor.electricity_degree_days') | float(-1) %}
                 {{ (kwh / dd) | round(2) if (kwh >= 0 and dd >= 1) else none }}
+              '';
+            }
+
+            # Cost. Computed here rather than through the energy integration's
+            # own cost sensor, which multiplies kWh by a single flat price and
+            # so cannot represent the fixed customer charge at all - on a light
+            # month that charge is most of the error. Doing it in templates also
+            # keeps the rate declarative: the energy dashboard stores its price
+            # in .storage, set through the UI, where a rate change would be
+            # invisible to this repo.
+            #
+            # Energy-only rows carry no fixed charge; it is levied once per
+            # billing period, so it belongs only on the cycle and bill rows.
+            {
+              name = "Electricity Rate";
+              unique_id = "electricity_rate";
+              unit_of_measurement = "USD/kWh";
+              state_class = "measurement";
+              icon = "mdi:cash";
+              state = "${toString duquesne.marginal}";
+            }
+            {
+              name = "Electricity Cost Today";
+              unique_id = "electricity_cost_today";
+              unit_of_measurement = "$";
+              state_class = "measurement";
+              icon = "mdi:cash-clock";
+              state = ''
+                {% set kwh = states('sensor.electricity_daily') | float(-1) %}
+                {{ (kwh * ${toString duquesne.marginal}) | round(2) if kwh >= 0 else none }}
+              '';
+            }
+            {
+              name = "Electricity Cost Bill Cycle";
+              unique_id = "electricity_cost_bill_cycle";
+              unit_of_measurement = "$";
+              state_class = "measurement";
+              icon = "mdi:cash-multiple";
+              state = ''
+                {% set kwh = states('sensor.electricity_bill_cycle') | float(-1) %}
+                {{ (${toString duquesne.fixed} + kwh * ${toString duquesne.marginal}) | round(2) if kwh >= 0 else none }}
+              '';
+            }
+            # The headline: what the next statement lands at if the rest of the
+            # cycle looks like the part already metered.
+            {
+              name = "Electricity Projected Bill";
+              unique_id = "electricity_projected_bill";
+              unit_of_measurement = "$";
+              state_class = "measurement";
+              icon = "mdi:file-document-outline";
+              state = ''
+                {% set kwh = states('sensor.electricity_projected_bill_cycle') | float(-1) %}
+                {{ (${toString duquesne.fixed} + kwh * ${toString duquesne.marginal}) | round(2) if kwh >= 0 else none }}
+              '';
+            }
+            {
+              name = "Electricity Last Bill";
+              unique_id = "electricity_last_bill";
+              unit_of_measurement = "$";
+              state_class = "measurement";
+              icon = "mdi:file-document-check-outline";
+              state = ''
+                {% set kwh = state_attr('sensor.electricity_bill_cycle', 'last_period') | float(-1) %}
+                {{ (${toString duquesne.fixed} + kwh * ${toString duquesne.marginal}) | round(2) if kwh >= 0 else none }}
               '';
             }
           ];
