@@ -213,17 +213,6 @@ in
             cycle = "monthly";
             periodically_resetting = false;
           };
-          # Cycles the cost sensor the energy integration creates once a price is
-          # set on the grid consumption source. That sensor does not exist until
-          # then, so this meter reads unavailable and the dashboard's "Cost /
-          # Today" row reads unknown - both light up on their own when the price
-          # lands, with no config change. Same shape as the energy meters above:
-          # the cost sensor is TOTAL and accumulates, so it never resets to zero.
-          electricity_cost_daily = {
-            source = "sensor.eagle_200_total_energy_delivered_cost";
-            cycle = "daily";
-            periodically_resetting = false;
-          };
         };
 
         # Rolling 24h peak/baseline over instantaneous demand. Peak is what
@@ -253,7 +242,149 @@ in
             sampling_size = 2880;
             max_age.hours = 24;
           }
+          # Daily mean outdoor temperature, the denominator behind the degree-day
+          # sensors below. The airgradient outdoor monitor changed state 691
+          # times in 24h, so 1500 leaves headroom on a volatile day - same sizing
+          # rule as the PM 24h means in the private repo.
+          {
+            platform = "statistics";
+            name = "Outdoor Temperature 24h";
+            unique_id = "outdoor_temperature_24h";
+            entity_id = "sensor.outdoor_air_monitor_temperature";
+            state_characteristic = "mean";
+            precision = 1;
+            sampling_size = 1500;
+            max_age.hours = 24;
+          }
         ];
+
+        # Pace, previous-period and weather-normalisation sensors. All of these
+        # are derived from the two utility_meter cycles and the outdoor mean
+        # above - nothing here talks to the eagle directly.
+        #
+        # Every one returns none - rendered "unknown" - rather than a number it
+        # cannot stand behind, matching the CO2/PM derived sensors in the private
+        # repo. Nothing on a dashboard should read as a confident zero when the
+        # real answer is "not enough data yet".
+        #
+        # device_class is deliberately omitted on the kWh sensors: `energy`
+        # requires a total/total_increasing state_class, and these are estimates
+        # and lookbacks rather than accumulating registers, so declaring it would
+        # log a validation warning on every state write. Icons carry the meaning
+        # instead.
+        template = [{
+          sensor = [
+            # Today's usage extrapolated to midnight, on the assumption the rest
+            # of the day looks like the part already measured. That assumption is
+            # weakest in the early hours - overnight is nearly all baseline, so a
+            # 6am projection reads low - which is the cost of having the number
+            # at all. The 0.04 floor (~58 minutes) only suppresses the window
+            # where the divisor is small enough to produce nonsense.
+            {
+              name = "Electricity Projected Today";
+              unique_id = "electricity_projected_today";
+              unit_of_measurement = "kWh";
+              state_class = "measurement";
+              icon = "mdi:chart-timeline-variant";
+              state = ''
+                {% set used = states('sensor.electricity_daily') | float(-1) %}
+                {% set elapsed = (now() - today_at('00:00')).total_seconds() / 86400 %}
+                {{ (used / elapsed) | round(1) if (used >= 0 and elapsed >= 0.04) else none }}
+              '';
+            }
+            # Same extrapolation over the calendar month. next_month is computed
+            # by stepping off day 1 rather than adding a fixed 30 days, so
+            # February and the 31-day months both come out right. The window is
+            # the calendar month, not the Duquesne statement cycle - the meter
+            # has no idea when that starts, because the utility sends every
+            # billing-period field empty (verified against the device's own
+            # device_query: zigbee:CurrentBillingPeriodStart is blank).
+            {
+              name = "Electricity Projected This Month";
+              unique_id = "electricity_projected_this_month";
+              unit_of_measurement = "kWh";
+              state_class = "measurement";
+              icon = "mdi:calendar-arrow-right";
+              state = ''
+                {% set used = states('sensor.electricity_monthly') | float(-1) %}
+                {% set start = now().replace(day=1, hour=0, minute=0, second=0, microsecond=0) %}
+                {% set next = (start + timedelta(days=32)).replace(day=1) %}
+                {% set frac = (now() - start).total_seconds() / (next - start).total_seconds() %}
+                {{ (used / frac) | round | int if (used >= 0 and frac >= 0.02) else none }}
+              '';
+            }
+            # utility_meter carries the previous cycle's total on its own
+            # last_period attribute, so a completed day/month needs no extra
+            # meter to remember it. The attribute is a string, hence the float
+            # cast; it reads 0 until the first cycle after a restart rolls over.
+            {
+              name = "Electricity Yesterday";
+              unique_id = "electricity_yesterday";
+              unit_of_measurement = "kWh";
+              state_class = "measurement";
+              icon = "mdi:calendar-arrow-left";
+              state = ''
+                {% set v = state_attr('sensor.electricity_daily', 'last_period') | float(-1) %}
+                {{ v | round(1) if v >= 0 else none }}
+              '';
+            }
+            {
+              name = "Electricity Last Month";
+              unique_id = "electricity_last_month";
+              unit_of_measurement = "kWh";
+              state_class = "measurement";
+              icon = "mdi:calendar-arrow-left";
+              state = ''
+                {% set v = state_attr('sensor.electricity_monthly', 'last_period') | float(-1) %}
+                {{ v | round(1) if v >= 0 else none }}
+              '';
+            }
+            # Degree days against a 65F base, the usual US balance point. Cooling
+            # degree days are max(0, mean - 65) and heating degree days are
+            # max(0, 65 - mean), so over one 24h window their sum is exactly
+            # |mean - 65| - one sensor covers both seasons and no season switch
+            # is needed. Over a 24h window a degree-day is numerically a degree,
+            # which is why the unit is F.
+            {
+              name = "Electricity Degree Days";
+              unique_id = "electricity_degree_days";
+              unit_of_measurement = "°F";
+              state_class = "measurement";
+              icon = "mdi:thermometer-lines";
+              state = ''
+                {% set t = states('sensor.outdoor_temperature_24h') | float(-999) %}
+                {{ ((t - 65) | abs | round(1)) if t > -900 else none }}
+              '';
+            }
+            # The normalised number: how much electricity a degree of weather
+            # costs. This is what makes two months comparable when one was hotter
+            # than the other - a raw kWh total cannot separate "used more" from
+            # "it was hotter".
+            #
+            # Floored at 1 degree day. Near the balance point the house needs
+            # essentially no conditioning, so the quotient is baseline load
+            # divided by ~0 and swings wildly on a rounding step - the same
+            # failure the PM2.5 indoor/outdoor ratio guards against. Mild weather
+            # therefore reads unknown, which is honest: on a 64F day there is no
+            # weather-driven usage to normalise.
+            #
+            # Numerator is the projection rather than usage-so-far, so the value
+            # is comparable across the day instead of climbing from near zero
+            # every midnight.
+            {
+              name = "Electricity per Degree Day";
+              unique_id = "electricity_per_degree_day";
+              unit_of_measurement = "kWh/°F";
+              state_class = "measurement";
+              icon = "mdi:home-thermometer";
+              state = ''
+                {% set kwh = states('sensor.electricity_projected_today') | float(-1) %}
+                {% set dd = states('sensor.electricity_degree_days') | float(-1) %}
+                {{ (kwh / dd) | round(2) if (kwh >= 0 and dd >= 1) else none }}
+              '';
+            }
+          ];
+        }];
         # `history` is in the package via default_config in extraComponents, but
         # extraComponents only builds a component in - it does not enable it, and
         # nothing here ever set default_config. Without this key the integration
