@@ -294,21 +294,15 @@ in
             sampling_size = 2880;
             max_age.hours = 24;
           }
-          # 24h rolling mean of demand - the trend line laid over the live trace
-          # on each demand graph. Same window and sizing as the two sensors
-          # above: the eagle polls every 30s, so 24h is 2880 samples.
+          # 24h rolling mean of demand. Briefly a trace on the demand graphs and
+          # no longer on any card: against a line that is already a bucket mean
+          # it read as a duplicate rather than a trend, so the graphs draw demand
+          # alone now. Kept because it costs nothing and its long-term statistics
+          # keep accumulating - the same reason CO2 Above Ambient and the PM2.5
+          # ratio are kept in the private repo after leaving their cards.
           #
-          # This trace replaced peak and baseline on the graphs. Those two are
-          # envelope values, and an envelope cannot be squiggly by construction:
-          # a rolling max only moves when a new extreme arrives or the old one
-          # ages out of the window, so it draws as plateaus with steps. Measured
-          # 2026-09-08, peak held 1.990 kW for six straight hours and then
-          # 2.620 kW for four more, while demand over the same 112 buckets took
-          # 63 distinct values to peak's 32 and baseline's 24. Flat is the
-          # correct behaviour for an envelope and the wrong shape for a line
-          # sitting next to a live signal, so peak and baseline are numbers on
-          # the card now and this is what the graphs draw instead - the same
-          # live-plus-rolling-mean pairing pmGraph uses for particulates.
+          # Same window and sizing as the two sensors above: the eagle polls
+          # every 30s, so 24h is 2880 samples.
           {
             platform = "statistics";
             name = "Electricity Demand 24h";
