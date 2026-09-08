@@ -96,7 +96,10 @@ let
     if gravity=$(query "SELECT COUNT(*) FROM gravity;") && [ -n "$gravity" ]; then
       adlist_total=$(query "SELECT COUNT(*) FROM adlist;")
       adlist_enabled=$(query "SELECT COUNT(*) FROM adlist WHERE enabled = 1;")
-      adlist_ok=$(query "SELECT COUNT(*) FROM adlist WHERE enabled = 1 AND status = 1;")
+      # gravity.sh status: 1 = downloaded+changed, 2 = unchanged/http 304, 3 = download failed but
+      # cached copy used, 4 = download failed with no cache. 1 and 2 are both healthy - only 3/4 are
+      # genuine download failures
+      adlist_ok=$(query "SELECT COUNT(*) FROM adlist WHERE enabled = 1 AND status IN (1, 2);")
       {
         echo "# HELP pihole_gravity_domains domains in the gravity blocklist"
         echo "# TYPE pihole_gravity_domains gauge"
@@ -107,7 +110,7 @@ let
         echo "# HELP pihole_adlist_enabled enabled adlists"
         echo "# TYPE pihole_adlist_enabled gauge"
         echo "pihole_adlist_enabled $adlist_enabled"
-        echo "# HELP pihole_adlist_ok enabled adlists whose last download succeeded"
+        echo "# HELP pihole_adlist_ok enabled adlists that are current - downloaded or already up to date"
         echo "# TYPE pihole_adlist_ok gauge"
         echo "pihole_adlist_ok $adlist_ok"
         echo "# HELP pihole_gravity_exporter_success whether the gravity db query succeeded"
