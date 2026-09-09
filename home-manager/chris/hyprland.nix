@@ -80,7 +80,7 @@ in
     components = [ "secrets" ];
   };
 
-  # idle daemon: DPMS off all monitors at 30 min, wake on input - no screen locking anywhere
+  # idle daemon: DPMS off all monitors at 10 min, wake on input - no screen locking anywhere
   services.hypridle = {
     enable = true;
     settings = {
@@ -89,7 +89,7 @@ in
       };
       listener = [
         {
-          timeout = 1800;
+          timeout = 600;
           on-timeout = "${pkgs.hyprland}/bin/hyprctl dispatch dpms off";
           on-resume = "${pkgs.hyprland}/bin/hyprctl dispatch dpms on";
         }
