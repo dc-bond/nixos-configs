@@ -327,10 +327,9 @@
       "nixos-system/oci-media-server.nix" # recoverMedia-server
       "nixos-system/oci-metube.nix" # recoverMetube
       "nixos-system/oci-actual.nix" # recoverActual
-      "nixos-system/oci-fava.nix"
+      "nixos-system/fava.nix"
       "nixos-system/oci-recipesage.nix" # recoverRecipesage
       "nixos-system/oci-n8n.nix" # recoverN8n
-      "nixos-system/oci-fava.nix"
       "nixos-system/calibre.nix"
       "nixos-system/vikunja.nix"
       "nixos-system/ollama.nix"

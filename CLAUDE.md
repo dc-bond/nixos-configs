@@ -229,14 +229,14 @@ what makes targeted reads acceptable — it does not make bulk reads acceptable.
 - Foundation: `foundation.nix`, `networking.nix`, `boot.nix`, `users.nix`
 - Infrastructure: `traefik.nix`, `backups.nix`, `sops.nix`, `tailscale.nix`
 - Databases: `postgresql.nix`, `mysql.nix`
-- Applications: `nextcloud.nix`, `photoprism.nix`, `home-assistant.nix`, `vaultwarden.nix`
+- Applications: `nextcloud.nix`, `photoprism.nix`, `home-assistant.nix`, `vaultwarden.nix`, `fava.nix`
 - Desktop: `hyprland.nix`, `labwc.nix`, `greetd.nix`
 
 **OCI Container Services** (`oci-*.nix` modules)
 - DNS: `oci-pihole.nix`
 - Media: `oci-media-server.nix` (Jellyfin, Sonarr, Radarr)
 - Home Automation: `oci-frigate.nix`, `oci-zwavejs.nix` (`zigbee2mqtt.nix` is a native service, not OCI)
-- Productivity: `oci-actual.nix`, `oci-fava.nix`, `oci-n8n.nix`, `oci-librechat.nix`
+- Productivity: `oci-actual.nix`, `oci-n8n.nix`, `oci-librechat.nix`
 - Infrastructure: `oci-unifi.nix`, `oci-searxng.nix`
 
 ## Hosts Overview
