@@ -9,6 +9,11 @@
 let
   app = "fava";
   ledgerDir = "/var/lib/nextcloud/data/Chris Bond/files/Bond Family/Financial/bond-ledger";
+  # fava plus its extensions in one python env; dashboards config is dashboards.yaml at the ledger root
+  favaEnv = pkgs.python3.withPackages (ps: with ps; [
+    fava
+    fava-dashboards
+  ]);
 in
 
 {
@@ -23,7 +28,7 @@ in
     serviceConfig = {
       # --read-only disables the editor, entry forms, and every write endpoint;
       # ledger edits are made in the beancount files directly, never through fava
-      ExecStart = "${pkgs.fava}/bin/fava --host 127.0.0.1 --port 7191 --read-only";
+      ExecStart = "${favaEnv}/bin/fava --host 127.0.0.1 --port 7191 --read-only";
       # nextcloud owns the ledger; no supplementary group needed to read it
       User = "nextcloud";
       Group = "nextcloud";
