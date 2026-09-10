@@ -362,13 +362,6 @@
       };
     };
 
-    fava = {
-      subnet = "172.21.6.0/25";
-      containers = {
-        fava = { ipv4 = "172.21.6.2"; };
-      };
-    };
-
     recipesage = {
       subnet = "172.21.7.0/25";
       containers = {
