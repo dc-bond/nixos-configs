@@ -152,6 +152,13 @@ in
       mqttHassPasswd = {};
       mqttZ2mPasswd = {}; # mosquitto user for zigbee2mqtt (zigbee2mqtt.nix)
       chrisEmailPasswd = {};
+      # long-lived access token for the hass websocket/rest api. not consumed by
+      # hass itself - it is for admin work against the running instance from
+      # aspen (entity registry renames, recorder/clear_statistics), which the
+      # frontend otherwise gates behind a browser session. deployed here so that
+      # work does not need a sops decrypt on the workstation, where every read
+      # costs a yubikey touch. root-only, the default.
+      hassApiToken = {};
     };
     templates = {
       "hass-secrets" = {
@@ -213,7 +220,7 @@ in
         "mobile_app"
         "notify"
         "smtp"
-        "airgradient" # indoor/outdoor air monitors (configVars.devices.{indoor,outdoor}AirMonitor); local polling, UI config flow
+        "airgradient" # basement/kitchen/outdoor air monitors (configVars.devices.{basement,kitchen,outdoor}AirMonitor); local polling, UI config flow
         "rainforest_eagle" # eagle 3 smart meter gateway (configVars.devices.eagle3); local api, UI config flow - creds are eagle3CloudId/eagle3InstallCode in secrets.yaml
       ];
       config = {
