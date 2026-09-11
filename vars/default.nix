@@ -268,11 +268,18 @@
       ipv4 = "192.168.1.30";
       tailscaleIp = null;
     };
-    indoorAirMonitor = {
+    # AirGradient monitors, static leases reserved in Unifi. Named for where
+    # they sit, not for the model - entity ids in HA derive from the device name
+    # set in the UI config flow, so these names and sensor.<name>_* must agree.
+    basementAirMonitor = { # I-9PSL
       ipv4 = "192.168.1.247";
       tailscaleIp = null;
     };
-    outdoorAirMonitor = {
+    kitchenAirMonitor = { # I-9PSL
+      ipv4 = "192.168.1.215";
+      tailscaleIp = null;
+    };
+    outdoorAirMonitor = { # O-1PST
       ipv4 = "192.168.1.246";
       tailscaleIp = null;
     };
