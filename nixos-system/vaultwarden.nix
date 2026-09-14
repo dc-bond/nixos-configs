@@ -89,6 +89,9 @@ in
 
     ${app} = {
       enable = true;
+      # 25.11 ships 1.36.0; clients >=2026.8.0 require 1.37.2 (see DEVIATIONS.md)
+      package = pkgs.unstable.${app};
+      webVaultPackage = pkgs.unstable."${app}-webvault"; # kept in lockstep with the server
       dbBackend = "postgresql";
       backupDir = null;
       environmentFile = config.sops.templates."${app}-env".path;

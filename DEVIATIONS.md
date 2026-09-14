@@ -23,7 +23,8 @@ pinned to a specific non-channel version.
 
 | File | Package | Source instead of 25.11 | Reason | Revert trigger |
 |---|---|---|---|---|
-| `home-manager/shared/firefox.nix` | `bitwarden` | AMO XPI **2026.6.1** via `overrideAttrs` | Extension 2026.7.0 renders an empty vault against Vaultwarden 1.36.0 ([vaultwarden#7462](https://github.com/dani-garcia/vaultwarden/issues/7462)) | Vaultwarden server on **≥1.37.0** — then restore plain `bitwarden` |
+| `nixos-system/vaultwarden.nix` | `vaultwarden` | `pkgs.unstable` (1.37.2 vs 1.36.0 in 25.11) | Bitwarden clients ≥2026.7.0 require server 1.37.0, ≥2026.8.0 require 1.37.2. Against 1.36.0 the iOS app crashes on sync with `typeMismatch` at `ciphers[].data` (legacy object where the client expects a string) and the browser extension renders an empty vault ([vaultwarden#7462](https://github.com/dani-garcia/vaultwarden/issues/7462), [#7615](https://github.com/dani-garcia/vaultwarden/discussions/7615)). 1.37.0 also carries 8 medium-severity security fixes | 25.11 backports ≥1.37.2 — then drop back to `pkgs.vaultwarden` |
+| `nixos-system/vaultwarden.nix` | `vaultwarden-webvault` | `pkgs.unstable` (2026.7.0+0 vs 2026.4.1+0 in 25.11) | Kept in lockstep with the server above; a 25.11 web vault against a 1.37.2 server just relocates the API mismatch | Same as `vaultwarden` |
 | `nixos-system/sunshine.nix` | `sunshine` | `pkgs.pkgs-2505` (25.05) | 25.11 has an x11-capture crash regression ([nixpkgs#475181](https://github.com/NixOS/nixpkgs/issues/475181)) | Fix lands in 25.11 |
 | `nixos-system/crowdsec.nix` | `crowdsec` | `pkgs.unstable` | Newer release than 25.11 ships | 25.11 catches up / no longer needed |
 | `nixos-system/crowdsec.nix` | `crowdsec-firewall-bouncer` | `pkgs.unstable` | Kept in lockstep with `crowdsec` above | Same as `crowdsec` |
