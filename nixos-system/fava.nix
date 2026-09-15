@@ -14,7 +14,8 @@ let
   ncUser = "Chris Bond";
   ledgerRel = "files/Bond Family/Financial/bond-ledger";
   ledgerDir = "/var/lib/nextcloud/data/${ncUser}/${ledgerRel}";
-  occPath = "/${ncUser}/${ledgerRel}/outside-balances";
+  priceRel = "prices";
+  occPath = "/${ncUser}/${ledgerRel}/${priceRel}";
 
   # fava plus its extensions in one python env; dashboards config is dashboards.yaml at the ledger root
   favaEnv = pkgs.python3.withPackages (ps: with ps; [
@@ -22,7 +23,7 @@ let
     fava-dashboards
   ]);
 
-  # bean-check, for validating what bean-price writes
+  # python3 + beancount, for validating what bean-price writes
   beancountEnv = pkgs.python3.withPackages (ps: with ps; [ beancount ]);
 in
 
@@ -76,7 +77,8 @@ in
       set -euo pipefail
 
       ledger="${ledgerDir}/master.beancount"
-      outdir="${ledgerDir}/outside-balances"
+      outdir="${ledgerDir}/${priceRel}"
+      mkdir -p "$outdir"
       tmp="$(mktemp)"
       trap 'rm -f "$tmp"' EXIT
 
@@ -101,8 +103,23 @@ in
         END { printf "wrote %d price directive(s)\n", n }
       ' "$tmp"
 
-      # master globs prices-*.beancount, so a new year file needs no include
-      bean-check "$ledger"
+      # a file master does not include would load clean while being ignored, so
+      # check inclusion rather than just parsing
+      python3 - "$ledger" "$outdir" <<'CHECK'
+      import glob, os, sys
+      from beancount import loader
+      _, errors, options = loader.load_file(sys.argv[1])
+      if errors:
+          sys.exit(f"{len(errors)} load error(s) after writing prices")
+      included = {os.path.realpath(p) for p in options["include"]}
+      orphans = sorted(
+          os.path.basename(f)
+          for f in glob.glob(os.path.join(sys.argv[2], "prices-*.beancount"))
+          if os.path.realpath(f) not in included
+      )
+      if orphans:
+          sys.exit(f"written but not included by master: {', '.join(orphans)}")
+      CHECK
 
       # the ledger sits in nextcloud's data dir; without a rescan the clients
       # never see the write and would clobber it on their next upload.
