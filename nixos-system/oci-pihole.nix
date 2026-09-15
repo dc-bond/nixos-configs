@@ -225,10 +225,7 @@ let
   piholeAllowedDomains = [
     "assets.adobedtm.com" # verizon wireless
     "geo.ddc.paypal.com" # paypal
-    # beanprice/fava-prices: yahoo issues its consent cookie here and the quote
-    # API refuses to hand out a crumb without it, so blocking this kills the
-    # price fetch at startup - and reports it as an SSL error, not a DNS one
-    "fc.yahoo.com" # beanprice
+    "fc.yahoo.com" # beanprice - yahoo consent cookie; blocked it fails as an SSL error
   ];
 
   piholeBlockedDomains = [
