@@ -7,34 +7,43 @@
   ...
 }:
 
-# replaces oci-unifi.nix. the native module runs unifi's *embedded* mongod
-# (spawned by ace.jar from ${mongodbPackage}/bin, localhost, no auth), so the
-# separate mongo container, its init script and all five unifiMongo* sops
-# secrets are gone. state is fixed at /var/lib/unifi - services.unifi.dataDir
-# was removed upstream.
+# native unifi controller, replaces the retired oci-unifi.nix. the module runs
+# unifi's *embedded* mongod (ace.jar spawns it from ${mongodbPackage}/bin on
+# localhost, no auth), so the second container, its init script and all five
+# unifiMongo* sops secrets are gone. state is fixed at /var/lib/unifi -
+# services.unifi.dataDir was removed upstream.
 #
-# cutover checklist, all four steps in one commit (not yet applied):
-#   1. hosts/aspen/configuration.nix - swap the oci-unifi.nix import for this
-#   2. hosts/aspen/impermanence.nix  - persist /var/lib/unifi as unifi:unifi 0700
-#   3. vars/default.nix              - comment out ociServices.unifi, frees 172.21.3.0/25
-#   4. DEVIATIONS.md                 - add the pkgs.unstable.unifi row
-# then, and only after the restore is verified and aspen has survived a reboot:
-#   5. drop unifiMongoRootUser/RootPasswd/User/Passwd/Db from secrets.yaml
-#   6. docker volume rm unifi unifi-mongodb-db unifi-mongodb-configdb
+# migrated by a native .unf backup/restore rather than a data copy. devices
+# inform to the host ip:8080 exactly as they did through docker's published
+# port, so nothing needed re-adopting.
 #
-# migration itself is a native .unf backup/restore, not a data copy:
-#   - download a full backup (settings + statistics) from the 9.0.114 web ui first
-#   - stop docker-unifi-root.target, leave its three volumes intact as rollback
-#   - rebuild, then restore the .unf through the setup wizard
-#   - devices keep informing to 192.168.1.2:8080, so no re-adoption
-#   - afterwards check /var/lib/unifi/data/system.properties for db.mongo.uri /
-#     statdb.mongo.uri / db.mongo.local=false carried over from the external-mongo
-#     install; strip them if present, they point at a container that no longer exists
+# outstanding until the restore is verified and aspen has survived a reboot:
+#   - check /var/lib/unifi/data/system.properties for db.mongo.uri /
+#     statdb.mongo.uri / db.mongo.local=false carried over from the
+#     external-mongo install; strip them if present, they point at a container
+#     that no longer exists
+#   - drop unifiMongoRootUser/RootPasswd/User/Passwd/Db from secrets.yaml
+#   - docker volume rm unifi unifi-mongodb-db unifi-mongodb-configdb (rollback
+#     until then: git revert the migration, rebuild, start docker-unifi-root.target)
 
 let
 
   app = "unifi";
   stateDir = "/var/lib/${app}";
+  # mongodb is SSPL, so hydra builds no mongodb at all and pkgs.mongodb-7_0 has
+  # no binary substitute - it compiles from source for hours and wants ~15G at
+  # the mongod link. mongodb-ce is the same server packaged from upstream's
+  # prebuilt tarball (fetchurl + autoPatchelfHook, nothing compiled), pinned
+  # back off 8.2 to the 7.0 the module defaults to and the mongo:7.0 container
+  # ran. 7.0 was never published for ubuntu2404, so the 2204 build it is.
+  mongodbVersion = "7.0.40";
+  mongodbPrebuilt = pkgs.mongodb-ce.overrideAttrs (_: {
+    version = mongodbVersion;
+    src = pkgs.fetchurl {
+      url = "https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-${mongodbVersion}.tgz";
+      hash = "sha256-5LPXoRgY+YPYl+yfy/JXeabhIvDnt+JfpKuKxdeKWok=";
+    };
+  });
   lanInterface = configVars.hosts."${config.networking.hostName}".networking.ethernetInterface;
   recoveryPlan = {
     restoreItems = [ stateDir ];
@@ -88,8 +97,9 @@ in
       # won't start. jdk25_headless is in 25.11, so this is not a second
       # cross-channel pull
       jrePackage = pkgs.jdk25_headless;
-      # mongodbPackage left at the module default (mongodb-7_0), same 7.0 major
-      # the mongo:7.0 container ran
+      # same 7.0 major the mongo:7.0 container ran, but prebuilt - see the let
+      # block for why the module default is unusable here
+      mongodbPackage = mongodbPrebuilt;
       initialJavaHeapSize = 1024; # was MEM_STARTUP
       maximumJavaHeapSize = 2048; # was MEM_LIMIT=1024; 10.x is heavier, jvm sat at ~876M on 9.0
     };
