@@ -245,6 +245,16 @@ in
           "0x001788010e29213d" = { friendly_name = "kitchen/dimmer"; }; # switch, transition is a light option
           "0x001788010c59b68b" = { friendly_name = "kitchen/under-cabinet"; transition = transitionSecs; }; # LCL001 lightstrip, gamut C like the LCA007
 
+          # sensors - the first non-hue devices on this network, and the first
+          # that are not lights or switches. no transition on any: that is a
+          # light option. none of them join a group.
+          # the two SNZB-02WD are physically identical, so which ieee is which
+          # was confirmed on 2026-09-21 by cupping one and watching its
+          # temperature/humidity climb - dbf7ffff was the one held, for the attic.
+          "0x8c73dafffece6780" = { friendly_name = "basement/floor"; }; # SNZB-05P leak, battery
+          "0xa4c13805dbf7ffff" = { friendly_name = "attic/climate"; }; # SNZB-02WD temp/humidity, battery
+          "0xa4c13806102affff" = { friendly_name = "guest-suite/crawlspace-climate"; }; # SNZB-02WD temp/humidity, battery
+
           # pending fixtures, placeholder names until locations are chosen. renaming
           # one needs the ha device deleted after the rebuild, see the header.
           # these two are brightness-only: no color_xy and no color_temp either, so
