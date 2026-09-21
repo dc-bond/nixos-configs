@@ -67,6 +67,7 @@
       "/var/lib/redis-authelia-dcbond"               # authelia session cache
       "/var/lib/calibre-web"                         # calibre-web database
       "/var/lib/private/ollama"                      # ollama downloaded models
+      { directory = "/var/lib/unifi"; user = "unifi"; group = "unifi"; mode = "0700"; } # unifi controller state + embedded mongodb
 
       # docker - full data root persisted (image layers + all named volumes)
       { directory = "/var/lib/docker"; mode = "0710"; } # docker requires specific permissions on data root

@@ -347,13 +347,14 @@
     #  };
     #};
 
-    unifi = {
-      subnet = "172.21.3.0/25";
-      containers = {
-        controller = { ipv4 = "172.21.3.2"; };
-        mongodb = { ipv4 = "172.21.3.3"; };
-      };
-    };
+    # unifi is a native module now (nixos-system/unifi.nix), 172.21.3.0/25 is free
+    #unifi = {
+    #  subnet = "172.21.3.0/25";
+    #  containers = {
+    #    controller = { ipv4 = "172.21.3.2"; };
+    #    mongodb = { ipv4 = "172.21.3.3"; };
+    #  };
+    #};
 
     zwavejs = {
       subnet = "172.21.4.0/25";
