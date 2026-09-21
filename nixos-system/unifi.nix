@@ -7,41 +7,17 @@
   ...
 }:
 
-# native unifi controller, replaces the retired oci-unifi.nix. the module runs
-# unifi's *embedded* mongod (ace.jar spawns it from ${mongodbPackage}/bin on
-# localhost, no auth), so the second container, its init script and all five
-# unifiMongo* sops secrets are gone. state is fixed at /var/lib/unifi -
-# services.unifi.dataDir was removed upstream.
-#
-# migrated by a native .unf backup/restore rather than a data copy. devices
-# inform to the host ip:8080 exactly as they did through docker's published
-# port, so nothing needed re-adopting.
-#
-# outstanding until the restore is verified and aspen has survived a reboot:
-#   - check /var/lib/unifi/data/system.properties for db.mongo.uri /
-#     statdb.mongo.uri / db.mongo.local=false carried over from the
-#     external-mongo install; strip them if present, they point at a container
-#     that no longer exists
-#   - drop unifiMongoRootUser/RootPasswd/User/Passwd/Db from secrets.yaml
-#   - docker volume rm unifi unifi-mongodb-db unifi-mongodb-configdb (rollback
-#     until then: git revert the migration, rebuild, start docker-unifi-root.target)
+# runs unifi's embedded mongod from ${mongodbPackage}/bin on localhost with no
+# auth, so there is no separate database service. state is fixed at /var/lib/unifi.
 
 let
 
   app = "unifi";
   stateDir = "/var/lib/${app}";
-  # mongodb is SSPL so hydra builds none of it: pkgs.mongodb-7_0, the module
-  # default, has no binary substitute on any platform and compiles from source
-  # for hours, wanting ~15G at the mongod link. mongodb-ce is the same server
-  # from upstream's prebuilt tarball - fetchurl + autoPatchelfHook, nothing
-  # compiled - and installs the mongod unifi actually execs.
-  #
-  # version is pinned rather than left at mongodb-ce's own default because
-  # unifi 10.6.106's deb declares mongodb-org-server (>= 3.6.0), (<< 8.1.0):
-  # 8.0 is the ceiling and the 8.2 mongodb-ce ships sits above it. 8.0 over the
-  # 7.0 the old container ran because the .unf restore builds the db from
-  # scratch, so the major is free to choose now and an in-place upgrade of an
-  # embedded mongod later. 7.0 eols 2027-08, 8.0 2029-10.
+  # no mongodb in nixpkgs has a binary substitute - it is SSPL, so hydra skips
+  # it and pkgs.mongodb-7_0 compiles from source for hours. mongodb-ce is the
+  # same server from upstream's prebuilt tarball. pinned to 8.0 because unifi's
+  # deb requires mongodb-org-server >= 3.6.0, << 8.1.0 and mongodb-ce ships 8.2.
   mongodbVersion = "8.0.32";
   mongodbPrebuilt = pkgs.mongodb-ce.overrideAttrs (_: {
     version = mongodbVersion;
@@ -68,15 +44,13 @@ in
   environment.systemPackages = with pkgs; [ recoverScript ];
 
   backups.serviceHooks = {
-    # fail-fast if the stop fails so borg doesn't cold-copy a live-writing mongod
-    preHook = lib.mkAfter [ "systemctl stop ${app}.service || exit 1" ];
+    preHook = lib.mkAfter [ "systemctl stop ${app}.service || exit 1" ]; # fail fast, never cold-copy a live mongod
     postHook = lib.mkAfter [ "systemctl start ${app}.service" ];
   };
 
-  # lan only, matching the ip-scoped publish set the docker module used. not
-  # services.unifi.openFirewall, which would also open these on the docker
-  # bridges. tailscale0 is already in firewall.trustedInterfaces (tailscale.nix).
-  # 8443 (web ui) stays closed - traefik reaches it on loopback.
+  # lan only, not services.unifi.openFirewall - that would also open these on the
+  # docker bridges. tailscale0 is already a trusted interface. 8443 stays closed,
+  # traefik reaches the ui on loopback.
   networking.firewall.interfaces."${lanInterface}" = {
     allowedTCPPorts = [
       8080 # device inform
@@ -94,19 +68,11 @@ in
 
     "${app}" = {
       enable = true;
-      # 25.11 ships 9.5.21, flagged knownVulnerabilities for CVE-2026-22557
-      # (CVSSv3.1 10.0) - fixed only in 9.0.118 and >=10.1.89, and no patched 9.x
-      # exists in nixpkgs. see DEVIATIONS.md
-      unifiPackage = pkgs.unstable.unifi;
-      # required: unifi 10.x wants jdk25 via passthru.jrePackage, which the 25.11
-      # module doesn't read - it defaults to jdk17_headless and the controller
-      # won't start. jdk25_headless is in 25.11, so this is not a second
-      # cross-channel pull
-      jrePackage = pkgs.jdk25_headless;
-      # prebuilt 8.0, the newest major unifi's deb allows - see the let block
+      unifiPackage = pkgs.unstable.unifi; # 25.11's 9.5.21 is flagged knownVulnerabilities, see DEVIATIONS.md
+      jrePackage = pkgs.jdk25_headless; # unifi 10.x needs jdk25; the 25.11 module ignores passthru.jrePackage and defaults to jdk17
       mongodbPackage = mongodbPrebuilt;
-      initialJavaHeapSize = 1024; # was MEM_STARTUP
-      maximumJavaHeapSize = 2048; # was MEM_LIMIT=1024; 10.x is heavier, jvm sat at ~876M on 9.0
+      initialJavaHeapSize = 1024;
+      maximumJavaHeapSize = 2048;
     };
 
     borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
@@ -114,10 +80,10 @@ in
     traefik.dynamicConfigOptions.http = {
       middlewares.unifi-headers.headers.customRequestHeaders.Authorization = "";
       serversTransports.unifi-insecure = {
-        insecureSkipVerify = true; # required for unifi's self-signed cert
-        forwardingTimeouts = {
-          dialTimeout = "5s"; # max time to establish connection (down from 30s default)
-          responseHeaderTimeout = "10s"; # max time to read response headers - triggers maintenance page faster
+        insecureSkipVerify = true; # unifi serves a self-signed cert
+        forwardingTimeouts = { # shorter than the 30s defaults so the maintenance page trips faster
+          dialTimeout = "5s";
+          responseHeaderTimeout = "10s";
         };
       };
       routers.${app} = {
@@ -138,7 +104,7 @@ in
       };
       services.${app} = {
         loadBalancer = {
-          serversTransport = "unifi-insecure"; # uses self-signed cert, needs insecureSkipVerify
+          serversTransport = "unifi-insecure";
           servers = [
             {
               url = "https://127.0.0.1:8443";
