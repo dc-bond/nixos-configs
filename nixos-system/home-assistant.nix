@@ -582,8 +582,18 @@ in
           #encryption = "tls"; # for port 465
         };
         rest_command = {
+          # two topics, split by whether the message needs acting on. info is
+          # the default and carries the routine stuff - battery levels, door
+          # reminders. alerts is for things that are damaging while ignored, so
+          # it can be subscribed to separately and left noisy.
           ntfy_notify = {
             url = "https://ntfy.${configVars.domain2}/homelab-info";
+            method = "POST";
+            content_type = "text/plain";
+            payload = "{{ message }}";
+          };
+          ntfy_alert = {
+            url = "https://ntfy.${configVars.domain2}/homelab-alerts";
             method = "POST";
             content_type = "text/plain";
             payload = "{{ message }}";
