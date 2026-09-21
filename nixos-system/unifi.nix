@@ -30,18 +30,24 @@ let
 
   app = "unifi";
   stateDir = "/var/lib/${app}";
-  # mongodb is SSPL, so hydra builds no mongodb at all and pkgs.mongodb-7_0 has
-  # no binary substitute - it compiles from source for hours and wants ~15G at
-  # the mongod link. mongodb-ce is the same server packaged from upstream's
-  # prebuilt tarball (fetchurl + autoPatchelfHook, nothing compiled), pinned
-  # back off 8.2 to the 7.0 the module defaults to and the mongo:7.0 container
-  # ran. 7.0 was never published for ubuntu2404, so the 2204 build it is.
-  mongodbVersion = "7.0.40";
+  # mongodb is SSPL so hydra builds none of it: pkgs.mongodb-7_0, the module
+  # default, has no binary substitute on any platform and compiles from source
+  # for hours, wanting ~15G at the mongod link. mongodb-ce is the same server
+  # from upstream's prebuilt tarball - fetchurl + autoPatchelfHook, nothing
+  # compiled - and installs the mongod unifi actually execs.
+  #
+  # version is pinned rather than left at mongodb-ce's own default because
+  # unifi 10.6.106's deb declares mongodb-org-server (>= 3.6.0), (<< 8.1.0):
+  # 8.0 is the ceiling and the 8.2 mongodb-ce ships sits above it. 8.0 over the
+  # 7.0 the old container ran because the .unf restore builds the db from
+  # scratch, so the major is free to choose now and an in-place upgrade of an
+  # embedded mongod later. 7.0 eols 2027-08, 8.0 2029-10.
+  mongodbVersion = "8.0.32";
   mongodbPrebuilt = pkgs.mongodb-ce.overrideAttrs (_: {
     version = mongodbVersion;
     src = pkgs.fetchurl {
-      url = "https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2204-${mongodbVersion}.tgz";
-      hash = "sha256-5LPXoRgY+YPYl+yfy/JXeabhIvDnt+JfpKuKxdeKWok=";
+      url = "https://fastdl.mongodb.org/linux/mongodb-linux-x86_64-ubuntu2404-${mongodbVersion}.tgz";
+      hash = "sha256-tBG+F8Me8kl2ftkZdNh24AfJGv1fReFTQFfSR+ranw0=";
     };
   });
   lanInterface = configVars.hosts."${config.networking.hostName}".networking.ethernetInterface;
@@ -97,8 +103,7 @@ in
       # won't start. jdk25_headless is in 25.11, so this is not a second
       # cross-channel pull
       jrePackage = pkgs.jdk25_headless;
-      # same 7.0 major the mongo:7.0 container ran, but prebuilt - see the let
-      # block for why the module default is unusable here
+      # prebuilt 8.0, the newest major unifi's deb allows - see the let block
       mongodbPackage = mongodbPrebuilt;
       initialJavaHeapSize = 1024; # was MEM_STARTUP
       maximumJavaHeapSize = 2048; # was MEM_LIMIT=1024; 10.x is heavier, jvm sat at ~876M on 9.0
