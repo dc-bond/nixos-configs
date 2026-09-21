@@ -592,10 +592,17 @@ in
             content_type = "text/plain";
             payload = "{{ message }}";
           };
+          # priority 5 is ntfy's max: it bypasses do-not-disturb on the phone
+          # clients and keeps ringing. set on the rest_command rather than per
+          # call because everything on this topic is urgent by definition - if
+          # something here does not warrant waking someone, it belongs on info.
           ntfy_alert = {
             url = "https://ntfy.${configVars.domain2}/homelab-alerts";
             method = "POST";
             content_type = "text/plain";
+            headers = {
+              Priority = "5";
+            };
             payload = "{{ message }}";
           };
         };
