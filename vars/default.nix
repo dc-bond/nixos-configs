@@ -241,7 +241,7 @@
       tailscaleIp = null;
     };
     unifiSwitch8 = {
-      ipv4 = "192.168.1.243";
+      ipv4 = "192.168.1.213";
       tailscaleIp = null;
     };
     unifiSwitch8Lite = {
