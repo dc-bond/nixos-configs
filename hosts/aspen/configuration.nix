@@ -272,6 +272,12 @@
     enable = true;
     pools = [ "storage" ]; # auto-import storage pool at boot
     enableSnapshots = false;
+    datasetQuotas = {
+      # unbounded frigate footage shares the pool with nextcloud, photoprism and
+      # the borg repo; ~1.3T projected across five cameras. dataset name rather
+      # than a bulkStorage path because these datasets are mountpoint=legacy
+      "storage/root/media/security-cameras" = "2T";
+    };
   };
 
   systemd.services.zfs-mount.enable = false; # disable zfs auto-mount service when using legacy systemd-managed mountpoints
