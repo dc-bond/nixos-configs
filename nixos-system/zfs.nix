@@ -131,6 +131,13 @@ in
       description = "Enable automatic ZFS snapshots";
     };
 
+    datasetQuotas = lib.mkOption {
+      type = lib.types.attrsOf lib.types.str;
+      default = {};
+      description = "Quotas to enforce on ZFS datasets";
+      example = { "storage/root/media/security-cameras" = "2T"; };
+    };
+
     snapshotRetention = {
       frequent = lib.mkOption {
         type = lib.types.int;
@@ -206,6 +213,22 @@ in
 
     # hook into zfs scrub service to export metrics after completion
     systemd.services.zfs-scrub.serviceConfig.ExecStartPost = lib.mkAfter "${zfsScrubExporter}";
+
+    # quotas live in pool metadata, not in the nix store, so reassert them at
+    # boot rather than assuming whatever the pool was last set to by hand
+    systemd.services.zfs-dataset-quotas = lib.mkIf (cfg.datasetQuotas != {}) {
+      description = "Apply declared ZFS dataset quotas";
+      after = [ "zfs-import.target" ];
+      requires = [ "zfs-import.target" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+      script = lib.concatStringsSep "\n" (lib.mapAttrsToList
+        (dataset: quota: "${pkgs.zfs}/bin/zfs set quota=${quota} ${dataset}")
+        cfg.datasetQuotas);
+    };
 
   };
 
