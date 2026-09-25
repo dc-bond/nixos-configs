@@ -20,6 +20,7 @@ let
   else null;
   # base flags without exit node (for use in exit node switching)
   baseUpFlags = [ "--ssh" ]
+  ++ lib.optional (!hostData.networking.useResolved) "--accept-dns=false" # nixos owns resolv.conf on these hosts; --reset otherwise re-enables tailscale dns and clobbers it
   ++ lib.optionals isExitNode [ "--advertise-exit-node" ]
   ++ lib.optionals (tsConfig.advertiseRoutes == null) [ "--accept-routes" ]
   ++ lib.optional (tsConfig.advertiseRoutes != null)
