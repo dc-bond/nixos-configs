@@ -608,14 +608,28 @@ all four in-scope hosts.
 
 #### Found during Batch 1, unrelated to 26.05
 
-- [ ] `tailscale up --reset` in `tailscale.nix` restores `accept-dns` to its
-      default of on, so tailscaled fights the declared
+- [x] tailscaled held `accept-dns` on, so it reclaimed the declared
       `environment.etc."resolv.conf"` on both DNS servers. juniper lost the race
       during the Batch 1 rebuild: `/etc/resolv.conf` became a tailscale-written
       file holding only `100.100.100.100`, dropping the Quad9 fallbacks on the
-      public DNS server. aspen carries the same latent conflict but was not
-      clobbered. Fix: `--accept-dns=false` in `baseUpFlags`, gated on
-      `!useResolved` so the resolved-based laptops are unaffected.
+      public DNS server.
+
+      Note there is no autoconnect service — `authKeyFile` is deliberately
+      commented out. Tailscale reconnects on boot from `WantRunning: true` in
+      `tailscaled.state`, and `tailscale up` is only a prefs-setting tool. So the
+      pref was not being re-applied by a rebuild; a long-running tailscaled was
+      re-asserting over the regenerated file.
+
+      Fixed two ways: `--accept-dns=false` added to `baseUpFlags` gated on
+      `!useResolved` (covers `tup` and fresh installs; leaves the resolved-based
+      laptops on tailscale DNS, which they want for `*.opticon.dev` off-LAN), and
+      a one-time `tailscale set --accept-dns=false` on juniper and aspen, which
+      persists in `tailscaled.state` across reboots. juniper's symlink and Quad9
+      fallbacks were restored by tailscaled the moment the pref flipped.
+
+      **A rebuild of juniper/aspen is still wanted** so the `tup` aliases point
+      at scripts carrying the flag — until then, running `tup` on those hosts
+      re-enables tailscale DNS.
 
 ### Phase 1 — juniper
 
