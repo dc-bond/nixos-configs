@@ -37,6 +37,7 @@ in
 
   networking = {
     useDHCP = false; # disable dhcpcd in favor of systemd-networkd below
+    resolvconf.enable = lib.mkIf (!hostData.networking.useResolved) false; # 26.05 defaults true and asserts against the resolv.conf written above
     firewall.enable = true;
     wireless.iwd = lib.mkIf hasWifi {
       enable = true;
@@ -69,7 +70,6 @@ in
         matchConfig.Name = hostData.networking.ethernetInterface;
         networkConfig.DHCP = "ipv4";
         dhcpV4Config.RouteMetric = 200;
-        dhcpV6Config.RouteMetric = 200;
         linkConfig.RequiredForOnline = "no";
       };
     } // lib.optionalAttrs hasDock {
@@ -77,7 +77,6 @@ in
         matchConfig.Name = hostData.networking.dockInterface;
         networkConfig.DHCP = "ipv4";
         dhcpV4Config.RouteMetric = 100;
-        dhcpV6Config.RouteMetric = 100;
         linkConfig.RequiredForOnline = "no";
       };
     } // lib.optionalAttrs hasWifi {
@@ -88,7 +87,6 @@ in
           IgnoreCarrierLoss = "3s";
         };
         dhcpV4Config.RouteMetric = 300;
-        dhcpV6Config.RouteMetric = 300;
         linkConfig.RequiredForOnline = "no";
       };
     };
