@@ -121,6 +121,7 @@ in
         "$mod, b, exec, rofi-bluetooth"
         "$mod, s, exec, ddcutil -d 1 setvcp D6 05 && systemctl suspend"
         "$mod, q, killactive"
+        "$mod CTRL, q, forcekillactive"
         "$mod, f, fullscreen"
         "$mod, t, togglefloating"
         "$mod, h, movefocus, l"
