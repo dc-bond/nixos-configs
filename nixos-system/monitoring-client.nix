@@ -83,12 +83,84 @@ let
     mv "$METRICS_FILE" "$FINAL_FILE"
   '';
 
+  # status and method are promoted to labels; path and client_ip go to structured
+  # metadata instead, since a label per url or client ip would multiply loki
+  # streams without bound (needs schema v13, which the loki config uses)
+  alloyConfig = ''
+    loki.write "default" {
+      endpoint {
+        url                 = "http://${configVars.hosts.juniper.networking.tailscaleIp}:3030/loki/api/v1/push"
+        max_backoff_retries = 2
+        remote_timeout      = "2s"
+      }
+    }
+
+    loki.relabel "journal" {
+      forward_to = []
+
+      rule {
+        source_labels = ["__journal__systemd_unit"]
+        target_label  = "unit"
+      }
+    }
+
+    loki.source.journal "journal" {
+      forward_to    = [loki.write.default.receiver]
+      relabel_rules = loki.relabel.journal.rules
+      labels        = { host = "${config.networking.hostName}", job = "journal" }
+    }
+  '' + lib.optionalString config.services.traefik.enable ''
+
+    local.file_match "traefik" {
+      path_targets = [{
+        __path__ = "/var/log/traefik/access.log",
+        job      = "traefik",
+        host     = "${config.networking.hostName}",
+      }]
+    }
+
+    loki.source.file "traefik" {
+      targets    = local.file_match.traefik.targets
+      forward_to = [loki.process.traefik.receiver]
+    }
+
+    loki.process "traefik" {
+      forward_to = [loki.write.default.receiver]
+
+      stage.json {
+        expressions = {
+          status    = "DownstreamStatus",
+          method    = "RequestMethod",
+          path      = "RequestPath",
+          client_ip = "ClientHost",
+        }
+      }
+
+      stage.labels {
+        values = {
+          status = "",
+          method = "",
+        }
+      }
+
+      stage.structured_metadata {
+        values = {
+          path      = "",
+          client_ip = "",
+        }
+      }
+    }
+  '';
+
 in
 
 {
 
   # smartctl for investigating disks by hand on the same hosts that ship smart metrics below
   environment.systemPackages = lib.optional (hostData.hardware.enableSmartMonitoring or false) pkgs.smartmontools;
+
+  # written to /etc rather than a store path so alloy can reload it on switch
+  environment.etc."alloy/config.alloy".text = alloyConfig;
 
   services = {
 
@@ -126,52 +198,12 @@ in
       };
     };
 
-    promtail = {
+    alloy = {
       enable = true;
-      configuration = {
-        server = {
-          http_listen_port = 3031;
-          grpc_listen_port = 0;
-        };
-        clients = [{
-          url = "http://${configVars.hosts.juniper.networking.tailscaleIp}:3030/loki/api/v1/push";
-          # bound the shutdown drain so an unreachable loki can't hang promtail past its TimeoutStopSec and fail a rebuild
-          backoff_config.max_retries = 2;
-          timeout = "2s";
-        }];
-        scrape_configs = [
-          {
-            job_name = "journal";
-            journal = {
-              labels.host = config.networking.hostName;
-            };
-            relabel_configs = [{
-              source_labels = ["__journal__systemd_unit"];
-              target_label = "unit";
-            }];
-          }
-        ] ++ lib.optionals config.services.traefik.enable [
-          {
-            job_name = "traefik";
-            static_configs = [{
-              targets = [ "127.0.0.1" ];
-              labels = {
-                job = "traefik";
-                host = config.networking.hostName;
-                __path__ = "/var/log/traefik/access.log";
-              };
-            }];
-            pipeline_stages = [{
-              json.expressions = {
-                status = "DownstreamStatus";
-                method = "RequestMethod";
-                path = "RequestPath";
-                client_ip = "ClientHost";
-              };
-            }];
-          }
-        ];
-      };
+      extraFlags = [
+        "--server.http.listen-addr=127.0.0.1:3031"
+        "--disable-reporting"
+      ];
     };
 
   };
@@ -183,6 +215,10 @@ in
   ];
 
   systemd.services = {
+    # cap the shutdown drain so an unreachable loki cannot hold the unit past stop
+    # and fail a rebuild
+    alloy.serviceConfig.TimeoutStopSec = 10;
+
     # export btrfs scrub metrics after each scrub completes
     # dynamically generate service name based on configured mountpoint
     "btrfs-scrub-${utils.escapeSystemdPath scrubMountpoint}" = lib.mkIf config.services.btrfs.autoScrub.enable {

@@ -67,6 +67,7 @@
       "/var/lib/redis-authelia-dcbond"               # authelia session cache
       "/var/lib/calibre-web"                         # calibre-web database
       "/var/lib/private/ollama"                      # ollama downloaded models
+      "/var/lib/private/alloy"                       # alloy log-shipper positions (DynamicUser service)
       { directory = "/var/lib/unifi"; user = "unifi"; group = "unifi"; mode = "0700"; } # unifi controller state + embedded mongodb
 
       # docker - full data root persisted (image layers + all named volumes)

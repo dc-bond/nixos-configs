@@ -553,7 +553,8 @@ item number. 6 of the 7 items land on 25.11; only 0.6 needs the bumped channel
 | Batch | Items | Test | Status |
 |---|---|---|---|
 | 1 | 0.2, 0.4, 0.5, 0.7 | rebuild, inspect generated units | **done 2026-09-25** |
-| 2 | 0.1 | logs arriving in Loki with label parity | pending |
+| 2 | 0.1 | logs arriving in Loki with label parity | juniper done 2026-09-25 |
+| 2b | loki bind fix (found during 2) | client logs reaching loki at all | pending |
 | 3 | 0.3 | reboot, `/etc/age` + `/run/secrets` | pending |
 | 4 | `boot.initrd.systemd.enable` on 25.11 | per-host reboot | pending |
 | 5 | 0.6 + flake bump | full re-eval | pending |
@@ -563,7 +564,8 @@ voluntarily on 25.11, so the one change that can leave a host unbootable is
 isolated from ~40 package upgrades. Verified to evaluate cleanly on 25.11 for
 all four in-scope hosts.
 
-- [ ] **0.1** Migrate `services.promtail` → `services.alloy`.
+- [~] **0.1** Migrate `services.promtail` → `services.alloy`. juniper switched
+      2026-09-25 and verified; aspen/thinkpad/kauri pending.
       `monitoring-client.nix:129` and `monitoring-server.nix:1266` (+ the
       ordering block at `:1117`). Biggest work item. Carry over the bounded
       shutdown drain and the `after`/`wants = [ "loki.service" ]` ordering.
@@ -630,6 +632,36 @@ all four in-scope hosts.
       **A rebuild of juniper/aspen is still wanted** so the `tup` aliases point
       at scripts carrying the flag — until then, running `tup` on those hosts
       re-enables tailscale DNS.
+
+- [x] **Loki was localhost-only, so no client log ever reached it.**
+      `http_listen_address` was `"127.0.0.1"` while aspen, thinkpad and kauri
+      were configured to push to juniper's tailscale ip. Evidence at the time of
+      discovery: Loki's `host` label held exactly `["juniper"]`, and aspen's
+      promtail had logged **140,448 connection-refused errors in 24h** (1.3M
+      journal lines, bounded only by journal retention). Loki had been up since
+      2026-06-07 with 0 restarts, so this long predates the migration — promtail
+      and alloy fail identically against it.
+
+      Fixed by binding Loki to `hostData.networking.tailscaleIp`. 3030 is not in
+      `allowedTCPPorts` and `trustedInterfaces` is `["tailscale0" "lo"]`, so the
+      socket is reachable over the tailnet and firewalled off the public
+      interface — the same posture every exporter in `monitoring-client.nix`
+      already uses. Because that drops the 127.0.0.1 binding, two consumers moved
+      with it: Grafana's loki datasource and juniper's own alloy push url. Loki
+      now also waits on a `tailscale-ready` oneshot so the interface carries its
+      ip before the bind.
+
+      Not yet addressed: Loki's gRPC port still listens on `*:9095`. Unused
+      externally in single-binary mode and firewalled, but worth binding to
+      localhost once the ring behaviour is confirmed safe to change.
+
+- [x] alloy labelled journal streams `job="loki.source.journal.journal"`, an
+      implementation detail leaking into a label value (and into `service_name`,
+      which loki derives from `job`). Setting `job = "journal"` explicitly
+      overrides it — confirmed with `loki.echo` before deploying. Nothing queried
+      the old value: grafana.db has zero matches for `service_name`,
+      `unknown_service` or `loki.source.journal`, and all 112 `job=` hits there
+      are prometheus queries.
 
 ### Phase 1 — juniper
 
