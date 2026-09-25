@@ -32,6 +32,15 @@ in
     };
   };
 
+  # 26.05's oci-containers module sets Restart=on-failure, which leaves a
+  # cleanly-exited container down. mkForce because the module sets Restart at
+  # normal priority, outranking the mkOverride 500 the oci-* modules use.
+  systemd.services = lib.mapAttrs' (name: _:
+    lib.nameValuePair "${config.virtualisation.oci-containers.backend}-${name}" {
+      serviceConfig.Restart = lib.mkForce "always";
+    }
+  ) config.virtualisation.oci-containers.containers;
+
   ## ensure docker.socket waits for tailscale interface when binding to tailscale ipv4
   #systemd.sockets.docker = lib.mkIf (hostData.networking.tailscaleIp != null) {
   #  after = [ "tailscaled-autoconnect.service" ];

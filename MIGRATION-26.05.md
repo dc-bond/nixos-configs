@@ -546,25 +546,56 @@ Land all of these before *any* host switches. None changes 25.11 behaviour, so
 this phase can be committed and switched on 25.11 first to confirm no
 regression.
 
+Phase 0 is executed in batches grouped by failure mode and test method, not by
+item number. 6 of the 7 items land on 25.11; only 0.6 needs the bumped channel
+(`services.resolved.settings` does not exist in 25.11).
+
+| Batch | Items | Test | Status |
+|---|---|---|---|
+| 1 | 0.2, 0.4, 0.5, 0.7 | rebuild, inspect generated units | **done 2026-09-25** |
+| 2 | 0.1 | logs arriving in Loki with label parity | pending |
+| 3 | 0.3 | reboot, `/etc/age` + `/run/secrets` | pending |
+| 4 | `boot.initrd.systemd.enable` on 25.11 | per-host reboot | pending |
+| 5 | 0.6 + flake bump | full re-eval | pending |
+
+Batch 4 is not a 26.05 requirement in itself — it takes systemd stage 1
+voluntarily on 25.11, so the one change that can leave a host unbootable is
+isolated from ~40 package upgrades. Verified to evaluate cleanly on 25.11 for
+all four in-scope hosts.
+
 - [ ] **0.1** Migrate `services.promtail` → `services.alloy`.
       `monitoring-client.nix:129` and `monitoring-server.nix:1266` (+ the
       ordering block at `:1117`). Biggest work item. Carry over the bounded
       shutdown drain and the `after`/`wants = [ "loki.service" ]` ordering.
-- [ ] **0.2** Delete `boot.initrd.preLVMCommands` from `boot.nix:50` (body is
-      just `setleds +num`). This is what flips every host to systemd stage 1.
+      `services.alloy` exists in 25.11 with an identical option surface, so this
+      lands and is verified before the channel bump.
+- [x] **0.2** Deleted `boot.initrd.preLVMCommands` from `boot.nix` (and the now
+      unused `pkgs` arg). Other modules still contribute to that option — the
+      console keymap/font setup, and the disko LUKS unlock script on the
+      laptops — which is consistent with the 26.05 assertion naming only
+      `boot.nix`: those modules stop contributing under systemd stage 1.
 - [ ] **0.3** Add `fsType = "none";` to the `/etc/age` bind mount in all five
       `hosts/*/impermanence.nix:22` — include cypress and alder so they stay
-      buildable while deprecated.
-- [ ] **0.4** `networking.nix`: add
-      `networking.resolvconf.enable = lib.mkIf (!hostData.networking.useResolved) false;`
-- [ ] **0.5** `networking.nix:72,80,91`: delete the three
-      `dhcpV6Config.RouteMetric` lines (dead config — those networks are
-      `DHCP = "ipv4"`).
+      buildable while deprecated. **Not** a no-op: 25.11 defaults `fsType` to
+      `"auto"`, and this mount is `neededForBoot` and gates SOPS.
+- [x] **0.4** Added `resolvconf.enable = lib.mkIf (!hostData.networking.useResolved) false`
+      inside the existing `networking` block. No-op on 25.11 (already `false`
+      fleet-wide); verified `false` on 26.05 for juniper and aspen, which is the
+      point.
+- [x] **0.5** Deleted the three `dhcpV6Config.RouteMetric` lines. Dead config —
+      every one of those networks is `DHCP = "ipv4"`. Confirmed no `DHCPv6`
+      section in any generated `.network` file, dhcpV4 metrics intact.
 - [ ] **0.6** `networking.nix:19`: `llmnr = "false"` →
-      `settings.Resolve.LLMNR = "false"`.
-- [ ] **0.7** Decide the `oci-containers` `Restart` question (§0.7).
-      Recommended: preserve `always` via `lib.mkForce` for the migration —
-      change one thing at a time. **Operator decision.**
+      `settings.Resolve.LLMNR = "false"`. Cannot be pre-landed —
+      `services.resolved.settings` does not exist in 25.11, so this rides with
+      the flake bump in Batch 5.
+- [x] **0.7** Chose to preserve `always`, applied centrally in
+      `oci-containers.nix` over `oci-containers.containers`. `mkForce` is
+      required: the module sets `Restart` at normal priority, which already
+      outranks the `mkOverride 500 "always"` in `oci-searxng.nix` and
+      `oci-recipesage.nix` — so those lines have never taken effect and would
+      have silently yielded `on-failure` on 26.05. Verified all 25 aspen and 4
+      juniper container units `Restart=always` and active.
 - [ ] Bump `flake.nix`: `nixpkgs` → `nixos-26.05`, `home-manager` →
       `release-26.05`. Either drop the dead `simple-nixos-mailserver` input or
       repoint it at `nixos-26.05`.
@@ -572,6 +603,19 @@ regression.
       expect clean.
 - [ ] **Do not touch `home.stateVersion`.** It gates every home-manager change
       listed in §3.2, including the Firefox profile move.
+- [ ] Add the `DEVIATIONS.md` row for the 0.7 `mkForce` — it only becomes a
+      deviation at the channel bump, so it belongs in the Batch 5 commit.
+
+#### Found during Batch 1, unrelated to 26.05
+
+- [ ] `tailscale up --reset` in `tailscale.nix` restores `accept-dns` to its
+      default of on, so tailscaled fights the declared
+      `environment.etc."resolv.conf"` on both DNS servers. juniper lost the race
+      during the Batch 1 rebuild: `/etc/resolv.conf` became a tailscale-written
+      file holding only `100.100.100.100`, dropping the Quad9 fallbacks on the
+      public DNS server. aspen carries the same latent conflict but was not
+      clobbered. Fix: `--accept-dns=false` in `baseUpFlags`, gated on
+      `!useResolved` so the resolved-based laptops are unaffected.
 
 ### Phase 1 — juniper
 

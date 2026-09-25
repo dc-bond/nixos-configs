@@ -1,5 +1,4 @@
 {
-  pkgs,
   config,
   configVars,
   lib,
@@ -47,9 +46,6 @@ in
         btrfs = true;
         ext4 = true;
       };
-      preLVMCommands = ''
-        ${pkgs.kbd}/bin/setleds +num
-      '';
     };
 
   };
