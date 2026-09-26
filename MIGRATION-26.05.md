@@ -24,8 +24,8 @@ if they come back. In-scope hosts are **juniper, aspen, thinkpad, kauri**.
 ## Progress — where this stands
 
 **Last updated 2026-09-26.** Everything below is still on `nixos-25.11`; the
-channel has not been bumped yet. Phase 0 batches 1 and 2 are complete and
-verified on all four in-scope hosts.
+channel has not been bumped yet. Phase 0 batches 1, 2 and 3 are complete and
+verified on all four in-scope hosts. Batch 4 is next.
 
 ### Batch status
 
@@ -39,7 +39,8 @@ verified on all four in-scope hosts.
 | — | container restart policy centralised, `on-failure` adopted | **done** — verified on aspen + juniper | `ce41515` |
 | — | loki localhost grpc bind | **reverted** — broke reads, see open items | `4c0bfc3` |
 | — | container exit 130 treated as clean | **done** — stops land inactive, 137 still restarts | `85dca2a` |
-| 3 | 0.3 bind-mount `fsType` | **config landed, reboots pending** — thinkpad and aspen only | |
+| 3 | 0.3 bind-mount `fsType` | **done** — thinkpad and aspen rebooted and verified | `678cc05` |
+| — | calibre-web removed from aspen (found during 3) | **done** — module archived to private `deprecated/` | |
 | 4 | `boot.initrd.systemd.enable` on 25.11 | **next** — per-host reboot, kauri before thinkpad | |
 | 5 | 0.6 + flake bump to 26.05 | pending | |
 
@@ -132,7 +133,7 @@ Loki listens on `100.70.221.14:3030` only; the public interface refuses 3030.
   SIGKILLed mid-write to the ZFS recording dataset. Upstream frigate expects
   SIGTERM, not the SIGINT the module sends. Worth either switching its
   `--stop-signal` or raising `--stop-timeout`; out of scope for the migration.
-- Batch 3's config has landed; its two reboots (thinkpad, aspen) are pending.
+- Batch 4 is next and is the last batch before the channel bump.
 
 ---
 
@@ -220,8 +221,7 @@ password prompt. See Phase 3 for the mitigation.
 
 ### 0.3 Bind-mount `fsType` has no default anymore
 
-> **Config landed** — batch 3, 2026-09-26. Reboot verification still pending on
-> thinkpad and aspen.
+> **Done** — batch 3, 2026-09-26. thinkpad and aspen both rebooted and verified.
 
 `fileSystems.<name>.fsType` lost its default, so the `/etc/age` early bind
 mount errors out on every impermanence host.
@@ -514,7 +514,7 @@ unchanged, and unifi 10.6's `<< 8.1.0` ceiling still applies).
 
 | Module | Change | Verdict |
 |---|---|---|
-| `services.calibre-web` | Now hardened: `ProtectSystem = "strict"`, `ProtectHome = true`, and `ReadWritePaths` computed as `dataDir` + `options.calibreLibrary` | **Safe.** `calibreLibrary` is set to `${bulkStorage.path}/media/library/ebooks/calibre/`, which resolves to a real directory on the ZFS `storage/root/media/library` dataset, so it lands in `ReadWritePaths`. Because `enableBookUploading = true` writes into that library, **smoke-test an upload** after switching |
+| `services.calibre-web` | Now hardened: `ProtectSystem = "strict"`, `ProtectHome = true`, and `ReadWritePaths` computed as `dataDir` + `options.calibreLibrary` | **Moot — calibre-web was removed from aspen 2026-09-26.** It lost a start race against the ZFS `storage/root/media/library` mount on every cold boot (`Invalid Calibre library`, recovered by one restart), and the 26.05 hardening would have made that worse by computing `ReadWritePaths` from a path absent at unit-start time. Module archived verbatim to `nixos-configs-private/deprecated/calibre.nix`; the 140K state DB and 425M ebook library are both still on disk |
 | `services.lldap` | New `database.createLocally` (defaults **true**) and `database.type` (defaults **`"sqlite"`**); `settings.database_url` is now only a `mkDefault` | **Safe but tidy it up.** `lldap.nix` sets `database_url = "postgres:///lldap"` explicitly, which beats `mkDefault` — so there is *no* silent switch to an empty SQLite DB. But the defaults now misdescribe reality. Set `database.createLocally = false` to declare intent and keep the module from managing a DB it shouldn't. Ordering is already handled by the module's own `requires`/`after` on `postgresql.target` |
 | `services.lldap` | `ldap_user_pass_file` / `jwt_secret_file` are now properly supported, with assertions | The `LoadCredential` + `LLDAP_*_FILE` workaround ("shit broken in 25.11") can likely be reverted to the native `*_file` options. Do it as a **separate** change after the switch, not during |
 | `services.sunshine` | Module now sets `hardware.uinput.enable = true` instead of `boot.kernelModules = [ "uinput" ]` | `sunshine.nix:99` sets `boot.kernelModules = [ "uinput" ]` by hand — now redundant. Dropping it also picks up the udev rules and `uinput` group that `hardware.uinput.enable` brings |
@@ -704,8 +704,8 @@ item number. 6 of the 7 items land on 25.11; only 0.6 needs the bumped channel
 | 1 | 0.2, 0.4, 0.5, 0.7 | rebuild, inspect generated units | **done 2026-09-25** |
 | 2 | 0.1 | logs arriving in Loki with label parity | **done 2026-09-25** |
 | 2b | loki bind fix (found during 2) | client logs reaching loki at all | **done 2026-09-25** |
-| 3 | 0.3 | reboot, `/etc/age` + `/run/secrets` | **config landed 2026-09-26, reboots pending** |
-| 4 | `boot.initrd.systemd.enable` on 25.11 | per-host reboot | pending |
+| 3 | 0.3 | reboot, `/etc/age` + `/run/secrets` | **done 2026-09-26** |
+| 4 | `boot.initrd.systemd.enable` on 25.11 | per-host reboot | **next** |
 | 5 | 0.6 + flake bump | full re-eval | pending |
 
 Batch 4 is not a 26.05 requirement in itself — it takes systemd stage 1
@@ -737,8 +737,12 @@ all four in-scope hosts.
       omits `fsType`. Only thinkpad and aspen reboot for it — kauri and alder
       have `impermanence.nix` commented out as `FRESH INSTALL ONLY`, so their
       edits are fresh-install correctness only.
-      **Reboots still pending** — verify `/etc/age` mounted with `Type=none`,
-      `/run/secrets` populated and zero failed units on each.
+      **Both reboots done and verified 2026-09-26.** On each host stage-1
+      logged `mounting /mnt-root/persist/etc/age on /etc/age...` with no retry,
+      `etc-age.mount` came up carrying `Type=none`, secrets decrypted
+      (thinkpad 8, aspen 34) and zero units failed. On aspen all 56 `docker-*`
+      units returned to their exact pre-reboot states and the 44 ZFS
+      `feature@` flags were byte-identical — no `zpool upgrade`.
 - [x] **0.4** Added `resolvconf.enable = lib.mkIf (!hostData.networking.useResolved) false`
       inside the existing `networking` block. No-op on 25.11 (already `false`
       fleet-wide); verified `false` on 26.05 for juniper and aspen, which is the
@@ -870,7 +874,7 @@ all four in-scope hosts.
 - [ ] Verify: `nvidia-smi` reports 580.x; Jellyfin hardware transcode; Frigate
       detection; ZFS pool ONLINE and *not* upgraded; HA recorder migrated with
       no missing entities; zigbee2mqtt has all 14 devices; mosquitto accepts
-      both users; **calibre-web book upload**; every container returns after a
+      both users; every container returns after a
       reboot and after `systemctl restart docker`.
 - [ ] Afterwards, as separate changes: test dropping the `sunshine`
       `pkgs-2505` pin (if it works, drop the whole `nixpkgs-2505` input — 25.05
