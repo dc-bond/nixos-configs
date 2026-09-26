@@ -16,6 +16,83 @@ against a possible future return, and explicitly *not* migrated. They still
 evaluate cleanly against 26.05, so Phase 0's shared fixes keep them buildable
 if they come back. In-scope hosts are **juniper, aspen, thinkpad, kauri**.
 
+---
+
+## Progress — where this stands
+
+**Last updated 2026-09-25.** Everything below is still on `nixos-25.11`; the
+channel has not been bumped yet. Phase 0 batches 1 and 2 are complete and
+verified on all four in-scope hosts.
+
+### Batch status
+
+| Batch | Items | Status | Commit |
+|---|---|---|---|
+| 1 | 0.2, 0.4, 0.5, 0.7 | **done** — all 4 hosts switched and verified | `c36bb73` |
+| — | tailscale `accept-dns` (found during 1) | **done** — config + live pref on juniper/aspen | `99c12df` |
+| 2 | 0.1 promtail → alloy | **done** — all 4 hosts on alloy, 0 restarts | `29e432d` |
+| 2b | loki tailnet bind (found during 2) | **done** — client shipping works for the first time | `29e432d` |
+| — | `/var/lib/private` 0700 (regression fix) | **done** — all 5 impermanence hosts | `3a37535` |
+| 3 | 0.3 bind-mount `fsType` | **next** — needs a reboot per impermanence host | |
+| 4 | `boot.initrd.systemd.enable` on 25.11 | pending — per-host reboot, kauri before thinkpad | |
+| 5 | 0.6 + flake bump to 26.05 | pending | |
+
+### Verified live state at the end of batch 2
+
+Generations: juniper 354, aspen 221, thinkpad and kauri current. **Zero failed
+units on any host.** promtail `inactive` everywhere, alloy `active` with 0
+restarts everywhere.
+
+Centralised logging now works — it never had before 2b. All four hosts appear in
+Loki's `host` label, journal streams carry `{host, job="journal", unit,
+service_name="journal"}`, and the traefik pipeline produces **32 streams** with
+`status` (13 values) and `method` (8 values) as labels while `path` and
+`client_ip` stay out of the label index as structured metadata.
+
+Loki listens on `100.70.221.14:3030` only; the public interface refuses 3030.
+`tailscale set --accept-dns=false` is persisted on juniper and aspen
+(`CorpDNS: false`), and their `tup` scripts now carry the flag too.
+
+### Things learned the hard way — do not rediscover these
+
+- **A DynamicUser `StateDirectory` needs its parent at mode 0700.** Persisting
+  `/var/lib/private/alloy` without `"d /persist/var/lib/private 0700 root root -"`
+  and `"d /var/lib/private 0700 root root -"` fails the unit with
+  `238/STATE_DIRECTORY`. aspen already had those rules for photoprism/lldap/
+  vikunja/ollama; thinkpad did not, and alloy crash-looped 2373 times on the
+  first switch. All five impermanence hosts now carry them.
+- **`services.resolved.settings` does not exist in 25.11**, so 0.6 cannot be
+  pre-landed and must ride with the Batch 5 flake bump.
+- **`fileSystems.<name>.fsType` defaults to `"auto"` in 25.11**, so 0.3 is *not*
+  a no-op — it changes the generated mount unit's `Type=`, on a mount that is
+  `neededForBoot` and gates SOPS. Reboot-test it.
+- **There is no tailscale autoconnect service** — `authKeyFile` is deliberately
+  commented out. Reconnect on boot comes from `WantRunning: true` in
+  `tailscaled.state`; `tailscale up` is only a prefs-setting tool, so config
+  changes to up-flags do not apply until `tup` is run.
+- **Alloy leaks its component id into `job`** unless `job` is set explicitly in
+  the journal source's `labels`. It also drives `service_name`.
+- **Verify alloy config with the real binary**, not by reading docs:
+  `nix shell nixpkgs#grafana-alloy --command alloy validate <file>`. Extract the
+  generated config first with
+  `nix eval --raw '.#nixosConfigurations.<host>.config.environment.etc."alloy/config.alloy".text'`.
+
+### Open items, not blocking
+
+- Loki's gRPC port still listens on `*:9095`. Unused externally in single-binary
+  mode and firewalled off the public interface, but worth binding to localhost
+  once the ring behaviour is confirmed safe to change.
+- Residual Loki streams labelled `job="loki.source.journal.journal"` exist from
+  the ~48-minute window between juniper's two batch-2 rebuilds. Historical data
+  only; ages out with the 168h retention.
+- Six `Restart = lib.mkOverride 500 "always"` lines in `oci-searxng.nix` and
+  `oci-recipesage.nix` are now provably dead, since the central `mkForce` in
+  `oci-containers.nix` outranks them. Safe to delete as a tidy-up.
+- `nixos-configs-private/CLAUDE.md` still documents 3 exported modules; the
+  flake exports 5.
+
+---
+
 Reproduce that check any time without touching the tree:
 
 ```sh
@@ -36,6 +113,8 @@ runtime behaviour on 25.11, so Phase 0 can be committed and switched on 25.11
 first to confirm nothing regressed.
 
 ### 0.1 `services.promtail` is removed — migrate to Alloy
+
+> **Done** — batch 2, 2026-09-25. Kept for the reasoning; see Progress above.
 
 Promtail reached end of life and the module is gone in 26.05. This is the
 single largest work item and it touches **every host**.
@@ -80,6 +159,8 @@ first and the clients can migrate host by host.
 
 ### 0.2 `boot.initrd.preLVMCommands` — unsupported under systemd stage 1
 
+> **Done** — batch 1, 2026-09-25.
+
 26.05 makes systemd stage 1 the default (scripted initrd deprecated, removal in
 26.11). `boot.initrd.preLVMCommands` then hard-fails an assertion.
 
@@ -96,6 +177,8 @@ password prompt. See Phase 3 for the mitigation.
 
 ### 0.3 Bind-mount `fsType` has no default anymore
 
+> **Next up** — batch 3. Not a no-op on 25.11; reboot-test each impermanence host.
+
 `fileSystems.<name>.fsType` lost its default, so the `/etc/age` early bind
 mount errors out on every impermanence host.
 
@@ -111,6 +194,8 @@ Add `fsType = "none";` alongside `options = [ "bind" ];` in:
 
 ### 0.4 `networking.resolvconf.enable` now conflicts with a managed `resolv.conf`
 
+> **Done** — batch 1, 2026-09-25. Landed inside the existing `networking` block.
+
 `networking.resolvconf.enable` defaults to `true` unconditionally in 26.05 and
 asserts if `environment.etc."resolv.conf"` is also set — which it is on the
 hosts that don't use systemd-resolved (juniper, aspen).
@@ -123,6 +208,8 @@ networking.resolvconf.enable = lib.mkIf (!hostData.networking.useResolved) false
 
 ### 0.5 `dhcpV6Config.RouteMetric` is no longer a valid networkd option
 
+> **Done** — batch 1, 2026-09-25.
+
 networkd 259 moved `RouteMetric` out of `[DHCPv6]`. Hard type error.
 
 `nixos-system/networking.nix:72,80,91` — delete all three
@@ -132,11 +219,15 @@ those networks sets `networkConfig.DHCP = "ipv4"`, so DHCPv6 never runs. The
 
 ### 0.6 `services.resolved.llmnr` renamed
 
+> **Deferred to batch 5** — `services.resolved.settings` does not exist in 25.11.
+
 `nixos-system/networking.nix:19` — `llmnr = "false"` becomes
 `settings.Resolve.LLMNR = "false"` (the module moved to RFC 42 settings).
 Warning on 26.05, so not strictly blocking, but do it now.
 
 ### 0.7 `oci-containers` Restart default: `always` → `on-failure`
+
+> **Done** — batch 1, 2026-09-25. Chose to preserve `always`, applied centrally in `oci-containers.nix`.
 
 **No eval error, no warning — decide this deliberately.** 26.05 changes the
 container unit template's `Restart=` from `always` to `on-failure`
@@ -553,8 +644,8 @@ item number. 6 of the 7 items land on 25.11; only 0.6 needs the bumped channel
 | Batch | Items | Test | Status |
 |---|---|---|---|
 | 1 | 0.2, 0.4, 0.5, 0.7 | rebuild, inspect generated units | **done 2026-09-25** |
-| 2 | 0.1 | logs arriving in Loki with label parity | juniper done 2026-09-25 |
-| 2b | loki bind fix (found during 2) | client logs reaching loki at all | pending |
+| 2 | 0.1 | logs arriving in Loki with label parity | **done 2026-09-25** |
+| 2b | loki bind fix (found during 2) | client logs reaching loki at all | **done 2026-09-25** |
 | 3 | 0.3 | reboot, `/etc/age` + `/run/secrets` | pending |
 | 4 | `boot.initrd.systemd.enable` on 25.11 | per-host reboot | pending |
 | 5 | 0.6 + flake bump | full re-eval | pending |
@@ -564,8 +655,11 @@ voluntarily on 25.11, so the one change that can leave a host unbootable is
 isolated from ~40 package upgrades. Verified to evaluate cleanly on 25.11 for
 all four in-scope hosts.
 
-- [~] **0.1** Migrate `services.promtail` → `services.alloy`. juniper switched
-      2026-09-25 and verified; aspen/thinkpad/kauri pending.
+- [x] **0.1** Migrated `services.promtail` → `services.alloy` on all four hosts
+      2026-09-25. Ported job-for-job; every generated config checked with
+      `alloy validate`. Journal labels carry an explicit `job = "journal"`;
+      traefik `status`/`method` are labels and `path`/`client_ip` structured
+      metadata.
       `monitoring-client.nix:129` and `monitoring-server.nix:1266` (+ the
       ordering block at `:1117`). Biggest work item. Carry over the bounded
       shutdown drain and the `after`/`wants = [ "loki.service" ]` ordering.
