@@ -9,7 +9,10 @@ November). Channel verified available: `nixos-26.05`, HEAD
 
 Every eval-level finding below was verified by evaluating each host's
 `system.build.toplevel.drvPath` against 26.05 with `home-manager` on
-`release-26.05`. **All hosts evaluate cleanly once Phase 0 is done.**
+`release-26.05`. **Five of the six evaluate cleanly once Phase 0 is done.**
+juniper is the exception: 26.05 made Grafana's `secret_key` a hard assertion, so
+it stays an eval failure until 1.1 lands. That is a Phase 1 item, not a Phase 0
+gap.
 
 **Scope:** cypress and alder are **deprecated** — offline, configs retained
 against a possible future return, and explicitly *not* migrated. They still
@@ -20,7 +23,7 @@ if they come back. In-scope hosts are **juniper, aspen, thinkpad, kauri**.
 
 ## Progress — where this stands
 
-**Last updated 2026-09-25.** Everything below is still on `nixos-25.11`; the
+**Last updated 2026-09-26.** Everything below is still on `nixos-25.11`; the
 channel has not been bumped yet. Phase 0 batches 1 and 2 are complete and
 verified on all four in-scope hosts.
 
@@ -36,8 +39,8 @@ verified on all four in-scope hosts.
 | — | container restart policy centralised, `on-failure` adopted | **done** — verified on aspen + juniper | `ce41515` |
 | — | loki localhost grpc bind | **reverted** — broke reads, see open items | `4c0bfc3` |
 | — | container exit 130 treated as clean | **done** — stops land inactive, 137 still restarts | `85dca2a` |
-| 3 | 0.3 bind-mount `fsType` | **next** — needs a reboot per impermanence host | |
-| 4 | `boot.initrd.systemd.enable` on 25.11 | pending — per-host reboot, kauri before thinkpad | |
+| 3 | 0.3 bind-mount `fsType` | **config landed, reboots pending** — thinkpad and aspen only | |
+| 4 | `boot.initrd.systemd.enable` on 25.11 | **next** — per-host reboot, kauri before thinkpad | |
 | 5 | 0.6 + flake bump to 26.05 | pending | |
 
 ### Verified live state
@@ -129,7 +132,7 @@ Loki listens on `100.70.221.14:3030` only; the public interface refuses 3030.
   SIGKILLed mid-write to the ZFS recording dataset. Upstream frigate expects
   SIGTERM, not the SIGINT the module sends. Worth either switching its
   `--stop-signal` or raising `--stop-timeout`; out of scope for the migration.
-- Batch 3 is next and is the first batch needing reboots.
+- Batch 3's config has landed; its two reboots (thinkpad, aspen) are pending.
 
 ---
 
@@ -217,7 +220,8 @@ password prompt. See Phase 3 for the mitigation.
 
 ### 0.3 Bind-mount `fsType` has no default anymore
 
-> **Next up** — batch 3. Not a no-op on 25.11; reboot-test each impermanence host.
+> **Config landed** — batch 3, 2026-09-26. Reboot verification still pending on
+> thinkpad and aspen.
 
 `fileSystems.<name>.fsType` lost its default, so the `/etc/age` early bind
 mount errors out on every impermanence host.
@@ -231,6 +235,20 @@ Add `fsType = "none";` alongside `options = [ "bind" ];` in:
 - `hosts/alder/impermanence.nix:22`
 
 (The `/` tmpfs entries already set `fsType`, so they are fine.)
+
+**Only thinkpad and aspen actually reboot for this.** cypress, kauri and alder
+appear in the file list but not in the reboot set: cypress is offline and
+deprecated, and kauri and alder have `impermanence.nix` commented out in their
+`configuration.nix` as `FRESH INSTALL ONLY` — kauri boots a persistent btrfs
+`/root` subvol with `/etc/age` as a plain directory and `etc-age.mount`
+inactive. Their edits are fresh-install correctness only and cannot be
+eval-verified. kauri's first reboot in this migration is therefore batch 4.
+
+Confirmed by evaluation that this is the whole blast radius: diffing the full
+`config.fileSystems` set between `HEAD` and the change, on thinkpad, aspen and
+cypress, moves exactly one field per host — `/etc/age` `fsType` `auto` → `none`
+— and the generated `/etc/fstab` differs from each live one by that single line.
+No other `fileSystems` entry in either repo omits `fsType`.
 
 ### 0.4 `networking.resolvconf.enable` now conflicts with a managed `resolv.conf`
 
@@ -686,7 +704,7 @@ item number. 6 of the 7 items land on 25.11; only 0.6 needs the bumped channel
 | 1 | 0.2, 0.4, 0.5, 0.7 | rebuild, inspect generated units | **done 2026-09-25** |
 | 2 | 0.1 | logs arriving in Loki with label parity | **done 2026-09-25** |
 | 2b | loki bind fix (found during 2) | client logs reaching loki at all | **done 2026-09-25** |
-| 3 | 0.3 | reboot, `/etc/age` + `/run/secrets` | pending |
+| 3 | 0.3 | reboot, `/etc/age` + `/run/secrets` | **config landed 2026-09-26, reboots pending** |
 | 4 | `boot.initrd.systemd.enable` on 25.11 | per-host reboot | pending |
 | 5 | 0.6 + flake bump | full re-eval | pending |
 
@@ -710,10 +728,17 @@ all four in-scope hosts.
       console keymap/font setup, and the disko LUKS unlock script on the
       laptops — which is consistent with the 26.05 assertion naming only
       `boot.nix`: those modules stop contributing under systemd stage 1.
-- [ ] **0.3** Add `fsType = "none";` to the `/etc/age` bind mount in all five
-      `hosts/*/impermanence.nix:22` — include cypress and alder so they stay
-      buildable while deprecated. **Not** a no-op: 25.11 defaults `fsType` to
-      `"auto"`, and this mount is `neededForBoot` and gates SOPS.
+- [x] **0.3** Added `fsType = "none";` to the `/etc/age` bind mount in all five
+      `hosts/*/impermanence.nix:22` 2026-09-26 — cypress and alder included so
+      they stay buildable while deprecated. **Not** a no-op: 25.11 defaults
+      `fsType` to `"auto"`, and this mount is `neededForBoot` and gates SOPS.
+      Verified by evaluation that the whole delta is one field per host
+      (`auto` → `none`) and that no other `fileSystems` entry in either repo
+      omits `fsType`. Only thinkpad and aspen reboot for it — kauri and alder
+      have `impermanence.nix` commented out as `FRESH INSTALL ONLY`, so their
+      edits are fresh-install correctness only.
+      **Reboots still pending** — verify `/etc/age` mounted with `Type=none`,
+      `/run/secrets` populated and zero failed units on each.
 - [x] **0.4** Added `resolvconf.enable = lib.mkIf (!hostData.networking.useResolved) false`
       inside the existing `networking` block. No-op on 25.11 (already `false`
       fleet-wide); verified `false` on 26.05 for juniper and aspen, which is the

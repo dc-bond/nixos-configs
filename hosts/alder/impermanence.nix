@@ -21,6 +21,7 @@
   # early bind mount for system age key - must happen before SOPS activation so we do this manually here instead of via impermanence module tooling below (which occurs after sops needs age decryption keys later in boot sequence)
   fileSystems."/etc/age" = {
     device = "/persist/etc/age";
+    fsType = "none";
     options = [ "bind" ];
     neededForBoot = true;
     depends = [ "/persist" ];
