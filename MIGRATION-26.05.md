@@ -33,15 +33,30 @@ verified on all four in-scope hosts.
 | 2 | 0.1 promtail → alloy | **done** — all 4 hosts on alloy, 0 restarts | `29e432d` |
 | 2b | loki tailnet bind (found during 2) | **done** — client shipping works for the first time | `29e432d` |
 | — | `/var/lib/private` 0700 (regression fix) | **done** — all 5 impermanence hosts | `3a37535` |
+| — | container restart policy centralised, `on-failure` adopted | **done** — verified on aspen + juniper | `ce41515` |
+| — | loki localhost grpc bind | **reverted** — broke reads, see open items | `4c0bfc3` |
+| — | container exit 130 treated as clean | **done** — stops land inactive, 137 still restarts | `85dca2a` |
 | 3 | 0.3 bind-mount `fsType` | **next** — needs a reboot per impermanence host | |
 | 4 | `boot.initrd.systemd.enable` on 25.11 | pending — per-host reboot, kauri before thinkpad | |
 | 5 | 0.6 + flake bump to 26.05 | pending | |
 
-### Verified live state at the end of batch 2
+### Verified live state
 
-Generations: juniper 354, aspen 221, thinkpad and kauri current. **Zero failed
+Generations: juniper 356, aspen 223, thinkpad and kauri current. **Zero failed
 units on any host.** promtail `inactive` everywhere, alloy `active` with 0
 restarts everywhere.
+
+Container restart policy lives solely in `nixos-system/oci-containers.nix`, applied
+over `oci-containers.containers`: `Restart=on-failure` (mkForce),
+`SuccessExitStatus=130`, and backoff `100ms -> 1m` over 9 steps. Verified on all
+29 container units across both hosts. Behaviour confirmed by test:
+`systemctl stop` lands **inactive** with "Deactivated successfully"; SIGKILL
+(137) still restarts; a reboot starts every container from
+`WantedBy=multi-user.target`, which no restart setting influences — 25/25 started
+on aspen's last cold boot.
+
+Loki reads verified end to end after the grpc revert: all four hosts present in
+the `host` label index and returning actual log lines.
 
 Centralised logging now works — it never had before 2b. All four hosts appear in
 Loki's `host` label, journal streams carry `{host, job="journal", unit,
@@ -72,6 +87,23 @@ Loki listens on `100.70.221.14:3030` only; the public interface refuses 3030.
   changes to up-flags do not apply until `tup` is run.
 - **Alloy leaks its component id into `job`** unless `job` is set explicitly in
   the journal source's `labels`. It also drives `service_name`.
+- **`Restart=` has nothing to do with boot.** Containers start from
+  `WantedBy=multi-user.target` (and their `docker-<app>-root.target`), so no
+  restart or exit-status setting can leave them down after a reboot or a
+  `nixos-rebuild switch` — the latter stops and starts units explicitly.
+- **`on-failure` excludes `SuccessExitStatus`.** With `SuccessExitStatus=130`,
+  exit 130 neither marks the unit failed nor triggers a restart. The one affected
+  path is a bare `systemctl restart docker`, where dockerd sends the configured
+  SIGINT and containers exit 130 — they stay down until their root targets are
+  started. Boot, rebuild and crash recovery are all unaffected.
+- **All 27 containers run `--stop-signal=SIGINT`**, so exit codes on stop are
+  purely upstream shutdown quality: 0 = handled cleanly, 130 = no handler, 137 =
+  overran the stop timeout and was SIGKILLed, and jellyfin emits its own 111/125.
+  137 is deliberately *not* in `SuccessExitStatus` — frigate hits it while writing
+  recordings to ZFS, which is worth fixing rather than declaring successful.
+- **Test a config change against what it actually affects.** The loki grpc bind
+  passed `/ready` and `/metrics` while every query silently returned empty. A read
+  test would have caught it immediately.
 - **Verify alloy config with the real binary**, not by reading docs:
   `nix shell nixpkgs#grafana-alloy --command alloy validate <file>`. Extract the
   generated config first with
@@ -93,11 +125,11 @@ Loki listens on `100.70.221.14:3030` only; the public interface refuses 3030.
 - Residual Loki streams labelled `job="loki.source.journal.journal"` exist from
   the ~48-minute window between juniper's two batch-2 rebuilds. Historical data
   only; ages out with the 168h retention.
-- Six `Restart = lib.mkOverride 500 "always"` lines in `oci-searxng.nix` and
-  `oci-recipesage.nix` are now provably dead, since the central `mkForce` in
-  `oci-containers.nix` outranks them. Safe to delete as a tidy-up.
-- `nixos-configs-private/CLAUDE.md` still documents 3 exported modules; the
-  flake exports 5.
+- frigate exits 137 on stop, meaning it overruns its stop timeout and is
+  SIGKILLed mid-write to the ZFS recording dataset. Upstream frigate expects
+  SIGTERM, not the SIGINT the module sends. Worth either switching its
+  `--stop-signal` or raising `--stop-timeout`; out of scope for the migration.
+- Batch 3 is next and is the first batch needing reboots.
 
 ---
 
