@@ -42,6 +42,12 @@ in
     lib.nameValuePair "${config.virtualisation.oci-containers.backend}-${name}" {
       serviceConfig = {
         Restart = lib.mkForce "on-failure";
+        # every container runs with --stop-signal=SIGINT, so an image with no
+        # SIGINT handler exits 130 - a clean stop, not a failure. on-failure
+        # excludes SuccessExitStatus, so 130 no longer triggers a restart either:
+        # a bare `systemctl restart docker` leaves containers down until their
+        # root targets are started again.
+        SuccessExitStatus = 130;
         RestartSec = "100ms";
         RestartSteps = 9;
         RestartMaxDelaySec = "1m";
