@@ -219,12 +219,6 @@ in
   systemd = {
     services = { 
       "docker-${app}" = {
-        serviceConfig = {
-          Restart = lib.mkOverride 500 "always";
-          RestartMaxDelaySec = lib.mkOverride 500 "1m";
-          RestartSec = lib.mkOverride 500 "100ms";
-          RestartSteps = lib.mkOverride 500 9;
-        };
         after = [
           "docker-network-${app}.service"
           "docker-volume-${app}.service"

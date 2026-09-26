@@ -1694,6 +1694,9 @@ in
           # the client hosts push here over the tailnet; 3030 is not in
           # allowedTCPPorts, so only the trusted tailscale0 interface reaches it
           http_listen_address = hostData.networking.tailscaleIp;
+          # nothing off-host speaks grpc to a single-binary loki, and the ring is
+          # inmemory on 127.0.0.1, so keep it off the tailnet entirely
+          grpc_listen_address = "127.0.0.1";
         };
         common = {
           ring = {

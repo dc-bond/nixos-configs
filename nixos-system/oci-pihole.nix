@@ -400,10 +400,6 @@ in
       };
       "docker-${app2}" = {
         serviceConfig = {
-          Restart = lib.mkOverride 500 "always";
-          RestartMaxDelaySec = lib.mkOverride 500 "1m";
-          RestartSec = lib.mkOverride 500 "100ms";
-          RestartSteps = lib.mkOverride 500 9;
           # ExecStartPost must finish before the start job completes, so every After= on this unit
           # now waits for a resolving upstream; TimeoutStartSec is mandatory because the module
           # ships TimeoutStartSec=0 and a blocking probe would otherwise hang boot indefinitely
@@ -424,12 +420,6 @@ in
         ];
       };
       "docker-${app}" = {
-        serviceConfig = {
-          Restart = lib.mkOverride 500 "always";
-          RestartMaxDelaySec = lib.mkOverride 500 "1m";
-          RestartSec = lib.mkOverride 500 "100ms";
-          RestartSteps = lib.mkOverride 500 9;
-        };
         after = [
           "docker-${app2}.service"
         ];

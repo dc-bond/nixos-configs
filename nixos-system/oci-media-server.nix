@@ -323,12 +323,6 @@ in
       };
 
       "docker-${app1}" = {
-        serviceConfig = {
-          Restart = lib.mkOverride 500 "always";
-          RestartMaxDelaySec = lib.mkOverride 500 "1m";
-          RestartSec = lib.mkOverride 500 "100ms";
-          RestartSteps = lib.mkOverride 500 9;
-        };
         after = [
           "docker-network-${app}.service"
         ];
@@ -344,12 +338,6 @@ in
       };
 
       "docker-${app2}" = {
-        serviceConfig = {
-          Restart = lib.mkOverride 500 "always";
-          RestartMaxDelaySec = lib.mkOverride 500 "1m";
-          RestartSec = lib.mkOverride 500 "100ms";
-          RestartSteps = lib.mkOverride 500 9;
-        };
         after = [
           "docker-${app1}.service"
           "docker-volume-${app2}.service"
@@ -379,12 +367,6 @@ in
       };
       
       "docker-${app3}" = {
-        serviceConfig = {
-          Restart = lib.mkOverride 500 "always";
-          RestartMaxDelaySec = lib.mkOverride 500 "1m";
-          RestartSec = lib.mkOverride 500 "100ms";
-          RestartSteps = lib.mkOverride 500 9;
-        };
         after = [
           "docker-${app1}.service"
           "docker-volume-${app3}.service"
@@ -414,12 +396,6 @@ in
       };
 
       "docker-${app4}" = {
-        serviceConfig = {
-          Restart = lib.mkOverride 500 "always";
-          RestartMaxDelaySec = lib.mkOverride 500 "1m";
-          RestartSec = lib.mkOverride 500 "100ms";
-          RestartSteps = lib.mkOverride 500 9;
-        };
         after = [
           "docker-${app1}.service"
           "docker-volume-${app4}.service"
@@ -449,12 +425,6 @@ in
       };
 
       "docker-${app5}" = {
-        serviceConfig = {
-          Restart = lib.mkOverride 500 "always";
-          RestartMaxDelaySec = lib.mkOverride 500 "1m";
-          RestartSec = lib.mkOverride 500 "100ms";
-          RestartSteps = lib.mkOverride 500 9;
-        };
         after = [
           "docker-${app1}.service"
           "docker-volume-${app5}.service"
@@ -484,12 +454,6 @@ in
       };
 
       "docker-${app6}" = {
-        serviceConfig = {
-          Restart = lib.mkOverride 500 "always";
-          RestartMaxDelaySec = lib.mkOverride 500 "1m";
-          RestartSec = lib.mkOverride 500 "100ms";
-          RestartSteps = lib.mkOverride 500 9;
-        };
         after = [
           "docker-${app1}.service"
           "docker-volume-${app6}.service"
@@ -519,12 +483,6 @@ in
       };
 
       "docker-${app7}" = {
-        serviceConfig = {
-          Restart = lib.mkOverride 500 "always";
-          RestartMaxDelaySec = lib.mkOverride 500 "1m";
-          RestartSec = lib.mkOverride 500 "100ms";
-          RestartSteps = lib.mkOverride 500 9;
-        };
         after = [
           "docker-${app1}.service"
           "docker-volume-${app7}.service"
