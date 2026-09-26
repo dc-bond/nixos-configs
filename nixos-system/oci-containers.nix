@@ -32,12 +32,20 @@ in
     };
   };
 
-  # 26.05's oci-containers module sets Restart=on-failure, which leaves a
-  # cleanly-exited container down. mkForce because the module sets Restart at
-  # normal priority, outranking the mkOverride 500 the oci-* modules use.
+  # restart policy for every container, in one place rather than per module.
+  # on-failure leaves a cleanly-exited container down, so a deliberate
+  # `docker stop` is not fought by systemd; mkForce because the module sets
+  # Restart at normal priority. the backoff walks 100ms -> 1m over 9 steps so a
+  # container whose dependency is not up yet stops hammering; the module sets
+  # none of the three, so they need no override.
   systemd.services = lib.mapAttrs' (name: _:
     lib.nameValuePair "${config.virtualisation.oci-containers.backend}-${name}" {
-      serviceConfig.Restart = lib.mkForce "always";
+      serviceConfig = {
+        Restart = lib.mkForce "on-failure";
+        RestartSec = "100ms";
+        RestartSteps = 9;
+        RestartMaxDelaySec = "1m";
+      };
     }
   ) config.virtualisation.oci-containers.containers;
 
