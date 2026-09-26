@@ -1496,7 +1496,6 @@ in
                 # aspen services - domain2
                 "https://actual.${configVars.domain2}"
                 "https://bond-ledger.${configVars.domain2}"
-                "https://calibre-web.${configVars.domain2}"
                 "https://frigate.${configVars.domain2}"
                 "https://home-assistant.${configVars.domain2}"
                 "https://jellyfin.${configVars.domain2}"

@@ -93,13 +93,6 @@ in
             };
           }
           {
-            "Calibre Web" = {
-              href = "https://calibre-web.${configVars.domain2}/";
-              description = "eBook Library";
-              ping = "https://calibre-web.${configVars.domain2}";
-            };
-          }
-          {
             "Stirling PDF" = {
               href = "https://stirling-pdf.${configVars.domain2}/";
               description = "PDF Tools";

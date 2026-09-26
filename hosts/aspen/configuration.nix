@@ -336,7 +336,6 @@
       "nixos-system/fava.nix"
       "nixos-system/oci-recipesage.nix" # recoverRecipesage
       "nixos-system/oci-n8n.nix" # recoverN8n
-      "nixos-system/calibre.nix"
       "nixos-system/vikunja.nix"
       "nixos-system/ollama.nix"
       "nixos-system/stirling-pdf.nix"

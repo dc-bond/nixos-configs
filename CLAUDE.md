@@ -252,7 +252,7 @@ what makes targeted reads acceptable — it does not make bulk reads acceptable.
 - **Reverse Proxy**: Traefik with Let's Encrypt, automatic TLS certificates
 - **DNS**: Pi-hole + Unbound (ad blocking + recursive DNS)
 - **Auth**: Authelia (SSO), LLDAP (LDAP directory)
-- **Storage**: Nextcloud, Photoprism, Calibre
+- **Storage**: Nextcloud, Photoprism
 - **Monitoring**: Prometheus, Grafana, Alertmanager (Uptime Kuma retired — deprecated to `nixos-configs-private/deprecated/`; backup dead-man's-switch now handled by node_exporter textfile collector + prometheus `backupStale` alert)
 - **Home Automation**: Home Assistant, Frigate, Zwavejs, Zigbee2MQTT (SLZB-06MG24U coordinator)
 - **Media**: Jellyfin, Sonarr, Radarr, Prowlarr, SABnzbd

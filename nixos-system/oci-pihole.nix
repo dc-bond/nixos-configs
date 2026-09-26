@@ -162,7 +162,6 @@ let
     "address=/lldap.${configVars.domain1}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/actual.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/bond-ledger.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
-    "address=/calibre-web.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/chris-workouts.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/danielle-workouts.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/frigate.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
