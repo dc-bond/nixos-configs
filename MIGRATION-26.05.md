@@ -79,9 +79,17 @@ Loki listens on `100.70.221.14:3030` only; the public interface refuses 3030.
 
 ### Open items, not blocking
 
-- Loki's gRPC port still listens on `*:9095`. Unused externally in single-binary
-  mode and firewalled off the public interface, but worth binding to localhost
-  once the ring behaviour is confirmed safe to change.
+- Loki's gRPC port listens on `*:9095`. **Do not naively bind it to localhost** —
+  tried on 2026-09-26 and reverted. `common.ring.instance_addr = "127.0.0.1"`
+  covers only the ring; the query-frontend advertises itself separately and
+  defaults to the first non-loopback interface, which on juniper is a docker
+  bridge (`172.21.11.1`). With gRPC on loopback the querier could not reach the
+  frontend: ingestion kept working (HTTP push) but **all reads silently returned
+  empty**, so Grafana log panels went blank while nothing looked failed.
+  If revisited, the lever is `common.instance_addr = "127.0.0.1"` (global, feeds
+  ring *and* frontend) paired with the grpc bind — and it needs a read test, not
+  just a `/ready` check. Low value regardless: HTTP 3030 is already tailnet-
+  exposed by design, so gRPC on the tailnet adds little marginal risk.
 - Residual Loki streams labelled `job="loki.source.journal.journal"` exist from
   the ~48-minute window between juniper's two batch-2 rebuilds. Historical data
   only; ages out with the 168h retention.
