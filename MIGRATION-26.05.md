@@ -236,6 +236,25 @@ Watch `/nix` on aspen — it was 84% full with 39 GiB free on 2026-09-27.
   `format.generate "crowdsec.yaml" cfg.settings.general` into
   `environment.etc."crowdsec/config.yaml"`; verified our generated store path is
   *identical* to the one the agent is passed.
+- **The config fix alone does not undo the migration — order matters.** Pinning
+  `StateDirectory` back is necessary but not sufficient: while `/var/lib/crowdsec`
+  is still a symlink into `private/`, a `ReadWritePaths = /var/lib/crowdsec` on a
+  `DynamicUser` unit fails with
+  `Failed to set up mount namespacing: /var/lib/private/crowdsec: No such file or
+  directory` (226/NAMESPACE), because inside that unit's namespace only its *own*
+  StateDirectory entries exist under `/var/lib/private`. **Repair the directory
+  first, then rebuild** — the reverse order just swaps one failure for another.
+  Repair, with the service stopped: `rm /var/lib/crowdsec` (the symlink),
+  `mv /var/lib/private/crowdsec /var/lib/crowdsec`,
+  `chown -R crowdsec:crowdsec /var/lib/crowdsec`, `chmod 750`. Same filesystem, so
+  the move is a rename. The migration also left the tree owned `65534:65534`
+  while the service runs as uid 994, so the chown is not optional.
+- **A lost bouncer API key needs the registration deleted, not retried.** After
+  the repair the register script reports `Bouncer registered but API key is not
+  present` and exits 1 forever: crowdsec's DB still holds the bouncer, so the
+  script never re-registers, but `api-key.cred` was lost with the migrated state
+  dir. Fix: `cscli bouncers delete firewall-bouncer-<host>`, then start the
+  register unit, which re-adds it and writes a fresh key.
 - **Audited the whole fleet for this trap (2026-09-27) — it is juniper-only.**
   Compared each host's live `DynamicUser` + `StateDirectory` set against the
   26.05 evaluation. aspen is byte-identical across both channels (alloy, lldap,
@@ -1103,9 +1122,27 @@ is only useful on a host with a screen in front of you.
 - [ ] Fresh pre-switch dumps: `matrix-synapse`, `vaultwarden`; copy
       `/var/lib/grafana/data/grafana.db` aside. Verify non-empty.
 - [ ] **Switch.**
-- [ ] Verify: alloy shipping to Loki, Synapse schema migration finished, Grafana
-      up on the new `secret_key`, pihole + unbound healthy, traefik certs
-      intact, crowdsec bouncer attached.
+- [x] **juniper switched to 26.05 on 2026-09-27 and verified.** Synapse applied
+      schema through `94/10` and logged "Schema now up to date", 0 restarts.
+      Grafana came up on the file-provided `secret_key`
+      (`Envelope encryption state … secretKey.v1`, `performed=3 skipped=30` for
+      the 12.3.6 → 13 upgrade). All 16 native services active, 9 of 10 container
+      units up (`docker-prune` is timer-driven), DNS answering, **0 failed
+      units**. All five public endpoints verified from outside: vaultwarden 200,
+      matrix 200 (client API serving through v1.x), grafana 302, searx 200,
+      ntfy 200. crowdsec enforcing again — `CROWDSEC_CHAIN` present on v4 and
+      v6, 48,777 decisions loaded, live bans landing.
+
+      Two switch-time gotchas, neither a config fault:
+      **(1)** running `nixos-rebuild` over tailscale SSH restarts `sshd` and
+      `tailscaled` mid-switch, which kills the transport; the first attempt died
+      with `exit 255` and left every unit stopped. The switch runs detached via
+      `systemd-run`, so prefer a `tmux` session on the host, and **judge the
+      result from the journal, not the exit code**.
+      **(2)** `systemctl show` on a `--collect`ed transient unit returns
+      *defaults* — `Result=success ExecMainStatus=0` — for a unit that no longer
+      exists. That misread a failed switch as a successful one. Always confirm
+      with `journalctl -u <unit>`.
 
 ### Phase 2 — aspen
 
