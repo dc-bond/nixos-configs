@@ -22,11 +22,14 @@ if they come back. In-scope hosts are **juniper, aspen, thinkpad, kauri**.
 
 ## Progress — where this stands
 
-**Last updated 2026-09-26.** Everything below is still on `nixos-25.11`; the
-channel has not been bumped yet. Phase 0 batches 1, 2 and 3 are complete and
-verified on all four in-scope hosts. Batch 4 is done on thinkpad, aspen and
-juniper; only kauri's reboot remains and it is a strict subset of what has
-already been proven. Batch 5 is next.
+**Last updated 2026-09-27.** **The channel is bumped — `flake.nix` is on
+`nixos-26.05` and `home-manager` on `release-26.05`, and all six hosts
+evaluate.** Phase 0 is complete. Nothing has switched yet: every host is still
+*running* its 25.11 generation, and moves only when it is rebuilt.
+
+Next action: **rebuild juniper** (Phase 1). Then aspen, then the workstations.
+kauri also still needs its batch 4 reboot, which it will take on its next
+restart.
 
 ### Batch status
 
@@ -43,7 +46,7 @@ already been proven. Batch 5 is next.
 | 3 | 0.3 bind-mount `fsType` | **done** — thinkpad and aspen rebooted and verified | `678cc05` |
 | — | calibre-web removed from aspen (found during 3) | **done** — module archived to private `deprecated/` | |
 | 4 | `boot.initrd.systemd.enable` on 25.11 | **done on thinkpad, aspen, juniper** — kauri staged, reboots on its next restart | `b1958fd` |
-| 5 | 0.6 + flake bump to 26.05 | pending | |
+| 5 | 0.6 + nvidia + flake bump to 26.05 | **done, nothing switched yet** — all six evaluate | `7d29fe2` `1e8350c` `61c4d50` |
 
 ### Verified live state
 
@@ -845,7 +848,7 @@ item number. 6 of the 7 items land on 25.11; only 0.6 needs the bumped channel
 | 2b | loki bind fix (found during 2) | client logs reaching loki at all | **done 2026-09-25** |
 | 3 | 0.3 | reboot, `/etc/age` + `/run/secrets` | **done 2026-09-26** |
 | 4 | `boot.initrd.systemd.enable` on 25.11 | per-host reboot | **done 2026-09-26** (kauri pending its next reboot) |
-| 5 | 0.6 + flake bump | full re-eval | pending |
+| 5 | 0.6 + nvidia + flake bump | full re-eval | **done 2026-09-27** |
 
 Batch 4 is not a 26.05 requirement in itself — it takes systemd stage 1
 voluntarily on 25.11, so the one change that can leave a host unbootable is
@@ -932,10 +935,10 @@ is only useful on a host with a screen in front of you.
 - [x] **0.5** Deleted the three `dhcpV6Config.RouteMetric` lines. Dead config —
       every one of those networks is `DHCP = "ipv4"`. Confirmed no `DHCPv6`
       section in any generated `.network` file, dhcpV4 metrics intact.
-- [ ] **0.6** `networking.nix:19`: `llmnr = "false"` →
-      `settings.Resolve.LLMNR = "false"`. Cannot be pre-landed —
-      `services.resolved.settings` does not exist in 25.11, so this rides with
-      the flake bump in Batch 5.
+- [x] **0.6** Landed with the bump 2026-09-27. `networking.nix`
+      `llmnr = "false"` → `settings.Resolve.LLMNR = "false"`. Verified the
+      generated `resolved.conf` still emits `LLMNR=false` on the resolved hosts
+      and that resolved stays disabled on juniper and aspen.
 - [x] **0.7** **Adopt the new default — no override at all.** Resolved
       2026-09-27 after the config and this file had drifted apart: batch 1 was
       recorded here as "preserve `always`", but what actually shipped was
@@ -973,8 +976,11 @@ is only useful on a host with a screen in front of you.
 
       Everything else that *could* be pre-landed has been: 0.1-0.5, 0.7,
       batch 4, and 1.1's Grafana `secret_key`.
-- [ ] Re-run the eval check on **all six** hosts (cypress and alder included) —
-      expect clean.
+- [x] Re-ran the eval check on **all six** hosts 2026-09-27 — clean. Remaining
+      warnings are all expected and warning-only: the home-manager
+      `stateVersion` deferrals in §3.2, Nextcloud's stay-on-32 notice, and the
+      home-assistant `lovelace.mode` deprecation. The `llmnr` rename warning is
+      gone, confirming 0.6.
 - [ ] **Do not touch `home.stateVersion`.** It gates every home-manager change
       listed in §3.2, including the Firefox profile move.
 - [x] ~~Add the `DEVIATIONS.md` row for the 0.7 `mkForce`~~ — **not needed.**
@@ -1051,13 +1057,17 @@ is only useful on a host with a screen in front of you.
       access. Generated config is `$__file{/run/secrets/grafanaSecretKey}`, so
       the literal never enters the store. **Clearing this made all six hosts
       evaluate on 26.05.**
-- [ ] Drop the `vaultwarden` + `vaultwarden-webvault` unstable pins (26.05 ships
-      1.37.3 / 2026.7.0+0).
-- [ ] Drop the whole `matrix-synapse-attrs-fix` overlay — fixed upstream; also
-      restores cache substitution so synapse stops building locally on every
-      rebuild.
-- [ ] Optionally drop the `crowdsec` pins → 26.05's 1.7.8 (avoid unstable's
-      1.8.x major).
+- [x] Dropped the `vaultwarden` + `vaultwarden-webvault` unstable pins
+      2026-09-27; juniper now resolves 1.37.3 from the channel.
+- [x] Dropped the whole `matrix-synapse-attrs-fix` overlay 2026-09-27.
+      **Verified the payoff:** juniper's synapse is now stock 1.161.0 and
+      *substitutes from cache*, where the overlaid build never did. That takes a
+      full synapse compile off every juniper rebuild.
+- [x] **Do not drop the `crowdsec` pins — this advice was wrong.** juniper is
+      already running **1.8.1** live, so dropping the pin would walk the local
+      crowdsec database *backwards* across a major version. Kept, with the
+      `DEVIATIONS.md` reason rewritten to a no-downgrade constraint. Third
+      instance of the same trap as `unifi` and `mcp-nixos`.
 - [ ] Fresh pre-switch dumps: `matrix-synapse`, `vaultwarden`; copy
       `/var/lib/grafana/data/grafana.db` aside. Verify non-empty.
 - [ ] **Switch.**
@@ -1067,22 +1077,27 @@ is only useful on a host with a screen in front of you.
 
 ### Phase 2 — aspen
 
-- [ ] **Set `hardware.nvidia.branch = "legacy_580"` and remove the explicit
-      `package` line** in `nvidia.nix:17`. Without this the GTX 1060 loses its
-      driver entirely (595 dropped Pascal) and there is **no eval error**.
-      `package` overrides `branch`, so the old line must go, not just sit
-      alongside.
+- [x] **Done with the bump 2026-09-27** — `hardware.nvidia.branch =
+      "legacy_580"`, explicit `package` line removed, now-unused `config` arg
+      dropped. Verified aspen resolves `nvidia-x11-580.173.02`, not 595.71.05.
+      This could not be pre-landed: neither the `branch` option nor the
+      `legacy_580` attribute exists in 25.11.
 - [ ] Keep Nextcloud on `nextcloud32`. Do **not** fold the NC33 upgrade into
       this migration.
 - [ ] **Keep** the `unifi` unstable pin — 26.05's 10.2.105 is a *downgrade* from
       the running 10.6.101 and UniFi does not support controller downgrades.
       Rewrite the `DEVIATIONS.md` reason (the CVE rationale is gone; the
       no-downgrade constraint replaces it).
-- [ ] Drop `services.unifi.jrePackage` (`unifi.nix:72`) — the module now
-      defaults to `jdk25_headless`.
-- [ ] Drop the `zigbee2mqtt` unstable pin (26.05 ships 2.14.0).
-- [ ] Set `services.lldap.database.createLocally = false`.
-- [ ] Drop `boot.kernelModules = [ "uinput" ]` from `sunshine.nix:99`.
+- [x] Dropped `services.unifi.jrePackage` 2026-09-27; verified the resolved JRE
+      is unchanged at `openjdk-headless-25.0.4.1+1`.
+- [x] Dropped the `zigbee2mqtt` unstable pin 2026-09-27 (2.14.1 → 2.14.0, a
+      patch step back; the point is it no longer drifts with unstable).
+- [x] Set `services.lldap.database.createLocally = false` 2026-09-27. Safe:
+      the postgres database is ensured by `lldap.nix`'s own `ensureDatabases`,
+      not by the module, and the explicit `postgres:///lldap` url still wins.
+- [x] Dropped `boot.kernelModules = [ "uinput" ]` from `sunshine.nix`
+      2026-09-27; verified `hardware.uinput.enable` is now true, which also
+      brings the udev rules and `input` group the manual line never did.
 - [ ] Optional de-risk: pin `boot.kernelPackages = pkgs.linuxPackages_6_12` so
       only userspace moves, then take the 6.18 kernel as a second switch.
 - [ ] Fresh pre-switch dumps: `hass` (244 MB, migration is minutes), `vikunja`,
@@ -1105,10 +1120,12 @@ is only useful on a host with a screen in front of you.
 - [ ] **kauri before thinkpad.** thinkpad drives the rebuilds, so it is the
       worst host to lose. By this point systemd initrd is proven fleet-wide from
       batch 4, so Phase 3 carries no stage-1 risk of its own.
-- [ ] Drop the stale `librewolf-152.0.2-1` `permittedInsecurePackages` entry
-      (156.0-1 carries no `knownVulnerabilities`).
-- [ ] Drop the `mcp-nixos` unstable pin (26.05 ships 2.4.3). Keep the
-      `claude-code` pin — that is an ongoing parity preference, not a workaround.
+- [x] Dropped the `librewolf` `permittedInsecurePackages` entries 2026-09-27;
+      26.05 ships 156.0-1 with no `knownVulnerabilities`.
+- [x] **Kept the `mcp-nixos` pin** — 26.05's 2.4.3 clears the recorded "≥ 2.x"
+      trigger, but unstable is at **3.0.1**, so dropping it is a major
+      downgrade of a tool in daily use. `DEVIATIONS.md` reason rewritten. Keep
+      the `claude-code` pin too — ongoing parity preference, not a workaround.
 - [ ] Use `nixos-rebuild boot` plus a deliberate reboot, not `switch`. LUKS
       passphrase to hand; the previous generation is in the bootloader menu.
 - [ ] **kauri**: switch, reboot, confirm LUKS unlock.
@@ -1121,7 +1138,9 @@ is only useful on a host with a screen in front of you.
 - [ ] Drop the explicit `boot.initrd.systemd.enable = true` from
       `nixos-system/boot.nix` — 26.05 makes systemd stage 1 the default, so the
       line becomes redundant (the scripted implementation is removed in 26.11).
-- [ ] Drop the `docker` overlay pin — 26.05's default `docker` is already 29.8.0.
+- [x] Dropped the `docker` overlay pin 2026-09-27 — confirmed against a clean
+      nixpkgs import that stock 26.05 `pkgs.docker` is already 29.8.0, so the
+      pin was a no-op. `displaylink-pinned` is now the only overlay left.
 - [ ] Rewrite the `DEVIATIONS.md` header and rows for 26.05; delete dropped
       rows. Per repo convention, in the same commit as each code change.
 - [x] ~~Update `nixos-configs-private/CLAUDE.md`~~ — **already done** in private
@@ -1133,6 +1152,65 @@ is only useful on a host with a screen in front of you.
       the new `lovelaceConfigFile` option is the clean target).
 - [ ] Separately, later: Nextcloud 32 → 33 (then 34, 35 if wanted), one major
       version at a time.
+
+---
+
+## If a switch goes wrong
+
+The channel is bumped, so **every** rebuild from here is a 26.05 rebuild. Each
+host still runs its 25.11 generation until switched, and they are independent.
+
+**Rolling one host back.** The previous generation is in the bootloader
+(5 retained, 5s menu) and `nixos-rebuild --rollback switch` returns without a
+reboot. That undoes the *system*, not database migrations — see below.
+
+**Rebuilding one host on 25.11 after the bump**, without reverting the repo:
+
+```sh
+nixos-rebuild switch --flake .#<host> \
+  --override-input nixpkgs github:nixos/nixpkgs/nixos-25.11 \
+  --override-input home-manager github:nix-community/home-manager/release-25.11
+```
+
+This is the escape hatch that made a per-host channel split in `flake.nix`
+unnecessary. Note 0.6 and the nvidia `branch` will fail to evaluate on 25.11 —
+that is expected, and is why those two are welded to the bump.
+
+**What a rollback does NOT undo.** Schema migrations run on first start and are
+one-way:
+
+| Service | Host | Irreversible once started |
+|---|---|---|
+| matrix-synapse 1.155 → 1.161 | juniper | yes — schema migration |
+| vaultwarden 1.37.2 → 1.37.3 | juniper | patch, low risk |
+| home-assistant 2025.11 → 2026.5 | aspen | **yes** — recorder schema in the `hass` DB |
+| vikunja 2.3 → 2.6 | aspen | yes |
+| nextcloud | aspen | held at 32 deliberately |
+
+Take fresh dumps immediately before switching juniper and aspen; do not rely on
+the 02:20 `postgresqlBackup` run.
+
+**Never run `zpool upgrade`** on aspen. ZFS 2.3.7 → 2.4.4 leaves pool features
+alone; the 44 `feature@` flags are recorded in the batch-3 baseline and must
+stay byte-identical.
+
+**Known-good rollback targets.** Generations at the time of the bump were the
+25.11 systems verified through batch 4: juniper, aspen and thinkpad all booted
+clean on systemd stage 1 with zero failed units.
+
+### First-switch watch list
+
+- **juniper** — synapse schema migration completing; grafana up on the
+  file-provided `secret_key` (`Envelope encryption state … secretKey.v1` and
+  `migrations completed performed=0`); pihole + unbound answering on
+  `100.70.221.14:53`; traefik certs intact; crowdsec bouncer attached; the 4
+  containers back.
+- **aspen** — `nvidia-smi` reports **580.x**, not 595; jellyfin hardware
+  transcode; frigate detection; ZFS pool ONLINE and *not* upgraded; HA recorder
+  migrated with no missing entities; zigbee2mqtt has all 14 devices; mosquitto
+  accepts both users; all 56 `docker-*` units back.
+- **workstations** — LUKS unlock (already proven in batch 4), and IWD:EE may
+  break on glibc 2.42's executable-stack refusal. Do not gate on it.
 
 ---
 
