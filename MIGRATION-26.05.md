@@ -73,6 +73,32 @@ Loki listens on `100.70.221.14:3030` only; the public interface refuses 3030.
 `tailscale set --accept-dns=false` is persisted on juniper and aspen
 (`CorpDNS: false`), and their `tup` scripts now carry the flag too.
 
+### Pre-bump build risk (checked 2026-09-27, no builds run)
+
+Checked by evaluation plus direct `cache.nixos.org` queries rather than by
+building, so this covers versions and substitutability, **not** that every
+derivation compiles.
+
+| Derivation on 26.05 | Substitutes? |
+|---|---|
+| `matrix-synapse` 1.161.0 stock | **yes** |
+| our overlaid synapse 1.155.0 (today, 25.11) | **no** — builds on every rebuild |
+| `zfs-kernel-2.4.4-6.18.54` | **yes** |
+| `zfs-user-2.4.4` | **yes** |
+| nvidia `legacy_580` 580.173.02 | no |
+| nvidia `stable` 595.71.05 | no |
+| nvidia 580.142 (today, 25.11) | **no** — so local nvidia builds are the status quo |
+
+Two conclusions. Dropping the `matrix-synapse-attrs-fix` overlay is a
+measurable win, not just tidiness: the stock build is cached and ours never has
+been. And ZFS 2.4.4 needs no local compile at all, which removes the sting from
+2.2's "separate the variables" advice — the kernel jump is cheaper than it
+looks.
+
+Still unproven, because they build locally and nothing here compiled them: the
+nvidia module against 6.18, `ollama-cuda` with `cudaArches = [ "61" ]` under
+CUDA 12.9, and sunshine from the EOL `pkgs-2505` against a newer stdenv.
+
 ### Things learned the hard way — do not rediscover these
 
 - **A DynamicUser `StateDirectory` needs its parent at mode 0700.** Persisting
@@ -479,10 +505,29 @@ branch is the documented home for Maxwell-through-Volta (GTX 9xx–10xx):
 hardware.nvidia.branch = "legacy_580";   # and drop the explicit `package`
 ```
 
-Verified: `linuxPackages_6_18.nvidiaPackages.legacy_580` = **580.173.02**,
-builds against 26.05's default 6.18.53 kernel. Note `hardware.nvidia.package`
-overrides `branch`, so the existing `package` line must go, not just sit
-alongside.
+Verified 2026-09-27 against the live channel:
+`linuxPackages_6_18.nvidiaPackages.legacy_580` = **580.173.02** and evaluates
+against 26.05's kernel, now **6.18.54**. `hardware.nvidia.package` overrides
+`branch`, so the existing `package` line must go, not just sit alongside.
+
+**This cannot be pre-landed on 25.11 — it must ride with the bump.** Checked
+both forms and neither exists on the current channel:
+
+- `hardware.nvidia.branch` — the option does not exist in 25.11 at all
+- `nvidiaPackages.legacy_580` — not an attribute in 25.11 either; the legacy
+  branches there stop at `legacy_535` (340/390/470/535)
+
+So aspen's nvidia change belongs **in the same commit as the flake bump**,
+alongside 0.6. There is no interim state: on 25.11 `stable` is 580.142 and
+Pascal works; the moment the channel moves, `stable` becomes 595.71.05 and the
+GTX 1060 has no driver. Miss it and aspen's first 26.05 switch takes out
+jellyfin transcoding, frigate detection, ollama-cuda and sunshine, with no eval
+error to warn you.
+
+Cache note: nvidia drivers are **not** substitutable — `legacy_580` builds
+locally. That is not a regression, it is the status quo: aspen's currently
+running 580.142 is not cached either. Budget the compile, don't be alarmed by
+it.
 
 ### 2.2 ZFS + the kernel jump
 
@@ -895,6 +940,19 @@ is only useful on a host with a screen in front of you.
 - [ ] Bump `flake.nix`: `nixpkgs` → `nixos-26.05`, `home-manager` →
       `release-26.05`. (The dead `simple-nixos-mailserver` input is already
       gone as of 2026-09-27.)
+
+      **Three items are welded to this commit** because none of them can be
+      expressed on 25.11 — each would be an eval error today:
+      - **0.6** `services.resolved.settings.Resolve.LLMNR` (the option tree
+        does not exist in 25.11)
+      - **2.1** aspen's `hardware.nvidia.branch = "legacy_580"` + deleting the
+        `package` line (neither the option nor the `legacy_580` attribute
+        exists in 25.11, and the Pascal cliff opens the instant the channel
+        moves)
+      - the `DEVIATIONS.md` drops whose triggers only fire at 26.05
+
+      Everything else that *could* be pre-landed has been: 0.1-0.5, 0.7,
+      batch 4, and 1.1's Grafana `secret_key`.
 - [ ] Re-run the eval check on **all six** hosts (cypress and alder included) —
       expect clean.
 - [ ] **Do not touch `home.stateVersion`.** It gates every home-manager change
