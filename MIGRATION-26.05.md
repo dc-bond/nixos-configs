@@ -25,7 +25,8 @@ if they come back. In-scope hosts are **juniper, aspen, thinkpad, kauri**.
 
 **Last updated 2026-09-26.** Everything below is still on `nixos-25.11`; the
 channel has not been bumped yet. Phase 0 batches 1, 2 and 3 are complete and
-verified on all four in-scope hosts. Batch 4 is next.
+verified on all four in-scope hosts. Batch 4's config has landed; its
+reboots are pending, starting with kauri.
 
 ### Batch status
 
@@ -41,7 +42,7 @@ verified on all four in-scope hosts. Batch 4 is next.
 | — | container exit 130 treated as clean | **done** — stops land inactive, 137 still restarts | `85dca2a` |
 | 3 | 0.3 bind-mount `fsType` | **done** — thinkpad and aspen rebooted and verified | `678cc05` |
 | — | calibre-web removed from aspen (found during 3) | **done** — module archived to private `deprecated/` | |
-| 4 | `boot.initrd.systemd.enable` on 25.11 | **next** — per-host reboot, kauri before thinkpad | |
+| 4 | `boot.initrd.systemd.enable` on 25.11 | **config landed, reboots pending** — order kauri → aspen → thinkpad → juniper | |
 | 5 | 0.6 + flake bump to 26.05 | pending | |
 
 ### Verified live state
@@ -108,6 +109,49 @@ Loki listens on `100.70.221.14:3030` only; the public interface refuses 3030.
 - **Test a config change against what it actually affects.** The loki grpc bind
   passed `/ready` and `/metrics` while every query silently returned empty. A read
   test would have caught it immediately.
+- **Evaluate a risky boot change before landing it**, with `extendModules`
+  rather than by editing the tree:
+  `(builtins.getFlake "path:$PWD").nixosConfigurations.<host>.extendModules
+  { modules = [ { boot.initrd.systemd.enable = true; } ]; }`. Always confirm the
+  override actually applied (check the option's value differs from the baseline)
+  before trusting a clean result — a mis-built override evaluates clean for the
+  wrong reason.
+- **systemd stage 1 hard-asserts on eight scripted-only `boot.initrd.*Commands`
+  options**, so a leftover hook is an eval error, not a silent drop. The ones
+  populated here — `postDeviceCommands`, `postMountCommands`, `preFailCommands`,
+  `preLVMCommands` — all come from nixpkgs' own `console.nix`, `btrfs.nix` and
+  `luksroot.nix` plus the impermanence input, and every one is internally gated
+  on `!boot.initrd.systemd.enable`. Nothing of ours contributes.
+- **impermanence reproduces its initrd bind mounts as real units under systemd
+  stage 1.** The scripted
+  `mountFS /mnt-root/persist/var/lib/nixos /var/lib/nixos bind none` becomes a
+  `boot.initrd.systemd.mounts` entry with `type = "none"`, `options = "bind"`,
+  `where = /sysroot/var/lib/nixos`, ordered `before =
+  initrd-nixos-activation.service`. Losing that bind would regenerate the UID/GID
+  map on a tmpfs-root host, so it is worth re-confirming if impermanence is ever
+  bumped.
+- **impermanence also handles the machine-id trap** (upstream #229/#242):
+  persisting `/etc/machine-id` as a *file* breaks
+  `systemd-machine-id-commit.service` under systemd initrd, so the module
+  suppresses that unit in the initrd and gates the stage-2 one on
+  `ConditionFirstBoot`. It arms itself only when systemd stage 1 is on.
+- **0.3 was a hard prerequisite for batch 4, not just tidiness.** Under systemd
+  stage 1 the initrd's fstab is
+  `makeFstabEntries (filter utils.fsNeededForBoot fileSystems)`, so `/etc/age` is
+  mounted by `systemd-fstab-generator` from that file. Its fsType column is now
+  `none`; before 0.3 it was `auto`, on a bind mount — exactly the case 26.05
+  removed the default for. `depends = [ "/persist" ]` survives the switch as
+  `x-systemd.requires-mounts-for=/sysroot/persist`.
+- **ZFS is not in aspen's initrd at all** — `boot.initrd.supportedFilesystems` is
+  btrfs/ext4/none/tmpfs and `boot.initrd.kernelModules` is `btrfs,dm_mod`; zfs
+  appears only in stage 2. The storage pool is outside the stage-1 blast radius.
+- **Both LUKS volumes are LUKS2 + argon2id with a 1 GiB memory cost.** That is
+  the same cost the scripted initrd already pays, not something systemd-cryptsetup
+  introduces, and both laptops have the RAM (thinkpad 7.4 GiB, kauri 15 GiB).
+  Neither uses a keyfile, detached header, FIDO2, YubiKey, GPG or pre/post-open
+  commands, so every systemd-stage-1 LUKS assertion passes and the generated
+  crypttab is one line per host with `-` for the key — an interactive
+  systemd-ask-password prompt that *looks different* from the scripted one.
 - **Verify alloy config with the real binary**, not by reading docs:
   `nix shell nixpkgs#grafana-alloy --command alloy validate <file>`. Extract the
   generated config first with
@@ -133,7 +177,8 @@ Loki listens on `100.70.221.14:3030` only; the public interface refuses 3030.
   SIGKILLed mid-write to the ZFS recording dataset. Upstream frigate expects
   SIGTERM, not the SIGINT the module sends. Worth either switching its
   `--stop-signal` or raising `--stop-timeout`; out of scope for the migration.
-- Batch 4 is next and is the last batch before the channel bump.
+- Batch 4's config has landed; its four reboots are pending and are the last
+  work before the channel bump.
 
 ---
 
@@ -548,8 +593,9 @@ units up.
 
 ## Phase 3 — workstations
 
-Order: **thinkpad** (primary, and the host that invokes rebuilds) → **kauri**.
-cypress and alder are deprecated and skipped.
+Order: **kauri** → **thinkpad**. cypress and alder are deprecated and skipped.
+The systemd stage 1 risk that used to dominate this phase is taken earlier, in
+batch 4.
 
 ### 3.1 The real risk is boot, not services
 
@@ -558,23 +604,29 @@ Phase 0.2 moves every host to systemd stage 1. thinkpad and kauri are both
 scripted implementation to systemd-cryptsetup. A failure here is a host that
 won't boot, recoverable only at the physical machine.
 
-With cypress retired there is no longer a non-LUKS impermanence workstation to
-rehearse on — but **aspen already fills that role**: impermanence with a tmpfs
-root and no LUKS. So by the time Phase 3 starts, systemd stage 1 has already
-been proven twice: on juniper (plain btrfs, no LUKS, no impermanence) and on
-aspen (impermanence + tmpfs root + ZFS). Only the cryptsetup variable is new.
+Note this risk is now taken in **batch 4**, on 25.11, not at the channel bump —
+that is the whole point of batch 4. See its pre-flight in Progress above.
 
 Mitigations:
 
 1. Use `nixos-rebuild boot` and reboot deliberately rather than `switch`, so you
    control when the new initrd is first exercised.
-2. Keep the previous generation in the bootloader (`configurationLimit = 5`
-   already does).
-3. Do **kauri before thinkpad**. thinkpad is the host you drive rebuilds from,
-   so it is the worst one to lose; kauri is the cheaper place to discover a
-   systemd-cryptsetup problem. This inverts "primary first" deliberately.
-4. Have the LUKS passphrase to hand and know the recovery path (boot previous
-   generation from the bootloader menu) before rebooting.
+2. Keep the previous generation in the bootloader. All four hosts retain 5
+   generations with a 5-second menu.
+3. Do **kauri first of all four**, not merely before thinkpad. It exercises both
+   failure classes — generic systemd stage 1 and systemd-cryptsetup — on the
+   host that is cheapest to recover and least disruptive to lose. thinkpad is
+   the host you drive rebuilds from, so it stays late.
+4. Have the LUKS passphrase to hand. The prompt comes from
+   systemd-ask-password and **looks different** from the scripted one; that is
+   expected, not a failure.
+5. Before rebooting **juniper**, open the Hetzner web console *first*. It is the
+   only host with no physical access, no initrd SSH and no serial console
+   params, and its GRUB menu is 5 seconds — not something to catch after the
+   fact.
+6. Cheap pre-reboot check once built: read the generated crypttab with
+   `nix build --no-link --print-out-paths
+   '.#nixosConfigurations.<host>.config.boot.initrd.systemd.contents."/etc/crypttab".source'`.
 
 ### 3.2 Do not bump `home.stateVersion`
 
@@ -705,13 +757,40 @@ item number. 6 of the 7 items land on 25.11; only 0.6 needs the bumped channel
 | 2 | 0.1 | logs arriving in Loki with label parity | **done 2026-09-25** |
 | 2b | loki bind fix (found during 2) | client logs reaching loki at all | **done 2026-09-25** |
 | 3 | 0.3 | reboot, `/etc/age` + `/run/secrets` | **done 2026-09-26** |
-| 4 | `boot.initrd.systemd.enable` on 25.11 | per-host reboot | **next** |
+| 4 | `boot.initrd.systemd.enable` on 25.11 | per-host reboot | **config landed 2026-09-26, reboots pending** |
 | 5 | 0.6 + flake bump | full re-eval | pending |
 
 Batch 4 is not a 26.05 requirement in itself — it takes systemd stage 1
 voluntarily on 25.11, so the one change that can leave a host unbootable is
 isolated from ~40 package upgrades. Verified to evaluate cleanly on 25.11 for
-all four in-scope hosts.
+all four in-scope hosts, with zero warnings.
+
+Set as `boot.initrd.systemd.enable = true` in `nixos-system/boot.nix`, shared by
+every host. It becomes the default at 26.05, so the explicit line can be dropped
+after the bump — see Closeout.
+
+**Reboot order: kauri → aspen → thinkpad → juniper.** This replaces the earlier
+"juniper first" plan. The reasoning changed because the pre-flight below proved
+the non-LUKS mechanics statically, so what remains is empirical confirmation,
+and kauri buys the most of it for the least risk: it exercises both a generic
+systemd-stage-1 failure and a systemd-cryptsetup failure, on a machine that can
+be physically reached, with the least disruption if it breaks. juniper goes last
+because it is the only host that cannot be reached physically — recovery there
+means catching a 5-second GRUB menu over Hetzner's web console. The residual
+cost of that order is that GRUB + systemd initrd stays untested until juniper;
+the other three are all systemd-boot.
+
+Per host, `nixos-rebuild boot` then a deliberate reboot. Verify on each: it
+boots, `systemd-analyze` shows an `initrd` phase, zero failed units, and
+`/run/secrets` populated. On kauri and thinkpad also confirm the LUKS prompt.
+On aspen also confirm all 56 `docker-*` units and the 44 ZFS feature flags.
+
+- [ ] **kauri** — LUKS + plain btrfs, systemd-boot. First cryptsetup test.
+- [ ] **aspen** — impermanence + tmpfs root + `/etc/age`, no LUKS. First
+      impermanence test.
+- [ ] **thinkpad** — LUKS + impermanence, the superset of the two above.
+- [ ] **juniper** — plain btrfs, GRUB/legacy BIOS. Open the Hetzner console
+      before rebooting.
 
 - [x] **0.1** Migrated `services.promtail` → `services.alloy` on all four hosts
       2026-09-25. Ported job-for-job; every generated config checked with
@@ -883,11 +962,9 @@ all four in-scope hosts.
 
 ### Phase 3 — workstations
 
-- [ ] **kauri before thinkpad.** Deliberately inverted from "primary first":
-      thinkpad drives the rebuilds, so it is the worst host to lose to a
-      systemd-cryptsetup problem. By this point systemd initrd is already proven
-      on juniper (no LUKS, no impermanence) and aspen (impermanence + tmpfs
-      root), so cryptsetup is the only new variable. **Operator decision.**
+- [ ] **kauri before thinkpad.** thinkpad drives the rebuilds, so it is the
+      worst host to lose. By this point systemd initrd is proven fleet-wide from
+      batch 4, so Phase 3 carries no stage-1 risk of its own.
 - [ ] Drop the stale `librewolf-152.0.2-1` `permittedInsecurePackages` entry
       (156.0-1 carries no `knownVulnerabilities`).
 - [ ] Drop the `mcp-nixos` unstable pin (26.05 ships 2.4.3). Keep the
@@ -901,6 +978,9 @@ all four in-scope hosts.
 
 ### Closeout
 
+- [ ] Drop the explicit `boot.initrd.systemd.enable = true` from
+      `nixos-system/boot.nix` — 26.05 makes systemd stage 1 the default, so the
+      line becomes redundant (the scripted implementation is removed in 26.11).
 - [ ] Drop the `docker` overlay pin — 26.05's default `docker` is already 29.8.0.
 - [ ] Rewrite the `DEVIATIONS.md` header and rows for 26.05; delete dropped
       rows. Per repo convention, in the same commit as each code change.
