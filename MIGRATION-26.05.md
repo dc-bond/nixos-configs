@@ -174,17 +174,9 @@ Loki listens on `100.70.221.14:3030` only; the public interface refuses 3030.
 - Residual Loki streams labelled `job="loki.source.journal.journal"` exist from
   the ~48-minute window between juniper's two batch-2 rebuilds. Historical data
   only; ages out with the 168h retention.
-- **Six media containers lose a start race against `media-server-vpn` on every
-  cold boot.** jellyfin, jellyseerr, prowlarr, radarr, sabnzbd and sonarr share
-  its network namespace and fail with `cannot join network namespace of a non
-  running container: container media-server-vpn is created`, then recover on the
-  automatic restart. How many lose the race varies per boot (4 units on
-  2026-09-26 morning, 7 that evening). frigate hits a different one,
-  `failed to bind host port 192.168.1.2:8554: cannot assign requested address`,
-  because the LAN ip is not up yet. All recover, so this is cosmetic today — but
-  it is ordering that should be expressed as a dependency on the VPN container
-  rather than left to `Restart=on-failure`. Same class as the calibre-web race
-  that led to that service's removal. Out of scope for the migration.
+- Cold-boot container ordering races (media-server-vpn netns, frigate's port
+  bind, docker-proxy's upstream) are recorded as **S1-S3** in Side items at the
+  end of this file.
 - frigate exits 137 on stop, meaning it overruns its stop timeout and is
   SIGKILLed mid-write to the ZFS recording dataset. Upstream frigate expects
   SIGTERM, not the SIGINT the module sends. Worth either switching its
@@ -702,9 +694,9 @@ it alone defers all of these to a separate, deliberate change:
   (`home-manager/chris/icewind-dale.nix`), which runs under `steam-run` against
   `pkgs-2105.openssl_1_0_2`. Low stakes (a game), thinkpad-only now that cypress
   is retired — test it, don't gate the migration on it.
-- **Stray file to remove on juniper**: `/var/lib/grafana/grafana.db`, a
-  root-owned 0-byte file (the real DB is `/var/lib/grafana/data/grafana.db`).
-  Harmless but misleading: `sudo rm /var/lib/grafana/grafana.db`.
+- ~~**Stray file to remove on juniper**: `/var/lib/grafana/grafana.db`~~ —
+  **gone as of 2026-09-26**, no longer present. The real DB
+  (`/var/lib/grafana/data/grafana.db`, 1.7 MB) is intact.
 
 ---
 
@@ -1012,9 +1004,8 @@ is only useful on a host with a screen in front of you.
 - [ ] Drop the `docker` overlay pin — 26.05's default `docker` is already 29.8.0.
 - [ ] Rewrite the `DEVIATIONS.md` header and rows for 26.05; delete dropped
       rows. Per repo convention, in the same commit as each code change.
-- [ ] Update `nixos-configs-private/CLAUDE.md` — it documents 3 exported
-      modules, the flake exports 5 (`home-assistant-lovelace` and
-      `home-assistant-scenes` are missing).
+- [x] ~~Update `nixos-configs-private/CLAUDE.md`~~ — **already done** in private
+      `2f382c7`; it now documents all 5 exported modules. Verified 2026-09-26.
 - [ ] Update the entity-rename procedure comment at `zigbee2mqtt.nix:37` — HA
       2026.4 replaced MQTT `object_id` with `default_entity_id`. Existing entity
       ids are unaffected; only future renames and adoptions change.
@@ -1022,3 +1013,59 @@ is only useful on a host with a screen in front of you.
       the new `lovelaceConfigFile` option is the clean target).
 - [ ] Separately, later: Nextcloud 32 → 33 (then 34, 35 if wanted), one major
       version at a time.
+
+---
+
+## Side items found during the migration
+
+Running list of things noticed while doing the migration that are **not**
+migration work. None blocks the channel bump. Kept here so they are not lost;
+move them out to their own issues or commits when mopped up.
+
+Add to this list as more turn up.
+
+### Cold-boot ordering races
+
+All of these recover on their own via `Restart=on-failure`, so they are
+cosmetic today — but each is ordering that belongs in a dependency rather than
+a restart. They became visible only because batch 3 and 4 forced real reboots.
+
+| # | Item | Detail |
+|---|---|---|
+| S1 | **Six media containers race `media-server-vpn`** | jellyfin, jellyseerr, prowlarr, radarr, sabnzbd, sonarr share its network namespace and fail with `cannot join network namespace of a non running container: container media-server-vpn is created`. How many lose the race varies per boot — 4 units on 2026-09-26 morning, 7 that evening. Wants `After=`/`BindsTo=` on the VPN container |
+| S2 | **frigate races the LAN ip** | `failed to bind host port 192.168.1.2:8554/tcp: cannot assign requested address` — docker tries to bind aspen's static ip before networkd has brought it up. Wants an ordering dep on the network being configured |
+| S3 | **`docker-proxy` races docker DNS** | nginx exits 1 with `host not found in upstream "pushpin"` because the pushpin container is not yet registered in the docker network's DNS. Seen once (aspen, 2026-09-26 morning), not on the evening boot — pure timing |
+| S4 | **calibre-web raced the ZFS library mount** | `Invalid Calibre library` on every cold boot. **Resolved by removal** 2026-09-26 (`22c1caf`) — the service was no longer wanted. Listed because it is the same class as S1–S3 and was what exposed the pattern |
+
+### Boot-log noise (low value, non-breaking)
+
+Present on every boot, before and after the migration work. Worth a pass
+sometime to get the error count to zero so real errors stand out.
+
+| # | Item | Detail |
+|---|---|---|
+| S5 | **`gvfs` wants a `wsdd` binary that isn't installed** | `Failed to spawn the wsdd daemon: Failed to execute child process "wsdd" (No such file or directory)`. `services.gvfs.enable = true` in both `hyprland.nix:48` and `labwc.nix:33`. Either add `pkgs.wsdd` or accept the noise |
+| S6 | **alloy logs a `noop client` line each boot** | `failed to register collector with remote server … err="noop client"`. `remotecfg` is not configured anywhere and is not wanted; the message is benign |
+| S7 | **`gkr-pam: unable to locate daemon control file`** | greetd/gnome-keyring PAM noise on thinkpad every boot |
+| S8 | **`iwlwifi: BIOS contains WGDS but no WRDS`** | firmware table quirk on thinkpad. Not fixable from config |
+| S9 | **`bluetoothd set_wake_allowed … Invalid Parameters`** | harmless kernel/bluez disagreement on thinkpad |
+| S10 | **usbmuxd avahi warnings** | `failed to spawnWIFIDeviceManager … Is the daemon running?` — avahi is not enabled; usbmuxd probes for it anyway |
+
+### Networking / access
+
+| # | Item | Detail |
+|---|---|---|
+| S11 | **juniper's public SSH times out from thinkpad** | `178.156.133.218:28764` times out, while juniper is listening on `0.0.0.0:28764`, crowdsec has no matching ban, and the tailnet path works. Reproduced before *and* after the batch 4 reboot, so it long predates this work. Suspect exit-node routing asymmetry (thinkpad exits via aspen). Only matters as a **recovery path** — it is the fallback if tailscale is ever down on juniper, the one host with no physical access |
+
+### Fleet state worth revisiting
+
+| # | Item | Detail |
+|---|---|---|
+| S12 | **kauri and alder are not actually impermanence hosts** | `impermanence.nix` exists for both but is commented out in their `configuration.nix` as `FRESH INSTALL ONLY`. kauri boots a persistent btrfs `/root` subvol. Their impermanence files therefore cannot be eval-verified and silently rot — 0.3 had to be applied to them blind. Private `roadmap.txt` already carries "alder and kauri to impermanence" as a future enhancement |
+| S13 | **`docker-prune.service` shows `inactive (dead)`** | Expected — it is timer-driven — but it means the honest container count is "55 of 56 active", which reads as a fault at a glance. Worth a note wherever container health is checked |
+
+### Already tracked elsewhere
+
+Not repeated here; see **Open items, not blocking** above for Loki's gRPC bind
+and the residual `loki.source.journal.journal` streams, and **Global cleanup**
+for the `simple-nixos-mailserver` dead input and the `DEVIATIONS.md` rewrite.
