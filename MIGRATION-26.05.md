@@ -95,9 +95,29 @@ been. And ZFS 2.4.4 needs no local compile at all, which removes the sting from
 2.2's "separate the variables" advice — the kernel jump is cheaper than it
 looks.
 
-Still unproven, because they build locally and nothing here compiled them: the
-nvidia module against 6.18, `ollama-cuda` with `cudaArches = [ "61" ]` under
-CUDA 12.9, and sunshine from the EOL `pkgs-2505` against a newer stdenv.
+**sunshine is not a bump risk at all** — checked and eliminated. Its store path
+is *byte-identical* on 25.11 and 26.05
+(`zwkpsxbwh23bay72z090f8zqiip7xnrn-sunshine-2025.628.4510`) and it **substitutes
+from cache**. The `pkgs-2505` overlay imports its own nixpkgs, so sunshine's
+whole closure is independent of the root channel and the bump does not touch it.
+Dropping the pin to take 26.05's sunshine is a separate, still-untested change.
+
+`ollama-cuda` and nvidia both build locally on 26.05 — but they build locally on
+**25.11 today** as well (`ollama-0.21.1` and `nvidia-x11-580.142` are neither of
+them cached), because an `.override` can never match a Hydra path and unfree
+drivers are not built by Hydra. Status quo, not a regression.
+
+So the genuinely unproven set is narrow: whether the local builds actually
+*compile* on 26.05 — the nvidia module against 6.18.54, and `ollama-cuda` with
+`cudaArches = [ "61" ]` under CUDA 12.9 (12.9 still supports sm_61; CUDA 13
+would not).
+
+**How to run that build.** aspen needs no flake checkout: thinkpad evaluates and
+distributes the derivations, which is what `rb`'s "distributed (aspen)" already
+does. `nix.distributedBuilds` is on and `/etc/nix/machines` points at aspen
+(12 cores, 31 GiB, `big-parallel`), so the heavy compiles land there, not on
+thinkpad's 7.4 GiB. A `--dry-run` compiles nothing at all and is safe anywhere.
+Watch `/nix` on aspen — it was 84% full with 39 GiB free on 2026-09-27.
 
 ### Things learned the hard way — do not rediscover these
 
