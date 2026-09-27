@@ -71,7 +71,7 @@ The overlay file also defines the cross-channel package sets consumed in §1:
 
 ---
 
-## 3. Config-level workarounds for upstream / 25.11 bugs
+## 3. Config-level workarounds for upstream / 26.05 bugs
 
 Not version pins, but deviations from a clean stock config, in place to work
 around a specific bug. Each should be revisited when its linked issue closes.
@@ -79,7 +79,9 @@ around a specific bug. Each should be revisited when its linked issue closes.
 | File | Workaround | Upstream reference / revert trigger |
 |---|---|---|
 | `nixos-system/lldap.nix` | Passwords/JWT passed via `systemd` `LoadCredential` instead of the module's file-based settings (`*_file` options commented out) | File-based settings broken in 25.11 — restore the `*_file` options when fixed |
-| `nixos-system/crowdsec.nix` | Firewall-bouncer workaround | [crowdsec#3632](https://github.com/crowdsecurity/crowdsec/issues/3632) |
+| `nixos-system/crowdsec.nix` | Firewall-bouncer workaround — `preStart` touches `capi-credentials.yaml` / `lapi-credentials.yaml` before registration | [crowdsec#3632](https://github.com/crowdsecurity/crowdsec/issues/3632) |
+| `nixos-system/crowdsec.nix` | **`crowdsec-firewall-bouncer-register.serviceConfig.StateDirectory` pinned back to `"crowdsec-firewall-bouncer-register"` (`mkForce`) and `ReadWritePaths = [ "/var/lib/crowdsec" ]` restored.** 26.05 added `crowdsec` to that unit's `StateDirectory` ([`crowdsec-firewall-bouncer.nix:260`](https://github.com/NixOS/nixpkgs/blob/nixos-26.05/nixos/modules/services/security/crowdsec-firewall-bouncer.nix)). The unit runs `DynamicUser`, so systemd migrated `/var/lib/crowdsec` → `/var/lib/private/crowdsec` and left a symlink; `/var/lib/private` is `0700 root`, so `cscli` and anything else outside a service namespace could no longer traverse it (`mkdir /var/lib/crowdsec: file exists`). Needed a one-time on-disk repair as well — see MIGRATION-26.05.md | Upstream drops `crowdsec` from that unit's `StateDirectory`, or gives the register step a namespace-safe way to reach crowdsec's state. Re-test on the next channel bump |
+| `nixos-system/crowdsec.nix` | **`environment.etc."crowdsec/config.yaml"`** mirrors the module's own `format.generate "crowdsec.yaml" cfg.settings.general`. 26.05's register script invokes the *unwrapped* `cscli` (`lib.getExe' cfg.package "cscli"`, `crowdsec-firewall-bouncer.nix:234`) instead of 25.11's `/run/current-system/sw/bin/cscli` wrapper, so it passes no `-c` and falls back to `/etc/crowdsec/config.yaml` — a path this config never populated, because the config lives in the store. Registration failed, no `api-key.cred` was written, and the bouncer died at `243/CREDENTIALS` with no `CROWDSEC_CHAIN` in iptables | Upstream restores the wrapped `cscli` (or passes `-c`) in the register script — then drop the `environment.etc` entry. **Fragile:** it duplicates one line of module internals, so re-check it whenever the crowdsec module changes |
 | `nixos-system/crowdsec.nix` | Console-token auto-enrollment commented out | Possible upstream bug — re-test after settling on 25.11 |
 | `nixos-system/yubikey.nix` | pcsclite polkit access-group workaround | [nixpkgs#121121](https://github.com/NixOS/nixpkgs/issues/121121) |
 | `nixos-system/foundation.nix` | `nix.settings.nix-path = config.nix.nixPath` | [nix#9574](https://github.com/NixOS/nix/issues/9574) |

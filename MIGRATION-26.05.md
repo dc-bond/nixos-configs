@@ -34,11 +34,28 @@ Verified fleet state at handoff (all hosts **0 failed units**):
 | **juniper** | **26.05** `0ai8kfv6…` | same | done — Phase 1 complete |
 | **aspen** | 25.11 `3vpv67zd…` | same | **← next: Phase 2 switch** |
 | **thinkpad** | 25.11 `shla9qg2…` | same | Phase 3, after aspen |
-| **kauri** | 25.11 `pp4zi533…` | 25.11 `rxp2lyzq…` | **batch 4 is staged** — its next reboot takes systemd stage 1 on **25.11**, not 26.05 |
+| **kauri** | 25.11 `pp4zi533…` | 25.11 `rxp2lyzq…` (**to be superseded**) | rebuild straight to **26.05**, then reboot once — see below |
 
-Note kauri: its staged generation is *still 25.11*. It is the last host owed a
-batch 4 reboot, and that reboot is expected to be uneventful — kauri is a strict
-subset of thinkpad, which passed.
+**kauri: operator decision 2026-09-27 — go straight to 26.05, do not reboot
+into the staged 25.11 generation first.** That staged generation is batch 4
+(systemd stage 1) on 25.11; it will be superseded by the 26.05 rebuild and
+never booted. kauri therefore takes **systemd stage 1 and the channel bump in a
+single reboot**.
+
+This is a deliberate departure from the one-variable-at-a-time rule the rest of
+the migration followed, and it is defensible: systemd stage 1 is already proven
+on thinkpad (LUKS **and** impermanence), aspen (impermanence + tmpfs + ZFS) and
+juniper (GRUB), and kauri is a strict subset of thinkpad minus impermanence. The
+26.05 half is mostly home-manager `stateVersion` deferrals on a workstation.
+
+Two things to hold in mind anyway: a boot failure now has two candidate causes
+rather than one, and kauri is danielle's laptop, so recovery means being at the
+machine. Have the LUKS passphrase to hand; the prompt will come from
+systemd-ask-password and **look different** from the scripted one, which is
+expected. Previous generation is in the systemd-boot menu behind a 5s timeout.
+
+Sequence is unchanged unless you decide otherwise: Phase 3 still puts the
+workstations after aspen, and kauri before thinkpad.
 
 **The next step is aspen (Phase 2).** It is the largest switch of the
 migration: 25 containers across 56 units, ZFS, the GPU, impermanence, and the
@@ -117,7 +134,7 @@ Useful recipes, all permitted without a build:
 | — | container exit 130 treated as clean | **reverted 2026-09-27** — `SuccessExitStatus` dropped with the rest of the override | `85dca2a` |
 | 3 | 0.3 bind-mount `fsType` | **done** — thinkpad and aspen rebooted and verified | `678cc05` |
 | — | calibre-web removed from aspen (found during 3) | **done** — module archived to private `deprecated/` | |
-| 4 | `boot.initrd.systemd.enable` on 25.11 | **done on thinkpad, aspen, juniper** — kauri staged, reboots on its next restart | `b1958fd` |
+| 4 | `boot.initrd.systemd.enable` on 25.11 | **done on thinkpad, aspen, juniper** — kauri takes it together with 26.05, by decision | `b1958fd` |
 | 5 | 0.6 + nvidia + flake bump to 26.05 | **done** — all six evaluate | `7d29fe2` `1e8350c` `61c4d50` |
 | — | crowdsec DynamicUser state trap (found switching juniper) | **fixed** — config + one-time state repair | `17d59a3` |
 | P1 | **juniper switched to 26.05** | **done 2026-09-27, verified** | `550c49a` |
@@ -126,8 +143,8 @@ Useful recipes, all permitted without a build:
 
 **Zero failed units on any host** (re-verified 2026-09-27 at handoff). alloy
 `active` with 0 restarts everywhere; promtail is gone. thinkpad, aspen and
-juniper are on **systemd stage 1**; kauri still runs the scripted initrd until
-its next reboot, which is staged.
+juniper are on **systemd stage 1**; kauri still runs the scripted initrd and
+will take it together with the channel bump at its single remaining reboot.
 
 **juniper runs 26.05**; aspen, thinkpad and kauri still run 25.11.
 
@@ -1022,9 +1039,11 @@ is only useful on a host with a screen in front of you.
       **0 failed units and 0 errors**. All public endpoints verified from
       outside — vaultwarden, matrix, grafana, searx and ntfy all answering over
       TLS. Boot 987ms kernel + 2.2s initrd + 1m4s userspace.
-- [ ] **kauri** — LUKS + plain btrfs, no impermanence. Staged but not yet
-      rebooted. It is a strict subset of thinkpad, which passed, so this is
-      expected to be uneventful; verify at the next restart.
+- [ ] **kauri** — LUKS + plain btrfs, no impermanence. A batch 4 generation was
+      staged on 25.11 but **will not be booted**: per the operator decision of
+      2026-09-27, kauri is rebuilt straight to 26.05 and takes systemd stage 1
+      and the channel bump in one reboot. Verify both at that reboot — the LUKS
+      prompt (systemd-ask-password, looks different) *and* the 26.05 checks.
 
 - [x] **0.1** Migrated `services.promtail` → `services.alloy` on all four hosts
       2026-09-25. Ported job-for-job; every generated config checked with
@@ -1264,8 +1283,11 @@ is only useful on a host with a screen in front of you.
 ### Phase 3 — workstations
 
 - [ ] **kauri before thinkpad.** thinkpad drives the rebuilds, so it is the
-      worst host to lose. By this point systemd initrd is proven fleet-wide from
-      batch 4, so Phase 3 carries no stage-1 risk of its own.
+      worst host to lose. Note kauri is the one host where Phase 3 *does* still
+      carry stage-1 risk: by operator decision it skips its batch 4 reboot and
+      takes systemd stage 1 together with the channel bump. Proven on the other
+      three hosts, and kauri is a subset of thinkpad, but it is two variables in
+      one reboot on someone else's laptop.
 - [x] Dropped the `librewolf` `permittedInsecurePackages` entries 2026-09-27;
       26.05 ships 156.0-1 with no `knownVulnerabilities`.
 - [x] **Kept the `mcp-nixos` pin** — 26.05's 2.4.3 clears the recorded "≥ 2.x"
