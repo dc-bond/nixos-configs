@@ -68,8 +68,7 @@ in
 
     "${app}" = {
       enable = true;
-      unifiPackage = pkgs.unstable.unifi; # 25.11's 9.5.21 is flagged knownVulnerabilities, see DEVIATIONS.md
-      jrePackage = pkgs.jdk25_headless; # unifi 10.x needs jdk25; the 25.11 module ignores passthru.jrePackage and defaults to jdk17
+      unifiPackage = pkgs.unstable.unifi; # 26.05 ships 10.2.105, older than the running 10.6.x; unifi does not support controller downgrades, see DEVIATIONS.md
       mongodbPackage = mongodbPrebuilt;
       initialJavaHeapSize = 1024;
       maximumJavaHeapSize = 2048;

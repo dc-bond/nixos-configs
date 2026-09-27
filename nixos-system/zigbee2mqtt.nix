@@ -182,7 +182,6 @@ in
 
     ${app} = {
       enable = true;
-      package = pkgs.unstable.${app}; # 25.11 ships 2.6.3; unstable for current ember/EFR32MG24 driver work (see DEVIATIONS.md)
       inherit dataDir;
       settings = {
 
