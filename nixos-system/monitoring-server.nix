@@ -1143,6 +1143,14 @@ in
 
 {
 
+  # grafana's secret_key lost its upstream default in 26.05 and is now a hard
+  # assertion. it must stay the old default literal: anything already encrypted
+  # in grafana.db was encrypted with it and upstream provides no rotation path.
+  sops.secrets."${app2}SecretKey" = {
+    owner = "${app2}";
+    group = "${app2}";
+  };
+
   users = {
     users.${app3} = {
       isSystemUser = true;
@@ -1738,6 +1746,7 @@ in
           domain = "${app2}.${configVars.domain2}";
           root_url = "https://${app2}.${configVars.domain2}";
         };
+        security.secret_key = "$__file{${config.sops.secrets."${app2}SecretKey".path}}";
         news.news_feed_enabled = false;
         analytics = {
           reporting_enabled = false;
