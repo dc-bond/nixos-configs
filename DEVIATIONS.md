@@ -26,11 +26,9 @@ pinned to a specific non-channel version.
 | `nixos-system/sunshine.nix` | `sunshine` | `pkgs.pkgs-2505` (25.05) | 25.11 has an x11-capture crash regression ([nixpkgs#475181](https://github.com/NixOS/nixpkgs/issues/475181)) | Fix lands in 25.11 |
 | `nixos-system/crowdsec.nix` | `crowdsec` | `pkgs.unstable` (1.8.1 vs 1.7.8 in 26.05) | **No-downgrade constraint.** juniper already runs 1.8.1 live; 26.05 ships 1.7.8, so dropping the pin would move the local crowdsec DB *backwards* across a major version. The original reason ("newer than the channel ships") no longer applies — this one replaces it | 26.05 backports ≥1.8.1, or crowdsec state is deliberately rebuilt on the older major |
 | `nixos-system/crowdsec.nix` | `crowdsec-firewall-bouncer` | `pkgs.unstable` (0.0.36) | Kept in lockstep with `crowdsec` above | Same as `crowdsec` |
-| `nixos-system/zigbee2mqtt.nix` | `zigbee2mqtt` | `pkgs.unstable` (2.13.0 at time of writing vs 2.6.3 in 25.11) | Current `ember` driver work for the SLZB-06MG24U's EFR32MG24 radio; 25.11's 2.6.3 predates several EmberZNet fixes | 25.11 ships ≥2.13.x — then drop back to `pkgs.zigbee2mqtt` |
-| `nixos-system/unifi.nix` | `unifi` | `pkgs.unstable` (10.6.101 vs 9.5.21 in 25.11) | 25.11's 9.5.21 carries `knownVulnerabilities` for CVE-2026-22557 (CVSSv3.1 10.0) and CVE-2026-22558 (7.7); fixed only in 9.0.118 and ≥10.1.89, and no patched 9.x exists anywhere in nixpkgs, so the native module can only be run from unstable. Also forces `services.unifi.jrePackage = pkgs.jdk25_headless`, since 10.x wants jdk25 via `passthru.jrePackage` and the 25.11 module defaults to jdk17 without reading it | 25.11 backports a `unifi` with no `knownVulnerabilities` — then drop back to `pkgs.unifi` and the module's default JRE |
+| `nixos-system/unifi.nix` | `unifi` | `pkgs.unstable` (10.6.101 vs 10.2.105 in 26.05) | **No-downgrade constraint.** The original CVE reason is gone — 26.05's 10.2.105 carries no `knownVulnerabilities` — but it is *older* than the running 10.6.101, and UniFi migrates its config DB forward on upgrade: an older controller will not read it. The `jrePackage` override is no longer needed; 26.05's module defaults to `jdk25_headless` on its own | 26.05 backports a `unifi` ≥ the running version |
 | `nixos-system/unifi.nix` | `mongodb` | `mongodb-ce` pinned to 8.0.32, in place of the module default `pkgs.mongodb-7_0` | MongoDB is SSPL, so Hydra builds no MongoDB at all and nothing in nixpkgs has a binary substitute — `mongodb-7_0` compiles from source for 3-5h on aspen and wants ~15G at the `mongod` link, repeating on every bump. `mongodb-ce` is the same server from upstream's prebuilt tarball (`fetchurl` + `autoPatchelfHook`). Pinned rather than left at mongodb-ce's default because unifi 10.6.106's deb declares `mongodb-org-server (>= 3.6.0), (<< 8.1.0)` — 8.0 is the ceiling and the 8.2 mongodb-ce ships is above it | nixpkgs gains a cached or prebuilt mongodb inside unifi's declared range, or `services.unifi` grows a prebuilt option |
 | `home-manager/chris/icewind-dale.nix` | `openssl_1_0_2` | `pkgs.pkgs-2105` (21.05) | Beamdog game binary links libssl 1.0.0, removed from nixpkgs after 21.05 | **Permanent** by nature (legacy ABI) |
-| `nixos-system/foundation.nix` | `librewolf` | `permittedInsecurePackages` (`librewolf-152.0.2-1`) | Allows a build flagged insecure so librewolf stays installable | Newer non-flagged librewolf in channel |
 
 ### Parity pulls from unstable (intentional, not bug workarounds)
 
@@ -48,11 +46,13 @@ on matching versions:
 
 `mcp-nixos` (the NixOS/Home Manager MCP server wired into `claude-code` in
 `home-manager/chris/claude-code.nix` and `home-manager/danielle/claude-code.nix`)
-is pulled from unstable: 25.11 ships only
-`1.0.3`, which predates the 2.x unified `nix()` tool surface and most data
-sources. Uses `pkgs.unstable.mcp-nixos` (2.4.x).
+is pulled from unstable. 26.05 ships 2.4.3; unstable is at 3.0.1.
 
-**Revert trigger:** 25.11 backports `mcp-nixos` ≥ 2.x — then drop to `pkgs.mcp-nixos`.
+**Revert trigger:** none while the channel lags. 26.05's 2.4.3 does clear the
+original "≥ 2.x" trigger, but dropping the pin now would be a *major downgrade*
+of a tool in daily use, for no gain. Same shape as the `unifi` and `crowdsec`
+rows: the channel catching up does not help when you are already ahead of it.
+Revisit if 26.05 reaches ≥ 3.x.
 
 ---
 
@@ -64,7 +64,6 @@ host via `nixos-system/foundation.nix` (`nixpkgs.overlays`).
 | Package | What it does | Revert trigger |
 |---|---|---|
 | `displaylink` | Pinned to **6.2** with a manual `requireFile` src + hash | Manual bump only; hash is mirrored in `nixos-system/rebuilds.nix` — keep the two in sync |
-| `docker` | Pinned to the `docker_29` engine so all `pkgs.docker` references (oci-* units) use it | Deliberate engine pin; revisit on major docker bump |
 
 The overlay file also defines the cross-channel package sets consumed in §1:
 `pkgs.unstable` (nixos-unstable), `pkgs.pkgs-2505` (25.05), `pkgs.pkgs-2105`

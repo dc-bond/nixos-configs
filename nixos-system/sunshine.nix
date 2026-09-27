@@ -95,8 +95,6 @@
     };
   };
 
-  # uinput kernel module and input group needed for sunshine input injection
-  boot.kernelModules = [ "uinput" ];
   users.users.chris.extraGroups = [ "input" ];
   security.rtkit.enable = true; # realtime scheduling priority for pipewire
 

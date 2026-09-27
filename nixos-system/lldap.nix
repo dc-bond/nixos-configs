@@ -70,6 +70,7 @@ in
 
     ${app} = {
       enable = true;
+      database.createLocally = false; # the postgres db is ensured in this module's own ensureDatabases, not by the lldap module
       settings = {
         ldap_user_email = "${configVars.users.chris.email}";
         ldap_user_dn = "admin";
