@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1781152676,
-        "narHash": "sha256-RxWs5ND31KzTG7wvMM+PMfUjyNpmIEr999lqNARaM5o=",
+        "lastModified": 1789770686,
+        "narHash": "sha256-uZkBR7yHdIKUFB5SZdfgh1qkGfI3XmYmI/lTiquxbck=",
         "owner": "nix-community",
         "repo": "disko",
-        "rev": "ff8702b4de27f72b4c78573dfb89ec74e36abdf1",
+        "rev": "725ea35e410ad83be4931d1bff7e090eacaf3563",
         "type": "github"
       },
       "original": {
@@ -49,11 +49,11 @@
       },
       "locked": {
         "dir": "pkgs/firefox-addons",
-        "lastModified": 1789358577,
-        "narHash": "sha256-Mq0Ft/ro4yiMB2IODMvDWJKT1udx3oDVME8mlL2Os7s=",
+        "lastModified": 1790497510,
+        "narHash": "sha256-0T3eZTD8zw3cEZflN066yGST6CNtO7qm9mMkMN0asRc=",
         "owner": "rycee",
         "repo": "nur-expressions",
-        "rev": "53450d808b7ef559de667a5df31e529c00a7c9ec",
+        "rev": "f91d27101fb8ef07a714f63dd5e7eecb3d84e9cd",
         "type": "gitlab"
       },
       "original": {
@@ -192,11 +192,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1789286504,
-        "narHash": "sha256-eiEK7cKZORNEvX0GeF3RtNEF/JXhgf2RqSp3230q13E=",
+        "lastModified": 1790463110,
+        "narHash": "sha256-hKlVl12B1dF0Q5vd9dY3lIJM5mFGWYSlXwSLAqHZ1+s=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "ef34387ddd751e1ab8857adf4676492d32eb24ec",
+        "rev": "e158d9ed9b51c98974c5e66e1ba1c9e0255fecaa",
         "type": "github"
       },
       "original": {
@@ -224,11 +224,11 @@
     },
     "private": {
       "locked": {
-        "lastModified": 1790030195,
-        "narHash": "sha256-30Ebk4gB2khWq4xoMnww7r/3w3YA9/GwC/MGSZQCqro=",
+        "lastModified": 1790428669,
+        "narHash": "sha256-LBVtosbKEX4fsnJTIyxMU5n1wYwbGL6vnQQg4KMOTZQ=",
         "ref": "refs/heads/main",
-        "rev": "59887f10ad67f5cc0adf88a0d851f9eab8e48367",
-        "revCount": 186,
+        "rev": "21f95b8807e40febbf51a70d35df3cc08b8a4e14",
+        "revCount": 189,
         "type": "git",
         "url": "ssh://git@github.com/dc-bond/nixos-configs-private"
       },
@@ -259,11 +259,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788914643,
-        "narHash": "sha256-4GuMPW90JSxXWDPUB9M+1m7fYbe3H0apOd86/zBQ2Kw=",
+        "lastModified": 1790498116,
+        "narHash": "sha256-rs9meAYxW3zzrh43yaW7htrqCD+X9+pupDPHN86fumI=",
         "owner": "Mic92",
         "repo": "sops-nix",
-        "rev": "13616fff713a9f94055c66f15687ebdc17a335df",
+        "rev": "5efb5a6f4f5ab192817d28557dd4d650fa14d866",
         "type": "github"
       },
       "original": {
