@@ -118,8 +118,8 @@ on `nix flake update`:
 | `impermanence` | `nix-community/impermanence` default branch |
 | `firefox-addons` | `rycee/nur-expressions` (rolling) |
 
-Correctly pinned to 25.11 (no drift): `home-manager` (`release-25.11`),
-`simple-nixos-mailserver` (`nixos-25.11`). Own repos: `finplanner`, `private`.
+Correctly pinned to 25.11 (no drift): `home-manager` (`release-25.11`).
+Own repos: `finplanner`, `private`.
 
 ---
 

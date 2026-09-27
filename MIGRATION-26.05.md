@@ -666,10 +666,13 @@ it alone defers all of these to a separate, deliberate change:
 
 - **`docker` overlay pin** (`overlays/default.nix:44`, `docker = prev.docker_29`)
   — **drop**. 26.05's default `docker` is already 29.8.0, so the pin is a no-op.
-- **`simple-nixos-mailserver` flake input is dead.** Declared at
-  `flake.nix:26` pinned to `nixos-25.11`, but no module from it is imported
-  anywhere. Either remove the input or repoint it at `nixos-26.05` — left as-is
-  it silently keeps a second nixpkgs tree in the lock.
+- ~~**`simple-nixos-mailserver` flake input is dead.**~~ **Removed 2026-09-27.**
+  It was declared but no module from it was ever imported. Dropping it took
+  `flake.lock` from 21 nodes to 16 — the input plus its transitive
+  `git-hooks`, `gitignore`, `flake-compat` and `blobs`, including the second
+  nixpkgs tree that `git-hooks` pulled in. All four in-scope hosts still
+  evaluate. The archived module stays at
+  `nixos-configs-private/deprecated/mailserver.nix` for reference.
 - **`nixos-configs-private/CLAUDE.md` is stale**: it documents 3 exported
   modules, but the private flake exports **5** (`home-assistant-lovelace` and
   `home-assistant-scenes` are missing from the doc).
@@ -861,8 +864,8 @@ is only useful on a host with a screen in front of you.
       have silently yielded `on-failure` on 26.05. Verified all 25 aspen and 4
       juniper container units `Restart=always` and active.
 - [ ] Bump `flake.nix`: `nixpkgs` → `nixos-26.05`, `home-manager` →
-      `release-26.05`. Either drop the dead `simple-nixos-mailserver` input or
-      repoint it at `nixos-26.05`.
+      `release-26.05`. (The dead `simple-nixos-mailserver` input is already
+      gone as of 2026-09-27.)
 - [ ] Re-run the eval check on **all six** hosts (cypress and alder included) —
       expect clean.
 - [ ] **Do not touch `home.stateVersion`.** It gates every home-manager change
@@ -1068,4 +1071,4 @@ sometime to get the error count to zero so real errors stand out.
 
 Not repeated here; see **Open items, not blocking** above for Loki's gRPC bind
 and the residual `loki.source.journal.journal` streams, and **Global cleanup**
-for the `simple-nixos-mailserver` dead input and the `DEVIATIONS.md` rewrite.
+for the `DEVIATIONS.md` rewrite.
