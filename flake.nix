@@ -23,10 +23,6 @@
       url = "gitlab:rycee/nur-expressions?dir=pkgs/firefox-addons";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    simple-nixos-mailserver = {
-      url = "gitlab:simple-nixos-mailserver/nixos-mailserver/nixos-25.11";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     finplanner = {
       url = "github:dc-bond/finplanner";
       inputs.nixpkgs.follows = "nixpkgs";
