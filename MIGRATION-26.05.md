@@ -9,10 +9,9 @@ November). Channel verified available: `nixos-26.05`, HEAD
 
 Every eval-level finding below was verified by evaluating each host's
 `system.build.toplevel.drvPath` against 26.05 with `home-manager` on
-`release-26.05`. **Five of the six evaluate cleanly once Phase 0 is done.**
-juniper is the exception: 26.05 made Grafana's `secret_key` a hard assertion, so
-it stays an eval failure until 1.1 lands. That is a Phase 1 item, not a Phase 0
-gap.
+`release-26.05`. **All six evaluate cleanly** as of 2026-09-27, when 1.1 was
+pre-landed on 25.11 and cleared juniper's Grafana `secret_key` assertion — the
+last eval blocker in the fleet.
 
 **Scope:** cypress and alder are **deprecated** — offline, configs retained
 against a possible future return, and explicitly *not* migrated. They still
@@ -961,10 +960,19 @@ is only useful on a host with a screen in front of you.
 
 ### Phase 1 — juniper
 
-- [ ] Add `grafanaSecretKey` to SOPS set to the old default
-      `SW2YcwTIb9zpOOhoPsMm`; wire as
+- [x] **Pre-landed on 25.11, 2026-09-27.** `grafanaSecretKey` added to SOPS at
+      the old default `SW2YcwTIb9zpOOhoPsMm`, declared in
+      `monitoring-server.nix` owned by `grafana:grafana` (0400), and wired as
       `security.secret_key = "$__file{...}"`. A *new* key breaks existing DB
       secrets and there is no upstream rotation path.
+
+      This did **not** need the channel bump: `services.grafana.settings.security.secret_key`
+      already exists on 25.11 — 26.05 only removes its default and adds the
+      assertion. Pre-landing it means the value is proven on the current channel
+      rather than being debugged mid-bump on the one host with no physical
+      access. Generated config is `$__file{/run/secrets/grafanaSecretKey}`, so
+      the literal never enters the store. **Clearing this made all six hosts
+      evaluate on 26.05.**
 - [ ] Drop the `vaultwarden` + `vaultwarden-webvault` unstable pins (26.05 ships
       1.37.3 / 2026.7.0+0).
 - [ ] Drop the whole `matrix-synapse-attrs-fix` overlay — fixed upstream; also
