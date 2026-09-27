@@ -22,14 +22,86 @@ if they come back. In-scope hosts are **juniper, aspen, thinkpad, kauri**.
 
 ## Progress — where this stands
 
-**Last updated 2026-09-27.** **The channel is bumped — `flake.nix` is on
-`nixos-26.05` and `home-manager` on `release-26.05`, and all six hosts
-evaluate.** Phase 0 is complete. Nothing has switched yet: every host is still
-*running* its 25.11 generation, and moves only when it is rebuilt.
+**Last updated 2026-09-27.** Phase 0 complete, channel bumped, **juniper is
+live on 26.05**. Everything below is still accurate; start with "Pick up here".
 
-Next action: **rebuild juniper** (Phase 1). Then aspen, then the workstations.
-kauri also still needs its batch 4 reboot, which it will take on its next
-restart.
+### Pick up here
+
+Verified fleet state at handoff (all hosts **0 failed units**):
+
+| Host | Running | Staged for next boot | Next action |
+|---|---|---|---|
+| **juniper** | **26.05** `0ai8kfv6…` | same | done — Phase 1 complete |
+| **aspen** | 25.11 `3vpv67zd…` | same | **← next: Phase 2 switch** |
+| **thinkpad** | 25.11 `shla9qg2…` | same | Phase 3, after aspen |
+| **kauri** | 25.11 `pp4zi533…` | 25.11 `rxp2lyzq…` | **batch 4 is staged** — its next reboot takes systemd stage 1 on **25.11**, not 26.05 |
+
+Note kauri: its staged generation is *still 25.11*. It is the last host owed a
+batch 4 reboot, and that reboot is expected to be uneventful — kauri is a strict
+subset of thinkpad, which passed.
+
+**The next step is aspen (Phase 2).** It is the largest switch of the
+migration: 25 containers across 56 units, ZFS, the GPU, impermanence, and the
+Home Assistant recorder migration.
+
+Before switching aspen:
+
+1. **Fresh dumps** — `hass` (244 MB, the migration is minutes), `vikunja`,
+   `nextcloud`, `lldap`, plus mysql `photoprism`. Do not rely on the 02:20
+   `postgresqlBackup` run. HA's recorder schema change is **not** undone by a
+   generation rollback.
+2. **Never run `zpool upgrade`.** The 44 `feature@` flags are recorded in
+   `batch3-baseline-aspen.txt` and must stay byte-identical. ZFS 2.3.7 → 2.4.4
+   does not touch pool features on its own.
+3. **Run the rebuild from a `tmux`/`screen` session on aspen**, not over
+   tailscale SSH from thinkpad — see the transport gotcha below.
+4. Optional de-risk from 2.2: pin `boot.kernelPackages = pkgs.linuxPackages_6_12`
+   so only userspace moves, then take the 6.18 kernel separately. Checked
+   2026-09-27: ZFS 2.4.4 userspace *and* the `zfs-kernel-2.4.4-6.18.54` module
+   both substitute from cache, so the kernel jump is cheaper than this section
+   originally assumed.
+
+First thing to check after aspen switches: **`nvidia-smi` must report 580.x, not
+595.** 26.05's `stable` is 595.71.05, which dropped Pascal; the config now pins
+`hardware.nvidia.branch = "legacy_580"` (580.173.02). There is no eval error if
+this is wrong — the GPU simply has no driver, taking out jellyfin transcoding,
+frigate detection, ollama-cuda and sunshine. The driver is **not** cached and
+builds locally; that is the status quo, not a problem.
+
+Then the rest of the 2.6 list: jellyfin hardware transcode, frigate detection,
+ZFS pool ONLINE and *not* upgraded, HA recorder migrated with no missing
+entities, zigbee2mqtt has all 14 devices, mosquitto accepts both users, and all
+56 `docker-*` units back.
+
+### Two gotchas that cost time on juniper — do not repeat
+
+- **Do not run `nixos-rebuild` against a host over its own tailscale SSH.** The
+  switch restarts `sshd` and `tailscaled`, killing the transport. On juniper
+  this produced `exit 255` with *every unit left stopped* — a full outage that
+  looked like a failed switch. The switch itself runs detached via
+  `systemd-run`, so it survives; the fix is to drive it from a `tmux` session on
+  the host.
+- **`systemctl show` lies about `--collect`ed transient units.** Querying
+  `nixos-rebuild-switch-to-configuration` after it was reaped returned
+  `Result=success ExecMainStatus=0` — the *defaults* for a unit that no longer
+  exists — while the journal showed `status=101`. **Judge a switch from
+  `journalctl -u <unit>`, never from the exit code or `systemctl show`.**
+
+### Baselines and artefacts
+
+Pre/post-reboot baselines live on thinkpad's persisted subvol at
+`/home/chris/.claude/projects/-home-chris-nixos/`:
+`batch3-baseline-thinkpad.txt`, `batch3-baseline-aspen.txt` (includes the 44 ZFS
+feature flags and the full 56-unit container inventory),
+`batch4-baseline-kauri.txt`, `batch4-baseline-thinkpad.txt`.
+
+Useful recipes, all permitted without a build:
+- evaluate a host: `nix eval --raw '.#nixosConfigurations.<h>.config.system.build.toplevel.drvPath'`
+- test a change without touching the tree: `extendModules` (see the hard-won
+  lessons below)
+- check whether something will substitute rather than compile:
+  `nix path-info --store https://cache.nixos.org <outPath>`
+- `nix build` is **denied** to the agent by policy, including `--dry-run`.
 
 ### Batch status
 
@@ -46,13 +118,18 @@ restart.
 | 3 | 0.3 bind-mount `fsType` | **done** — thinkpad and aspen rebooted and verified | `678cc05` |
 | — | calibre-web removed from aspen (found during 3) | **done** — module archived to private `deprecated/` | |
 | 4 | `boot.initrd.systemd.enable` on 25.11 | **done on thinkpad, aspen, juniper** — kauri staged, reboots on its next restart | `b1958fd` |
-| 5 | 0.6 + nvidia + flake bump to 26.05 | **done, nothing switched yet** — all six evaluate | `7d29fe2` `1e8350c` `61c4d50` |
+| 5 | 0.6 + nvidia + flake bump to 26.05 | **done** — all six evaluate | `7d29fe2` `1e8350c` `61c4d50` |
+| — | crowdsec DynamicUser state trap (found switching juniper) | **fixed** — config + one-time state repair | `17d59a3` |
+| P1 | **juniper switched to 26.05** | **done 2026-09-27, verified** | `550c49a` |
 
 ### Verified live state
 
-**Zero failed units on any host.** alloy `active` with 0 restarts everywhere;
-promtail is gone. thinkpad, aspen and juniper are on **systemd stage 1**; kauri
-still runs the scripted initrd until its next reboot.
+**Zero failed units on any host** (re-verified 2026-09-27 at handoff). alloy
+`active` with 0 restarts everywhere; promtail is gone. thinkpad, aspen and
+juniper are on **systemd stage 1**; kauri still runs the scripted initrd until
+its next reboot, which is staged.
+
+**juniper runs 26.05**; aspen, thinkpad and kauri still run 25.11.
 
 Container restart policy lives solely in `nixos-system/oci-containers.nix`, applied
 over `oci-containers.containers`: `Restart=on-failure` (mkForce),
