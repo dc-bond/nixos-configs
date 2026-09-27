@@ -8,6 +8,13 @@
 
 let
   crowdsecApiPort = 8590;
+
+  # mirrors the upstream module's own `format.generate "crowdsec.yaml" cfg.settings.general`
+  # (nixos/modules/services/security/crowdsec.nix). the module keeps that path internal and
+  # 26.05's bouncer-register script calls the *unwrapped* cscli, which has no -c and falls
+  # back to /etc/crowdsec/config.yaml, so the file has to exist at the default path.
+  crowdsecConfigFile =
+    (pkgs.formats.yaml { }).generate "crowdsec.yaml" config.services.crowdsec.settings.general;
 in
 
 {
@@ -111,6 +118,14 @@ in
         chmod 640 /var/lib/crowdsec/state/lapi-credentials.yaml
       '';
     };
+    # 26.05 added "crowdsec" to this unit's StateDirectory. it runs DynamicUser, so systemd
+    # migrates /var/lib/crowdsec into /var/lib/private/crowdsec and leaves a symlink; that
+    # parent is 0700 root, so cscli and anything else outside a service namespace can no
+    # longer traverse it. pin the state dir back and restore the 25.11 ReadWritePaths.
+    crowdsec-firewall-bouncer-register.serviceConfig = {
+      StateDirectory = lib.mkForce "crowdsec-firewall-bouncer-register";
+      ReadWritePaths = [ "/var/lib/crowdsec" ];
+    };
     # ensure firewall bouncer waits for crowdsec to be fully running
     crowdsec-firewall-bouncer = {
       after = [ "crowdsec.service" ];
@@ -120,6 +135,8 @@ in
       unitConfig.Requires = lib.mkForce "crowdsec.service";
     };
   };
+
+  environment.etc."crowdsec/config.yaml".source = crowdsecConfigFile;
 
   programs.zsh = {
     shellAliases = {

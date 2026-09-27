@@ -215,6 +215,38 @@ Watch `/nix` on aspen — it was 84% full with 39 GiB free on 2026-09-27.
   commands, so every systemd-stage-1 LUKS assertion passes and the generated
   crypttab is one line per host with `-` for the key — an interactive
   systemd-ask-password prompt that *looks different* from the scripted one.
+- **The `/var/lib/private` DynamicUser trap has now bitten three times.** alloy in
+  batch 2 (missing 0700 parents), and crowdsec twice at the 26.05 switch. The
+  shape is always the same: a `DynamicUser` service's `StateDirectory` makes
+  systemd move `/var/lib/<name>` to `/var/lib/private/<name>` and leave a
+  symlink, and `/var/lib/private` is `0700 root` — so **anything running outside
+  that service's namespace can no longer traverse it**. On 26.05 the
+  `crowdsec-firewall-bouncer-register` unit gained `crowdsec` in its
+  `StateDirectory` (upstream `crowdsec-firewall-bouncer.nix:260`), which migrated
+  crowdsec's whole state dir and broke `cscli` with
+  `mkdir /var/lib/crowdsec: file exists`. The agent survived only because our
+  module grants it `ReadWritePaths = /var/lib/crowdsec /etc/crowdsec`.
+  Fixed by pinning `StateDirectory` back and restoring the 25.11 `ReadWritePaths`.
+- **26.05's bouncer-register script calls the *unwrapped* `cscli`.** 25.11 used
+  `/run/current-system/sw/bin/cscli`, which is a wrapper passing
+  `-c=<generated crowdsec.yaml>`; 26.05 uses
+  `lib.getExe' cfg.package "cscli"` directly, so it has no `-c` and falls back to
+  `/etc/crowdsec/config.yaml` — a path this config has never populated, because
+  the config lives in the store. Fixed by mirroring the module's own
+  `format.generate "crowdsec.yaml" cfg.settings.general` into
+  `environment.etc."crowdsec/config.yaml"`; verified our generated store path is
+  *identical* to the one the agent is passed.
+- **Audited the whole fleet for this trap (2026-09-27) — it is juniper-only.**
+  Compared each host's live `DynamicUser` + `StateDirectory` set against the
+  26.05 evaluation. aspen is byte-identical across both channels (alloy, lldap,
+  ollama, ollama-model-loader, photoprism, stirling-pdf, vikunja,
+  prometheus-smartctl-exporter) and all six of its state dirs are *already*
+  symlinks into `private/`, so nothing is left to migrate. thinkpad and kauri
+  carry only `alloy` and `prometheus-smartctl-exporter`, identical on both
+  channels. juniper's only delta is the crowdsec register unit above. crowdsec is
+  **not** enabled on aspen — its import is commented out in
+  `hosts/aspen/configuration.nix`, so the aspen whitelist branch in
+  `crowdsec.nix` is currently dead code.
 - **Verify alloy config with the real binary**, not by reading docs:
   `nix shell nixpkgs#grafana-alloy --command alloy validate <file>`. Extract the
   generated config first with
