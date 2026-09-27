@@ -32,22 +32,13 @@ in
     };
   };
 
-  # restart policy for every container, in one place rather than per module.
-  # on-failure leaves a cleanly-exited container down, so a deliberate
-  # `docker stop` is not fought by systemd; mkForce because the module sets
-  # Restart at normal priority. the backoff walks 100ms -> 1m over 9 steps so a
-  # container whose dependency is not up yet stops hammering; the module sets
-  # none of the three, so they need no override.
+  # restart backoff for every container, in one place rather than per module.
+  # walks 100ms -> 1m over 9 steps so a container whose dependency is not up yet
+  # stops hammering; the module sets none of the three, so they need no override.
+  # Restart itself is left to the module default.
   systemd.services = lib.mapAttrs' (name: _:
     lib.nameValuePair "${config.virtualisation.oci-containers.backend}-${name}" {
       serviceConfig = {
-        Restart = lib.mkForce "on-failure";
-        # every container runs with --stop-signal=SIGINT, so an image with no
-        # SIGINT handler exits 130 - a clean stop, not a failure. on-failure
-        # excludes SuccessExitStatus, so 130 no longer triggers a restart either:
-        # a bare `systemctl restart docker` leaves containers down until their
-        # root targets are started again.
-        SuccessExitStatus = 130;
         RestartSec = "100ms";
         RestartSteps = 9;
         RestartMaxDelaySec = "1m";

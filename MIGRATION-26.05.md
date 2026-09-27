@@ -38,9 +38,9 @@ already been proven. Batch 5 is next.
 | 2 | 0.1 promtail → alloy | **done** — all 4 hosts on alloy, 0 restarts | `29e432d` |
 | 2b | loki tailnet bind (found during 2) | **done** — client shipping works for the first time | `29e432d` |
 | — | `/var/lib/private` 0700 (regression fix) | **done** — all 5 impermanence hosts | `3a37535` |
-| — | container restart policy centralised, `on-failure` adopted | **done** — verified on aspen + juniper | `ce41515` |
+| — | container restart policy centralised | **superseded** — override dropped 2026-09-27, module default adopted | `ce41515` |
 | — | loki localhost grpc bind | **reverted** — broke reads, see open items | `4c0bfc3` |
-| — | container exit 130 treated as clean | **done** — stops land inactive, 137 still restarts | `85dca2a` |
+| — | container exit 130 treated as clean | **reverted 2026-09-27** — `SuccessExitStatus` dropped with the rest of the override | `85dca2a` |
 | 3 | 0.3 bind-mount `fsType` | **done** — thinkpad and aspen rebooted and verified | `678cc05` |
 | — | calibre-web removed from aspen (found during 3) | **done** — module archived to private `deprecated/` | |
 | 4 | `boot.initrd.systemd.enable` on 25.11 | **done on thinkpad, aspen, juniper** — kauri staged, reboots on its next restart | `b1958fd` |
@@ -97,11 +97,25 @@ Loki listens on `100.70.221.14:3030` only; the public interface refuses 3030.
   `WantedBy=multi-user.target` (and their `docker-<app>-root.target`), so no
   restart or exit-status setting can leave them down after a reboot or a
   `nixos-rebuild switch` — the latter stops and starts units explicitly.
-- **`on-failure` excludes `SuccessExitStatus`.** With `SuccessExitStatus=130`,
-  exit 130 neither marks the unit failed nor triggers a restart. The one affected
-  path is a bare `systemctl restart docker`, where dockerd sends the configured
-  SIGINT and containers exit 130 — they stay down until their root targets are
-  started. Boot, rebuild and crash recovery are all unaffected.
+- **`on-failure` excludes `SuccessExitStatus`, and that combination bites.**
+  With `SuccessExitStatus=130`, exit 130 neither marks the unit failed nor
+  triggers a restart, so a bare `systemctl restart docker` — where dockerd
+  signals every container and they exit 130 or 0 — leaves them all down until
+  their root targets are started. Worse, the *better behaved* the image the more
+  likely it stays down: a clean SIGINT handler exits 0, which `on-failure`
+  always treats as success. This is why the override was dropped entirely on
+  2026-09-27. Boot, rebuild and crash recovery were never affected.
+- **`Restart=always` does not stop you stopping things.** systemd never restarts
+  a unit it was explicitly asked to stop, whatever `Restart=` says. The only
+  divergence between `always` and `on-failure` is an *unsolicited* clean exit —
+  `systemctl restart docker`, or a `docker stop` issued through the CLI behind
+  systemd's back.
+- **`Restart=always` is still capped by the start limit.** `StartLimitBurst=5`
+  over `StartLimitIntervalSec=10s` is the default, and with `RestartSec=100ms` a
+  fast-failing container burns that in under a second, after which systemd gives
+  up and leaves the unit `failed`. "always" is not unconditional. Disabling it
+  needs `unitConfig.StartLimitIntervalSec = 0`, which is *not* configured here —
+  worth knowing if a container ever seems to stop retrying.
 - **All 27 containers run `--stop-signal=SIGINT`**, so exit codes on stop are
   purely upstream shutdown quality: 0 = handled cleanly, 130 = no handler, 137 =
   overran the stop timeout and was SIGKILLed, and jellyfin emits its own 111/125.
@@ -334,7 +348,9 @@ Warning on 26.05, so not strictly blocking, but do it now.
 
 ### 0.7 `oci-containers` Restart default: `always` → `on-failure`
 
-> **Done** — batch 1, 2026-09-25. Chose to preserve `always`, applied centrally in `oci-containers.nix`.
+> **Resolved 2026-09-27: adopt the new default.** The override was dropped
+> entirely; `Restart` is now left to the module. See the checklist entry for the
+> history, which went back and forth.
 
 **No eval error, no warning — decide this deliberately.** 26.05 changes the
 container unit template's `Restart=` from `always` to `on-failure`
@@ -856,13 +872,27 @@ is only useful on a host with a screen in front of you.
       `settings.Resolve.LLMNR = "false"`. Cannot be pre-landed —
       `services.resolved.settings` does not exist in 25.11, so this rides with
       the flake bump in Batch 5.
-- [x] **0.7** Chose to preserve `always`, applied centrally in
-      `oci-containers.nix` over `oci-containers.containers`. `mkForce` is
-      required: the module sets `Restart` at normal priority, which already
-      outranks the `mkOverride 500 "always"` in `oci-searxng.nix` and
-      `oci-recipesage.nix` — so those lines have never taken effect and would
-      have silently yielded `on-failure` on 26.05. Verified all 25 aspen and 4
-      juniper container units `Restart=always` and active.
+- [x] **0.7** **Adopt the new default — no override at all.** Resolved
+      2026-09-27 after the config and this file had drifted apart: batch 1 was
+      recorded here as "preserve `always`", but what actually shipped was
+      `mkForce "on-failure"` plus `SuccessExitStatus = 130`, i.e. the opposite.
+      Live units confirmed `Restart=on-failure` on both hosts before the fix.
+
+      `oci-containers.nix` now sets only the backoff (`RestartSec`,
+      `RestartSteps`, `RestartMaxDelaySec`), which the module does not set and
+      which is additive rather than an override. `Restart` and
+      `SuccessExitStatus` are gone.
+
+      Effect, verified by evaluation on aspen: **25 containers get `always` on
+      25.11** (the module default today) and **`on-failure` on 26.05**, which is
+      the whole point — the bump carries them onto the new default with no
+      config change. `docker-pihole-init` keeps its own `on-failure` from
+      `oci-pihole.nix`; it is `Type=oneshot` and not part of
+      `oci-containers.containers`, which also matters because systemd refuses
+      `Restart=always` on oneshot units.
+
+      **No `DEVIATIONS.md` row is needed** — taking a module default is not a
+      deviation. This replaces the planned row for the `mkForce`.
 - [ ] Bump `flake.nix`: `nixpkgs` → `nixos-26.05`, `home-manager` →
       `release-26.05`. (The dead `simple-nixos-mailserver` input is already
       gone as of 2026-09-27.)
@@ -870,8 +900,9 @@ is only useful on a host with a screen in front of you.
       expect clean.
 - [ ] **Do not touch `home.stateVersion`.** It gates every home-manager change
       listed in §3.2, including the Firefox profile move.
-- [ ] Add the `DEVIATIONS.md` row for the 0.7 `mkForce` — it only becomes a
-      deviation at the channel bump, so it belongs in the Batch 5 commit.
+- [x] ~~Add the `DEVIATIONS.md` row for the 0.7 `mkForce`~~ — **not needed.**
+      The override was dropped 2026-09-27 in favour of the module default, so
+      there is no deviation to record.
 
 #### Found during Batch 1, unrelated to 26.05
 
