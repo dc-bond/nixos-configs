@@ -1,7 +1,6 @@
 { 
   pkgs,
   lib,
-  config, 
   ... 
 }: 
 
@@ -15,7 +14,7 @@
       powerManagement.finegrained = false; # experimental turns off GPU when not in use, only works on Turing or newer cards
       open = false; # use open source nvidia kernel module, only works on Turning or newer cards and driver 515.43.04+ (GTX1060 is older)
       nvidiaSettings = false; # enable nvidia settings menu accessible via 'nvidia-settings'
-      package = config.boot.kernelPackages.nvidiaPackages.stable;
+      branch = "legacy_580"; # 595 dropped pascal; the 580 LTSB is the last branch supporting the GTX 1060 (sm_61)
     };
     nvidia-container-toolkit.enable = true;  # enable GPU utilization by oci-containers
   };

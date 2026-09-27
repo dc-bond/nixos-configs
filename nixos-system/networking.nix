@@ -17,7 +17,7 @@ in
 
   services.resolved = {
     enable = hostData.networking.useResolved;
-    llmnr = "false";
+    settings.Resolve.LLMNR = "false";
   };
 
   environment.etc."resolv.conf" = lib.mkIf (!hostData.networking.useResolved) { # if not using systemd-resolved, than manually create resolv.conf, use Quad9 (9.9.9.9 and 149.112.112.112) for upstream fallback DNS
