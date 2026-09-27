@@ -25,8 +25,9 @@ if they come back. In-scope hosts are **juniper, aspen, thinkpad, kauri**.
 
 **Last updated 2026-09-26.** Everything below is still on `nixos-25.11`; the
 channel has not been bumped yet. Phase 0 batches 1, 2 and 3 are complete and
-verified on all four in-scope hosts. Batch 4's config has landed; its
-reboots are pending, starting with kauri.
+verified on all four in-scope hosts. Batch 4 is done on thinkpad, aspen and
+juniper; only kauri's reboot remains and it is a strict subset of what has
+already been proven. Batch 5 is next.
 
 ### Batch status
 
@@ -42,14 +43,14 @@ reboots are pending, starting with kauri.
 | — | container exit 130 treated as clean | **done** — stops land inactive, 137 still restarts | `85dca2a` |
 | 3 | 0.3 bind-mount `fsType` | **done** — thinkpad and aspen rebooted and verified | `678cc05` |
 | — | calibre-web removed from aspen (found during 3) | **done** — module archived to private `deprecated/` | |
-| 4 | `boot.initrd.systemd.enable` on 25.11 | **config landed, reboots pending** — order kauri → aspen → thinkpad → juniper | |
+| 4 | `boot.initrd.systemd.enable` on 25.11 | **done on thinkpad, aspen, juniper** — kauri staged, reboots on its next restart | `b1958fd` |
 | 5 | 0.6 + flake bump to 26.05 | pending | |
 
 ### Verified live state
 
-Generations: juniper 356, aspen 223, thinkpad and kauri current. **Zero failed
-units on any host.** promtail `inactive` everywhere, alloy `active` with 0
-restarts everywhere.
+**Zero failed units on any host.** alloy `active` with 0 restarts everywhere;
+promtail is gone. thinkpad, aspen and juniper are on **systemd stage 1**; kauri
+still runs the scripted initrd until its next reboot.
 
 Container restart policy lives solely in `nixos-system/oci-containers.nix`, applied
 over `oci-containers.containers`: `Restart=on-failure` (mkForce),
@@ -173,12 +174,23 @@ Loki listens on `100.70.221.14:3030` only; the public interface refuses 3030.
 - Residual Loki streams labelled `job="loki.source.journal.journal"` exist from
   the ~48-minute window between juniper's two batch-2 rebuilds. Historical data
   only; ages out with the 168h retention.
+- **Six media containers lose a start race against `media-server-vpn` on every
+  cold boot.** jellyfin, jellyseerr, prowlarr, radarr, sabnzbd and sonarr share
+  its network namespace and fail with `cannot join network namespace of a non
+  running container: container media-server-vpn is created`, then recover on the
+  automatic restart. How many lose the race varies per boot (4 units on
+  2026-09-26 morning, 7 that evening). frigate hits a different one,
+  `failed to bind host port 192.168.1.2:8554: cannot assign requested address`,
+  because the LAN ip is not up yet. All recover, so this is cosmetic today — but
+  it is ordering that should be expressed as a dependency on the VPN container
+  rather than left to `Restart=on-failure`. Same class as the calibre-web race
+  that led to that service's removal. Out of scope for the migration.
 - frigate exits 137 on stop, meaning it overruns its stop timeout and is
   SIGKILLed mid-write to the ZFS recording dataset. Upstream frigate expects
   SIGTERM, not the SIGINT the module sends. Worth either switching its
   `--stop-signal` or raising `--stop-timeout`; out of scope for the migration.
-- Batch 4's config has landed; its four reboots are pending and are the last
-  work before the channel bump.
+- Batch 4 is done on three of four hosts; kauri reboots into it whenever it next
+  restarts. Batch 5 (0.6 + the flake bump) is the last work before 26.05.
 
 ---
 
@@ -757,7 +769,7 @@ item number. 6 of the 7 items land on 25.11; only 0.6 needs the bumped channel
 | 2 | 0.1 | logs arriving in Loki with label parity | **done 2026-09-25** |
 | 2b | loki bind fix (found during 2) | client logs reaching loki at all | **done 2026-09-25** |
 | 3 | 0.3 | reboot, `/etc/age` + `/run/secrets` | **done 2026-09-26** |
-| 4 | `boot.initrd.systemd.enable` on 25.11 | per-host reboot | **config landed 2026-09-26, reboots pending** |
+| 4 | `boot.initrd.systemd.enable` on 25.11 | per-host reboot | **done 2026-09-26** (kauri pending its next reboot) |
 | 5 | 0.6 + flake bump | full re-eval | pending |
 
 Batch 4 is not a 26.05 requirement in itself — it takes systemd stage 1
@@ -780,17 +792,33 @@ means catching a 5-second GRUB menu over Hetzner's web console. The residual
 cost of that order is that GRUB + systemd initrd stays untested until juniper;
 the other three are all systemd-boot.
 
-Per host, `nixos-rebuild boot` then a deliberate reboot. Verify on each: it
-boots, `systemd-analyze` shows an `initrd` phase, zero failed units, and
-`/run/secrets` populated. On kauri and thinkpad also confirm the LUKS prompt.
-On aspen also confirm all 56 `docker-*` units and the 44 ZFS feature flags.
+Executed order was **thinkpad → aspen → juniper**, with kauri deferred: kauri
+could not be rebooted when its turn came, so the first test moved to thinkpad on
+the reasoning that recovery matters more than decomposition when you are sitting
+at the machine — systemd stage 1 drops to an emergency shell on failure, which
+is only useful on a host with a screen in front of you.
 
-- [ ] **kauri** — LUKS + plain btrfs, systemd-boot. First cryptsetup test.
-- [ ] **aspen** — impermanence + tmpfs root + `/etc/age`, no LUKS. First
-      impermanence test.
-- [ ] **thinkpad** — LUKS + impermanence, the superset of the two above.
-- [ ] **juniper** — plain btrfs, GRUB/legacy BIOS. Open the Hetzner console
-      before rebooting.
+- [x] **thinkpad** — LUKS + impermanence, the superset of every other host.
+      `root=fstab` present, 0 scripted `stage-1-init` lines, systemd-cryptsetup
+      unlocked the LUKS2 volume, `/sysroot/etc/age` and `/sysroot/var/lib/nixos`
+      both mounted before `initrd-nixos-activation`, 8 secrets, 0 failed units,
+      same 3 pre-existing errors as the previous boot. Boot went **1m53s → 45s**:
+      the kernel phase dropped from 1m20s to 898ms with 16s now correctly
+      attributed to a new `initrd` phase.
+- [x] **aspen** — impermanence + tmpfs root + `/etc/age` + ZFS + 56 containers.
+      Same clean initrd sequence; activation logged `reviving group … with GID`
+      for every group, which is the persisted `/var/lib/nixos` ID map being read
+      back through the new bind. 34 secrets, 0 failed units, all 56 `docker-*`
+      units identical to their pre-batch-3 state, 44 ZFS feature flags
+      byte-identical, GPU present (GTX 1060, 580.142), pihole answering.
+- [x] **juniper** — plain btrfs, **GRUB/legacy BIOS**, the one untested variable.
+      Works: `root=fstab`, 0 scripted lines, clean switch-root, 14 secrets,
+      **0 failed units and 0 errors**. All public endpoints verified from
+      outside — vaultwarden, matrix, grafana, searx and ntfy all answering over
+      TLS. Boot 987ms kernel + 2.2s initrd + 1m4s userspace.
+- [ ] **kauri** — LUKS + plain btrfs, no impermanence. Staged but not yet
+      rebooted. It is a strict subset of thinkpad, which passed, so this is
+      expected to be uneventful; verify at the next restart.
 
 - [x] **0.1** Migrated `services.promtail` → `services.alloy` on all four hosts
       2026-09-25. Ported job-for-job; every generated config checked with
