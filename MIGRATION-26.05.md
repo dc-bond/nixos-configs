@@ -22,8 +22,11 @@ if they come back. In-scope hosts are **juniper, aspen, thinkpad, kauri**.
 
 ## Progress — where this stands
 
-**Last updated 2026-09-27.** Phase 0 complete, channel bumped, **juniper is
-live on 26.05**. Everything below is still accurate; start with "Pick up here".
+**Last updated 2026-09-28.** Phase 0 complete, channel bumped, **juniper is
+live on 26.05**. **aspen is built and staged**: generation 226 (26.05) is the
+systemd-boot default, but nothing has been activated — aspen still runs 25.11
+with 0 failed units, and reboots into 26.05 on 2026-09-29. Everything below is
+still accurate; start with "Pick up here".
 
 ### Pick up here
 
@@ -32,7 +35,7 @@ Verified fleet state at handoff (all hosts **0 failed units**):
 | Host | Running | Staged for next boot | Next action |
 |---|---|---|---|
 | **juniper** | **26.05** `0ai8kfv6…` | same | done — Phase 1 complete |
-| **aspen** | 25.11 `3vpv67zd…` | same | **← next: Phase 2 switch** |
+| **aspen** | 25.11 `3vpv67zd…` (gen 225) | **26.05** `089pzf09…` (gen 226, **built and staged 2026-09-28**) | **← next: reboot** (planned 2026-09-29, after tonight's backups) |
 | **thinkpad** | 25.11 `shla9qg2…` | same | Phase 3, after aspen |
 | **kauri** | 25.11 `pp4zi533…` | 25.11 `rxp2lyzq…` (**to be superseded**) | rebuild straight to **26.05**, then reboot once — see below |
 
@@ -61,22 +64,48 @@ workstations after aspen, and kauri before thinkpad.
 migration: 25 containers across 56 units, ZFS, the GPU, impermanence, and the
 Home Assistant recorder migration.
 
-Before switching aspen:
+**Built and staged 2026-09-28 14:59.** Prep (GC, clean scrub, baseline) and the
+build are both done — see the Phase 2 checklist. Generation **226** (26.05) is
+the systemd-boot default; **nothing has been activated**, so aspen still runs
+generation 225 on kernel 6.12.93 with 0 failed units and every service up. The
+staged closure was verified by inspection without booting: kernel **6.18.54**,
+**`nvidia-x11-580.173.02`**, `zfs-user-2.4.4` + `zfs-kernel-2.4.4`.
 
-1. **Fresh dumps** — `hass` (244 MB, the migration is minutes), `vikunja`,
-   `nextcloud`, `lldap`, plus mysql `photoprism`. Do not rely on the 02:20
-   `postgresqlBackup` run. HA's recorder schema change is **not** undone by a
-   generation rollback.
-2. **Never run `zpool upgrade`.** The 44 `feature@` flags are recorded in
-   `batch3-baseline-aspen.txt` and must stay byte-identical. ZFS 2.3.7 → 2.4.4
-   does not touch pool features on its own.
-3. **Run the rebuild from a `tmux`/`screen` session on aspen**, not over
-   tailscale SSH from thinkpad — see the transport gotcha below.
-4. Optional de-risk from 2.2: pin `boot.kernelPackages = pkgs.linuxPackages_6_12`
-   so only userspace moves, then take the 6.18 kernel separately. Checked
-   2026-09-27: ZFS 2.4.4 userspace *and* the `zfs-kernel-2.4.4-6.18.54` module
-   both substitute from cache, so the kernel jump is cheaper than this section
-   originally assumed.
+Baseline for the post-reboot diff:
+`~/.claude/projects/-home-chris-nixos/phase2-baseline-aspen.txt`, ending in a
+VERIFY TARGETS block with every number to match.
+
+**Evaluation warnings (2026-09-28) — all four classes benign, none actionable:**
+home-manager `stateVersion` deferrals (`programs.neovim.withRuby`,
+`programs.neovim.withPython3` for two users, `xdg.userDirs.setSessionVariables`)
+holding legacy defaults because `home.stateVersion` < 26.05, which is exactly
+what 3.2 says to keep; the Nextcloud legacy-install notice, emitted once per
+major step 32→33→34→35 because we hold at 32 deliberately; and the
+`lovelace.mode` deprecation, warning-only until HA 2026.8.
+
+Remaining before the reboot:
+
+1. **`zpool upgrade` — never.** The 44 `feature@` flags in
+   `phase2-baseline-aspen.txt` must stay byte-identical. ZFS 2.3.7 → 2.4.4 does
+   not touch pool features on its own. They were re-verified unchanged across
+   the 2026-09-28 scrub.
+2. **No console will be attached** (operator decision) — a monitor goes on only
+   if aspen fails to come back. What narrows that risk: **ZFS is not in aspen's
+   initrd** (stage-1 filesystems are btrfs/ext4/none/tmpfs; zfs is stage 2
+   only), so a ZFS fault degrades services rather than blocking boot; **aspen
+   has no LUKS**, so nothing in stage 1 is interactive; and systemd stage 1 is
+   already running here from batch 4. The genuinely new boot variables are
+   kernel 6.18.54 and systemd 260/261. 26.05 exposes **no** systemd-boot
+   boot-counting option, so there is no automatic fallback — a failed boot
+   needs someone at the machine to pick generation 225 from the 5s menu.
+3. **Backups land first.** aspen deliberately runs 25.11 overnight so the
+   2026-09-29 01:15 `postgresqlBackup-*`, 02:20 `mysql-backup` and 02:20 borg
+   all execute under the known-good 25.11 stack a few hours before the reboot.
+   Confirm they succeeded before rebooting; that is the recovery position for
+   the one-way HA recorder and vikunja migrations.
+4. **Expect S1-S3 on the way back up** — media containers racing
+   `media-server-vpn`, frigate racing the LAN ip bind, possibly `docker-proxy`
+   racing docker DNS. They self-recover and are not migration faults.
 
 First thing to check after aspen switches: **`nvidia-smi` must report 580.x, not
 595.** 26.05's `stable` is 595.71.05, which dropped Pascal; the config now pins
@@ -87,8 +116,8 @@ builds locally; that is the status quo, not a problem.
 
 Then the rest of the 2.6 list: jellyfin hardware transcode, frigate detection,
 ZFS pool ONLINE and *not* upgraded, HA recorder migrated with no missing
-entities, zigbee2mqtt has all 14 devices, mosquitto accepts both users, and all
-56 `docker-*` units back.
+entities, zigbee2mqtt has all 17 devices, mosquitto accepts both users, and all
+56 `docker-*.service` units back.
 
 ### Two gotchas that cost time on juniper — do not repeat
 
@@ -138,6 +167,8 @@ Useful recipes, all permitted without a build:
 | 5 | 0.6 + nvidia + flake bump to 26.05 | **done** — all six evaluate | `7d29fe2` `1e8350c` `61c4d50` |
 | — | crowdsec DynamicUser state trap (found switching juniper) | **fixed** — config + one-time state repair | `17d59a3` |
 | P1 | **juniper switched to 26.05** | **done 2026-09-27, verified** | `550c49a` |
+| P2a | **aspen built + `nixos-rebuild boot`** | **done 2026-09-28** — gen 226 staged as bootloader default, nothing activated, 0 failed units, still running 25.11 | |
+| P2b | aspen reboot into 26.05 | **pending — planned 2026-09-29** | |
 
 ### Verified live state
 
@@ -151,7 +182,7 @@ will take it together with the channel bump at its single remaining reboot.
 Container restart policy lives solely in `nixos-system/oci-containers.nix`, applied
 over `oci-containers.containers`: `Restart=on-failure` (mkForce),
 `SuccessExitStatus=130`, and backoff `100ms -> 1m` over 9 steps. Verified on all
-29 container units across both hosts. Behaviour confirmed by test:
+31 container units across both hosts (aspen 26, juniper 5). Behaviour confirmed by test:
 `systemctl stop` lands **inactive** with "Deactivated successfully"; SIGKILL
 (137) still restarts; a reboot starts every container from
 `WantedBy=multi-user.target`, which no restart setting influences — 25/25 started
@@ -258,7 +289,7 @@ Watch `/nix` on aspen — it was 84% full with 39 GiB free on 2026-09-27.
   up and leaves the unit `failed`. "always" is not unconditional. Disabling it
   needs `unitConfig.StartLimitIntervalSec = 0`, which is *not* configured here —
   worth knowing if a container ever seems to stop retrying.
-- **All 27 containers run `--stop-signal=SIGINT`**, so exit codes on stop are
+- **All 29 long-running containers run `--stop-signal=SIGINT`**, so exit codes on stop are
   purely upstream shutdown quality: 0 = handled cleanly, 130 = no handler, 137 =
   overran the stop timeout and was SIGKILLed, and jellyfin emits its own 111/125.
   137 is deliberately *not* in `SuccessExitStatus` — frigate hits it while writing
@@ -550,8 +581,10 @@ container unit template's `Restart=` from `always` to `on-failure`
 (`nixos/modules/virtualisation/oci-containers.nix:539`, in the shared
 backend-agnostic `serviceConfig`, so it applies to the docker backend).
 
-Scope: **all 91 `docker-*` units on aspen** and the 4 on juniper are currently
-`Restart=always` (verified at runtime).
+Scope: **the 26 container units on aspen** and the 5 on juniper are currently
+`Restart=always` (verified at runtime). Not the supporting
+`docker-image-*`/`docker-network-*`/`docker-volume-*`/`docker-prune` oneshots,
+which are `Restart=no` and unaffected.
 
 What changes: a container that exits **cleanly** is no longer restarted. Under
 `always` it was. That covers a graceful `docker stop`, a container that exits 0
@@ -817,9 +850,9 @@ Phase 3 means the workstations build against an already-migrated builder.
 
 Post-switch checks: GPU present (`nvidia-smi` shows 580.x), Jellyfin transcode
 and Frigate detection both working, ZFS pool ONLINE and **not** upgraded, HA up
-with recorder migrated and no missing entities, zigbee2mqtt paired with all 14
-devices, mosquitto accepting both users, traefik routes green, all `docker-*`
-units up.
+with recorder migrated and no missing entities, zigbee2mqtt paired with all 17
+devices, mosquitto accepting both users, traefik routes green, all 56
+`docker-*.service` units up.
 
 ---
 
@@ -1247,12 +1280,16 @@ is only useful on a host with a screen in front of you.
       dropped. Verified aspen resolves `nvidia-x11-580.173.02`, not 595.71.05.
       This could not be pre-landed: neither the `branch` option nor the
       `legacy_580` attribute exists in 25.11.
-- [ ] Keep Nextcloud on `nextcloud32`. Do **not** fold the NC33 upgrade into
-      this migration.
-- [ ] **Keep** the `unifi` unstable pin — 26.05's 10.2.105 is a *downgrade* from
+- [x] Keep Nextcloud on `nextcloud32`. Do **not** fold the NC33 upgrade into
+      this migration. **Verified 2026-09-28** — `nextcloud.nix:100` pins
+      `pkgs.nextcloud32` and aspen resolves 32.0.15 on 26.05. The eval emits the
+      "legacy Nextcloud install" warning, which is expected and not a blocker.
+- [x] **Keep** the `unifi` unstable pin — 26.05's 10.2.105 is a *downgrade* from
       the running 10.6.101 and UniFi does not support controller downgrades.
-      Rewrite the `DEVIATIONS.md` reason (the CVE rationale is gone; the
-      no-downgrade constraint replaces it).
+      **Verified 2026-09-28** — the pin is in place at `unifi.nix:71` and aspen
+      resolves 10.6.106, i.e. an *upgrade* from the running 10.6.101, not a
+      downgrade. The `DEVIATIONS.md:29` reason was already rewritten to the
+      no-downgrade constraint.
 - [x] Dropped `services.unifi.jrePackage` 2026-09-27; verified the resolved JRE
       is unchanged at `openjdk-headless-25.0.4.1+1`.
 - [x] Dropped the `zigbee2mqtt` unstable pin 2026-09-27 (2.14.1 → 2.14.0, a
@@ -1263,16 +1300,46 @@ is only useful on a host with a screen in front of you.
 - [x] Dropped `boot.kernelModules = [ "uinput" ]` from `sunshine.nix`
       2026-09-27; verified `hardware.uinput.enable` is now true, which also
       brings the udev rules and `input` group the manual line never did.
-- [ ] Optional de-risk: pin `boot.kernelPackages = pkgs.linuxPackages_6_12` so
-      only userspace moves, then take the 6.18 kernel as a second switch.
-- [ ] Fresh pre-switch dumps: `hass` (244 MB, migration is minutes), `vikunja`,
-      `nextcloud`, `lldap`, plus mysql `photoprism`.
-- [ ] **Switch.**
+- [x] **Pre-switch housekeeping done 2026-09-28.** `nix-collect-garbage
+      --delete-older-than 7d` freed 7.90 GiB (`/nix` 43G -> **50G** free, 82% ->
+      79%); generations 178-213 deleted, 214-225 kept, so every batch-4 rollback
+      target and all five bootloader entries survive. 214 is older than 7d but
+      is retained as the cutoff anchor — `--delete-older-than` always keeps the
+      generation that was active at the cutoff. The scheduled ZFS scrub
+      completed clean (repaired 0B in 03:43:57, 0 errors, no known data errors)
+      and the 44 `feature@` flags were re-verified byte-identical across it. A
+      full pre-switch baseline is captured at
+      `~/.claude/projects/-home-chris-nixos/phase2-baseline-aspen.txt` — it ends
+      with a VERIFY TARGETS block carrying every post-switch number.
+      aspen at capture: 0 failed units, 56 `docker-*.service`, 454 HA entities,
+      recorder `schema_version` 52, 17 zigbee devices, tmux present.
+- [x] **Declined 2026-09-28** — optional de-risk of pinning
+      `boot.kernelPackages = pkgs.linuxPackages_6_12`. It would not hold ZFS
+      userspace back without also pinning `boot.zfs.package = pkgs.zfs_2_3`, and
+      it costs a second reboot. Taking kernel + ZFS together in one reboot.
+- [x] **Fresh dumps — covered by the scheduled run 2026-09-29 01:15/02:20.**
+      Operator decision 2026-09-28: no manual dumps; aspen deliberately keeps
+      running 25.11 overnight so `postgresqlBackup-*`, `mysql-backup` and borg
+      all execute under the **known-good 25.11 stack** a few hours before the
+      reboot. Fallback position if they fail is the 2026-09-28 02:20 set
+      (`hass` 20M, `nextcloud` 12M, `vikunja` 73K, `lldap` 146K, `photoprism`
+      16M), which costs ~7h of recorder history against 10-day retention.
+- [x] **Built and staged 2026-09-28 14:59** — `rb aspen` -> `boot` ->
+      `distributed (aspen)` from thinkpad. Generation **226**
+      (`089pzf09…-nixos-system-aspen-26.05.20260926.5e2305d`) is the
+      systemd-boot default; `nixos-generation-226.conf` written, 5 entries
+      retained (222-226), `/boot` 22% used. **Nothing activated** — aspen still
+      runs generation 225 on kernel 6.12.93 with 0 failed units. Staged closure
+      verified by inspection *without booting*: kernel **6.18.54**,
+      **`nvidia-x11-580.173.02`** (not the Pascal-dropping 595.71.05),
+      `zfs-user-2.4.4` + `zfs-kernel-2.4.4`. `/nix` 50G -> **34G** free (86%)
+      now that both closures are resident.
+- [ ] **Reboot into 26.05** — planned 2026-09-29. No console will be attached.
 - [ ] **Never run `zpool upgrade`** — the one genuinely irreversible step here.
       ZFS 2.3.7 → 2.4.4 leaves pool features alone otherwise.
 - [ ] Verify: `nvidia-smi` reports 580.x; Jellyfin hardware transcode; Frigate
       detection; ZFS pool ONLINE and *not* upgraded; HA recorder migrated with
-      no missing entities; zigbee2mqtt has all 14 devices; mosquitto accepts
+      no missing entities; zigbee2mqtt has all 17 devices; mosquitto accepts
       both users; every container returns after a
       reboot and after `systemctl restart docker`.
 - [ ] Afterwards, as separate changes: test dropping the `sunshine`
@@ -1375,8 +1442,8 @@ clean on systemd stage 1 with zero failed units.
   containers back.
 - **aspen** — `nvidia-smi` reports **580.x**, not 595; jellyfin hardware
   transcode; frigate detection; ZFS pool ONLINE and *not* upgraded; HA recorder
-  migrated with no missing entities; zigbee2mqtt has all 14 devices; mosquitto
-  accepts both users; all 56 `docker-*` units back.
+  migrated with no missing entities; zigbee2mqtt has all 17 devices; mosquitto
+  accepts both users; all 56 `docker-*.service` units back.
 - **workstations** — LUKS unlock (already proven in batch 4), and IWD:EE may
   break on glibc 2.42's executable-stack refusal. Do not gate on it.
 
@@ -1429,6 +1496,8 @@ sometime to get the error count to zero so real errors stand out.
 |---|---|---|
 | S12 | **kauri and alder are not actually impermanence hosts** | `impermanence.nix` exists for both but is commented out in their `configuration.nix` as `FRESH INSTALL ONLY`. kauri boots a persistent btrfs `/root` subvol. Their impermanence files therefore cannot be eval-verified and silently rot — 0.3 had to be applied to them blind. Private `roadmap.txt` already carries "alder and kauri to impermanence" as a future enhancement |
 | S13 | **`docker-prune.service` shows `inactive (dead)`** | Expected — it is timer-driven — but it means the honest container count is "55 of 56 active", which reads as a fault at a glance. Worth a note wherever container health is checked |
+| S14 | **The weekly ZFS scrub report is always one week stale** | juniper's `zfs-health.timer` fires `Mon 04:00` (+5m jitter) and builds the ntfy report from aspen's scraped textfile metrics, which only update when a scrub *completes*. But aspen's `zfs-scrub.timer` is `OnCalendar=Mon 03:00` with **`RandomizedDelaySec=6h`**, so the scrub starts anywhere in 03:00-09:00 (2026-09-21: 08:13; 2026-09-28: 05:39) — and a 2.72T scrub takes ~3h, so it could not finish by 04:00 even starting at 03:00 exactly. The comment at `monitoring-server.nix:1355` ("after Mon 03:00 scrub completes") is wrong on both counts. The report has always carried real, correct data about the *previous* scrub, which is why it never looked broken. Fix by triggering the report off scrub completion rather than a wall-clock guess, or move it well clear of the 6h window. The btrfs equivalent (`Sun 04:30`, "30 min after 04:00 scrub starts") has the same shape but gets away with it — an SSD scrub finishes in minutes |
+| S15 | **`ProtectKernelTunnels` is a typo, so four monitoring units are unhardened** | `monitoring-server.nix` lines 1247, 1271, 1295, 1319 set `ProtectKernelTunnels = true`; the real systemd key is `ProtectKernelTunables`, which appears 0 times in the file. systemd logs `Unknown key 'ProtectKernelTunnels' in section [Service], ignoring` on every unit load and applies no hardening. Affects `alertmanager-to-ntfy` (the bridge carrying every prometheus alert to ntfy) plus the `smart-health`, `btrfs-health` and `zfs-health` report units. Harmless to their function; it is dead config plus recurring journal noise |
 
 ### Already tracked elsewhere
 
