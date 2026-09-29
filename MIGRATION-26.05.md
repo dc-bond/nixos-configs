@@ -982,7 +982,27 @@ deferred.
 | `swww` renamed to `awww` | A package rename that *removes binaries*. 26.05's `pkgs.swww` ships only `awww`/`awww-daemon`, so every `swww-daemon` and `${pkgs.swww}/bin/swww` call site fails at **runtime** — no eval error, no warning at the call site, just no wallpaper daemon and a dead pywal reload script. Fixed at 5 sites (chris hyprland, shared desktop-plumbing script + package list, danielle and eric labwc autostarts). `awww` 0.12.1 is a pure rename: same `img` subcommand, same `--transition-step`/`--transition-fps` | **fixed** |
 | `programs.vscode` → `programs.vscodium` | `programs.vscode` now **always** writes to VS Code's paths (`~/.vscode`, `Code/User`) even when `package` is a fork. Not conditional on anything. It would have stopped managing `~/.config/VSCodium/User` and written `~/.config/Code/User`, which thinkpad does **not** persist — so declarative settings and extensions land on the tmpfs root and vanish every boot. `programs.vscodium` is a drop-in with the same `enable`/`package`/`profiles.<name>.{extensions,userSettings}` surface | **fixed** (chris + danielle) |
 | `programs.ssh.matchBlocks` → `programs.ssh.settings` | A deprecation, still functional, but worth taking while cheap since `rb` resolves its `<host>-tailscale` targets through this config. **Not a rename** — `settings` is a freeform DAG keyed on upstream `ssh_config` directive names, so the keys change: `hostname`→`HostName`, `user`→`User`, `port`→`Port`, `localForwards`→`LocalForward` (same `bind.port`/`host.address`/`host.port` structure). Attribute names still become `Host <name>`. Verified behaviour-preserving by generating `~/.ssh/config` before and after: 81 lines, **byte-identical** | **fixed** |
-| `xfce.thunar-archive-plugin` / `thunar-volman` → top-level `pkgs.*` | Package aliases. Still resolve, purely cosmetic | left as-is |
+| `xfce.thunar-archive-plugin` / `thunar-volman` → top-level `pkgs.*` | Package aliases. Still resolve today but will not forever. `plugins = with pkgs.xfce;` → `with pkgs;` in `nixos-system/hyprland.nix` and `labwc.nix`. Verified a true no-op: both spellings resolve to byte-identical store paths | **fixed** |
+
+**With all four not-gated items fixed, the remaining warnings are purely
+`stateVersion` deferrals** — 8 on thinkpad, 7 on kauri (kauri has no
+`hyprland.configType`, being labwc). That is the expected steady state until
+`home.stateVersion` is deliberately bumped. Anything outside this set is new
+and worth reading in full:
+
+- `programs.neovim.withRuby` ×2 and `withPython3` ×2 (two users per host)
+- `xdg.userDirs.setSessionVariables`
+- `gtk.gtk4.theme`
+- `programs.firefox.configPath`
+- `wayland.windowManager.hyprland.configType` (thinkpad only)
+
+Check them as a set rather than by eye — a long familiar list is exactly how a
+new warning gets missed, which nearly happened with the `programs.vscode` one:
+
+```sh
+nix eval --raw '.#nixosConfigurations.<host>.config.system.build.toplevel.drvPath' 2>&1 >/dev/null \
+  | grep '^evaluation warning' | sed 's/^evaluation warning: //' | cut -c1-88 | sort | uniq -c
+```
 
 ### 3.3 Workstation deviations
 
