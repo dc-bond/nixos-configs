@@ -23,10 +23,11 @@ if they come back. In-scope hosts are **juniper, aspen, thinkpad, kauri**.
 ## Progress — where this stands
 
 **Last updated 2026-09-29.** Phase 0 complete, channel bumped, **juniper and
-aspen are both live on 26.05** — aspen switched and verified 2026-09-29 with
-zero failed units and no service losses. **Phase 3 (workstations) is next:
-kauri, then thinkpad.** Everything below is still accurate; start with "Pick up
-here".
+aspen are both live on 26.05**, both verified with zero failed units and no
+service losses. **Phase 3 is in progress**: three non-deferred home-manager
+breakages were found and fixed before either workstation rebooted (`1ff5ce3`,
+see 3.2), so **both staged generations are stale and must be rebuilt**.
+thinkpad goes first now, kauri is deferred. Start with "Pick up here".
 
 ### Pick up here
 
@@ -36,8 +37,8 @@ Verified fleet state at handoff (all hosts **0 failed units**):
 |---|---|---|---|
 | **juniper** | **26.05** `0ai8kfv6…` | same | done — Phase 1 complete |
 | **aspen** | **26.05** `089pzf09…` (gen 226) | same | done — Phase 2 complete, switched and verified 2026-09-29 |
-| **thinkpad** | 25.11 `shla9qg2…` | same | **← Phase 3, after kauri** |
-| **kauri** | 25.11 `pp4zi533…` | 25.11 `rxp2lyzq…` (**to be superseded**) | **← next: Phase 3**, rebuild straight to **26.05**, then reboot once — see below |
+| **thinkpad** | 25.11 `shla9qg2…` | **26.05** `j55li7n6…` — **STALE**, predates `1ff5ce3` | **← next: rebuild, then reboot** |
+| **kauri** | 25.11 `pp4zi533…` | 26.05 — **STALE**, predates `1ff5ce3` | **deferred** by operator decision 2026-09-29; rebuild + one reboot whenever picked up |
 
 **kauri: operator decision 2026-09-27 — go straight to 26.05, do not reboot
 into the staged 25.11 generation first.** That staged generation is batch 4
@@ -86,14 +87,39 @@ post-reboot numbers in `phase2-baseline-aspen.txt`.
 all `disabled`, with every pre-existing flag unchanged. The invariant is the
 *states*, not the total — see the rollback section.
 
-**The next step is Phase 3 (workstations): kauri, then thinkpad.** kauri takes
-systemd stage 1 and the channel bump in one reboot by the 2026-09-27 operator
-decision above, and it is danielle's laptop, so recovery means being at the
-machine with the LUKS passphrase to hand — the prompt now comes from
-systemd-ask-password and looks different from the scripted one. thinkpad goes
-last because it drives the rebuilds. Both are `boot` plus a deliberate reboot,
-not `switch`. Note aspen is the distributed build host and is now itself on
-26.05, which is the ordering this phase was designed around.
+**The next step is thinkpad: rebuild, then reboot.** Order was inverted from
+the original kauri-first plan on 2026-09-29; kauri is deferred indefinitely.
+
+**Read this before rebuilding.** Both workstations were built and staged on
+2026-09-29, and *then* three home-manager breakages were found by inspecting
+the staged closure — so **both staged generations are stale** and must be
+rebuilt or two of the three regressions still land. See 3.2 for the full
+reasoning; the short version is that only five of the nine home-manager
+warnings were `stateVersion` deferrals. The other four land regardless:
+`swww` was renamed to `awww` with the old binaries removed (wallpaper daemon
+and pywal script would have died at runtime with no eval error),
+`programs.vscode` now always writes to VS Code's paths even for a fork (config
+would have gone to `~/.config/Code`, which thinkpad does not persist, so it
+would vanish every boot), plus the ssh deprecation and the thunar aliases. All
+fixed in `1ff5ce3`.
+
+So: `rb thinkpad` → `boot` → `distributed (aspen)`, then reboot.
+
+What to expect on thinkpad: 713 packages change, +859.8 MiB. Boot risk is low —
+LUKS and systemd stage 1 were both proven in batch 4, and it has a screen. The
+real functional risk is **mesa 25.2.6 → 26.1.8 alongside hyprland 0.52.2 →
+0.55.4**; if the session will not start you land in greetd with no desktop,
+recoverable from a TTY. Also moving: glibc 2.40→2.42 (the IWD:EE exec-stack
+question, do not gate on it), systemd 258.7→260.4, iwd 3.10→3.12 with networks
+persisted, pipewire 1.4.9→1.6.6, libinput 1.29.2→1.31.3. Full delta and a
+verify list are in `phase3-baseline-thinkpad.txt`.
+
+**Commit before rebooting.** `~/nixos` is on the tmpfs root, not persisted, and
+`clone-configs` re-clones it each boot — uncommitted work in either repo is
+destroyed by a workstation reboot.
+
+Whatever session drives the thinkpad reboot dies with it. The baseline file is
+on the persisted LUKS subvol and is written to be picked up cold.
 
 ### Two gotchas that cost time on juniper — do not repeat
 
@@ -115,7 +141,16 @@ Pre/post-reboot baselines live on thinkpad's persisted subvol at
 `/home/chris/.claude/projects/-home-chris-nixos/`:
 `batch3-baseline-thinkpad.txt`, `batch3-baseline-aspen.txt` (includes the 44 ZFS
 feature flags and the full 56-unit container inventory),
-`batch4-baseline-kauri.txt`, `batch4-baseline-thinkpad.txt`.
+`batch4-baseline-kauri.txt`, `batch4-baseline-thinkpad.txt`,
+`phase2-baseline-aspen.txt` (the Phase 2 reference — pre-switch state, a VERIFY
+TARGETS block, and the post-reboot result table), and
+`phase3-baseline-thinkpad.txt` (the 713-package `diff-closures` delta, the three
+fixes, what is benign and why, and a verify list).
+
+**That directory is a persisted bind mount; `~/nixos` is not.** The repo
+checkouts sit on the 2.0G tmpfs root and are re-cloned each boot by
+`clone-configs`, so **uncommitted work in `nixos-configs` is destroyed by a
+workstation reboot**. Commit and push before rebooting thinkpad or kauri.
 
 Useful recipes, all permitted without a build:
 - evaluate a host: `nix eval --raw '.#nixosConfigurations.<h>.config.system.build.toplevel.drvPath'`
@@ -145,6 +180,9 @@ Useful recipes, all permitted without a build:
 | P1 | **juniper switched to 26.05** | **done 2026-09-27, verified** | `550c49a` |
 | P2a | **aspen built + `nixos-rebuild boot`** | **done 2026-09-28** — gen 226 staged as bootloader default, nothing activated, 0 failed units, still running 25.11 | |
 | P2b | **aspen rebooted into 26.05** | **done 2026-09-29, verified** — 0 failed units, GPU on 580.173.02, recorder migrated with no entity loss | |
+| P3a | home-manager renames fixed ahead of the workstation reboots | **done 2026-09-29** — swww→awww, programs.vscode→vscodium, ssh matchBlocks→settings; see 3.2 | `1ff5ce3` |
+| P3b | thinkpad rebuild + reboot | **pending** — staged gen is stale, must rebuild first | |
+| P3c | kauri rebuild + reboot | **deferred** by operator decision | |
 
 ### Verified live state
 
@@ -309,6 +347,28 @@ Watch `/nix` on aspen — it was 84% full with 39 GiB free on 2026-09-27.
 - **ZFS is not in aspen's initrd at all** — `boot.initrd.supportedFilesystems` is
   btrfs/ext4/none/tmpfs and `boot.initrd.kernelModules` is `btrfs,dm_mod`; zfs
   appears only in stage 2. The storage pool is outside the stage-1 blast radius.
+- **Not every 26.05 home-manager warning is a `stateVersion` deferral, and the
+  ones that are not are silent.** A deferral says so explicitly — "you are
+  currently using the legacy default because `home.stateVersion` is less than
+  26.05". Anything without that sentence lands on the next activation. On the
+  workstations four of nine did not defer: `programs.vscode` now always writes
+  to VS Code's paths even for a fork (config would have gone to an unpersisted
+  directory), `swww` was renamed to `awww` with the old binaries *removed* (a
+  pure runtime failure — no eval error at the call site), the `ssh.matchBlocks`
+  deprecation, and the thunar aliases. Read each warning's text; do not
+  pattern-match on "home-manager warning, therefore deferred".
+- **A package rename that drops binaries is invisible to evaluation.**
+  `${pkgs.swww}/bin/swww` still *evaluates* — Nix interpolates the store path
+  without checking the file exists — so the build succeeds and the failure
+  only appears when something tries to run it. When a rename warning appears,
+  check the new package's `bin/` rather than assuming an alias covers it.
+- **`programs.ssh.settings` is a schema change, not a rename.** It is a
+  freeform DAG keyed on upstream `ssh_config` directive names, so migrating
+  from `matchBlocks` changes the keys too (`hostname`→`HostName`,
+  `user`→`User`, `port`→`Port`, `localForwards`→`LocalForward`). The honest
+  test is to generate the file both ways and diff it:
+  `nix eval --raw '.#nixosConfigurations.<h>.config.home-manager.users.<u>.home.file.".ssh/config".text'`
+  — byte-identical output is proof; a clean eval is not.
 - **A ZFS upgrade grows the `feature@` list, and that is not `zpool upgrade`.**
   2.3.7 -> 2.4.4 took aspen's pool from 44 to 47 listed flags on first boot,
   because the newer userspace knows about `block_cloning_endian`,
@@ -851,9 +911,16 @@ devices, mosquitto accepting both users, traefik routes green, all 56
 
 ## Phase 3 — workstations
 
-Order: **kauri** → **thinkpad**. cypress and alder are deprecated and skipped.
-The systemd stage 1 risk that used to dominate this phase is taken earlier, in
-batch 4.
+Order: **thinkpad** → **kauri**, inverted from the original plan by operator
+decision 2026-09-29. cypress and alder are deprecated and skipped. The systemd
+stage 1 risk that used to dominate this phase is taken earlier, in batch 4.
+
+The original reason for kauri-first was that thinkpad drives the rebuilds and
+is the worst host to lose. That argument is much weaker now: aspen is the
+distributed build host and is already on 26.05, and both workstations were
+built and staged in the same session, so nothing further depends on thinkpad to
+get kauri over the line. kauri is deferred indefinitely; it stays on 25.11 with
+a stale staged generation until picked back up.
 
 ### 3.1 The real risk is boot, not services
 
@@ -886,23 +953,36 @@ Mitigations:
    `nix build --no-link --print-out-paths
    '.#nixosConfigurations.<host>.config.boot.initrd.systemd.contents."/etc/crypttab".source'`.
 
-### 3.2 Do not bump `home.stateVersion`
+### 3.2 Do not bump `home.stateVersion` — but do not assume it covers everything
 
-Every home-manager change surfaced by the evaluation is gated on
-`home.stateVersion < 26.05` and stays on legacy behaviour while it is. Leaving
-it alone defers all of these to a separate, deliberate change:
+**The original framing of this section was wrong and it nearly cost us.** It
+said every home-manager change surfaced by the evaluation is gated on
+`home.stateVersion < 26.05`. Most are. **Four were not**, and those are silent
+runtime breakage rather than deferred defaults — an eval warning is *not*
+evidence that legacy behaviour is retained. Always check whether a given
+warning says "you are currently using the legacy default because
+home.stateVersion is less than 26.05". If it does not say that, it is not
+deferred.
+
+**Gated on `home.stateVersion` — genuinely deferred, leave alone:**
 
 | Warning | Note |
 |---|---|
-| `programs.firefox.configPath` default → `$XDG_CONFIG_HOME/mozilla/firefox` | **The one with user data at stake** — adopting it means moving `~/.mozilla/firefox`, and native messaging hosts are not moved. Defer |
-| `programs.vscode` → `programs.vscodium` | `programs.vscode` now always writes to VS Code's paths; the fork needs the `vscodium` module or config lands in the wrong place |
-| `programs.ssh.matchBlocks` → `programs.ssh.settings` | `home-manager/chris/ssh.nix` |
-| `swww` renamed to `awww` | Package rename |
+| `programs.firefox.configPath` default → `$XDG_CONFIG_HOME/mozilla/firefox` | **The one with user data at stake** — adopting it means moving `~/.mozilla/firefox`, and native messaging hosts are not moved. Verified 2026-09-29 that the guard holds: the profile stays at `~/.mozilla/firefox`, which thinkpad persists. No data at risk while stateVersion stays put. Defer |
 | `wayland.windowManager.hyprland.configType` default `hyprlang` → `lua` | thinkpad + cypress |
 | `gtk.gtk4.theme` default → `null` | |
 | `programs.neovim.withRuby` / `withPython3` defaults → `false` | |
-| `xfce.thunar-archive-plugin` / `thunar-volman` → top-level `pkgs.*` | |
 | `xdg.userDirs.setSessionVariables` default change | |
+
+**NOT gated — these land regardless of `home.stateVersion`.** All fixed
+2026-09-29 in `1ff5ce3`, before the workstation reboots:
+
+| Item | Why it was not deferred | Status |
+|---|---|---|
+| `swww` renamed to `awww` | A package rename that *removes binaries*. 26.05's `pkgs.swww` ships only `awww`/`awww-daemon`, so every `swww-daemon` and `${pkgs.swww}/bin/swww` call site fails at **runtime** — no eval error, no warning at the call site, just no wallpaper daemon and a dead pywal reload script. Fixed at 5 sites (chris hyprland, shared desktop-plumbing script + package list, danielle and eric labwc autostarts). `awww` 0.12.1 is a pure rename: same `img` subcommand, same `--transition-step`/`--transition-fps` | **fixed** |
+| `programs.vscode` → `programs.vscodium` | `programs.vscode` now **always** writes to VS Code's paths (`~/.vscode`, `Code/User`) even when `package` is a fork. Not conditional on anything. It would have stopped managing `~/.config/VSCodium/User` and written `~/.config/Code/User`, which thinkpad does **not** persist — so declarative settings and extensions land on the tmpfs root and vanish every boot. `programs.vscodium` is a drop-in with the same `enable`/`package`/`profiles.<name>.{extensions,userSettings}` surface | **fixed** (chris + danielle) |
+| `programs.ssh.matchBlocks` → `programs.ssh.settings` | A deprecation, still functional, but worth taking while cheap since `rb` resolves its `<host>-tailscale` targets through this config. **Not a rename** — `settings` is a freeform DAG keyed on upstream `ssh_config` directive names, so the keys change: `hostname`→`HostName`, `user`→`User`, `port`→`Port`, `localForwards`→`LocalForward` (same `bind.port`/`host.address`/`host.port` structure). Attribute names still become `Host <name>`. Verified behaviour-preserving by generating `~/.ssh/config` before and after: 81 lines, **byte-identical** | **fixed** |
+| `xfce.thunar-archive-plugin` / `thunar-volman` → top-level `pkgs.*` | Package aliases. Still resolve, purely cosmetic | left as-is |
 
 ### 3.3 Workstation deviations
 
@@ -1359,12 +1439,21 @@ is only useful on a host with a screen in front of you.
 
 ### Phase 3 — workstations
 
-- [ ] **kauri before thinkpad.** thinkpad drives the rebuilds, so it is the
-      worst host to lose. Note kauri is the one host where Phase 3 *does* still
-      carry stage-1 risk: by operator decision it skips its batch 4 reboot and
-      takes systemd stage 1 together with the channel bump. Proven on the other
-      three hosts, and kauri is a subset of thinkpad, but it is two variables in
-      one reboot on someone else's laptop.
+- [x] **Order inverted to thinkpad → kauri, 2026-09-29 operator decision.**
+      The kauri-first rationale (thinkpad drives the rebuilds) no longer binds:
+      aspen is the build host and is already on 26.05, and both workstations
+      were built in the same session. kauri is **deferred indefinitely** — it
+      still carries the only remaining stage-1 risk in the fleet, taking
+      systemd stage 1 and the channel bump in one reboot on danielle's laptop,
+      so it wants the LUKS passphrase to hand and someone at the machine.
+- [x] **Three non-deferred home-manager breakages fixed 2026-09-29** before
+      either workstation rebooted — `swww`→`awww`, `programs.vscode`→
+      `programs.vscodium`, `programs.ssh.matchBlocks`→`programs.ssh.settings`.
+      Found by reading the staged closure while still on 25.11, so none of them
+      landed. Full detail and the reasoning in 3.2. `1ff5ce3`
+- [ ] **Both staged generations are now STALE** — they predate `1ff5ce3`.
+      Rebuild before rebooting either host or the first two regressions still
+      land. `rb <host>` → `boot` → `distributed (aspen)`.
 - [x] Dropped the `librewolf` `permittedInsecurePackages` entries 2026-09-27;
       26.05 ships 156.0-1 with no `knownVulnerabilities`.
 - [x] **Kept the `mcp-nixos` pin** — 26.05's 2.4.3 clears the recorded "≥ 2.x"
@@ -1373,8 +1462,14 @@ is only useful on a host with a screen in front of you.
       the `claude-code` pin too — ongoing parity preference, not a workaround.
 - [ ] Use `nixos-rebuild boot` plus a deliberate reboot, not `switch`. LUKS
       passphrase to hand; the previous generation is in the bootloader menu.
-- [ ] **kauri**: switch, reboot, confirm LUKS unlock.
-- [ ] **thinkpad**: switch, reboot, confirm LUKS unlock.
+- [ ] **thinkpad**: rebuild (stale staged gen), reboot, confirm LUKS unlock.
+      Pre-reboot baseline with the full 713-package delta and a verify list is
+      at `~/.claude/projects/-home-chris-nixos/phase3-baseline-thinkpad.txt`.
+      The functional risk to watch is **mesa 25.2→26.1 with hyprland
+      0.52→0.55** — if the session will not start you land in greetd with no
+      desktop, recoverable from a TTY. Boot itself is low-risk: LUKS and
+      systemd stage 1 were both proven in batch 4.
+- [ ] **kauri**: deferred. Rebuild + one reboot when picked up.
 - [ ] Test IWD:EE — may break on glibc 2.42's executable-stack refusal. Do not
       gate the migration on it.
 
