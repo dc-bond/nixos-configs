@@ -31,6 +31,9 @@ in
   services.greetd = {
     enable = true;
     settings = {
+      # tuigreet 0.11 no longer bounds the user menu by /etc/login.defs, so the 32
+      # nixbld accounts at 30001+ show up alongside real users; the bounds below
+      # are login.defs' own UID_MIN/UID_MAX
       default_session.command = ''
         ${pkgs.tuigreet}/bin/tuigreet \
           --time \
@@ -39,6 +42,8 @@ in
           --theme "border=white;text=white;prompt=white;time=green;action=green;button=white" \
           --greeting "Access is restricted to authorized personnel only." \
           --user-menu \
+          --user-menu-min-uid 1000 \
+          --user-menu-max-uid 29999 \
           --remember \
           --remember-user-session \
           --sessions ${customSessions}/share/wayland-sessions:/run/current-system/sw/share/wayland-sessions \
