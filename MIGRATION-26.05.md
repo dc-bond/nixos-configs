@@ -1505,6 +1505,14 @@ is only useful on a host with a screen in front of you.
       silent`, which matches the window however it was launched — the reason
       the `[workspace N silent]` prefix never worked here is that codium
       re-execs through a wrapper.
+- [x] **tuigreet 0.9.1 -> 0.11.1 unbounds the user menu.** After the reboot the
+      greeter listed all 32 `nixbld` accounts alongside the real user. Their
+      UIDs are 30001-30032, above `/etc/login.defs`' `UID_MAX` of 29999, so
+      0.9.1 had been excluding them; 0.11.1 evidently no longer derives the
+      bounds from login.defs (its defaults let everything up to ~60000 through,
+      which is also why `nobody` at 65534 stayed hidden). Fixed by stating the
+      bounds explicitly — `--user-menu-min-uid 1000 --user-menu-max-uid 29999`,
+      login.defs' own values. Safe fleet-wide: every real user is 1000-1002.
 - [ ] **kauri**: deferred. Rebuild + one reboot when picked up.
 - [ ] Test IWD:EE — may break on glibc 2.42's executable-stack refusal. Do not
       gate the migration on it.
