@@ -1489,6 +1489,22 @@ is only useful on a host with a screen in front of you.
       0.52→0.55** — if the session will not start you land in greetd with no
       desktop, recoverable from a TTY. Boot itself is low-risk: LUKS and
       systemd stage 1 were both proven in batch 4.
+- [x] **Two more 0.55 items found after thinkpad's first 26.05 boot**, both
+      user-visible rather than log-only:
+      **(a)** Hyprland 0.55 shows an on-screen warning when launched directly
+      instead of through `start-hyprland`, its watchdog wrapper. greetd's
+      `--cmd` is now `start-hyprland` for thinkpad and cypress. Safe for the
+      login path: the binary resolves `Hyprland` from `PATH`, so the
+      `security.wrappers` copy carrying `cap_setpcap,cap_sys_nice` is still
+      what runs, and tuigreet stores only `lastuser` (no remembered session),
+      so `--cmd` is authoritative.
+      **(b)** codium stopped landing on workspace 3. Its window class is
+      `codium`, but the old exec-once polled `hyprctl clients` for
+      `class: VSCodium`, so the loop never matched and gave up after 30 tries.
+      Replaced the poll with `windowrule = match:class ^(codium)$, workspace 3
+      silent`, which matches the window however it was launched — the reason
+      the `[workspace N silent]` prefix never worked here is that codium
+      re-execs through a wrapper.
 - [ ] **kauri**: deferred. Rebuild + one reboot when picked up.
 - [ ] Test IWD:EE — may break on glibc 2.42's executable-stack refusal. Do not
       gate the migration on it.

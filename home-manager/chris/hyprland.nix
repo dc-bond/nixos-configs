@@ -108,8 +108,10 @@ in
         "sleep 1 && nextcloud"
         "[workspace 1 silent] firefox"
         "[workspace 2 silent] alacritty"
-        # codium re-execs through a wrapper, breaking the [workspace N silent] dispatcher prefix, so we launch then poll until the window appears and move it once
-        "codium & for i in $(seq 1 30); do sleep 0.5; hyprctl clients | grep -q \"class: VSCodium\" && { hyprctl dispatch movetoworkspacesilent \"3,class:^(VSCodium)$\"; break; }; done"
+        # codium re-execs through a wrapper, so the [workspace N silent] prefix does
+        # not stick to the window it finally opens; the windowrule below catches it
+        # by class instead, whatever launched it
+        "codium"
         "[workspace 4 silent] element-desktop --password-store=gnome-libsecret"
         "[workspace 5 silent] thunderbird"
         "[workspace 6 silent] thunar"
@@ -189,6 +191,7 @@ in
         "match:class ^(com.saivert.pwvucontrol)$, float true, size 1154 706"
         "match:class ^(org.gnome.Calculator)$, float true, size 451 607"
         "match:class ^(com.nextcloud.desktopclient.nextcloud)$, float true"
+        "match:class ^(codium)$, workspace 3 silent"
         # thunderbird compose/reply shares the `thunderbird` class with the main
         # window, so match on the title prefix (identical for new mail, replies,
         # and forwards). centered because the window is big enough that the

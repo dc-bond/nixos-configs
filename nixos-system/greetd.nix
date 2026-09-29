@@ -15,8 +15,11 @@ let
     EOF
   '';
   defaultCmdByHost = {
-    thinkpad = "Hyprland";
-    cypress = "Hyprland";
+    # start-hyprland is a watchdog that execs Hyprland; 0.55 warns on screen when
+    # launched without it. it resolves Hyprland from PATH, so the security.wrappers
+    # copy carrying cap_sys_nice is still what gets run
+    thinkpad = "start-hyprland";
+    cypress = "start-hyprland";
     alder = "labwc";
     kauri = "labwc";
   };
