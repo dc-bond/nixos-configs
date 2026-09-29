@@ -184,21 +184,19 @@ in
       env = [
         "SSH_AUTH_SOCK,/run/user/1000/gnupg/S.gpg-agent.ssh" # workaround to ensure ssh_auth_sock variable inherited by all applications instead of just interactive shell when using gpg-agent to serve ssh
       ];
-      windowrulev2 = [
-        "size 1154 706, class:(com.saivert.pwvucontrol)"
-        "size 451 607, class:(org.gnome.Calculator)"
+      # hyprland 0.55 grammar: every matcher and property takes an explicit value
+      windowrule = [
+        "match:class ^(com.saivert.pwvucontrol)$, float true, size 1154 706"
+        "match:class ^(org.gnome.Calculator)$, float true, size 451 607"
+        "match:class ^(com.nextcloud.desktopclient.nextcloud)$, float true"
         # thunderbird compose/reply shares the `thunderbird` class with the main
         # window, so match on the title prefix (identical for new mail, replies,
         # and forwards). centered because the window is big enough that the
         # default cursor-position placement lands poorly.
-        "size 1200 800, title:^(Write: .*)$"
+        "match:title ^(Write: .*)$, float true, center true, size 1200 800"
       ];
-      windowrule = [
-        "float, class:^(com.saivert.pwvucontrol)$"
-        "float, class:^(org.gnome.Calculator)$"
-        "float, class:^(com.nextcloud.desktopclient.nextcloud)$"
-        "float, title:^(Write: .*)$"
-        "center, title:^(Write: .*)$"
+      layerrule = [
+        "match:namespace waybar, blur true"
       ];
       input = {
         kb_layout = "us";
@@ -220,7 +218,6 @@ in
       };
       dwindle = {
         force_split = 2;
-        pseudotile = true;
         preserve_split = true;
       };
       decoration = {
@@ -235,7 +232,6 @@ in
           new_optimizations = "on";
           ignore_opacity = true;
           xray = true;
-          blurls = "waybar";
         };
       };
       animations = {
