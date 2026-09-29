@@ -102,7 +102,7 @@ in
     settings = {
       "$mod" = "Alt";
       exec-once = [
-        "swww-daemon"
+        "awww-daemon"
         "dunst"
         "sleep 1 && desktopReload" # generate pywal colors and start waybar
         "sleep 1 && nextcloud"

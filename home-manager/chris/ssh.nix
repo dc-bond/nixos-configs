@@ -12,103 +12,101 @@
     enable = true;
     enableDefaultConfig = false;
 
-    matchBlocks = {
+    settings = {
       #"*" = {
-      #  extraOptions = {
-      #    ConnectTimeout = "10";
-      #    ServerAliveInterval = "5";
-      #  };
-      #  serverAliveCountMax = 3;
+      #  ConnectTimeout = 10;
+      #  ServerAliveInterval = 5;
+      #  ServerAliveCountMax = 3;
       #};
       "aspen" = {
-        hostname = configVars.hosts.aspen.networking.ipv4;
-        user = config.home.username;
-        port = 28766;
+        HostName = configVars.hosts.aspen.networking.ipv4;
+        User = config.home.username;
+        Port = 28766;
       };
       "aspen-wan" = {
-        hostname = "ssh.${configVars.domain1}";
-        user = config.home.username;
-        port = 28766;
+        HostName = "ssh.${configVars.domain1}";
+        User = config.home.username;
+        Port = 28766;
       };
       "aspen-tailscale" = {
-        hostname = configVars.hosts.aspen.networking.tailscaleIp;
-        user = config.home.username;
-        port = 22;
+        HostName = configVars.hosts.aspen.networking.tailscaleIp;
+        User = config.home.username;
+        Port = 22;
       };
       "juniper" = {
-        hostname = configVars.hosts.juniper.networking.ipv4;
-        user = config.home.username;
-        port = 28764;
+        HostName = configVars.hosts.juniper.networking.ipv4;
+        User = config.home.username;
+        Port = 28764;
       };
       "juniper-tailscale" = {
-        hostname = configVars.hosts.juniper.networking.tailscaleIp;
-        user = config.home.username;
-        port = 22;
+        HostName = configVars.hosts.juniper.networking.tailscaleIp;
+        User = config.home.username;
+        Port = 22;
       };
       "cypress-tailscale" = {
-        hostname = configVars.hosts.cypress.networking.tailscaleIp;
-        user = config.home.username;
-        port = 22;
+        HostName = configVars.hosts.cypress.networking.tailscaleIp;
+        User = config.home.username;
+        Port = 22;
       };
       "thinkpad-tailscale" = {
-        hostname = configVars.hosts.thinkpad.networking.tailscaleIp;
-        user = config.home.username;
-        port = 22;
+        HostName = configVars.hosts.thinkpad.networking.tailscaleIp;
+        User = config.home.username;
+        Port = 22;
       };
       "alder-tailscale" = {
-        hostname = configVars.hosts.alder.networking.tailscaleIp;
-        user = "eric";
-        port = 22;
+        HostName = configVars.hosts.alder.networking.tailscaleIp;
+        User = "eric";
+        Port = 22;
       };
       "alder-vnc" = {
-        hostname = configVars.hosts.alder.networking.tailscaleIp;
-        user = "eric";
-        port = 22;
-        localForwards = [{
+        HostName = configVars.hosts.alder.networking.tailscaleIp;
+        User = "eric";
+        Port = 22;
+        LocalForward = [{
           bind.port = 5901;
           host.address = "127.0.0.1";
           host.port = 5900;
         }];
       };
       "kauri-tailscale" = {
-        hostname = configVars.hosts.kauri.networking.tailscaleIp;
-        user = "danielle";
-        port = 22;
+        HostName = configVars.hosts.kauri.networking.tailscaleIp;
+        User = "danielle";
+        Port = 22;
       };
       "kauri-vnc" = {
-        hostname = configVars.hosts.kauri.networking.tailscaleIp;
-        user = "danielle";
-        port = 22;
-        localForwards = [{
+        HostName = configVars.hosts.kauri.networking.tailscaleIp;
+        User = "danielle";
+        Port = 22;
+        LocalForward = [{
           bind.port = 5900;
           host.address = "127.0.0.1";
           host.port = 5900;
         }];
       };
       "unifi-usg" = {
-        hostname = configVars.devices.unifiUsg.ipv4;
-        user = "dcbond";
-        port = 22;
+        HostName = configVars.devices.unifiUsg.ipv4;
+        User = "dcbond";
+        Port = 22;
       };
       "unifi-uap-livingroom" = {
-        hostname = configVars.devices.unifiUapLivingRoom.ipv4;
-        user = "dcbond";
-        port = 22;
+        HostName = configVars.devices.unifiUapLivingRoom.ipv4;
+        User = "dcbond";
+        Port = 22;
       };
       "unifi-uap-garage" = {
-        hostname = configVars.devices.unifiUapGarage.ipv4;
-        user = "dcbond";
-        port = 22;
+        HostName = configVars.devices.unifiUapGarage.ipv4;
+        User = "dcbond";
+        Port = 22;
       };
       "unifi-switch8" = {
-        hostname = configVars.devices.unifiSwitch8.ipv4;
-        user = "dcbond";
-        port = 22;
+        HostName = configVars.devices.unifiSwitch8.ipv4;
+        User = "dcbond";
+        Port = 22;
       };
       "unifi-switch8-lite" = {
-        hostname = configVars.devices.unifiSwitch8Lite.ipv4;
-        user = "dcbond";
-        port = 22;
+        HostName = configVars.devices.unifiSwitch8Lite.ipv4;
+        User = "dcbond";
+        Port = 22;
       };
     };
   };

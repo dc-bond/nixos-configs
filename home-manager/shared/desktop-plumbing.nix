@@ -29,7 +29,7 @@ let
     ${pkgs.coreutils}/bin/cp $wallpaper ~/.cache/current_wallpaper.jpg
 
     # set the new wallpaper
-    ${pkgs.swww}/bin/swww img $wallpaper --transition-step 20 --transition-fps=20
+    ${pkgs.awww}/bin/awww img $wallpaper --transition-step 20 --transition-fps=20
 
     # reload waybar
     ${pkgs.procps}/bin/pkill waybar || true
@@ -44,7 +44,7 @@ in
 {
 
   home.packages = [ desktopReloadScript ] ++ (with pkgs; [
-    swww # animated wallpaper for wayland window managers
+    awww # animated wallpaper for wayland window managers
     pywal # color theme changer
     dunst # notification daemon
     gnome-calculator # calculator
