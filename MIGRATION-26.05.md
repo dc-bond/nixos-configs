@@ -968,11 +968,11 @@ deferred.
 
 | Warning | Note |
 |---|---|
-| `programs.firefox.configPath` default → `$XDG_CONFIG_HOME/mozilla/firefox` | **The one with user data at stake** — adopting it means moving `~/.mozilla/firefox`, and native messaging hosts are not moved. Verified 2026-09-29 that the guard holds: the profile stays at `~/.mozilla/firefox`, which thinkpad persists. No data at risk while stateVersion stays put. Defer |
+| `programs.firefox.configPath` default → `$XDG_CONFIG_HOME/mozilla/firefox` | **The one with user data at stake.** Guard verified holding 2026-09-29 — the profile stays at `~/.mozilla/firefox`, which thinkpad persists, so nothing is at risk today. **Operator decision 2026-09-30: move the data rather than pin the legacy path. Planned in 3.4, not yet done** |
 | `wayland.windowManager.hyprland.configType` default `hyprlang` → `lua` | thinkpad + cypress |
-| `gtk.gtk4.theme` default → `null` | |
-| `programs.neovim.withRuby` / `withPython3` defaults → `false` | |
-| `xdg.userDirs.setSessionVariables` default change | |
+| `gtk.gtk4.theme` default → `null` | **Pinned to `config.gtk.theme` 2026-09-30** — operator decision to keep materia-light on gtk4 apps (gnome-calculator, seahorse) for chris, danielle and eric. Explicit, so a later stateVersion bump cannot silently change it |
+| `programs.neovim.withRuby` / `withPython3` defaults → `false` | **Adopted 2026-09-30.** Verified no-op — the shared config is pure vimscript with no ruby or python plugins. Set in `shared/neovim.nix`, which the user and root profiles both import |
+| `xdg.userDirs.setSessionVariables` default change | **Adopted 2026-09-30.** Not a pure no-op — it stops exporting `XDG_DOWNLOAD_DIR` and friends — but `enable` stays true so `user-dirs.dirs` is still written, and that is what `xdg-user-dir` and gtk/qt file dialogs read. Nothing in the tree reads the env vars, and upstream recommends against them |
 
 **NOT gated — these land regardless of `home.stateVersion`.** All fixed
 2026-09-29 in `1ff5ce3`, before the workstation reboots:
@@ -1013,6 +1013,83 @@ nix eval --raw '.#nixosConfigurations.<host>.config.system.build.toplevel.drvPat
 | `claude-code` unstable pin | **Keep** — ongoing CLI/extension parity preference, no revert trigger |
 | `displaylink` 6.2 `requireFile` pin | **Keep.** Unchanged in 26.05; remember the hash is mirrored in `nixos-system/rebuilds.nix` and the prefetch must run on the *invoking* host |
 | `pkgs-2105` / `openssl_1_0_2` (IWD:EE) | **Keep** — permanent by nature |
+
+---
+
+### 3.4 Firefox profile move to the XDG path — plan, not yet done
+
+`programs.firefox.configPath` is the last `home.stateVersion` deferral with real
+data behind it. **Operator decision: move the data rather than pin the legacy
+path**, on the reasoning that pinning is a permanent divergence from the XDG
+layout that a fresh install would never choose, and every future change in this
+area then has to be re-reasoned against a non-standard location.
+
+**Surveyed 2026-09-30 before planning. The move is smaller than the warning
+suggests.**
+
+The warning's caveat — "native messaging hosts are not moved by this option
+change" — **does not apply here.** `~/.mozilla/native-messaging-hosts/` contains
+exactly one entry, a `.keep` symlink into the home-manager store, and there are
+no manifests in `/etc/mozilla/native-messaging-hosts` or the package's
+`lib/mozilla` either. Nothing real to move; home-manager regenerates `.keep` at
+whatever path it is told to use.
+
+What is actually there on thinkpad (`/persist/home/chris/.mozilla`, 214M):
+
+| Path | Size | Nature |
+|---|---|---|
+| `firefox/chris.default/` | **214M** | the only real state — the whole move |
+| `firefox/profiles.ini` | — | home-manager store symlink, regenerated |
+| `firefox/{Crash Reports,Pending Pings,Profile Groups}` | small | firefox scratch, disposable |
+| `native-messaging-hosts/.keep` | — | home-manager store symlink, regenerated |
+| `extensions/` | **0** | empty since Mar 2026, vestigial — drop it |
+
+`~/.cache/mozilla` (25M) is on the tmpfs root and deliberately not persisted. It
+is unaffected and should stay that way.
+
+Note `configPath` takes a path relative to `$HOME` and **also rewraps the
+firefox package** to use it, so the browser and home-manager cannot disagree
+about the location.
+
+**thinkpad procedure.** `.mozilla` is a live bind mount, so the data has to move
+on the `/persist` side, and impermanence bind mounts only change at boot — every
+change therefore has to land in the same reboot, with nothing starting firefox
+in between:
+
+1. Quit Firefox completely.
+2. `home-manager/shared/firefox.nix`: add
+   `configPath = ".config/mozilla/firefox";` to `programs.firefox`.
+3. `hosts/thinkpad/impermanence.nix:61`: `".mozilla"` -> `".config/mozilla"`.
+   The neighbouring `.config/*` entries are individually bind-mounted, so this
+   is the same shape as `.config/Element` beside it.
+4. `rb thinkpad` -> `boot` (stages, activates nothing).
+5. Move the data — same filesystem, so it is a rename, not a copy:
+   `mkdir -p /persist/home/chris/.config/mozilla`
+   `mv /persist/home/chris/.mozilla/firefox /persist/home/chris/.config/mozilla/firefox`
+6. Reboot.
+7. Verify: `findmnt /home/chris/.config/mozilla` shows the bind mount;
+   `~/.config/mozilla/firefox/chris.default` is 214M; `profiles.ini` is a fresh
+   store symlink; firefox opens with bookmarks, logins, ublock and bitwarden
+   intact; the `firefox.configPath` warning is gone.
+8. Then remove the leftover `/persist/home/chris/.mozilla` (empty `extensions/`
+   and a stale `native-messaging-hosts/`).
+
+Rollback is symmetrical: move `firefox/` back, revert the two files, previous
+generation is in the boot menu.
+
+**kauri is simpler and different.** danielle has 165M at
+`/home/danielle/.mozilla`, but kauri is **not** an impermanence host (S12 —
+`impermanence.nix` is commented out in its `configuration.nix`), so there is no
+`/persist` path and no impermanence entry to edit. The move is just the
+directory plus the `configPath` setting, which is shared. Do it **after** kauri
+is on 26.05, not as part of that reboot, and while danielle is not using the
+laptop.
+
+**Sequencing.** This is a per-user data migration: one host at a time, firefox
+closed, not folded into a rebuild being done for other reasons. `configPath`
+lives in the shared `firefox.nix`, so setting it moves *every* profile's
+expected location at once — either stage it per-user first, or do both hosts in
+the same sitting.
 
 ---
 
