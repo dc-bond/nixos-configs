@@ -45,6 +45,7 @@ in
 # define default folders in home directory
   xdg.userDirs = {
     enable = true;
+    setSessionVariables = false; # 26.05 default; user-dirs.dirs is still written, which is what xdg-user-dir and file dialogs read
     createDirectories = false;
     download = "${config.home.homeDirectory}/downloads";
     documents = "${config.home.homeDirectory}/documents";

@@ -5,6 +5,8 @@
   programs.neovim = {
     enable = true;
     defaultEditor = true;
+    withRuby = false;    # 26.05 defaults; no ruby or python plugins in the config below
+    withPython3 = false;
     viAlias = true;
     vimAlias = true;
     vimdiffAlias = true;
