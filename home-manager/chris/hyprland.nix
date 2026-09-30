@@ -50,6 +50,7 @@ in
       name = "Materia-light";
       package = pkgs.materia-theme;
     };
+    gtk4.theme = config.gtk.theme; # 26.05 defaults this to null, which drops materia-light on gtk4 apps
     iconTheme = {
       name = "Papirus";
       package = pkgs.papirus-nord;
