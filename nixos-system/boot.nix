@@ -40,6 +40,12 @@ in
     };
 
     #kernelParams = [ "quiet" ];
+
+    # default 4 also prints KERN_ERR to the console, which lands on top of the
+    # greeter when a device logs an error after boot - the intel bluetooth
+    # adapter re-enumerating is the usual one. 3 keeps CRIT and above on the
+    # console; everything is still in the journal
+    consoleLogLevel = 3;
     
     initrd = {
       systemd.enable = true; # scripted stage 1 is deprecated in 26.05, removed in 26.11

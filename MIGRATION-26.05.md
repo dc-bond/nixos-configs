@@ -1513,7 +1513,33 @@ is only useful on a host with a screen in front of you.
       which is also why `nobody` at 65534 stayed hidden). Fixed by stating the
       bounds explicitly — `--user-menu-min-uid 1000 --user-menu-max-uid 29999`,
       login.defs' own values. Safe fleet-wide: every real user is 1000-1002.
-- [ ] **kauri**: deferred. Rebuild + one reboot when picked up.
+- [x] **Console log level lowered to 3.** The default 4 prints `KERN_ERR` to
+      the console, so a device logging an error after boot paints over the
+      greeter. On thinkpad that was the Intel BT adapter: the firmware send
+      fails, btusb resets the device to retry, and the reset shows up as a USB
+      disconnect plus `device descriptor read/64, error -71`. It recovers
+      completely — hci0 comes up `UP RUNNING` with pairings intact — and it hit
+      only 1 of 3 26.05 boots, so it is sporadic rather than a regression.
+      `boot.consoleLogLevel = 3` keeps CRIT and above on the console and leaves
+      everything in the journal. `quiet` stays commented out deliberately.
+- [x] **Hyprland debug logging off.** `debug.disable_logs` had been explicitly
+      `false` since the initial commit, which is the opposite of Hyprland's own
+      default and produced a 3684-line log per session. Set to `true`. Config
+      errors still surface through the on-screen overlay and
+      `hyprctl configerrors`, which is the part worth keeping.
+- [ ] **kauri: deferred, and its staged generation is stale again.** Everything
+      learned on thinkpad that applies to kauri is already in the tree —
+      `swww`→`awww` in `danielle/labwc.nix` and `eric/labwc.nix`, `vscodium` in
+      `danielle/vscodium.nix`, the thunar attrs in `labwc.nix`, and the shared
+      greeter UID bounds and `consoleLogLevel` in `greetd.nix` / `boot.nix`.
+      Not applicable: `start-hyprland`, the 0.55 rule grammar and
+      `disable_logs` (all Hyprland), and the ssh migration (chris only).
+      Remaining kauri-specific risk: labwc moves 0.9.2 → **0.9.7**, a patch
+      series rather than Hyprland's minor jump, so config-format breakage is
+      much less likely — but labwc has **no `hyprctl configerrors` equivalent**,
+      so check its own log after the first boot rather than assuming silence
+      means success. And kauri is still the one host taking systemd stage 1 and
+      the channel bump in a single reboot.
 - [ ] Test IWD:EE — may break on glibc 2.42's executable-stack refusal. Do not
       gate the migration on it.
 

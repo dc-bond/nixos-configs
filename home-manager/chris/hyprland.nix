@@ -254,7 +254,7 @@ in
         disable_splash_rendering = true;
       };
       debug = {
-        disable_logs = false;
+        disable_logs = true; # hyprland's own default; false makes it log every frame's worth of debug to stdout and the logfile
       };
     };
   };
