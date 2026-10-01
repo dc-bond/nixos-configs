@@ -1,5 +1,4 @@
 {
-  pkgs,
   ...
 }:
 
@@ -44,11 +43,9 @@
       };
     };
 
-    # pinned to pkgs-2505, 25.11 has a crash regression on x11 capture, see https://github.com/NixOS/nixpkgs/issues/475181
     sunshine = {
       enable = true;
       autoStart = true; # starts with chris's x session
-      package = pkgs.pkgs-2505.sunshine;
       settings = {
         sunshine_name = "aspen";
       };
