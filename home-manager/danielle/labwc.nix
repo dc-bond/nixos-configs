@@ -85,7 +85,9 @@ in
 
         <core>
           <decoration>server</decoration>
-          <windowSwitcher show="yes" preview="yes" outlines="yes" />
+          <windowSwitcher preview="yes" outlines="yes">
+            <osd show="yes" />
+          </windowSwitcher>
         </core>
         
         <theme>
