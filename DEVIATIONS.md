@@ -25,7 +25,7 @@ pinned to a specific non-channel version.
 |---|---|---|---|---|
 | `nixos-system/crowdsec.nix` | `crowdsec` | `pkgs.unstable` (1.8.1 vs 1.7.8 in 26.05) | **No-downgrade constraint.** juniper already runs 1.8.1 live; 26.05 ships 1.7.8, so dropping the pin would move the local crowdsec DB *backwards* across a major version. The original reason ("newer than the channel ships") no longer applies — this one replaces it | 26.05 backports ≥1.8.1, or crowdsec state is deliberately rebuilt on the older major |
 | `nixos-system/crowdsec.nix` | `crowdsec-firewall-bouncer` | `pkgs.unstable` (0.0.36) | Kept in lockstep with `crowdsec` above | Same as `crowdsec` |
-| `nixos-system/unifi.nix` | `unifi` | `pkgs.unstable` (10.6.101 vs 10.2.105 in 26.05) | **No-downgrade constraint.** The original CVE reason is gone — 26.05's 10.2.105 carries no `knownVulnerabilities` — but it is *older* than the running 10.6.101, and UniFi migrates its config DB forward on upgrade: an older controller will not read it. The `jrePackage` override is no longer needed; 26.05's module defaults to `jdk25_headless` on its own | 26.05 backports a `unifi` ≥ the running version |
+| `nixos-system/unifi.nix` | `unifi` | `pkgs.unstable` (10.6.106 vs 10.2.105 in 26.05) | **No-downgrade constraint.** The original CVE reason is gone — 26.05's 10.2.105 carries no `knownVulnerabilities` — but it is *older* than the running 10.6.106, and UniFi migrates its config DB forward on upgrade: an older controller will not read it. The `jrePackage` override is no longer needed; 26.05's module defaults to `jdk25_headless` on its own | 26.05 backports a `unifi` ≥ the running version |
 | `nixos-system/unifi.nix` | `mongodb` | `mongodb-ce` pinned to 8.0.32, in place of the module default `pkgs.mongodb-7_0` | MongoDB is SSPL, so Hydra builds no MongoDB at all and nothing in nixpkgs has a binary substitute — `mongodb-7_0` compiles from source for 3-5h on aspen and wants ~15G at the `mongod` link, repeating on every bump. `mongodb-ce` is the same server from upstream's prebuilt tarball (`fetchurl` + `autoPatchelfHook`). Pinned rather than left at mongodb-ce's default because unifi 10.6.106's deb declares `mongodb-org-server (>= 3.6.0), (<< 8.1.0)` — 8.0 is the ceiling and the 8.2 mongodb-ce ships is above it | nixpkgs gains a cached or prebuilt mongodb inside unifi's declared range, or `services.unifi` grows a prebuilt option |
 | `home-manager/chris/icewind-dale.nix` | `openssl_1_0_2` | `pkgs.pkgs-2105` (21.05) | Beamdog game binary links libssl 1.0.0, removed from nixpkgs after 21.05 | **Permanent** by nature (legacy ABI) |
 
@@ -60,12 +60,8 @@ Revisit if 26.05 reaches ≥ 3.x.
 Repo-wide package modifications in `overlays/default.nix`, applied to every
 host via `nixos-system/foundation.nix` (`nixpkgs.overlays`).
 
-| Package | What it does | Revert trigger |
-|---|---|---|
-| `displaylink` | Pinned to **6.2** with a manual `requireFile` src + hash | Manual bump only; hash is mirrored in `nixos-system/rebuilds.nix` — keep the two in sync |
-
-The overlay file also defines the cross-channel package sets consumed in §1:
-`pkgs.unstable` (nixos-unstable) and `pkgs.pkgs-2105` (21.05).
+None. The overlay file defines only the cross-channel package sets consumed
+in §1: `pkgs.unstable` (nixos-unstable) and `pkgs.pkgs-2105` (21.05).
 
 ---
 
@@ -80,9 +76,6 @@ around a specific bug. Each should be revisited when its linked issue closes.
 | `nixos-system/crowdsec.nix` | **`crowdsec-firewall-bouncer-register.serviceConfig.StateDirectory` pinned back to `"crowdsec-firewall-bouncer-register"` (`mkForce`) and `ReadWritePaths = [ "/var/lib/crowdsec" ]` restored.** 26.05 added `crowdsec` to that unit's `StateDirectory` ([`crowdsec-firewall-bouncer.nix:260`](https://github.com/NixOS/nixpkgs/blob/nixos-26.05/nixos/modules/services/security/crowdsec-firewall-bouncer.nix)). The unit runs `DynamicUser`, so systemd migrated `/var/lib/crowdsec` → `/var/lib/private/crowdsec` and left a symlink; `/var/lib/private` is `0700 root`, so `cscli` and anything else outside a service namespace could no longer traverse it (`mkdir /var/lib/crowdsec: file exists`). Needed a one-time on-disk repair as well — see MIGRATION-26.05.md | Upstream drops `crowdsec` from that unit's `StateDirectory`, or gives the register step a namespace-safe way to reach crowdsec's state. Re-test on the next channel bump |
 | `nixos-system/crowdsec.nix` | **`environment.etc."crowdsec/config.yaml"`** mirrors the module's own `format.generate "crowdsec.yaml" cfg.settings.general`. 26.05's register script invokes the *unwrapped* `cscli` (`lib.getExe' cfg.package "cscli"`, `crowdsec-firewall-bouncer.nix:234`) instead of 25.11's `/run/current-system/sw/bin/cscli` wrapper, so it passes no `-c` and falls back to `/etc/crowdsec/config.yaml` — a path this config never populated, because the config lives in the store. Registration failed, no `api-key.cred` was written, and the bouncer died at `243/CREDENTIALS` with no `CROWDSEC_CHAIN` in iptables | Upstream restores the wrapped `cscli` (or passes `-c`) in the register script — then drop the `environment.etc` entry. **Fragile:** it duplicates one line of module internals, so re-check it whenever the crowdsec module changes |
 | `nixos-system/crowdsec.nix` | Console-token auto-enrollment commented out | Possible upstream bug, never re-tested — verify as part of bringing crowdsec to aspen (MIGRATION-26.05.md S17) |
-| `nixos-system/yubikey.nix` | pcsclite polkit access-group workaround | [nixpkgs#121121](https://github.com/NixOS/nixpkgs/issues/121121) |
-| `nixos-system/foundation.nix` | `nix.settings.nix-path = config.nix.nixPath` | [nix#9574](https://github.com/NixOS/nix/issues/9574) |
-| `nixos-system/home-assistant.nix` | `doInstallCheck = false` on the HA package override | Drop when the install-check no longer fails |
 | `nixos-system/home-assistant.nix` | `energy_panel_hide` custom integration (built with `buildHomeAssistantComponent`, installed via `customComponents`) removes the built-in Energy sidebar panel. HA offers no declarative way to hide it: `energy/async_setup` calls `frontend.async_register_built_in_panel` unconditionally in the same call that sets up the websocket API the `energy-*` cards and `EnergyCostSensor` depend on, and the component's `CONFIG_SCHEMA` is `cv.empty_config_schema`. The lovelace Energy view already renders the panel's content, so the panel is a duplicate. | HA gains a supported panel-visibility option (a `frontend` config key, or a per-panel `show_in_sidebar`) — then drop the custom integration |
 
 ---
@@ -95,8 +88,6 @@ depart from stock versions. Listed so a future audit doesn't re-flag them:
 - `nixos-system/ollama.nix` — `ollama-cuda.override { cudaArches = [ "61" ]; }`
   (GTX 1060 / Pascal)
 - `home-manager/shared/rofi.nix` — `rofi.override { plugins = [ rofi-calc ]; }`
-- `nixos-system/home-assistant.nix` — `home-assistant.override { extraPackages = ... psycopg2 ... }`
-  (the `doInstallCheck = false` part of the same expression **is** a workaround — see §3)
 
 ---
 

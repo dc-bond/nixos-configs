@@ -104,7 +104,7 @@
 
   services = {
     xserver.videoDrivers = [ # enable displaylink for USB dock displays
-      "displaylink" # should pull pinned version from overlay automatically
+      "displaylink"
       "modesetting"
     ];
     logind.settings.Login.HandleLidSwitch = "ignore"; # disable suspend on laptop lid close

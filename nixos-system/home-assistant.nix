@@ -207,11 +207,7 @@ in
 
     ${app} = {
       enable = true;
-      package = (pkgs.home-assistant.override {
-        extraPackages = py: with py; [ psycopg2 ];
-        }).overrideAttrs (oldAttrs: {
-          doInstallCheck = false;
-        });
+      extraPackages = py: with py; [ psycopg2 ];
       customComponents = [ energyPanelHide ];
       extraComponents = [
         "default_config"
