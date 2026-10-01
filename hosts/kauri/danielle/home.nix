@@ -38,6 +38,12 @@ in
     ];
   };
 
+# firefox profile lives at the xdg path, not ~/.mozilla; configPath also rewraps
+# the firefox package, so home-manager and the browser cannot disagree. set per
+# host rather than in shared/firefox.nix because the profiles on the deprecated
+# cypress and alder were never moved
+  programs.firefox.configPath = ".config/mozilla/firefox";
+
 # define default folders in home directory
   xdg.userDirs = {
     enable = true;
