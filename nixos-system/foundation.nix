@@ -40,7 +40,7 @@ in
         trusted-users = [ "@wheel" ]; # allow remote builds
         warn-dirty = false;
         flake-registry = "";
-        nix-path = config.nix.nixPath; # workaround for https://github.com/NixOS/nix/issues/9574
+        nix-path = config.nix.nixPath; # NIX_PATH is only a session variable; this covers sudo (env_reset) and systemd units
       };
       channel.enable = false; # disable channels because using flake
       registry = lib.mkForce (lib.mapAttrs (_: flake: {inherit flake;}) flakeInputs); # make flake registry match flake inputs

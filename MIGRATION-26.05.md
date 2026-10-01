@@ -1747,26 +1747,24 @@ is only useful on a host with a screen in front of you.
 - [x] Dropped the `docker` overlay pin 2026-09-27 — confirmed against a clean
       nixpkgs import that stock 26.05 `pkgs.docker` is already 29.8.0, so the
       pin was a no-op. `displaylink-pinned` is now the only overlay left.
-- [ ] Rewrite the `DEVIATIONS.md` header and rows for 26.05; delete dropped
-      rows. Per repo convention, in the same commit as each code change.
-      **Framing done 2026-10-01** — header, section 1 intro and column, the
-      claude-code revert text, section 5 (which still claimed `home-manager`
-      was on `release-25.11`), and both CLAUDE.md references. **Left: rows whose
-      triggers needed a real retest on 26.05, not a text edit.** **sunshine
-      resolved 2026-10-01** — stock 26.05 sunshine 2026.516 streamed IWD:EE and
-      SNES to thinkpad's Moonlight with no crash and no coredump, pairing
-      intact; the pin, its row, the `nixpkgs-2505` input and the `pkgs-2505`
-      overlay are all gone (sunshine was the overlay's only consumer). The old
-      pairing state is kept at `/persist/home/chris/sunshine.bak-2025.628` on
-      aspen until there is no doubt. Still open: crowdsec console
-      auto-enrollment (folded into **S17**, crowdsec on
-      aspen, by operator decision 2026-10-01). **lldap resolved 2026-10-01** — not
-      an upstream bug: the module runs lldap as a `DynamicUser` (still so in
-      26.05), and the sops files are `root:root 0400`, so the `*_file` settings
-      could never read them on any channel. `LoadCredential` is systemd's
-      mechanism for exactly that, so it is the correct config rather than a
-      workaround. Row deleted, the "broken in 25.11" comments in `lldap.nix`
-      rewritten to state the constraint.
+- [x] **`DEVIATIONS.md` reviewed end to end against 26.05, 2026-10-01.**
+      Removed as no longer deviations: the `displaylink` overlay (dead on 26.05
+      — it overrode `linuxPackages.displaylink`, which no longer exists — and
+      stock `pkgs.displaylink` is the same 6.2 `requireFile` source and hash;
+      kauri's `DisplayLinkManager` path is byte-identical before and after),
+      the HA package override (the 26.05 module's default package already sets
+      `doInstallCheck = false`; psycopg2 moved to the module's `extraPackages`
+      option, drvPath identical), the `nix-path` row (nixpkgs#9574's trigger —
+      NixOS writing an empty `nix-path` with channels off — is gone in 26.05;
+      the line stays as plain config so `sudo nix-shell` and systemd units
+      resolve `<nixpkgs>`), and the pcscd polkit row (nixpkgs#121121 closed in
+      2021; the rule stays because pcsc-lite admits only active-session
+      clients and scdaemon runs under `user@.service` with `disable-ccid`).
+      Earlier the same day: sunshine, lldap. **Remaining are all genuine:**
+      unifi/mongodb, crowdsec ×2 pins + 3 workarounds + enrollment (S17),
+      openssl 1.0.2 (permanent), claude-code/mcp-nixos (preference),
+      `energy_panel_hide` (HA 2026.5 still registers the panel
+      unconditionally)
 - [x] ~~Update `nixos-configs-private/CLAUDE.md`~~ — **already done** in private
       `2f382c7`; it now documents all 5 exported modules. Verified 2026-09-26.
 - [x] Updated the entity-rename comment in `zigbee2mqtt.nix`, 2026-10-01.

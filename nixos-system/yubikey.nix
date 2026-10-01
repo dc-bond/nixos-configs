@@ -14,7 +14,8 @@
 # enable smartcard reader tool
   services.pcscd.enable = true;
 
-# nixos pcsclite packages don't include user group to access card when polkit enabled (automatically with hyprland) so workaround to grant access - https://github.com/NixOS/nixpkgs/issues/121121
+# pcsc-lite's polkit policy admits only clients in an active login session. scdaemon (disable-ccid, so it goes
+# through pcscd) runs under gpg-agent.service in user@.service, outside the session, so wheel is granted explicitly
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
       if (action.id == "org.debian.pcsc-lite.access_card" &&

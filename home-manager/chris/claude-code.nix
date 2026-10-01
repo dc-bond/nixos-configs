@@ -12,7 +12,7 @@ let
   mcpServers = {
     nixos = {
       type = "stdio";
-      command = lib.getExe pkgs.unstable.mcp-nixos; # 25.11 ships only 1.0.3; unstable for the 2.x tool surface (see DEVIATIONS.md)
+      command = lib.getExe pkgs.unstable.mcp-nixos; # unstable: 26.05 ships 2.4.3, a major behind (see DEVIATIONS.md)
     };
   };
 
