@@ -60,8 +60,11 @@ settled in config already is:
 
 **Parked 2026-10-01 after step 1.** Gen 39 is built from `24ebd5f`, staged
 as the systemd-boot default, and verified to match the tree's outPath. Steps 2-4
-wait for a reboot window. Re-check before resuming: if anything has been
-committed since that changes kauri's closure, rebuild again first.
+wait for a reboot window. Re-check before resuming: rebuild again first only
+if a later commit changes **kauri-relevant config** (shared modules, labwc,
+danielle's files). Every commit changes the flake `self` source hash, which
+reaches kauri's `etc/nix/registry.json` and wallpapers copy, so an outPath
+mismatch alone is not a reason to rebuild.
 
 **While parked, any reboot of kauri lands in gen 39 with the profile unmoved**
 — danielle's laptop, so this can happen without anyone choosing it (a dead
@@ -133,9 +136,9 @@ all `disabled`, with every pre-existing flag unchanged. The invariant is the
 *states*, not the total — see the rollback section.
 
 **Expected eval warnings at steady state:** thinkpad 1
-(`hyprland.configType`, a `stateVersion` deferral), kauri 0, juniper 0, aspen 4
-(three "legacy Nextcloud install" notices from holding at 32, and
-`lovelace.mode` — both closeout items). Anything else is new.
+(`hyprland.configType`, a `stateVersion` deferral), kauri 0, juniper 0, aspen 3
+(three "legacy Nextcloud install" notices from holding at 32, a closeout
+item; `lovelace.mode` is gone as of private `697d05c`). Anything else is new.
 
 ### Two gotchas that cost time on juniper — do not repeat
 
@@ -492,8 +495,6 @@ Watch `/nix` on aspen — it was 84% full with 39 GiB free on 2026-09-27.
   SIGKILLed mid-write to the ZFS recording dataset. Upstream frigate expects
   SIGTERM, not the SIGINT the module sends. Worth either switching its
   `--stop-signal` or raising `--stop-timeout`; out of scope for the migration.
-- Batch 4 is done on three of four hosts; kauri reboots into it whenever it next
-  restarts. Batch 5 (0.6 + the flake bump) is the last work before 26.05.
 
 ---
 
@@ -1191,8 +1192,8 @@ returns, move its profile and set the same line in its `home.nix`.
 
 ## Global cleanup (fold into whichever phase touches it)
 
-- **`docker` overlay pin** (`overlays/default.nix:44`, `docker = prev.docker_29`)
-  — **drop**. 26.05's default `docker` is already 29.8.0, so the pin is a no-op.
+- ~~**`docker` overlay pin**~~ — **dropped 2026-09-27**; 26.05's default
+  `docker` is already 29.8.0.
 - ~~**`simple-nixos-mailserver` flake input is dead.**~~ **Removed 2026-09-27.**
   It was declared but no module from it was ever imported. Dropping it took
   `flake.lock` from 21 nodes to 16 — the input plus its transitive
@@ -1200,14 +1201,11 @@ returns, move its profile and set the same line in its `home.nix`.
   nixpkgs tree that `git-hooks` pulled in. All four in-scope hosts still
   evaluate. The archived module stays at
   `nixos-configs-private/deprecated/mailserver.nix` for reference.
-- **`nixos-configs-private/CLAUDE.md` is stale**: it documents 3 exported
-  modules, but the private flake exports **5** (`home-assistant-lovelace` and
-  `home-assistant-scenes` are missing from the doc).
-- **`DEVIATIONS.md` header and every row** need updating from "stock
-  `nixos-25.11`" to 26.05, with the dropped rows deleted and the UniFi row's
-  reason rewritten (see 2.4). Per repo convention that happens in the same
-  commit as each code change.
-- **Inputs to bump** alongside `nixpkgs`: `home-manager` →
+- ~~**`nixos-configs-private/CLAUDE.md` is stale**~~ — **done** in private
+  `2f382c7`; it documents all 5 exported modules.
+- **`DEVIATIONS.md` header and every row** to 26.05 — **mostly done**; the
+  remaining rows are tracked in the Closeout checklist.
+- ~~**Inputs to bump**~~ — **done** with the channel bump: `home-manager` is on
   `release-26.05`. `sops-nix`, `disko`, `impermanence` and `firefox-addons`
   track rolling branches and will move on their own. `private` and `finplanner`
   are own repos — remember private edits need push + `nix flake update private`
@@ -1219,11 +1217,11 @@ returns, move its profile and set the same line in its `home.nix`.
   than merely matching the default. Keep it, and note the 10.11 EOL is Feb 2028.
 - **GCC 14 → 15** in 26.05. Only matters for things built from source here;
   dropping the `matrix-synapse` overlay (1.3) removes the largest such build.
-- **glibc 2.42 no longer allows an executable stack** when a shared library
-  requests one. Possible breakage for the Beamdog IWD:EE launcher
-  (`home-manager/chris/icewind-dale.nix`), which runs under `steam-run` against
-  `pkgs-2105.openssl_1_0_2`. Low stakes (a game), thinkpad-only now that cypress
-  is retired — test it, don't gate the migration on it.
+- ~~**glibc 2.42 no longer allows an executable stack** when a shared library
+  requests one~~ — the risk was the Beamdog IWD:EE launcher
+  (`home-manager/chris/icewind-dale.nix`, `steam-run` against
+  `pkgs-2105.openssl_1_0_2`). **Confirmed working 2026-10-01**, so it did not
+  bite.
 - ~~**Stray file to remove on juniper**: `/var/lib/grafana/grafana.db`~~ —
   **gone as of 2026-09-26**, no longer present. The real DB
   (`/var/lib/grafana/data/grafana.db`, 1.7 MB) is intact.
@@ -1755,16 +1753,52 @@ is only useful on a host with a screen in front of you.
       claude-code revert text, section 5 (which still claimed `home-manager`
       was on `release-25.11`), and both CLAUDE.md references. **Left: three
       rows whose triggers need a real retest on 26.05, not a text edit** —
-      sunshine's x11-capture crash (`pkgs-2505` pin, "fix lands in 25.11"),
-      lldap's broken file-based settings, and crowdsec console
-      auto-enrollment.
+      sunshine's x11-capture crash (`pkgs-2505` pin, "fix lands in 25.11")
+      and crowdsec console auto-enrollment. **lldap resolved 2026-10-01** — not
+      an upstream bug: the module runs lldap as a `DynamicUser` (still so in
+      26.05), and the sops files are `root:root 0400`, so the `*_file` settings
+      could never read them on any channel. `LoadCredential` is systemd's
+      mechanism for exactly that, so it is the correct config rather than a
+      workaround. Row deleted, the "broken in 25.11" comments in `lldap.nix`
+      rewritten to state the constraint.
 - [x] ~~Update `nixos-configs-private/CLAUDE.md`~~ — **already done** in private
       `2f382c7`; it now documents all 5 exported modules. Verified 2026-09-26.
-- [ ] Update the entity-rename procedure comment at `zigbee2mqtt.nix:37` — HA
-      2026.4 replaced MQTT `object_id` with `default_entity_id`. Existing entity
-      ids are unaffected; only future renames and adoptions change.
-- [ ] Plan HA `lovelace.mode` → `lovelace.dashboards` (warning only on 26.05;
-      the new `lovelaceConfigFile` option is the clean target).
+- [x] Updated the entity-rename comment in `zigbee2mqtt.nix`, 2026-10-01.
+      Checked against aspen's zigbee2mqtt 2.14.0 source: it sends **both**
+      `object_id` and `default_entity_id = <type>.<object_id>` "for migration
+      purposes", and HA reads the latter. The procedure itself is unchanged —
+      the friendly name still reaches HA only through that one field, and HA
+      still pins the entity id at first discovery. Comment only, no rebuild
+      needed.
+- [x] **HA `lovelace.mode` → `lovelaceConfigFile`, 2026-10-01** (private
+      `697d05c`, operator decision). The 26.05 HA module now serves the
+      dashboard as a yaml dashboard at **`/nixos-lovelace`**, titled "Home"
+      via an explicit `lovelace.dashboards.nixos-lovelace` entry so the sidebar
+      does not show two "Overview"s. The module links the file through `/etc`
+      and puts it on `reloadTriggers`; its reload is a SIGHUP that HA turns
+      into a full restart (exit 100, `RestartForceExitStatus`), which is what a
+      dashboard change needs — HA re-reads the yaml only when its mtime beats
+      the cache, and store paths are always mtime 1. So the private module's
+      tmpfiles link and explicit `restartTriggers` are gone. card-mod and
+      apexcharts still load via `extra_module_url`; `resource_mode` stays
+      unset (the module filters the null). aspen's `lovelace.mode` warning is
+      gone; it now evaluates with just the three Nextcloud notices.
+- [ ] **After aspen's rebuild — UI steps, admin account, once:**
+      1. Confirm "Home" is in the sidebar and `/nixos-lovelace` renders every
+         view (home, lights, air, energy) with card-mod styling and the
+         apexcharts chart intact.
+      2. **Settings → Dashboards** → the "Home" row's ⋮ menu → **Set as
+         default**. This is the system-wide default for every user who has
+         not picked their own.
+      3. Anyone who chose a personal default dashboard (Profile → Dashboard)
+         keeps it; reset theirs to "Use system default" or to "Home".
+      4. Optional: hide the built-in "Overview" (`/lovelace`, now a storage
+         dashboard) from the sidebar per user — Profile → *Change the order
+         and hide items from the sidebar*. Leave it in place rather than
+         deleting; it is the built-in.
+      5. Update any bookmark, wall panel or companion-app shortcut that
+         points at `/lovelace` to `/nixos-lovelace`.
+
 - [ ] Separately, later: Nextcloud 32 → 33 (then 34, 35 if wanted), one major
       version at a time.
 
@@ -1883,7 +1917,7 @@ sometime to get the error count to zero so real errors stand out.
 | S12 | **kauri and alder are not actually impermanence hosts** | `impermanence.nix` exists for both but is commented out in their `configuration.nix` as `FRESH INSTALL ONLY`. kauri boots a persistent btrfs `/root` subvol. Their impermanence files therefore cannot be eval-verified and silently rot — 0.3 had to be applied to them blind. Private `roadmap.txt` already carries "alder and kauri to impermanence" as a future enhancement |
 | S13 | **`docker-prune.service` shows `inactive (dead)`** | Expected — it is timer-driven — but it means the honest container count is "55 of 56 active", which reads as a fault at a glance. Worth a note wherever container health is checked |
 | S14 | **The weekly ZFS scrub report is always one week stale** | juniper's `zfs-health.timer` fires `Mon 04:00` (+5m jitter) and builds the ntfy report from aspen's scraped textfile metrics, which only update when a scrub *completes*. But aspen's `zfs-scrub.timer` is `OnCalendar=Mon 03:00` with **`RandomizedDelaySec=6h`**, so the scrub starts anywhere in 03:00-09:00 (2026-09-21: 08:13; 2026-09-28: 05:39) — and a 2.72T scrub takes ~3h, so it could not finish by 04:00 even starting at 03:00 exactly. The comment at `monitoring-server.nix:1355` ("after Mon 03:00 scrub completes") is wrong on both counts. The report has always carried real, correct data about the *previous* scrub, which is why it never looked broken. Fix by triggering the report off scrub completion rather than a wall-clock guess, or move it well clear of the 6h window. The btrfs equivalent (`Sun 04:30`, "30 min after 04:00 scrub starts") has the same shape but gets away with it — an SSD scrub finishes in minutes |
-| S15 | **`ProtectKernelTunnels` is a typo, so four monitoring units are unhardened** | `monitoring-server.nix` lines 1247, 1271, 1295, 1319 set `ProtectKernelTunnels = true`; the real systemd key is `ProtectKernelTunables`, which appears 0 times in the file. systemd logs `Unknown key 'ProtectKernelTunnels' in section [Service], ignoring` on every unit load and applies no hardening. Affects `alertmanager-to-ntfy` (the bridge carrying every prometheus alert to ntfy) plus the `smart-health`, `btrfs-health` and `zfs-health` report units. Harmless to their function; it is dead config plus recurring journal noise |
+| S15 | **FIXED IN TREE 2026-10-01, takes effect on juniper's next rebuild.** `ProtectKernelTunnels` is a typo, so four monitoring units are unhardened | `monitoring-server.nix` lines 1247, 1271, 1295, 1319 set `ProtectKernelTunnels = true`; the real systemd key is `ProtectKernelTunables`, which appears 0 times in the file. systemd logs `Unknown key 'ProtectKernelTunnels' in section [Service], ignoring` on every unit load and applies no hardening. Affects `alertmanager-to-ntfy` (the bridge carrying every prometheus alert to ntfy) plus the `smart-health`, `btrfs-health` and `zfs-health` report units. Harmless to their function; it is dead config plus recurring journal noise |
 | S16 | **26.05's dbus-broker switch floods the journal with duplicate-name errors** | `services.dbus.implementation` now defaults to **`broker`** instead of `dbus`, and dbus-broker logs *at error priority* every service name it finds twice. NixOS puts both `config.system.path` and each individual package on the bus search path, so every dbus-providing package enabled through its own module is seen twice — bluez, polkit, udisks, iwd, thunar, tumbler, gvfs, gnome-keyring, seahorse, xfconf, dconf and the three portals. On thinkpad's first 26.05 boot that is **69 of 72 errors**, against **zero** on each of the three preceding 25.11 boots. Harmless in itself (the broker ignores the duplicate and uses one) but it buries real errors — thinkpad's genuine ones this boot were just the iwlwifi WGDS/WRDS quirk (S8), the gkr-pam greetd message (S7) and one bluez `hci0` line. Reverting to `implementation = "dbus"` is a downgrade and stripping `/share/dbus-1` from `environment.pathsToLink` breaks more than it fixes, so this wants an upstream fix, not a local workaround |
 
 ### Already tracked elsewhere

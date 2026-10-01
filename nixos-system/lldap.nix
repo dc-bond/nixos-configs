@@ -44,7 +44,9 @@ in
   systemd.services."${app}" = {
     requires = [ "postgresql.target" ];
     after = [ "postgresql.target" ];
-    serviceConfig = { # shit needed because broken settings for passwords and env permissions in 25.11
+    # the module runs lldap as a DynamicUser, which cannot read the root-owned sops
+    # files directly; LoadCredential hands them over under %d instead
+    serviceConfig = {
       LoadCredential = [
         "jwt_secret:${config.sops.secrets.lldapJwtSecret.path}"
         "ldap_user_pass:${config.sops.secrets.lldapLdapUserPasswd.path}"
@@ -74,9 +76,7 @@ in
       settings = {
         ldap_user_email = "${configVars.users.chris.email}";
         ldap_user_dn = "admin";
-        #ldap_user_pass_file = config.sops.secrets.lldapLdapUserPasswd.path; # shit broken in 25.11
         force_ldap_user_pass_reset = "always";
-        #jwt_secret_file = config.sops.secrets.lldapJwtSecret.path; # shit broken in 25.11
         ldap_port = 3890;
         ldap_base_dn = "dc=${configVars.domain1Short},dc=com";
         http_url = "https://${app}.${configVars.domain1}";
