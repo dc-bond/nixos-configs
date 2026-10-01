@@ -1783,6 +1783,19 @@ is only useful on a host with a screen in front of you.
       apexcharts still load via `extra_module_url`; `resource_mode` stays
       unset (the module filters the null). aspen's `lovelace.mode` warning is
       gone; it now evaluates with just the three Nextcloud notices.
+      **Upstream bug found after the switch:** the module's preStart links
+      `ui-lovelace.yaml` into `/var/lib/hass` only for `lovelaceConfig`, not
+      `lovelaceConfigFile`. aspen kept rendering only because the old tmpfiles
+      link (to a fixed store path) survived on the persisted dir — the next
+      dashboard edit would have been silently ignored. The private module now
+      keeps `L+ /var/lib/hass/ui-lovelace.yaml → /etc/home-assistant/ui-lovelace.yaml`.
+      **What HA did to storage at first start:** it added the built-in
+      `/lovelace` "Overview" to `.storage/lovelace_dashboards` (previously
+      only Map) and moved the long-unused `.storage/lovelace` into
+      `lovelace.lovelace` — a pre-yaml-era page with the garage door and two
+      Z-Wave plugs. That is what `/lovelace` shows now, which reads as
+      "dashboards gone". Nothing was lost: the 2026-10-01 02:20 borg archive
+      shows only Map in the list beforehand.
 - [ ] **After aspen's rebuild — UI steps, admin account, once:**
       1. Confirm "Home" is in the sidebar and `/nixos-lovelace` renders every
          view (home, lights, air, energy) with card-mod styling and the
@@ -1793,9 +1806,9 @@ is only useful on a host with a screen in front of you.
       3. Anyone who chose a personal default dashboard (Profile → Dashboard)
          keeps it; reset theirs to "Use system default" or to "Home".
       4. Optional: hide the built-in "Overview" (`/lovelace`, now a storage
-         dashboard) from the sidebar per user — Profile → *Change the order
-         and hide items from the sidebar*. Leave it in place rather than
-         deleting; it is the built-in.
+         dashboard showing the old pre-yaml page) from the sidebar per user —
+         Profile → *Change the order and hide items from the sidebar*. Leave
+         it in place rather than deleting; it is the built-in.
       5. Update any bookmark, wall panel or companion-app shortcut that
          points at `/lovelace` to `/nixos-lovelace`.
 
