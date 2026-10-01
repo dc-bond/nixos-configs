@@ -18,10 +18,10 @@ a link is stale.
 
 ## 1. Active cross-channel / pinned package versions
 
-Packages deliberately taken from a channel other than `nixpkgs` (25.11), or
+Packages deliberately taken from a channel other than `nixpkgs` (26.05), or
 pinned to a specific non-channel version.
 
-| File | Package | Source instead of 25.11 | Reason | Revert trigger |
+| File | Package | Source instead of 26.05 | Reason | Revert trigger |
 |---|---|---|---|---|
 | `nixos-system/sunshine.nix` | `sunshine` | `pkgs.pkgs-2505` (25.05) | 25.11 has an x11-capture crash regression ([nixpkgs#475181](https://github.com/NixOS/nixpkgs/issues/475181)) | Fix lands in 25.11 |
 | `nixos-system/crowdsec.nix` | `crowdsec` | `pkgs.unstable` (1.8.1 vs 1.7.8 in 26.05) | **No-downgrade constraint.** juniper already runs 1.8.1 live; 26.05 ships 1.7.8, so dropping the pin would move the local crowdsec DB *backwards* across a major version. The original reason ("newer than the channel ships") no longer applies — this one replaces it | 26.05 backports ≥1.8.1, or crowdsec state is deliberately rebuilt on the older major |
@@ -41,7 +41,7 @@ on matching versions:
 - `home-manager/chris/vscodium.nix`, `home-manager/danielle/vscodium.nix` —
   `pkgs.unstable.vscode-extensions.anthropic.claude-code`
 
-**Revert trigger:** none — this is an ongoing preference, kept until 25.11's
+**Revert trigger:** none — this is an ongoing preference, kept until 26.05's
 `claude-code` is current enough that parity no longer requires unstable.
 
 `mcp-nixos` (the NixOS/Home Manager MCP server wired into `claude-code` in
@@ -103,9 +103,9 @@ depart from stock versions. Listed so a future audit doesn't re-flag them:
 
 ---
 
-## 5. Flake inputs that don't track a 25.11 release
+## 5. Flake inputs that don't track a 26.05 release
 
-Most inputs `follows` nixpkgs or pin a `release-25.11` tag. These instead track
+Most inputs `follows` nixpkgs or pin a `release-26.05` tag. These instead track
 a rolling default branch, so they can move independently of the pinned channel
 on `nix flake update`:
 
@@ -116,7 +116,7 @@ on `nix flake update`:
 | `impermanence` | `nix-community/impermanence` default branch |
 | `firefox-addons` | `rycee/nur-expressions` (rolling) |
 
-Correctly pinned to 25.11 (no drift): `home-manager` (`release-25.11`).
+Correctly pinned to 26.05 (no drift): `home-manager` (`release-26.05`).
 Own repos: `finplanner`, `private`.
 
 ---
