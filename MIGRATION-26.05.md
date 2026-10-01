@@ -22,48 +22,77 @@ if they come back. In-scope hosts are **juniper, aspen, thinkpad, kauri**.
 
 ## Progress — where this stands
 
-**Last updated 2026-09-29.** Phase 0 complete, channel bumped, **juniper and
-aspen are both live on 26.05**, both verified with zero failed units and no
-service losses. **Phase 3 is in progress**: three non-deferred home-manager
-breakages were found and fixed before either workstation rebooted (`1ff5ce3`,
-see 3.2), so **both staged generations are stale and must be rebuilt**.
-thinkpad goes first now, kauri is deferred. Start with "Pick up here".
+**Last updated 2026-10-01.** Phase 0 complete, channel bumped, **juniper,
+aspen and thinkpad are all live on 26.05**, each verified with zero failed
+units. thinkpad's Firefox profile move (3.4) is done and verified. **kauri is
+the last host**, and all of its pre-reboot config work is in the tree, so one
+rebuild, one data move and one reboot take it to a finished 26.05 state. Start
+with "Pick up here".
 
 ### Pick up here
-
-Verified fleet state at handoff (all hosts **0 failed units**):
 
 | Host | Running | Staged for next boot | Next action |
 |---|---|---|---|
 | **juniper** | **26.05** `0ai8kfv6…` | same | done — Phase 1 complete |
-| **aspen** | **26.05** `089pzf09…` (gen 226) | same | done — Phase 2 complete, switched and verified 2026-09-29 |
-| **thinkpad** | 25.11 `shla9qg2…` | **26.05** `j55li7n6…` — **STALE**, predates `1ff5ce3` | **← next: rebuild, then reboot** |
-| **kauri** | 25.11 `pp4zi533…` | 26.05 — **STALE**, predates `1ff5ce3` | **deferred** by operator decision 2026-09-29; rebuild + one reboot whenever picked up |
+| **aspen** | **26.05** `089pzf09…` (gen 226) | same | done — Phase 2 complete, verified 2026-09-29 |
+| **thinkpad** | **26.05** `c1lfyw9z…` (gen 79) | same | done — Phase 3 complete, Firefox moved, verified 2026-10-01 |
+| **kauri** | 25.11 `rxp2lyzq…` (gen 35) | 26.05 `bns3czxf…` (gen 38) — **STALE**, predates `1ff5ce3` and the 2026-10-01 kauri prep | **← next: rebuild, move danielle's Firefox profile, reboot** |
 
-**kauri: operator decision 2026-09-27 — go straight to 26.05, do not reboot
-into the staged 25.11 generation first.** That staged generation is batch 4
-(systemd stage 1) on 25.11; it will be superseded by the 26.05 rebuild and
-never booted. kauri therefore takes **systemd stage 1 and the channel bump in a
-single reboot**.
+**kauri: one sitting, one reboot, finished state.** Operator goal 2026-10-01:
+land kauri as close to a finished 26.05 state as possible on its single
+reboot, rather than following it with a second session. Everything that can be
+settled in config already is:
 
-This is a deliberate departure from the one-variable-at-a-time rule the rest of
-the migration followed, and it is defensible: systemd stage 1 is already proven
-on thinkpad (LUKS **and** impermanence), aspen (impermanence + tmpfs + ZFS) and
-juniper (GRUB), and kauri is a strict subset of thinkpad minus impermanence. The
-26.05 half is mostly home-manager `stateVersion` deferrals on a workstation.
+- the not-gated home-manager fixes from 3.2 — `swww`→`awww` in
+  `danielle/labwc.nix`, `vscodium` in `danielle/vscodium.nix`, the thunar attrs
+  in `labwc.nix` — plus the shared greeter UID bounds and `consoleLogLevel`
+- the `stateVersion` deferrals adopted or pinned on 2026-09-30 (neovim,
+  `xdg.userDirs`, `gtk.gtk4.theme`) — shared and danielle files, already apply
+- **`programs.firefox.configPath` for danielle**, set in
+  `hosts/kauri/danielle/home.nix`. With it, **kauri evaluates with zero
+  warnings** — nothing deferred remains
+- **labwc `<windowSwitcher>` syntax.** 0.9.3 moved `show` off `<windowSwitcher>`
+  onto an `<osd>` child and kept the old form "for one release"; kauri jumps
+  0.9.2 → 0.9.7, so danielle's rc.xml now uses the current form. The rest of
+  0.9.3–0.9.7 was checked against labwc's NEWS and touches nothing else in her
+  rc.xml. The one behaviour change that reaches her — default placement
+  `center` → `cascade` — is moot because her window rule maximizes every window
 
-Two things to hold in mind anyway: a boot failure now has two candidate causes
-rather than one, and kauri is danielle's laptop, so recovery means being at the
-machine. Have the LUKS passphrase to hand; the prompt will come from
-systemd-ask-password and **look different** from the scripted one, which is
-expected. Previous generation is in the systemd-boot menu behind a 5s timeout.
+The sequence:
 
-Sequence is unchanged unless you decide otherwise: Phase 3 still puts the
-workstations after aspen, and kauri before thinkpad.
+1. `rb kauri` → `boot` → `distributed (aspen)`. Activates nothing.
+2. **danielle's Firefox closed** (it is normally open — confirm with `pgrep
+   firefox`), then move the profile and delete its home-manager store symlinks:
+   see the kauri procedure in 3.4. Firefox must not start between this step and
+   the reboot.
+3. Reboot. Have the LUKS passphrase to hand: the prompt comes from
+   systemd-ask-password and **looks different** from the scripted one, which is
+   expected. Previous generation is in the systemd-boot menu behind a 5s
+   timeout.
+4. Verify — the kauri item in the Phase 3 checklist.
 
-**The next step is aspen (Phase 2).** It is the largest switch of the
-migration: 25 containers across 56 units, ZFS, the GPU, impermanence, and the
-Home Assistant recorder migration.
+**kauri takes systemd stage 1 and the channel bump in a single reboot**, by
+operator decision 2026-09-27. That staged 25.11 batch 4 generation is
+superseded and will never boot. A deliberate departure from the
+one-variable-at-a-time rule, and defensible: systemd stage 1 is proven on
+thinkpad (LUKS **and** impermanence), aspen (impermanence + tmpfs + ZFS) and
+juniper (GRUB), and kauri is a strict subset of thinkpad minus impermanence. A
+boot failure has two candidate causes rather than one, and kauri is danielle's
+laptop, so recovery means being at the machine.
+
+The Firefox move adds a third change to the same reboot but not a third *boot*
+risk: it lives entirely in home-manager activation and the user session. Its
+failure modes are a fresh empty profile (Firefox started in the window) or a
+stale symlink blocking activation, and `backupFileExtension = "hm-bak"` turns
+the latter into a renamed file rather than a failed activation. Rollback is
+moving the directory back.
+
+**thinkpad is on 26.05 and verified**, gen 79, 0 failed system or user units.
+The mesa 26.1 + Hyprland 0.55 risk did not take the session down; what it did
+produce is the set of 0.55 follow-ups in the Phase 3 checklist (watchdog
+launcher, codium window rule, greeter UID bounds, console log level, debug
+logs). IWD:EE was confirmed working over Moonlight on glibc 2.42 (operator,
+2026-10-01). The Firefox move verified on 2026-10-01 — see 3.4.
 
 **aspen switched to 26.05 on 2026-09-29 and is verified.** It came back first
 time with no console attached, running `26.05.20260926.5e2305d (Yarara)` on
@@ -87,39 +116,10 @@ post-reboot numbers in `phase2-baseline-aspen.txt`.
 all `disabled`, with every pre-existing flag unchanged. The invariant is the
 *states*, not the total — see the rollback section.
 
-**The next step is thinkpad: rebuild, then reboot.** Order was inverted from
-the original kauri-first plan on 2026-09-29; kauri is deferred indefinitely.
-
-**Read this before rebuilding.** Both workstations were built and staged on
-2026-09-29, and *then* three home-manager breakages were found by inspecting
-the staged closure — so **both staged generations are stale** and must be
-rebuilt or two of the three regressions still land. See 3.2 for the full
-reasoning; the short version is that only five of the nine home-manager
-warnings were `stateVersion` deferrals. The other four land regardless:
-`swww` was renamed to `awww` with the old binaries removed (wallpaper daemon
-and pywal script would have died at runtime with no eval error),
-`programs.vscode` now always writes to VS Code's paths even for a fork (config
-would have gone to `~/.config/Code`, which thinkpad does not persist, so it
-would vanish every boot), plus the ssh deprecation and the thunar aliases. All
-fixed in `1ff5ce3`.
-
-So: `rb thinkpad` → `boot` → `distributed (aspen)`, then reboot.
-
-What to expect on thinkpad: 713 packages change, +859.8 MiB. Boot risk is low —
-LUKS and systemd stage 1 were both proven in batch 4, and it has a screen. The
-real functional risk is **mesa 25.2.6 → 26.1.8 alongside hyprland 0.52.2 →
-0.55.4**; if the session will not start you land in greetd with no desktop,
-recoverable from a TTY. Also moving: glibc 2.40→2.42 (the IWD:EE exec-stack
-question, do not gate on it), systemd 258.7→260.4, iwd 3.10→3.12 with networks
-persisted, pipewire 1.4.9→1.6.6, libinput 1.29.2→1.31.3. Full delta and a
-verify list are in `phase3-baseline-thinkpad.txt`.
-
-**Commit before rebooting.** `~/nixos` is on the tmpfs root, not persisted, and
-`clone-configs` re-clones it each boot — uncommitted work in either repo is
-destroyed by a workstation reboot.
-
-Whatever session drives the thinkpad reboot dies with it. The baseline file is
-on the persisted LUKS subvol and is written to be picked up cold.
+**Expected eval warnings at steady state:** thinkpad 1
+(`hyprland.configType`, a `stateVersion` deferral), kauri 0, juniper 0, aspen 4
+(three "legacy Nextcloud install" notices from holding at 32, and
+`lovelace.mode` — both closeout items). Anything else is new.
 
 ### Two gotchas that cost time on juniper — do not repeat
 
@@ -181,8 +181,11 @@ Useful recipes, all permitted without a build:
 | P2a | **aspen built + `nixos-rebuild boot`** | **done 2026-09-28** — gen 226 staged as bootloader default, nothing activated, 0 failed units, still running 25.11 | |
 | P2b | **aspen rebooted into 26.05** | **done 2026-09-29, verified** — 0 failed units, GPU on 580.173.02, recorder migrated with no entity loss | |
 | P3a | home-manager renames fixed ahead of the workstation reboots | **done 2026-09-29** — swww→awww, programs.vscode→vscodium, ssh matchBlocks→settings; see 3.2 | `1ff5ce3` |
-| P3b | thinkpad rebuild + reboot | **pending** — staged gen is stale, must rebuild first | |
-| P3c | kauri rebuild + reboot | **deferred** by operator decision | |
+| P3b | **thinkpad rebuilt and rebooted into 26.05** | **done, verified** — 0 failed units; Hyprland 0.55 follow-ups in the Phase 3 checklist | `1b7524d` `49c308d` `4b2bae0` `6f1f764` |
+| P3c | `stateVersion` deferrals adopted or pinned (neovim, `xdg.userDirs`, `gtk.gtk4.theme`) | **done 2026-09-30** | `6357ba2` `532877d` |
+| P3d | thinkpad Firefox profile → XDG path (3.4) | **done 2026-10-01, verified** — old `/persist/home/chris/.mozilla` removed | `a0545f8` |
+| P3e | kauri pre-reboot prep: danielle `configPath`, labwc `<osd>` syntax | **done 2026-10-01** in the tree — kauri evaluates with 0 warnings | |
+| P3f | kauri rebuild + Firefox move + reboot | **next** | |
 
 ### Verified live state
 
@@ -191,7 +194,7 @@ Useful recipes, all permitted without a build:
 juniper are on **systemd stage 1**; kauri still runs the scripted initrd and
 will take it together with the channel bump at its single remaining reboot.
 
-**juniper runs 26.05**; aspen, thinkpad and kauri still run 25.11.
+**juniper, aspen and thinkpad run 26.05**; kauri still runs 25.11.
 
 Container restart policy lives solely in `nixos-system/oci-containers.nix`, applied
 over `oci-containers.containers`: `Restart=on-failure` (mkForce),
@@ -968,8 +971,8 @@ deferred.
 
 | Warning | Note |
 |---|---|
-| `programs.firefox.configPath` default → `$XDG_CONFIG_HOME/mozilla/firefox` | **The one with user data at stake.** Guard verified holding 2026-09-29 — the profile stays at `~/.mozilla/firefox`, which thinkpad persists, so nothing is at risk today. **Operator decision 2026-09-30: move the data rather than pin the legacy path. Planned in 3.4, not yet done** |
-| `wayland.windowManager.hyprland.configType` default `hyprlang` → `lua` | thinkpad + cypress |
+| `programs.firefox.configPath` default → `$XDG_CONFIG_HOME/mozilla/firefox` | **The one with user data at stake.** Operator decision 2026-09-30: move the data rather than pin the legacy path. **thinkpad done 2026-10-01; kauri set in config, data moves at its reboot** — see 3.4 |
+| `wayland.windowManager.hyprland.configType` default `hyprlang` → `lua` | thinkpad + cypress. **The only deferral left** — leave on `hyprlang` until a deliberate Lua config rewrite |
 | `gtk.gtk4.theme` default → `null` | **Pinned to `config.gtk.theme` 2026-09-30** — operator decision to keep materia-light on gtk4 apps (gnome-calculator, seahorse) for chris, danielle and eric. Explicit, so a later stateVersion bump cannot silently change it |
 | `programs.neovim.withRuby` / `withPython3` defaults → `false` | **Adopted 2026-09-30.** Verified no-op — the shared config is pure vimscript with no ruby or python plugins. Set in `shared/neovim.nix`, which the user and root profiles both import |
 | `xdg.userDirs.setSessionVariables` default change | **Adopted 2026-09-30.** Not a pure no-op — it stops exporting `XDG_DOWNLOAD_DIR` and friends — but `enable` stays true so `user-dirs.dirs` is still written, and that is what `xdg-user-dir` and gtk/qt file dialogs read. Nothing in the tree reads the env vars, and upstream recommends against them |
@@ -984,17 +987,11 @@ deferred.
 | `programs.ssh.matchBlocks` → `programs.ssh.settings` | A deprecation, still functional, but worth taking while cheap since `rb` resolves its `<host>-tailscale` targets through this config. **Not a rename** — `settings` is a freeform DAG keyed on upstream `ssh_config` directive names, so the keys change: `hostname`→`HostName`, `user`→`User`, `port`→`Port`, `localForwards`→`LocalForward` (same `bind.port`/`host.address`/`host.port` structure). Attribute names still become `Host <name>`. Verified behaviour-preserving by generating `~/.ssh/config` before and after: 81 lines, **byte-identical** | **fixed** |
 | `xfce.thunar-archive-plugin` / `thunar-volman` → top-level `pkgs.*` | Package aliases. Still resolve today but will not forever. `plugins = with pkgs.xfce;` → `with pkgs;` in `nixos-system/hyprland.nix` and `labwc.nix`. Verified a true no-op: both spellings resolve to byte-identical store paths | **fixed** |
 
-**With all four not-gated items fixed, the remaining warnings are purely
-`stateVersion` deferrals** — 8 on thinkpad, 7 on kauri (kauri has no
-`hyprland.configType`, being labwc). That is the expected steady state until
-`home.stateVersion` is deliberately bumped. Anything outside this set is new
-and worth reading in full:
-
-- `programs.neovim.withRuby` ×2 and `withPython3` ×2 (two users per host)
-- `xdg.userDirs.setSessionVariables`
-- `gtk.gtk4.theme`
-- `programs.firefox.configPath`
-- `wayland.windowManager.hyprland.configType` (thinkpad only)
+**With all four not-gated items fixed, and the deferrals adopted, pinned or
+migrated as recorded above, one warning is left fleet-wide on the
+workstations:** `wayland.windowManager.hyprland.configType` on thinkpad. kauri
+evaluates with **zero** as of 2026-10-01, when danielle's `configPath` was set.
+Anything else is new and worth reading in full.
 
 Check them as a set rather than by eye — a long familiar list is exactly how a
 new warning gets missed, which nearly happened with the `programs.vscode` one:
@@ -1016,7 +1013,7 @@ nix eval --raw '.#nixosConfigurations.<host>.config.system.build.toplevel.drvPat
 
 ---
 
-### 3.4 Firefox profile move to the XDG path — plan, not yet done
+### 3.4 Firefox profile move to the XDG path — thinkpad done, kauri at its reboot
 
 `programs.firefox.configPath` is the last `home.stateVersion` deferral with real
 data behind it. **Operator decision: move the data rather than pin the legacy
@@ -1097,40 +1094,81 @@ change lands in the same reboot, with nothing starting firefox in between:
    wholesale.
 6. Reboot. **Do not start firefox before rebooting** — see the window note
    below.
-7. Verify: `findmnt /home/chris/.config/mozilla` shows the bind mount;
-   `~/.config/mozilla/firefox/chris.default` is ~214M; `profiles.ini` is a fresh
-   store symlink; firefox opens with bookmarks, logins, ublock and bitwarden
-   intact; no `*.hm-bak` files appeared; the `firefox.configPath` warning is
-   gone.
-8. Clean up `/persist/home/chris/.mozilla` — it already holds only the empty
-   `extensions/` and a stale `native-messaging-hosts/`. Leave it until firefox
-   is confirmed working; it costs nothing and is part of the rollback.
+7. **Done 2026-10-01, verified** after the reboot: `findmnt` shows
+   `~/.config/mozilla` bound from `/persist`; the profile is 197M with
+   `places.sqlite` / `logins.json` / `key4.db` / `cookies.sqlite` present;
+   `profiles.ini`, `.keep` and the uBlock and Bitwarden `.xpi`s are fresh store
+   symlinks at the new path, and the three firefox-installed `.xpi`s survived;
+   `home-manager-chris` activated cleanly; the `firefox.configPath` warning is
+   gone; the operator signed off and removed the rollback copy (step 8). Two deviations from the expected result, both benign:
+   - **One `*.hm-bak` appeared**, `search.json.mozlz4.hm-bak` — the real file
+     home-manager also manages, caught by `backupFileExtension` exactly as
+     designed. Deleted. Expect the same on kauri.
+   - **There was no skipredirect extension.** Step 5's list of five deleted
+     symlinks named one, but neither the pre-move nor the post-move generation
+     declares it — `shared/firefox.nix` lists only uBlock and Bitwarden. The
+     fifth deleted symlink was a stale leftover, and home-manager now owns
+     **four** links in the profile, not five.
+8. **Done 2026-10-01** — `/persist/home/chris/.mozilla` removed by the operator.
+   `~/.mozilla/native-messaging-hosts/.keep` is still created on the tmpfs root
+   each activation, as expected.
 
 **The window between the move and the reboot.** The running generation still
 expects `~/.mozilla/firefox`, and the data is no longer there — it moved out
 from under the live bind mount, while `~/.config/mozilla` does not exist yet
 because impermanence only creates that bind mount at boot. So in this window
 firefox has no profile at either path. **Starting it would create a fresh empty
-profile at the old location**, which is recoverable but messy. Nothing else is
-affected and the data is intact at
-`/persist/home/chris/.config/mozilla/firefox`.
+profile at the old location**, which is recoverable but messy.
 
 Rollback is symmetrical: move `firefox/` back, revert the two files, previous
 generation is in the boot menu.
 
-**kauri is simpler and different.** danielle has 165M at
-`/home/danielle/.mozilla`, but kauri is **not** an impermanence host (S12 —
-`impermanence.nix` is commented out in its `configuration.nix`), so there is no
-`/persist` path and no impermanence entry to edit. The move is just the
-directory plus the `configPath` setting, which is shared. Do it **after** kauri
-is on 26.05, not as part of that reboot, and while danielle is not using the
-laptop.
+**kauri procedure — folded into its 26.05 reboot by operator decision
+2026-10-01.** The earlier plan put this after kauri was on 26.05, in a second
+sitting; it now rides the single reboot so kauri lands finished. kauri is
+**not** an impermanence host (S12 — `impermanence.nix` is commented out in its
+`configuration.nix`), so there is no `/persist` side and no impermanence entry:
+the move is a rename inside `/home/danielle`, plus `configPath`, which is
+already set in `hosts/kauri/danielle/home.nix`.
 
-**Sequencing.** This is a per-user data migration: one host at a time, firefox
-closed, not folded into a rebuild being done for other reasons. `configPath`
-lives in the shared `firefox.nix`, so setting it moves *every* profile's
-expected location at once — either stage it per-user first, or do both hosts in
-the same sitting.
+Surveyed 2026-10-01: `/home/danielle/.mozilla` is **166M**, one profile
+`danielle.default`, and exactly **four** home-manager store symlinks under
+`firefox/` — `profiles.ini`, `danielle.default/.keep`, and the uBlock and
+Bitwarden `.xpi`s — plus `native-messaging-hosts/.keep`, which stays put.
+`search.json.mozlz4` is a real file home-manager also manages, so expect one
+`search.json.mozlz4.hm-bak` after the reboot, as on thinkpad. eric has no
+profile on kauri.
+
+1. `rb kauri` → `boot` first. Moving the data before the new generation is
+   staged would leave it where no bootable generation expects it if the build
+   fails.
+2. danielle's Firefox closed, from a root shell on kauri:
+   ```sh
+   pgrep -u danielle firefox                     # must print nothing
+   du -s --apparent-size /home/danielle/.mozilla/firefox; find /home/danielle/.mozilla/firefox | wc -l
+   sudo -u danielle mkdir -p /home/danielle/.config/mozilla
+   sudo -u danielle mv /home/danielle/.mozilla/firefox /home/danielle/.config/mozilla/firefox
+   sudo -u danielle find /home/danielle/.config/mozilla -lname '/nix/store/*' -print -delete   # expect 4
+   du -s --apparent-size /home/danielle/.config/mozilla/firefox; find /home/danielle/.config/mozilla/firefox | wc -l
+   ```
+   The file count should drop by exactly 4 and the size by only those 4
+   symlinks' few hundred bytes. Running as
+   danielle keeps ownership without a `chown`.
+3. Reboot. The same window applies: Firefox started between 2 and 3 builds an
+   empty profile at `~/.mozilla/firefox`. On kauri that one would persist
+   (no tmpfs root), so if it happens, delete it after the reboot.
+4. Verify: profile at `~/.config/mozilla/firefox/danielle.default`, ~166M;
+   `profiles.ini` a fresh store symlink; `home-manager-danielle` activated
+   cleanly; Firefox opens with danielle's bookmarks, logins, uBlock and
+   Bitwarden; delete the expected `search.json.mozlz4.hm-bak`.
+
+Rollback: move `firefox/` back to `~/.mozilla/`, revert `configPath` in
+`hosts/kauri/danielle/home.nix`, and rebuild.
+
+**Placement.** `configPath` is set per host (`hosts/thinkpad/chris/home.nix`,
+`hosts/kauri/danielle/home.nix`), not in the shared `firefox.nix`, because the
+profiles on the deprecated cypress and alder were never moved. If either host
+returns, move its profile and set the same line in its `home.nix`.
 
 ---
 
@@ -1589,18 +1627,20 @@ is only useful on a host with a screen in front of you.
       `programs.vscodium`, `programs.ssh.matchBlocks`→`programs.ssh.settings`.
       Found by reading the staged closure while still on 25.11, so none of them
       landed. Full detail and the reasoning in 3.2. `1ff5ce3`
-- [ ] **Both staged generations are now STALE** — they predate `1ff5ce3`.
-      Rebuild before rebooting either host or the first two regressions still
-      land. `rb <host>` → `boot` → `distributed (aspen)`.
+- [x] ~~Both staged generations are STALE~~ — thinkpad was rebuilt before its
+      reboot. **kauri's staged gen 38 is still stale** and must be rebuilt;
+      it predates `1ff5ce3` and the 2026-10-01 kauri prep.
 - [x] Dropped the `librewolf` `permittedInsecurePackages` entries 2026-09-27;
       26.05 ships 156.0-1 with no `knownVulnerabilities`.
 - [x] **Kept the `mcp-nixos` pin** — 26.05's 2.4.3 clears the recorded "≥ 2.x"
       trigger, but unstable is at **3.0.1**, so dropping it is a major
       downgrade of a tool in daily use. `DEVIATIONS.md` reason rewritten. Keep
       the `claude-code` pin too — ongoing parity preference, not a workaround.
-- [ ] Use `nixos-rebuild boot` plus a deliberate reboot, not `switch`. LUKS
+- [x] Use `nixos-rebuild boot` plus a deliberate reboot, not `switch`. LUKS
       passphrase to hand; the previous generation is in the bootloader menu.
-- [ ] **thinkpad**: rebuild (stale staged gen), reboot, confirm LUKS unlock.
+- [x] **thinkpad**: rebuilt, rebooted, LUKS unlock confirmed — on 26.05, 0
+      failed units. The mesa/Hyprland risk below produced only the follow-ups
+      listed after this item.
       Pre-reboot baseline with the full 713-package delta and a verify list is
       at `~/.claude/projects/-home-chris-nixos/phase3-baseline-thinkpad.txt`.
       The functional risk to watch is **mesa 25.2→26.1 with hyprland
@@ -1645,8 +1685,17 @@ is only useful on a host with a screen in front of you.
       default and produced a 3684-line log per session. Set to `true`. Config
       errors still surface through the on-screen overlay and
       `hyprctl configerrors`, which is the part worth keeping.
-- [ ] **kauri: deferred, and its staged generation is stale again.** Everything
-      learned on thinkpad that applies to kauri is already in the tree —
+- [x] **thinkpad Firefox profile moved to the XDG path** and verified
+      2026-10-01; `/persist/home/chris/.mozilla` removed. See 3.4.
+- [x] **kauri pre-reboot prep, 2026-10-01.** danielle's `configPath` set in
+      `hosts/kauri/danielle/home.nix` (kauri now evaluates with **0
+      warnings**), and her rc.xml moved to labwc's `<windowSwitcher><osd
+      show="yes"/>` form — the old `show` attribute was accepted for one
+      release after 0.9.3, and kauri jumps to 0.9.7. Nothing else in 0.9.3–0.9.7
+      touches her config.
+- [ ] **kauri: rebuild, move danielle's Firefox profile, reboot** — sequence in
+      "Pick up here", Firefox commands in 3.4. Everything learned on thinkpad
+      that applies to kauri is already in the tree —
       `swww`→`awww` in `danielle/labwc.nix` and `eric/labwc.nix`, `vscodium` in
       `danielle/vscodium.nix`, the thunar attrs in `labwc.nix`, and the shared
       greeter UID bounds and `consoleLogLevel` in `greetd.nix` / `boot.nix`.
@@ -1658,19 +1707,37 @@ is only useful on a host with a screen in front of you.
       so check its own log after the first boot rather than assuming silence
       means success. And kauri is still the one host taking systemd stage 1 and
       the channel bump in a single reboot.
-- [ ] Test IWD:EE — may break on glibc 2.42's executable-stack refusal. Do not
-      gate the migration on it.
+      **Verify after the reboot:** LUKS unlock via systemd-ask-password;
+      `nixos-version` reports 26.05; `systemctl --failed` and
+      `systemctl --user -M danielle@ --failed` empty; labwc session starts,
+      Alt-Tab shows the switcher OSD, wallpaper present (`awww-daemon`
+      running); `journalctl -b | grep -i labwc` shows no config errors;
+      VSCodium settings under `~/.config/VSCodium/User`; the Firefox checks in
+      3.4; and the eval-warning set from "Pick up here" still reads kauri 0.
+- [x] **IWD:EE works on 26.05** — confirmed by the operator over thinkpad's
+      Moonlight stream, 2026-10-01. glibc 2.42's executable-stack refusal did
+      not bite.
 
 ### Closeout
 
-- [ ] Drop the explicit `boot.initrd.systemd.enable = true` from
-      `nixos-system/boot.nix` — 26.05 makes systemd stage 1 the default, so the
-      line becomes redundant (the scripted implementation is removed in 26.11).
+- [x] Dropped the explicit `boot.initrd.systemd.enable = true` from
+      `nixos-system/boot.nix`, 2026-10-01 — 26.05 makes systemd stage 1 the
+      default (the scripted implementation is removed in 26.11). Verified a
+      no-op: the option still evaluates `true` on all four live hosts, and
+      `nix-diff` of kauri's system before/after shows only the flake `self`
+      source hash propagating — no initrd or boot derivation changes.
 - [x] Dropped the `docker` overlay pin 2026-09-27 — confirmed against a clean
       nixpkgs import that stock 26.05 `pkgs.docker` is already 29.8.0, so the
       pin was a no-op. `displaylink-pinned` is now the only overlay left.
 - [ ] Rewrite the `DEVIATIONS.md` header and rows for 26.05; delete dropped
       rows. Per repo convention, in the same commit as each code change.
+      **Framing done 2026-10-01** — header, section 1 intro and column, the
+      claude-code revert text, section 5 (which still claimed `home-manager`
+      was on `release-25.11`), and both CLAUDE.md references. **Left: three
+      rows whose triggers need a real retest on 26.05, not a text edit** —
+      sunshine's x11-capture crash (`pkgs-2505` pin, "fix lands in 25.11"),
+      lldap's broken file-based settings, and crowdsec console
+      auto-enrollment.
 - [x] ~~Update `nixos-configs-private/CLAUDE.md`~~ — **already done** in private
       `2f382c7`; it now documents all 5 exported modules. Verified 2026-09-26.
 - [ ] Update the entity-rename procedure comment at `zigbee2mqtt.nix:37` — HA
