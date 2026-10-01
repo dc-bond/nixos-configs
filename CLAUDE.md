@@ -100,7 +100,7 @@ Conventions and exceptions:
 
 - **`vars/default.nix`**: Single source of truth for all configuration metadata
 - **`README.md`**
-- **`DEVIATIONS.md`**: Registry of everything that is not a stock `nixos-26.05` build — cross-channel package pulls (`pkgs.unstable`/`pkgs-2505`/`pkgs-2105`), version pins, overlays, insecure-package allowances, and config-level upstream-bug workarounds, each with a revert trigger
+- **`DEVIATIONS.md`**: Registry of everything that is not a stock `nixos-26.05` build — cross-channel package pulls (`pkgs.unstable`/`pkgs-2105`), version pins, overlays, insecure-package allowances, and config-level upstream-bug workarounds, each with a revert trigger
 - **`nixos-system/networking.nix`**
 - **`flake.nix`**: Flake entrypoint with `mkHost` auto-generation function
 - **`lib/default.nix`**: Custom helper functions

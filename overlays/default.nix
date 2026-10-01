@@ -16,17 +16,6 @@
     };
   };
 
-# 25.05 nixpkgs set for packages with bugs in current release, accessible through 'pkgs.pkgs-2505'
-  nixpkgs-2505-packages = final: _prev: {
-    pkgs-2505 = import inputs.nixpkgs-2505 {
-      system = final.stdenv.hostPlatform.system;
-      config = {
-        allowUnfree = true;
-        allowBroken = true;
-      };
-    };
-  };
-
 # 21.05 nixpkgs set for legacy libraries dropped from newer releases (e.g. openssl_1_0_2 for IWD:EE), accessible through 'pkgs.pkgs-2105'
   nixpkgs-2105-packages = final: _prev: {
     pkgs-2105 = import inputs.nixpkgs-2105 {
