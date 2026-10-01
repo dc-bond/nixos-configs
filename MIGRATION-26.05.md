@@ -1336,7 +1336,7 @@ is only useful on a host with a screen in front of you.
       **0 failed units and 0 errors**. All public endpoints verified from
       outside — vaultwarden, matrix, grafana, searx and ntfy all answering over
       TLS. Boot 987ms kernel + 2.2s initrd + 1m4s userspace.
-- [ ] **kauri** — LUKS + plain btrfs, no impermanence. A batch 4 generation was
+- [x] **Superseded — folded into kauri's 26.05 reboot (Phase 3).** **kauri** — LUKS + plain btrfs, no impermanence. A batch 4 generation was
       staged on 25.11 but **will not be booted**: per the operator decision of
       2026-09-27, kauri is rebuilt straight to 26.05 and takes systemd stage 1
       and the channel bump in one reboot. Verify both at that reboot — the LUKS
@@ -1404,7 +1404,7 @@ is only useful on a host with a screen in front of you.
 
       **No `DEVIATIONS.md` row is needed** — taking a module default is not a
       deviation. This replaces the planned row for the `mkForce`.
-- [ ] Bump `flake.nix`: `nixpkgs` → `nixos-26.05`, `home-manager` →
+- [x] **Done — batch 5** (`7d29fe2` `1e8350c` `61c4d50`). Bump `flake.nix`: `nixpkgs` → `nixos-26.05`, `home-manager` →
       `release-26.05`. (The dead `simple-nixos-mailserver` input is already
       gone as of 2026-09-27.)
 
@@ -1425,7 +1425,9 @@ is only useful on a host with a screen in front of you.
       `stateVersion` deferrals in §3.2, Nextcloud's stay-on-32 notice, and the
       home-assistant `lovelace.mode` deprecation. The `llmnr` rename warning is
       gone, confirming 0.6.
-- [ ] **Do not touch `home.stateVersion`.** It gates every home-manager change
+- [x] **Held throughout** — every `home.stateVersion` is still 25.11; the
+      deferrals were adopted, pinned or migrated individually instead (§3.2).
+      **Do not touch `home.stateVersion`.** It gates every home-manager change
       listed in §3.2, including the Firefox profile move.
 - [x] ~~Add the `DEVIATIONS.md` row for the 0.7 `mkForce`~~ — **not needed.**
       The override was dropped 2026-09-27 in favour of the module default, so
@@ -1512,9 +1514,11 @@ is only useful on a host with a screen in front of you.
       crowdsec database *backwards* across a major version. Kept, with the
       `DEVIATIONS.md` reason rewritten to a no-downgrade constraint. Third
       instance of the same trap as `unifi` and `mcp-nixos`.
-- [ ] Fresh pre-switch dumps: `matrix-synapse`, `vaultwarden`; copy
-      `/var/lib/grafana/data/grafana.db` aside. Verify non-empty.
-- [ ] **Switch.**
+- [x] ~~Fresh pre-switch dumps: `matrix-synapse`, `vaultwarden`; copy
+      `/var/lib/grafana/data/grafana.db` aside. Verify non-empty.~~ **Moot** —
+      juniper switched and verified with no data loss; whether these dumps
+      were taken was not recorded.
+- [x] **Switch.**
 - [x] **juniper switched to 26.05 on 2026-09-27 and verified.** Synapse applied
       schema through `94/10` and logged "Schema now up to date", 0 restarts.
       Grafana came up on the file-provided `secret_key`
@@ -1623,7 +1627,9 @@ is only useful on a host with a screen in front of you.
 - [x] **S1 and S2 fired on the way up, as predicted, and self-recovered** — one
       "cannot join network namespace" and six "failed to bind host port". Zero
       failed units afterwards; S3 did not appear this boot.
-- [ ] Afterwards, as separate changes: test dropping the `sunshine`
+- [x] **All three done 2026-10-01** — sunshine pin and `nixpkgs-2505` dropped,
+      lldap reclassified as correct config (DynamicUser), `doInstallCheck`
+      now the 26.05 module default. Afterwards, as separate changes: test dropping the `sunshine`
       `pkgs-2505` pin (if it works, drop the whole `nixpkgs-2505` input — 25.05
       is EOL); revert the lldap `LoadCredential` workaround to the native
       `*_file` options; re-test HA's `doInstallCheck = false`.
