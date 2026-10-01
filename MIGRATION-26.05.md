@@ -1083,23 +1083,37 @@ change lands in the same reboot, with nothing starting firefox in between:
    `hosts/thinkpad/chris/home.nix`, `.mozilla` -> `.config/mozilla` in
    `hosts/thinkpad/impermanence.nix`, `backupFileExtension` in `flake.nix`.
 3. `rb thinkpad` -> `boot` (stages, activates nothing).
-4. Move the data — same filesystem, so a rename, not a copy:
-   `sudo mkdir -p /persist/home/chris/.config/mozilla`
-   `sudo mv /persist/home/chris/.mozilla/firefox /persist/home/chris/.config/mozilla/firefox`
-5. Drop the home-manager symlinks the move carried along, so activation
-   recreates them at the new path instead of finding them in the way:
-   `sudo find /persist/home/chris/.config/mozilla -lname '/nix/store/*' -delete`
-   (expect 5: `profiles.ini`, `chris.default/.keep`, and three
-   `extensions/*.xpi`. The real `.xpi` files beside them are firefox-installed
-   and must stay.)
-6. Reboot.
+4. **Done 2026-09-30** — moved, same filesystem so a rename not a copy.
+   Verified byte-for-byte against a pre-move baseline: **195M, 277 files, 74
+   directories before and after**, `places.sqlite` / `logins.json` / `key4.db`
+   / `cookies.sqlite` / `prefs.js` / `extensions.json` all identical sizes,
+   ownership `chris:users` preserved, destination parent created `0755` to
+   match its `.config` siblings.
+5. **Done** — the 5 home-manager store symlinks were deleted (`profiles.ini`,
+   `chris.default/.keep`, and the `skipredirect` / `uBlock0` / bitwarden
+   `.xpi`s). The three firefox-installed `.xpi`s beside them — `arc-theme`,
+   `arc-dark-theme` and `{935b9bec…}` — were left in place, which is the whole
+   reason the deletion is scoped by `-lname '/nix/store/*'` rather than
+   wholesale.
+6. Reboot. **Do not start firefox before rebooting** — see the window note
+   below.
 7. Verify: `findmnt /home/chris/.config/mozilla` shows the bind mount;
    `~/.config/mozilla/firefox/chris.default` is ~214M; `profiles.ini` is a fresh
    store symlink; firefox opens with bookmarks, logins, ublock and bitwarden
    intact; no `*.hm-bak` files appeared; the `firefox.configPath` warning is
    gone.
-8. Clean up `/persist/home/chris/.mozilla` — by then it holds only the empty
-   `extensions/` and a stale `native-messaging-hosts/`.
+8. Clean up `/persist/home/chris/.mozilla` — it already holds only the empty
+   `extensions/` and a stale `native-messaging-hosts/`. Leave it until firefox
+   is confirmed working; it costs nothing and is part of the rollback.
+
+**The window between the move and the reboot.** The running generation still
+expects `~/.mozilla/firefox`, and the data is no longer there — it moved out
+from under the live bind mount, while `~/.config/mozilla` does not exist yet
+because impermanence only creates that bind mount at boot. So in this window
+firefox has no profile at either path. **Starting it would create a fresh empty
+profile at the old location**, which is recoverable but messy. Nothing else is
+affected and the data is intact at
+`/persist/home/chris/.config/mozilla/firefox`.
 
 Rollback is symmetrical: move `firefox/` back, revert the two files, previous
 generation is in the boot menu.
