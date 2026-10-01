@@ -1244,7 +1244,7 @@ in
           PrivateTmp = true;
           ProtectSystem = "strict";
           ProtectHome = true;
-          ProtectKernelTunnels = true;
+          ProtectKernelTunables = true;
           ProtectKernelModules = true;
           ProtectControlGroups = true;
           RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
@@ -1268,7 +1268,7 @@ in
           PrivateTmp = true;
           ProtectSystem = "strict";
           ProtectHome = true;
-          ProtectKernelTunnels = true;
+          ProtectKernelTunables = true;
           ProtectKernelModules = true;
           ProtectControlGroups = true;
           RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
@@ -1292,7 +1292,7 @@ in
           PrivateTmp = true;
           ProtectSystem = "strict";
           ProtectHome = true;
-          ProtectKernelTunnels = true;
+          ProtectKernelTunables = true;
           ProtectKernelModules = true;
           ProtectControlGroups = true;
           RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
@@ -1316,7 +1316,7 @@ in
           PrivateTmp = true;
           ProtectSystem = "strict";
           ProtectHome = true;
-          ProtectKernelTunnels = true;
+          ProtectKernelTunables = true;
           ProtectKernelModules = true;
           ProtectControlGroups = true;
           RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];

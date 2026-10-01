@@ -34,8 +34,8 @@
 # between the two styles therefore does NOT move an entity - see below.
 #
 # renaming a device does NOT fix its home assistant entity id. discovery is
-# retained and keyed by ieee, but only the payload's object_id carries the
-# friendly name, and home assistant pins an entity id at first discovery and
+# retained and keyed by ieee, but only the payload's default_entity_id carries
+# the friendly name, and home assistant pins an entity id at first discovery and
 # never rewrites it. to rename a fixture:
 #   1. change friendly_name here
 #   2. nixos-rebuild switch - z2m restarts and rewrites the retained discovery
