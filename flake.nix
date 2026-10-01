@@ -62,6 +62,7 @@
             home-manager = {
               useGlobalPkgs = true;
               useUserPackages = true;
+              backupFileExtension = "hm-bak"; # without this a file home-manager did not place is a hard activation failure, which at boot means a broken session rather than a warning
               users = lib.genAttrs
                 (hostConfig.users ++ ["root"]) # always include root user in hosts
                 (user: import ./hosts/${hostname}/${user}/home.nix); # include users defined in each host in configVars
