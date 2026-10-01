@@ -25,8 +25,8 @@ if they come back. In-scope hosts are **juniper, aspen, thinkpad, kauri**.
 **Last updated 2026-10-01.** Phase 0 complete, channel bumped, **juniper,
 aspen and thinkpad are all live on 26.05**, each verified with zero failed
 units. thinkpad's Firefox profile move (3.4) is done and verified. **kauri is
-the last host**, and all of its pre-reboot config work is in the tree, so one
-rebuild, one data move and one reboot take it to a finished 26.05 state. Start
+the last host**: rebuilt and staged (gen 39), **parked** until a reboot window,
+when one data move and one reboot take it to a finished 26.05 state. Start
 with "Pick up here".
 
 ### Pick up here
@@ -36,7 +36,7 @@ with "Pick up here".
 | **juniper** | **26.05** `0ai8kfv6…` | same | done — Phase 1 complete |
 | **aspen** | **26.05** `089pzf09…` (gen 226) | same | done — Phase 2 complete, verified 2026-09-29 |
 | **thinkpad** | **26.05** `c1lfyw9z…` (gen 79) | same | done — Phase 3 complete, Firefox moved, verified 2026-10-01 |
-| **kauri** | 25.11 `rxp2lyzq…` (gen 35) | 26.05 `bns3czxf…` (gen 38) — **STALE**, predates `1ff5ce3` and the 2026-10-01 kauri prep | **← next: rebuild, move danielle's Firefox profile, reboot** |
+| **kauri** | 25.11 `rxp2lyzq…` (gen 35) | **26.05 `1ymskj0v…` (gen 39)** — current, matches `24ebd5f`, bootloader default | **parked 2026-10-01** — rebuilt; Firefox move + reboot when a reboot window opens |
 
 **kauri: one sitting, one reboot, finished state.** Operator goal 2026-10-01:
 land kauri as close to a finished 26.05 state as possible on its single
@@ -58,9 +58,25 @@ settled in config already is:
   rc.xml. The one behaviour change that reaches her — default placement
   `center` → `cascade` — is moot because her window rule maximizes every window
 
+**Parked 2026-10-01 after step 1.** Gen 39 is built from `24ebd5f`, staged
+as the systemd-boot default, and verified to match the tree's outPath. Steps 2-4
+wait for a reboot window. Re-check before resuming: if anything has been
+committed since that changes kauri's closure, rebuild again first.
+
+**While parked, any reboot of kauri lands in gen 39 with the profile unmoved**
+— danielle's laptop, so this can happen without anyone choosing it (a dead
+battery, an update prompt, a power-off). Nothing breaks at boot, but Firefox
+then opens a **fresh empty profile** at `~/.config/mozilla/firefox` while the
+real one sits unused at `~/.mozilla/firefox`. Recovery, with Firefox closed:
+delete the fresh `~/.config/mozilla/firefox`, run step 2 below unchanged, then
+`systemctl restart home-manager-danielle` to recreate the store symlinks at
+the new path — no second reboot needed, since kauri has no impermanence bind
+mount to wait for. Moving the data *now* instead is worse: it would break
+danielle's running 25.11 Firefox until the reboot.
+
 The sequence:
 
-1. `rb kauri` → `boot` → `distributed (aspen)`. Activates nothing.
+1. **Done 2026-10-01** — `rb kauri` → `boot` → `distributed (aspen)`, gen 39.
 2. **danielle's Firefox closed** (it is normally open — confirm with `pgrep
    firefox`), then move the profile and delete its home-manager store symlinks:
    see the kauri procedure in 3.4. Firefox must not start between this step and
@@ -185,7 +201,8 @@ Useful recipes, all permitted without a build:
 | P3c | `stateVersion` deferrals adopted or pinned (neovim, `xdg.userDirs`, `gtk.gtk4.theme`) | **done 2026-09-30** | `6357ba2` `532877d` |
 | P3d | thinkpad Firefox profile → XDG path (3.4) | **done 2026-10-01, verified** — old `/persist/home/chris/.mozilla` removed | `a0545f8` |
 | P3e | kauri pre-reboot prep: danielle `configPath`, labwc `<osd>` syntax | **done 2026-10-01** in the tree — kauri evaluates with 0 warnings | |
-| P3f | kauri rebuild + Firefox move + reboot | **next** | |
+| P3f | kauri rebuild | **done 2026-10-01** — gen 39 staged as default, matches `24ebd5f` | |
+| P3g | kauri Firefox move + reboot | **parked** — waiting for a reboot window | |
 
 ### Verified live state
 
@@ -1693,8 +1710,11 @@ is only useful on a host with a screen in front of you.
       show="yes"/>` form — the old `show` attribute was accepted for one
       release after 0.9.3, and kauri jumps to 0.9.7. Nothing else in 0.9.3–0.9.7
       touches her config.
-- [ ] **kauri: rebuild, move danielle's Firefox profile, reboot** — sequence in
-      "Pick up here", Firefox commands in 3.4. Everything learned on thinkpad
+- [x] **kauri rebuilt 2026-10-01** — gen 39, bootloader default, matches
+      `24ebd5f`.
+- [ ] **kauri: move danielle's Firefox profile, reboot** — **parked**, waiting
+      for a reboot window. Sequence and the unplanned-reboot recovery in "Pick
+      up here", Firefox commands in 3.4. Everything learned on thinkpad
       that applies to kauri is already in the tree —
       `swww`→`awww` in `danielle/labwc.nix` and `eric/labwc.nix`, `vscodium` in
       `danielle/vscodium.nix`, the thunar attrs in `labwc.nix`, and the shared
