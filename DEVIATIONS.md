@@ -23,7 +23,6 @@ pinned to a specific non-channel version.
 
 | File | Package | Source instead of 26.05 | Reason | Revert trigger |
 |---|---|---|---|---|
-| `nixos-system/sunshine.nix` | `sunshine` | `pkgs.pkgs-2505` (25.05) | 25.11 has an x11-capture crash regression ([nixpkgs#475181](https://github.com/NixOS/nixpkgs/issues/475181)) | Fix lands in 25.11 |
 | `nixos-system/crowdsec.nix` | `crowdsec` | `pkgs.unstable` (1.8.1 vs 1.7.8 in 26.05) | **No-downgrade constraint.** juniper already runs 1.8.1 live; 26.05 ships 1.7.8, so dropping the pin would move the local crowdsec DB *backwards* across a major version. The original reason ("newer than the channel ships") no longer applies — this one replaces it | 26.05 backports ≥1.8.1, or crowdsec state is deliberately rebuilt on the older major |
 | `nixos-system/crowdsec.nix` | `crowdsec-firewall-bouncer` | `pkgs.unstable` (0.0.36) | Kept in lockstep with `crowdsec` above | Same as `crowdsec` |
 | `nixos-system/unifi.nix` | `unifi` | `pkgs.unstable` (10.6.101 vs 10.2.105 in 26.05) | **No-downgrade constraint.** The original CVE reason is gone — 26.05's 10.2.105 carries no `knownVulnerabilities` — but it is *older* than the running 10.6.101, and UniFi migrates its config DB forward on upgrade: an older controller will not read it. The `jrePackage` override is no longer needed; 26.05's module defaults to `jdk25_headless` on its own | 26.05 backports a `unifi` ≥ the running version |
@@ -66,8 +65,7 @@ host via `nixos-system/foundation.nix` (`nixpkgs.overlays`).
 | `displaylink` | Pinned to **6.2** with a manual `requireFile` src + hash | Manual bump only; hash is mirrored in `nixos-system/rebuilds.nix` — keep the two in sync |
 
 The overlay file also defines the cross-channel package sets consumed in §1:
-`pkgs.unstable` (nixos-unstable), `pkgs.pkgs-2505` (25.05), `pkgs.pkgs-2105`
-(21.05).
+`pkgs.unstable` (nixos-unstable) and `pkgs.pkgs-2105` (21.05).
 
 ---
 
@@ -125,5 +123,5 @@ Own repos: `finplanner`, `private`.
 - Adding a deviation? Add a row here in the same commit, with a concrete revert
   trigger.
 - Removing one? Delete both the code and its row here.
-- Periodic audit: `grep -rnE 'pkgs\.(unstable|pkgs-2505|pkgs-2105)|overrideAttrs|permittedInsecurePackages|allowInsecure' --include='*.nix' .`
+- Periodic audit: `grep -rnE 'pkgs\.(unstable|pkgs-2105)|overrideAttrs|permittedInsecurePackages|allowInsecure' --include='*.nix' .`
   should turn up nothing that isn't documented above.
