@@ -1051,28 +1051,55 @@ Note `configPath` takes a path relative to `$HOME` and **also rewraps the
 firefox package** to use it, so the browser and home-manager cannot disagree
 about the location.
 
-**thinkpad procedure.** `.mozilla` is a live bind mount, so the data has to move
-on the `/persist` side, and impermanence bind mounts only change at boot — every
-change therefore has to land in the same reboot, with nothing starting firefox
-in between:
+**Two things the first survey missed, both found by evaluating the new config
+before touching anything:**
 
-1. Quit Firefox completely.
-2. `home-manager/shared/firefox.nix`: add
-   `configPath = ".config/mozilla/firefox";` to `programs.firefox`.
-3. `hosts/thinkpad/impermanence.nix:61`: `".mozilla"` -> `".config/mozilla"`.
-   The neighbouring `.config/*` entries are individually bind-mounted, so this
-   is the same shape as `.config/Element` beside it.
-4. `rb thinkpad` -> `boot` (stages, activates nothing).
-5. Move the data — same filesystem, so it is a rename, not a copy:
-   `mkdir -p /persist/home/chris/.config/mozilla`
-   `mv /persist/home/chris/.mozilla/firefox /persist/home/chris/.config/mozilla/firefox`
+- **`native-messaging-hosts` does not move with `configPath`.** Home-manager
+  still writes it to `.mozilla/native-messaging-hosts`, so `~/.mozilla` does not
+  disappear. Harmless today — the only thing in it is home-manager's own `.keep`
+  symlink, regenerated every activation — but it now lands on the tmpfs root
+  rather than the persisted path. **If a real native-messaging manifest is ever
+  installed, it needs its own persist entry**, or it will vanish each boot.
+- **Home-manager owns five store symlinks inside the profile**, and the moved
+  tree would carry stale copies of them into paths home-manager wants to claim
+  as new. With `backupFileExtension` unset, that is a **hard activation failure
+  at boot** — a broken session, not a warning. Fixed two ways: the symlinks are
+  deleted as part of the move so home-manager recreates them cleanly, and
+  `backupFileExtension = "hm-bak"` is now set in `flake.nix` as a standing
+  safety net. `search.json.mozlz4` is the same shape — a real file home-manager
+  also manages — and is covered by the same net.
+
+`configPath` is set in **`hosts/thinkpad/chris/home.nix`, not the shared
+`firefox.nix`**, because danielle and eric import that module too and their
+profiles have not moved.
+
+**thinkpad procedure.** `.mozilla` is a live bind mount, so the data moves on
+the `/persist` side, and impermanence bind mounts only change at boot — every
+change lands in the same reboot, with nothing starting firefox in between:
+
+1. Quit Firefox. Confirm with `pgrep firefox` and a dangling
+   `chris.default/lock` symlink.
+2. **Done** — `configPath = ".config/mozilla/firefox"` in
+   `hosts/thinkpad/chris/home.nix`, `.mozilla` -> `.config/mozilla` in
+   `hosts/thinkpad/impermanence.nix`, `backupFileExtension` in `flake.nix`.
+3. `rb thinkpad` -> `boot` (stages, activates nothing).
+4. Move the data — same filesystem, so a rename, not a copy:
+   `sudo mkdir -p /persist/home/chris/.config/mozilla`
+   `sudo mv /persist/home/chris/.mozilla/firefox /persist/home/chris/.config/mozilla/firefox`
+5. Drop the home-manager symlinks the move carried along, so activation
+   recreates them at the new path instead of finding them in the way:
+   `sudo find /persist/home/chris/.config/mozilla -lname '/nix/store/*' -delete`
+   (expect 5: `profiles.ini`, `chris.default/.keep`, and three
+   `extensions/*.xpi`. The real `.xpi` files beside them are firefox-installed
+   and must stay.)
 6. Reboot.
 7. Verify: `findmnt /home/chris/.config/mozilla` shows the bind mount;
-   `~/.config/mozilla/firefox/chris.default` is 214M; `profiles.ini` is a fresh
+   `~/.config/mozilla/firefox/chris.default` is ~214M; `profiles.ini` is a fresh
    store symlink; firefox opens with bookmarks, logins, ublock and bitwarden
-   intact; the `firefox.configPath` warning is gone.
-8. Then remove the leftover `/persist/home/chris/.mozilla` (empty `extensions/`
-   and a stale `native-messaging-hosts/`).
+   intact; no `*.hm-bak` files appeared; the `firefox.configPath` warning is
+   gone.
+8. Clean up `/persist/home/chris/.mozilla` — by then it holds only the empty
+   `extensions/` and a stale `native-messaging-hosts/`.
 
 Rollback is symmetrical: move `firefox/` back, revert the two files, previous
 generation is in the boot menu.
