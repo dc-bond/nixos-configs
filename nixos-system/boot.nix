@@ -48,7 +48,6 @@ in
     consoleLogLevel = 3;
     
     initrd = {
-      systemd.enable = true; # scripted stage 1 is deprecated in 26.05, removed in 26.11
       supportedFilesystems = {
         btrfs = true;
         ext4 = true;
