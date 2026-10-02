@@ -42,12 +42,6 @@ in
     ];
   };
 
-# firefox profile lives at the xdg path, not ~/.mozilla; configPath also rewraps
-# the firefox package, so home-manager and the browser cannot disagree. set per
-# host rather than in shared/firefox.nix because the profiles on the deprecated
-# cypress and alder were never moved
-  programs.firefox.configPath = ".config/mozilla/firefox";
-
 # define default folders in home directory
   xdg.userDirs = {
     enable = true;
@@ -71,6 +65,6 @@ in
   systemd.user.startServices = "sd-switch";
 
 # original home state version - defines the first version of home-manager installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
-  home.stateVersion = "25.11";
+  home.stateVersion = "26.05";
 
 }

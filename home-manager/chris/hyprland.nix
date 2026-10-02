@@ -100,6 +100,7 @@ in
 
   wayland.windowManager.hyprland = {
     enable = true;
+    configType = "hyprlang"; # settings below are written in hyprlang grammar; the home 26.05 default is lua
     settings = {
       "$mod" = "Alt";
       exec-once = [
