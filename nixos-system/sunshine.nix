@@ -1,4 +1,6 @@
 {
+  lib,
+  pkgs,
   ...
 }:
 
@@ -46,6 +48,11 @@
     sunshine = {
       enable = true;
       autoStart = true; # starts with chris's x session
+      # nvenc needs sunshine's cuda path (x11 capture -> cuda -> nvenc) and the driver runpath that comes with it;
+      # nixpkgs builds it without cuda, and its default cuda capabilities start at 7.5 - the GTX 1060 is 6.1
+      package = (pkgs.sunshine.override { cudaSupport = true; }).overrideAttrs (old: {
+        cmakeFlags = old.cmakeFlags ++ [ (lib.cmakeFeature "CMAKE_CUDA_ARCHITECTURES" "61") ];
+      });
       settings = {
         sunshine_name = "aspen";
       };
