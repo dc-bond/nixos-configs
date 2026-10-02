@@ -96,7 +96,7 @@ in
             "Stirling PDF" = {
               href = "https://stirling-pdf.${configVars.domain2}/";
               description = "PDF Tools";
-              ping = "https://stirling-pdf.${configVars.domain2}";
+              ping = "https://stirling-pdf.${configVars.domain2}/api/v1/info/status";
             };
           }
           {
