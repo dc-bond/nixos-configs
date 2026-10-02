@@ -1,7 +1,6 @@
 {
   inputs,
   config,
-  lib,
   pkgs,
   ...
 }:
@@ -15,14 +14,7 @@ in
 
   programs.firefox = {
     enable = true;
-    # firefox 147+ falls back to ~/.mozilla whenever it exists, and home-manager always creates
-    # ~/.mozilla/native-messaging-hosts; home-manager only wraps MOZ_APP_DATA when configPath is
-    # non-default, so wrap it unconditionally or the xdg profile is silently ignored
-    package = pkgs.firefox.override {
-      appDataDir = if lib.hasPrefix "/" config.programs.firefox.configPath
-        then config.programs.firefox.configPath
-        else "${config.home.homeDirectory}/${config.programs.firefox.configPath}";
-    };
+    package = pkgs.firefox;
     profiles = {
       default = {
         id = 0;
