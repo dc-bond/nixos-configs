@@ -1517,7 +1517,7 @@ in
                 "https://sabnzbd.${configVars.domain2}"
                 "https://search.${configVars.domain2}"
                 "https://sonarr.${configVars.domain2}"
-                "https://stirling-pdf.${configVars.domain2}"
+                "https://stirling-pdf.${configVars.domain2}/api/v1/info/status" # / answers 401 in 2.x; this is its unauthenticated health endpoint
                 "https://traefik-aspen.${configVars.domain2}"
                 "https://unifi.${configVars.domain2}"
                 "https://wardrobe.${configVars.domain2}"

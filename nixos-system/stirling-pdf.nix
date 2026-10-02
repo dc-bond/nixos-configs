@@ -15,6 +15,7 @@ in
     environment = { 
       SERVER_PORT = 8081; 
       INSTALL_BOOK_AND_ADVANCED_HTML_OPS = "true";
+      SECURITY_ENABLELOGIN = "false"; # overrides the generated settings.yml; traefik's trusted-allow already gates access
     };
   };
 
