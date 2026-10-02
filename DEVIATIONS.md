@@ -87,6 +87,8 @@ depart from stock versions. Listed so a future audit doesn't re-flag them:
 
 - `nixos-system/ollama.nix` — `ollama-cuda.override { cudaArches = [ "61" ]; }`
   (GTX 1060 / Pascal)
+- `nixos-system/sunshine.nix` — `sunshine.override { cudaSupport = true; }` with
+  `CMAKE_CUDA_ARCHITECTURES=61`, for NVENC on the GTX 1060
 - `home-manager/shared/rofi.nix` — `rofi.override { plugins = [ rofi-calc ]; }`
 
 ---
