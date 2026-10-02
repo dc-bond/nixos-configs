@@ -184,7 +184,7 @@ in
   virtualisation.oci-containers.containers = {
 
     "${app}" = {
-      image = "ghcr.io/blakeblackshear/${app}:0.15.0"; # https://github.com/blakeblackshear/frigate/releases
+      image = "ghcr.io/blakeblackshear/${app}:0.15.2"; # https://github.com/blakeblackshear/frigate/releases
       autoStart = true;
       environmentFiles = [ 
         config.sops.templates."${app}-env".path 
