@@ -20,7 +20,7 @@ let
   # its unit is Type=simple, so After=/Requires= alone are satisfied as soon as docker run starts
   waitForVpn = ''
     for _ in $(seq 60); do
-      [ "$(${pkgs.docker}/bin/docker inspect -f '{{.State.Running}}' ${app1} 2>/dev/null)" = true ] && break
+      [ "$(${pkgs.docker}/bin/docker container inspect -f '{{.State.Running}}' ${app1} 2>/dev/null)" = true ] && break
       sleep 1
     done
   '';
