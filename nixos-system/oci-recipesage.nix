@@ -250,7 +250,7 @@ in
         # nginx resolves ${app5} at startup; docker dns has it only once that container is running
         preStart = lib.mkBefore ''
           for _ in $(seq 60); do
-            [ "$(${pkgs.docker}/bin/docker inspect -f '{{.State.Running}}' ${app5} 2>/dev/null)" = true ] && break
+            [ "$(${pkgs.docker}/bin/docker container inspect -f '{{.State.Running}}' ${app5} 2>/dev/null)" = true ] && break
             sleep 1
           done
         '';
