@@ -1352,7 +1352,7 @@ in
         description = "Weekly ZFS Scrub Health Report Timer";
         wantedBy = [ "timers.target" ];
         timerConfig = {
-          OnCalendar = "Mon 04:00:00";  # monday 04:00 (after Mon 03:00 scrub completes)
+          OnCalendar = "Mon 09:00:00";  # aspen's scrub starts Mon 03:00 and takes ~3h45m; its metrics update only on completion
           Persistent = true;  # run on next boot if missed
           RandomizedDelaySec = "5m";  # randomize within 5 minutes to avoid load spikes
         };
