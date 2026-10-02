@@ -139,7 +139,7 @@
         hasBluetooth = true;
         hasBacklight = false;
         disk0 = "/dev/disk/by-id/ata-512GB_SSD_MP32B12203488"; # 512GB SATA SSD (OS disk)
-        disk1 = null; # TODO: external HDD (currently UUID f3fb53cc-52fa-48e3-8cac-b69d85a8aff1, get by-id with: ls -l /dev/disk/by-id/ | grep -v part)
+        disk1 = null;
         disk2 = null;
         disk3 = null;
       };
