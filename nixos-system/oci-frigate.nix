@@ -8,6 +8,7 @@
 
 let
   app = "frigate";
+  hostIp = configVars.hosts."${config.networking.hostName}".networking.ipv4;
 in
 
 {
@@ -220,6 +221,13 @@ in
   systemd = {
     services = { 
       "docker-${app}" = {
+        # ports bind to the host's lan address; network-online.target does not wait for it (wait-online is disabled)
+        preStart = lib.mkBefore ''
+          for _ in $(seq 60); do
+            ${pkgs.iproute2}/bin/ip -4 -o addr show | grep -q " ${hostIp}/" && break
+            sleep 1
+          done
+        '';
         after = [
           "docker-network-${app}.service"
           "docker-volume-${app}.service"

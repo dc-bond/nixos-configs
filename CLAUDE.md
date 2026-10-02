@@ -174,6 +174,7 @@ Conventions and exceptions:
 
 **SSH Access**
 - Servers (aspen, juniper): Custom SSH ports defined in configVars
+- juniper's public SSH port is deliberately closed at the Hetzner Cloud Firewall: reach it via Tailscale SSH, or the Hetzner web console as fallback
 - Workstations/laptops: Tailscale SSH only (`sshPort = null`)
 - Public keys stored in `configVars.hosts.${hostname}.networking.sshPublicKey`
 

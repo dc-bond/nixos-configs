@@ -247,6 +247,13 @@ in
     services = { 
 
       "docker-${app1}" = {
+        # nginx resolves ${app5} at startup; docker dns has it only once that container is running
+        preStart = lib.mkBefore ''
+          for _ in $(seq 60); do
+            [ "$(${pkgs.docker}/bin/docker inspect -f '{{.State.Running}}' ${app5} 2>/dev/null)" = true ] && break
+            sleep 1
+          done
+        '';
         after = [
           "docker-network-${app}.service"
           "docker-${app2}.service"
