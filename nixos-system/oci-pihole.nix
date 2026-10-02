@@ -311,6 +311,17 @@ let
     
     echo "Re-enabling Pi-hole..."
     docker exec ${app} pihole enable
+
+    # adlists are recreated above, so a list that fails to download has no cached copy (status 3/4)
+    # until the next gravity run; retry a transient failure here instead. runs with blocking enabled
+    # and never fails the unit
+    for attempt in 1 2 3; do
+      failed=$(sql "SELECT COUNT(*) FROM adlist WHERE enabled = 1 AND status NOT IN (1, 2);") || failed=0
+      [ "$failed" -eq 0 ] && break
+      echo "$failed adlist(s) failed to download; retrying gravity in 60s ($attempt/3)..."
+      sleep 60
+      docker exec ${app} pihole -g || true
+    done
     
     echo "Declarative adlists, allowlist, and client configuration complete!"
   '';
