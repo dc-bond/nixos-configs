@@ -899,14 +899,15 @@ let
             labels:
               severity: warning
 
+          # grouped by device: impermanence bind mounts report one filesystem under every mountpoint
           - alert: diskSpaceLow
-            expr: (node_filesystem_avail_bytes{fstype=~"ext4|btrfs|xfs"} / node_filesystem_size_bytes{fstype=~"ext4|btrfs|xfs"}) * 100 < 10
+            expr: min by (host, instance, device, fstype) (node_filesystem_avail_bytes{fstype=~"ext4|btrfs|xfs"} / node_filesystem_size_bytes{fstype=~"ext4|btrfs|xfs"}) * 100 < 10
             for: 5m
             labels:
               severity: warning
 
           - alert: diskSpaceCritical
-            expr: (node_filesystem_avail_bytes{fstype=~"ext4|btrfs|xfs"} / node_filesystem_size_bytes{fstype=~"ext4|btrfs|xfs"}) * 100 < 5
+            expr: min by (host, instance, device, fstype) (node_filesystem_avail_bytes{fstype=~"ext4|btrfs|xfs"} / node_filesystem_size_bytes{fstype=~"ext4|btrfs|xfs"}) * 100 < 5
             for: 2m
             labels:
               severity: critical
