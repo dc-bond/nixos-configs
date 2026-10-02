@@ -198,6 +198,7 @@ in
       autoScrub = {
         enable = true;
         interval = cfg.scrubInterval;
+        randomizedDelaySec = "0"; # start on schedule; juniper's weekly zfs-health report runs a fixed time after it
       };
       # automatic snapshots
       autoSnapshot = lib.mkIf cfg.enableSnapshots {

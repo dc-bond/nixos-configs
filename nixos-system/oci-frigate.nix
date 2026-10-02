@@ -206,7 +206,8 @@ in
         "--network=${app}"
         "--ip=${configVars.ociServices.${app}.containers.${app}.ipv4}"
         "--tty=true"
-        "--stop-signal=SIGINT"
+        "--stop-signal=SIGTERM" # the image's /init (s6-overlay) shuts down on SIGTERM; SIGINT left it to be killed at the timeout
+        "--stop-timeout=60" # room to finish recording segments; inside the unit's 120s TimeoutStopSec
         "--privileged" # ensure container access to udev rules for Coral device
         "--device=nvidia.com/gpu=all" # enable GPU utilization
         #"--device=/dev/apex_0:/dev/apex_0" # enable PCIe Coral device utilization
