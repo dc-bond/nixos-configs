@@ -16,6 +16,14 @@ let
   app5 = "prowlarr";
   app6 = "jellyseerr";
   app7 = "jellyfin";
+  # dependents join ${app1}'s network namespace, which exists only once that container is running;
+  # its unit is Type=simple, so After=/Requires= alone are satisfied as soon as docker run starts
+  waitForVpn = ''
+    for _ in $(seq 60); do
+      [ "$(${pkgs.docker}/bin/docker inspect -f '{{.State.Running}}' ${app1} 2>/dev/null)" = true ] && break
+      sleep 1
+    done
+  '';
   hostData = configVars.hosts.${config.networking.hostName};
   recoveryPlan = {
     restoreItems = [
@@ -338,6 +346,7 @@ in
       };
 
       "docker-${app2}" = {
+        preStart = lib.mkBefore waitForVpn;
         after = [
           "docker-${app1}.service"
           "docker-volume-${app2}.service"
@@ -367,6 +376,7 @@ in
       };
       
       "docker-${app3}" = {
+        preStart = lib.mkBefore waitForVpn;
         after = [
           "docker-${app1}.service"
           "docker-volume-${app3}.service"
@@ -396,6 +406,7 @@ in
       };
 
       "docker-${app4}" = {
+        preStart = lib.mkBefore waitForVpn;
         after = [
           "docker-${app1}.service"
           "docker-volume-${app4}.service"
@@ -425,6 +436,7 @@ in
       };
 
       "docker-${app5}" = {
+        preStart = lib.mkBefore waitForVpn;
         after = [
           "docker-${app1}.service"
           "docker-volume-${app5}.service"
@@ -454,6 +466,7 @@ in
       };
 
       "docker-${app6}" = {
+        preStart = lib.mkBefore waitForVpn;
         after = [
           "docker-${app1}.service"
           "docker-volume-${app6}.service"
@@ -483,6 +496,7 @@ in
       };
 
       "docker-${app7}" = {
+        preStart = lib.mkBefore waitForVpn;
         after = [
           "docker-${app1}.service"
           "docker-volume-${app7}.service"
