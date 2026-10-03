@@ -75,7 +75,7 @@
 
       # 2. select activation mode
       echo "Activation:"
-      select activation in "switch" "boot"; do
+      select activation in "switch" "boot" "build"; do
         if [ -n "$activation" ]; then
           break
         fi
@@ -110,6 +110,13 @@
       # show current branch
       echo ""
       echo "→ Building from branch: $(git -C "$flake_dir" branch --show-current 2>/dev/null || echo 'unknown')"
+
+      # build only: needs no connection to the target, so it also works for offline hosts
+      if [ "$activation" = "build" ]; then
+        echo "→ Building $selected_host (no activation, $build_strategy)..."
+        eval nix build "$flake_dir#nixosConfigurations.$selected_host.config.system.build.toplevel" --no-link --print-out-paths $builder_opts
+        return $?
+      fi
 
       # local rebuild (target is current host)
       if [ "$selected_host" = "$current_host" ]; then
@@ -172,7 +179,8 @@
 #    ├─ Prompts for target host (or accepts as argument)
 #    ├─ Prompts for activation mode:
 #    │  ├─ switch: Activate immediately
-#    │  └─ boot: Activate on next reboot
+#    │  ├─ boot: Activate on next reboot
+#    │  └─ build: Build the closure only and exit; no SSH, so it works for offline hosts
 #    ├─ Prompts for build strategy:
 #    │  ├─ distributed (aspen): Use aspen for builds (auto-fallback to local after 5s)
 #    │  └─ force-local: Build on this machine only (for when aspen is down/broken)
