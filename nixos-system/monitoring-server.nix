@@ -1008,10 +1008,10 @@ let
       # each host's cloudBackup OnSuccess writes borgbackup_last_success_timestamp_seconds via
       # node_exporter textfile collector; if the metric is stale or absent, we alert.
       #
-      # workstations (thinkpad, kauri) are intentionally excluded: they still emit the metric
-      # so we can see "last backup" in grafana, but a laptop being closed at 02:40 is expected
-      # behavior, not an incident. borgbackup timers on workstations are non-persistent
-      # (opportunistic - if awake at 02:40/02:50, back up; otherwise skip until tomorrow).
+      # workstations (cypress, thinkpad, kauri) are intentionally excluded: they still emit the
+      # metric so we can see "last backup" in grafana, but a workstation being off or asleep at
+      # its backup time is expected behavior, not an incident. borgbackup timers on workstations
+      # are non-persistent (opportunistic - if awake at 02:40-02:50, back up; otherwise skip until tomorrow).
       - name: backup_alerts
         interval: 60s
         rules:

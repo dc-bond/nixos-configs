@@ -87,7 +87,7 @@
 
           ## Tooling
 
-          Installed host-wide on thinkpad, beyond coreutils: `python3` (bundled with
+          Installed host-wide on cypress and thinkpad, beyond coreutils: `python3` (bundled with
           `requests`, `pyyaml`, `openpyxl`), `jq`, `yq-go`, `sqlite`, `ripgrep`, `lsof`,
           `gh`, `pandoc`, `typst`, `poppler-utils`, `qpdf`, `ghostscript`, `imagemagick`
           and `tesseract` — see

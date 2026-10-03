@@ -58,7 +58,7 @@
         { directory = ".config/age"; mode = "0700"; } # user age key for home-manager SOPS
         { directory = ".claude/projects"; mode = "0700"; } # claude code: session transcripts + per-project auto-memory (chris's hand-refined MEMORY.md)
         "nextcloud-client" # local nextcloud directory
-        ".mozilla" # firefox profiles
+        ".config/mozilla" # firefox profiles
         ".config/Element" # matrix e2e keys
         ".config/Nextcloud" # nextcloud sync state
         ".config/VSCodium" # codium editor state
@@ -77,5 +77,5 @@
     "d /persist/home/chris 0700 chris users -" # tmpfiles ensures directory exists before impermanence tooling bind-mounts /persist/home/{user}/.config/age directory
     "d /persist/etc/age 0755 root root -" # since early bind mounting /etc/age manually (i.e. not using impermanence tooling bind mounts) due to sops needing age keys for user creation prior to impermanence bind mounts (deploy script should create this, but tmpfiles as fallback)
   ];
-
+  
 }
