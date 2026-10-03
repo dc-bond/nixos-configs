@@ -30,7 +30,7 @@ in
       "home-manager/${username}/hyprland.nix"
     ])
   ];
-  
+
   programs.home-manager.enable = true; # enable home manager
 
 # define username and home directory
@@ -51,16 +51,20 @@ in
     documents = "${config.home.homeDirectory}/documents";
     desktop = null;
   };
-  
-  # ensure nextcloud-client directory exists
-  systemd.user.tmpfiles.rules = [
-    "d %h/nextcloud-client 0755 - - -"
-  ];
+
+# default applications - tmpfs root wipes ~/.config/mimeapps.list each boot, so manage it declaratively
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "application/pdf" = "firefox.desktop";
+      "x-scheme-handler/mailto" = "thunderbird.desktop";
+    };
+  };
 
 # start/re-start services after system rebuild
   systemd.user.startServices = "sd-switch";
 
 # original home state version - defines the first version of home-manager installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
-  home.stateVersion = "23.11";
+  home.stateVersion = "26.05";
 
 }

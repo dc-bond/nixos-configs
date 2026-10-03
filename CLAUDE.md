@@ -244,8 +244,8 @@ what makes targeted reads acceptable — it does not make bulk reads acceptable.
 
 - **aspen**: Homelab server (headless, 192.168.1.2), monitoring hub, exit node, build server for other hosts, runs 30+ services
 - **juniper**: VPS (headless, 178.156.133.218), public services, primary DNS, exit node
-- **thinkpad**: ThinkPad laptop (Hyprland, encrypted), primary workstation
-- **cypress**: Desktop workstation (Hyprland)
+- **cypress**: Desktop (Hyprland, unencrypted), primary workstation
+- **thinkpad**: ThinkPad laptop (Hyprland, encrypted), configured to match cypress
 - **kauri**: Family laptop (Labwc, encrypted), secondary user
 
 ## Key Services

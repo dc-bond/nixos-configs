@@ -1,4 +1,4 @@
-# check ip on installation iso and update configVars
+# usage: deploy-<host> [installer-ip] - the ip defaults to the host's configVars address
 # set root password on installation iso with 'sudo passwd'
 
 { 
@@ -35,8 +35,9 @@ let
     in pkgs.writeShellScriptBin "deploy-${hostname}" ''
       #!/usr/bin/env bash
       set -euo pipefail
-      
-      echo "Deploying ${hostname} to ${ipv4}..."
+
+      target="''${1:-${ipv4}}"
+      echo "Deploying ${hostname} to $target..."
       ${lib.optionalString useDiskEncryption ''echo "Using disk encryption for this host..."''}
       ${lib.optionalString usesImpermanence ''echo "Using impermanence architecture for this host..."''}
 
@@ -59,7 +60,7 @@ let
       ${userAgeSetup}
 
       # move to host directory
-      cd "$HOME/nextcloud-client/Personal/nixos/nixos-configs/hosts/${hostname}"
+      cd "$HOME/nixos/nixos-configs/hosts/${hostname}"
       
       # run nixos-anywhere, bypass declarative knownHosts to allow deployment to fresh installation ISOs
       ${if useDiskEncryption
@@ -76,7 +77,7 @@ let
             --ssh-option UserKnownHostsFile=/dev/null \
             --ssh-option GlobalKnownHostsFile=/dev/null \
             --flake '.#${hostname}' \
-            root@${ipv4}
+            "root@$target"
         ''
         else ''
           nix run github:nix-community/nixos-anywhere -- \
@@ -90,7 +91,7 @@ let
             --ssh-option UserKnownHostsFile=/dev/null \
             --ssh-option GlobalKnownHostsFile=/dev/null \
             --flake '.#${hostname}' \
-            root@${ipv4}
+            "root@$target"
         ''
       }
       

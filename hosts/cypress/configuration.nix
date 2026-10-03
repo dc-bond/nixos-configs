@@ -3,8 +3,8 @@
   outputs,
   lib,
   configLib,
-  configVars,
   config,
+  configVars,
   pkgs,
   ...
 }:
@@ -15,8 +15,7 @@
 
   disko.devices = {
     disk = {
-      main = {
-      #disk0 = {
+      disk0 = {
         type = "disk";
         device = configVars.hosts.${config.networking.hostName}.hardware.disk0;
         content = {
@@ -48,7 +47,7 @@
                   };
                   "/swap" = {
                     mountpoint = "/swap";
-                    swap.swapfile.size = "8G"; # 0.5x RAM - adequate OOM protection without hibernation
+                    swap.swapfile.size = "8G"; # cold-page overflow behind zram — no hibernation on impermanence hosts
                   };
                 };
               };
@@ -61,6 +60,11 @@
 
   bulkStorage.path = lib.mkIf (config.hardware.wdPassport.enable or false) "/storage-ext4-external";
 
+  backups = {
+    startTime = "*-*-* 02:45:00"; # staggered: cypress at 2:45 AM
+    prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
+  };
+
   # enable nix-ld to run dynamically linked binaries (e.g., vscodium extensions)
   programs.nix-ld = {
     enable = true;
@@ -69,19 +73,8 @@
     ];
   };
 
-  backups = {
-    startTime = "*-*-* 02:45:00"; # staggered: cypress at 2:45 AM
-    prune.daily = 3; # workstation retention: 3 daily archives reduces borg compact segment rewrites, keeping rclone cloud syncs incremental
-    standaloneData = [ "/home/chris/nixos" ];
-    serviceHooks.preHook = [
-      # sync nixos configs to nextcloud as tertiary backup (excludes .git to avoid sync corruption)
-      "mkdir -p /home/chris/nextcloud-client/Personal/nixos-backup"
-      "${pkgs.rsync}/bin/rsync -av --delete --exclude='.git' /home/chris/nixos/ /home/chris/nextcloud-client/Personal/nixos-backup/"
-    ];
-  };
-
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
-  system.stateVersion = "25.11";
+  system.stateVersion = "26.05";
 
   imports = lib.flatten [
     inputs.disko.nixosModules.disko
@@ -91,7 +84,6 @@
       "nixos-system/boot.nix"
       "nixos-system/foundation.nix"
       "nixos-system/base-tools.nix"
-      "nixos-system/intel.nix"
       "nixos-system/rebuilds.nix"
       "nixos-system/networking.nix"
       "nixos-system/tailscale.nix" # recoverTailscale
@@ -99,6 +91,7 @@
       "nixos-system/sshd.nix"
       "nixos-system/audio.nix"
       "nixos-system/zsh.nix"
+      "nixos-system/workstation-tools.nix"
       "nixos-system/yubikey.nix"
       "nixos-system/printing.nix"
       "nixos-system/backups.nix"
@@ -108,12 +101,14 @@
       "nixos-system/monitoring-client.nix"
       "nixos-system/usb-phone-mount.nix"
       "nixos-system/wd-passport.nix"
+      "nixos-system/intel.nix"
+      "nixos-system/oom.nix"
+      "nixos-system/zram.nix"
       "nixos-system/greetd.nix"
       "nixos-system/ddcutil.nix"
       "nixos-system/hyprland.nix"
       "scripts/deploy.nix"
       "scripts/network-test.nix"
-      "scripts/test-builds.nix"
     ])
   ];
 
