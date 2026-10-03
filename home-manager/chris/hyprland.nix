@@ -3,6 +3,7 @@
   config,
   lib,
   configLib,
+  configVars,
   pkgs, 
   osConfig,
   ... 
@@ -136,7 +137,7 @@ in
         "$mod, F2, exec, ddcutil -d 1 setvcp 60 0x12" # switch monitor input to HDMI2
         "$mod, Pause, exec, hyprctl dispatch dpms toggle" # toggle monitor on/off
         #"$mod, F3, exec, ddcutil -d 1 setvcp 60 0x0f" # switch monitor input to DP1
-        ] ++ lib.optional (osConfig.networking.hostName == "thinkpad") "$mod, F8, exec, rfkill toggle wlan" ++ [
+        ] ++ lib.optional (configVars.hosts.${osConfig.networking.hostName}.networking.wifiInterface != null) "$mod, F8, exec, rfkill toggle wlan" ++ [
         "$mod, F10, exec, rfkill toggle bluetooth"
         "$mod, F5, exec, brightnessctl set 10%-"
         "$mod, F6, exec, brightnessctl set +10%"

@@ -122,7 +122,7 @@
         sshPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAzRulWkTODGo7qfcwMt8jP3h9kwApc7aEoFiwTQstCL";
         useResolved = true;
         ethernetInterface = "enp1s0";
-        wifiInterface = null;
+        wifiInterface = "wlan0";
         dockInterface = null;
         ipv4 = "192.168.1.89";
         tailscaleIp = "100.118.203.123";
