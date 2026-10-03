@@ -42,7 +42,7 @@
         # kill the SSH tunnel after VNC session ends
         pkill -f "ssh.*kauri-vnc"
       }
-      alder-desktop() {
+      alder-desktop() { # alder deprecated, not deployed
         echo "Connecting to alder's desktop via VNC..."
         echo "Opening SSH tunnel to alder (port 5901)..."
         ssh -f -N alder-vnc && \

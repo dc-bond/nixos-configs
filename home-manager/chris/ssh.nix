@@ -53,12 +53,12 @@
         User = config.home.username;
         Port = 22;
       };
-      "alder-tailscale" = {
+      "alder-tailscale" = { # alder deprecated, not deployed
         HostName = configVars.hosts.alder.networking.tailscaleIp;
         User = "eric";
         Port = 22;
       };
-      "alder-vnc" = {
+      "alder-vnc" = { # alder deprecated, not deployed
         HostName = configVars.hosts.alder.networking.tailscaleIp;
         User = "eric";
         Port = 22;

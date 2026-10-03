@@ -1415,7 +1415,7 @@ in
               labels.host = "thinkpad";
             }
             {
-              targets = [ "${configVars.hosts.alder.networking.tailscaleIp}:9100" ];
+              targets = [ "${configVars.hosts.alder.networking.tailscaleIp}:9100" ]; # alder deprecated, not deployed
               labels.host = "alder";
             }
             {
@@ -1444,7 +1444,7 @@ in
               labels.host = "thinkpad";
             }
             {
-              targets = [ "${configVars.hosts.alder.networking.tailscaleIp}:9633" ];
+              targets = [ "${configVars.hosts.alder.networking.tailscaleIp}:9633" ]; # alder deprecated, not deployed
               labels.host = "alder";
             }
             {
