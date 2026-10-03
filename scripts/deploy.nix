@@ -14,7 +14,7 @@ let
   mkDeployScript = hostname: hostConfig:
     let
       users = hostConfig.users;
-      # remote hosts (e.g. alder) have no LAN address and are reached over tailscale instead
+      # remote hosts have no LAN address and are reached over tailscale instead
       ipv4 = if hostConfig.networking.ipv4 != null
              then hostConfig.networking.ipv4
              else hostConfig.networking.tailscaleIp;

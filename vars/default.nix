@@ -179,7 +179,7 @@
       };
     };
     
-    alder = {
+    alder = { # deprecated host, not deployed - config kept for reference
       system = "x86_64-linux";
       users = [ "eric" ];
       bootLoader = "systemd-boot";

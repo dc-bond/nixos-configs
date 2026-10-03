@@ -362,7 +362,7 @@ in
                   "${configVars.hosts.juniper.networking.tailscaleIp}" # server - for blackbox monitoring
                   "${configVars.hosts.thinkpad.networking.tailscaleIp}"
                   "${configVars.hosts.cypress.networking.tailscaleIp}"
-                  "${configVars.hosts.alder.networking.tailscaleIp}"
+                  "${configVars.hosts.alder.networking.tailscaleIp}" # deprecated host, not deployed
                   "${configVars.hosts.kauri.networking.tailscaleIp}"
                   "${configVars.devices.chrisIphone15.tailscaleIp}"
                   "${configVars.devices.danielleIphone17.tailscaleIp}"

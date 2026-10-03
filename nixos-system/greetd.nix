@@ -20,7 +20,7 @@ let
     # copy carrying cap_sys_nice is still what gets run
     thinkpad = "start-hyprland";
     cypress = "start-hyprland";
-    alder = "labwc";
+    alder = "labwc"; # deprecated host, not deployed
     kauri = "labwc";
   };
   defaultCmd = defaultCmdByHost.${config.networking.hostName} or "zsh";

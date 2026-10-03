@@ -9,6 +9,9 @@
   ...
 }:
 
+# DEPRECATED - alder is retired and no longer deployed or migrated across
+# channels. this config is kept in the repo for future reference only.
+
 {
 
   networking.hostName = "alder";
