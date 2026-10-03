@@ -37,9 +37,10 @@ in
       BEANCOUNT_FILE = "${ledgerDir}/master.beancount";
     };
     serviceConfig = {
-      # --read-only disables the editor, entry forms, and every write endpoint;
-      # ledger edits are made in the beancount files directly, never through fava
-      ExecStart = "${favaEnv}/bin/fava --host 127.0.0.1 --port 7191 --read-only";
+      # no --read-only: it aborts every non-GET with 401, and fava-dashboards
+      # renders each panel through a POST, so the flag blanks every dashboard.
+      # ProtectSystem=strict below is what keeps the ledger unwritable
+      ExecStart = "${favaEnv}/bin/fava --host 127.0.0.1 --port 7191";
       # nextcloud owns the ledger; no supplementary group needed to read it
       User = "nextcloud";
       Group = "nextcloud";
