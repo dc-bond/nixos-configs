@@ -124,7 +124,7 @@ Conventions and exceptions:
 - **aspen** (192.168.1.2): LAN DNS server (~90% uptime)
 - **juniper** (VPS): Public DNS server (~99% uptime)
 - Both run identical Pi-hole + Unbound configurations declared in `oci-pihole.nix`
-- Tailscale clients use juniper as primary DNS for reliability
+- Tailscale clients resolve through the tailnet's global nameservers: aspen (100.118.61.37) first, juniper (100.70.221.14) second; MagicDNS is disabled tailnet-wide
 - LAN-only devices use aspen via DHCP with fallback servers
 
 **DNS Failover Behavior (Tested 2026-02-18)**
@@ -132,15 +132,15 @@ Conventions and exceptions:
 *NixOS Hosts with systemd-resolved:*
 - **DHCP Configuration Required**: UniFi DHCP must advertise all 3 DNS servers:
   - Primary: 192.168.1.2 (aspen pihole)
-  - Secondary: 1.1.1.1 (Cloudflare)
-  - Tertiary: 9.9.9.9 (Quad9)
+  - Secondary: 9.9.9.9 (Quad9)
+  - Tertiary: 149.112.112.112 (Quad9)
 - **Failover on LAN (Tailscale OFF)**:
   - When aspen goes down: First query may take ~5s timeout before failing over to 1.1.1.1, but systemd-resolved can also detect aspen as unreachable proactively (observed: no timeout after ~30s of aspen being offline)
   - Subsequent queries: Instant - systemd-resolved learns and switches Current DNS Server
   - Local domains (*.opticon.dev): FAIL (public DNS doesn't know them)
   - Internet connectivity: Works perfectly via fallback DNS
 - **Failover via Tailscale (Tailscale ON)**:
-  - Uses 100.100.100.100 (Tailscale MagicDNS) which routes queries to juniper's pihole
+  - Uses 100.100.100.100 (tailscaled's local forwarder), which falls through from aspen's pihole to juniper's
   - No timeouts - seamless failover
   - Local domains: WORK (juniper has identical custom DNS entries)
   - Internet connectivity: Works perfectly
@@ -164,17 +164,19 @@ Conventions and exceptions:
   - **iOS/iPhone**: Settings → Wi-Fi → (i) → Renew Lease
   - **Android**: Forget network and reconnect, or toggle airplane mode
 - Check current DNS config: `resolvectl status` (Linux) or Wi-Fi settings (mobile)
+- With Tailscale ON, `tailscale0` holds the `~.` routing domain, so resolved sends every query to 100.100.100.100 and the DHCP servers on the LAN link go unused. The forwarder reaches both piholes by tailnet IP, so this path does not depend on any exit node
+- A client accepting aspen's 192.168.1.0/24 subnet route sends LAN traffic through aspen even when on the LAN (tailscale's table 52 outranks main). Clients with a default exit node drop the route at home (see Tailscale Integration); cypress still accepts it, so with aspen down it loses other LAN hosts but keeps internet and tailnet DNS
 
 **Tailscale Integration**
-- Exit nodes: aspen, juniper (advertise LAN routes)
-- Clients with exit node: thinkpad, kauri (use aspen as default exit)
+- Exit nodes: aspen, juniper; only aspen also advertises the LAN route (192.168.1.0/24)
+- Clients with a default exit node: thinkpad, kauri (aspen), applied only off the home LAN. `tailscale-exit-node-auto` (fired by networkd-dispatcher) arpings the default gateway; when its MAC matches `configVars.devices.unifiUsg.mac` it clears the exit node and sets `--accept-routes=false`, so LAN traffic stays on the LAN instead of going through aspen's 192.168.1.0/24 subnet route. Off the home LAN it sets both back. These clients also run with `networking.enableIPv6 = false`, because aspen advertises `::/0` but has no IPv6 uplink
 - Clients without exit node: cypress (--ssh --accept-routes only, no --exit-node configured)
 - Configuration per-host in `configVars.hosts.${hostname}.networking.tailscale`
 - Module: `nixos-system/tailscale.nix`
 
 **SSH Access**
 - Servers (aspen, juniper): Custom SSH ports defined in configVars
-- juniper's public SSH port is deliberately closed at the Hetzner Cloud Firewall: reach it via Tailscale SSH, or the Hetzner web console as fallback
+- juniper's public SSH port is deliberately closed at the Hetzner Cloud Firewall: reach it via Tailscale SSH (`ssh juniper-tailscale`; plain `ssh juniper` resolves to the public IP and times out), or the Hetzner web console as fallback
 - Workstations/laptops: Tailscale SSH only (`sshPort = null`)
 - Public keys stored in `configVars.hosts.${hostname}.networking.sshPublicKey`
 
@@ -243,7 +245,7 @@ what makes targeted reads acceptable — it does not make bulk reads acceptable.
 ## Hosts Overview
 
 - **aspen**: Homelab server (headless, 192.168.1.2), monitoring hub, exit node, build server for other hosts, runs 30+ services
-- **juniper**: VPS (headless, 178.156.133.218), public services, primary DNS, exit node
+- **juniper**: VPS (headless, 178.156.133.218), public services, secondary tailnet DNS, exit node
 - **cypress**: Desktop (Hyprland, unencrypted), primary workstation
 - **thinkpad**: ThinkPad laptop (Hyprland, encrypted), configured to match cypress
 - **kauri**: Family laptop (Labwc, encrypted), secondary user
