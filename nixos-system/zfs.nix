@@ -17,84 +17,54 @@ let
     METRICS_FILE="$TEXTFILE_DIR/zfs_scrub.prom.$$"
     FINAL_FILE="$TEXTFILE_DIR/zfs_scrub.prom"
 
-    # iterate through all configured pools
+    to_bytes() {
+      case "$2" in
+        P) multiplier=1125899906842624 ;;
+        T) multiplier=1099511627776 ;;
+        G) multiplier=1073741824 ;;
+        M) multiplier=1048576 ;;
+        K) multiplier=1024 ;;
+        *) multiplier=1 ;;
+      esac
+      ${pkgs.gawk}/bin/awk -v val="$1" -v mult="$multiplier" 'BEGIN { printf "%.0f", val * mult }'
+    }
+
+    # e.g. "scan: scrub repaired 0B in 03:43:57 with 0 errors on Mon Sep 28 09:23:08 2026";
+    # runs of a day or more read "in 1 days 02:03:04"
+    completed_re='scrub repaired ([0-9.]+)([KMGTP]?)B? in (([0-9]+) days? )?([0-9]+):([0-9]+):([0-9]+) with ([0-9]+) errors on (.+)$'
+
     for pool in ${lib.concatStringsSep " " cfg.pools}; do
-      # get scrub status for this pool
-      scrub_status=$(${pkgs.zfs}/bin/zpool status "$pool" 2>/dev/null || echo "")
+      # only the scan line: the status/action text above it also contains " on "
+      scan_line=$(${pkgs.zfs}/bin/zpool status "$pool" 2>/dev/null | grep -E '^[[:space:]]*scan:' || true)
 
-      if grep -q "scrub in progress" <<< "$scrub_status"; then
-        # scrub is currently running
+      if [[ "$scan_line" == *"scrub in progress"* ]]; then
         echo "zfs_scrub_status{pool=\"$pool\"} 2"
-      elif grep -q "scrub repaired" <<< "$scrub_status" || grep -q "scrub completed" <<< "$scrub_status"; then
-        # scrub completed successfully
+      elif [[ "$scan_line" =~ $completed_re ]]; then
+        repaired_value="''${BASH_REMATCH[1]}"
+        repaired_unit="''${BASH_REMATCH[2]}"
+        days="''${BASH_REMATCH[4]:-0}"
+        hours="''${BASH_REMATCH[5]}"
+        minutes="''${BASH_REMATCH[6]}"
+        seconds="''${BASH_REMATCH[7]}"
+        finished="''${BASH_REMATCH[9]}"
+
         echo "zfs_scrub_status{pool=\"$pool\"} 1"
+        echo "zfs_scrub_errors_repaired_bytes{pool=\"$pool\"} $(to_bytes "$repaired_value" "$repaired_unit")"
+        echo "zfs_scrub_duration_seconds{pool=\"$pool\"} $(( 10#$days * 86400 + 10#$hours * 3600 + 10#$minutes * 60 + 10#$seconds ))"
 
-        # extract error count - bytes repaired indicates errors
-        repaired=$(grep -oP 'scrub repaired \K[\d.]+[KMGT]?' <<< "$scrub_status" || echo "0")
-        if [ "$repaired" = "0" ] || [ "$repaired" = "0B" ]; then
-          echo "zfs_scrub_errors_repaired_bytes{pool=\"$pool\"} 0"
-        else
-          # convert to bytes
-          value=$(echo "$repaired" | sed 's/[KMGT]$//')
-          case "$repaired" in
-            *T) multiplier=1099511627776 ;;  # 1024^4
-            *G) multiplier=1073741824 ;;     # 1024^3
-            *M) multiplier=1048576 ;;        # 1024^2
-            *K) multiplier=1024 ;;           # 1024^1
-            *)  multiplier=1 ;;              # bytes
-          esac
-          repaired_bytes=$(${pkgs.gawk}/bin/awk -v val="$value" -v mult="$multiplier" 'BEGIN { printf "%.0f", val * mult }')
-          echo "zfs_scrub_errors_repaired_bytes{pool=\"$pool\"} $repaired_bytes"
+        timestamp=$(date -d "$finished" +%s 2>/dev/null || echo "0")
+        if [ "$timestamp" != "0" ]; then
+          echo "zfs_scrub_last_completion_timestamp{pool=\"$pool\"} $timestamp"
         fi
 
-        # extract duration if available
-        duration_line=$(grep -A1 "scan:" <<< "$scrub_status" | tail -1 || echo "")
-        if [[ "$duration_line" =~ ([0-9]+)h([0-9]+)m ]]; then
-          hours="''${BASH_REMATCH[1]}"
-          minutes="''${BASH_REMATCH[2]}"
-          duration_seconds=$(( (hours * 3600) + (minutes * 60) ))
-          echo "zfs_scrub_duration_seconds{pool=\"$pool\"} $duration_seconds"
-        elif [[ "$duration_line" =~ ([0-9]+)[[:space:]]days ]]; then
-          days="''${BASH_REMATCH[1]}"
-          # extract hours and minutes after days
-          if [[ "$duration_line" =~ ([0-9]+):([0-9]+):([0-9]+) ]]; then
-            hours="''${BASH_REMATCH[1]}"
-            minutes="''${BASH_REMATCH[2]}"
-            seconds="''${BASH_REMATCH[3]}"
-            duration_seconds=$(( (days * 86400) + (hours * 3600) + (minutes * 60) + seconds ))
-            echo "zfs_scrub_duration_seconds{pool=\"$pool\"} $duration_seconds"
-          fi
-        fi
-
-        # extract completion timestamp if available
-        if [[ "$scrub_status" =~ on[[:space:]](.+) ]]; then
-          timestamp_str="''${BASH_REMATCH[1]}"
-          timestamp=$(date -d "$timestamp_str" +%s 2>/dev/null || echo "0")
-          if [ "$timestamp" != "0" ]; then
-            echo "zfs_scrub_last_completion_timestamp{pool=\"$pool\"} $timestamp"
-          fi
-        fi
-
-        # extract scanned bytes
-        scanned=$(grep -oP 'scanned out of \K[\d.]+[KMGT]?' <<< "$scrub_status" || echo "0")
-        if [ "$scanned" != "0" ]; then
-          value=$(echo "$scanned" | sed 's/[KMGT]$//')
-          case "$scanned" in
-            *T) multiplier=1099511627776 ;;
-            *G) multiplier=1073741824 ;;
-            *M) multiplier=1048576 ;;
-            *K) multiplier=1024 ;;
-            *)  multiplier=1 ;;
-          esac
-          scanned_bytes=$(${pkgs.gawk}/bin/awk -v val="$value" -v mult="$multiplier" 'BEGIN { printf "%.0f", val * mult }')
-          echo "zfs_scrub_total_bytes{pool=\"$pool\"} $scanned_bytes"
-        fi
-
-      elif grep -q "none requested" <<< "$scrub_status"; then
+        # a completed scan line carries no size; a scrub reads every allocated byte
+        allocated=$(${pkgs.zfs}/bin/zpool list -Hp -o allocated "$pool" 2>/dev/null || echo "0")
+        echo "zfs_scrub_total_bytes{pool=\"$pool\"} $allocated"
+      elif [[ "$scan_line" == *"none requested"* || -z "$scan_line" ]]; then
         # never run
         echo "zfs_scrub_status{pool=\"$pool\"} 3"
       else
-        # failed or unknown
+        # canceled, or a format this parser does not know
         echo "zfs_scrub_status{pool=\"$pool\"} 0"
       fi
     done > "$METRICS_FILE"
@@ -212,8 +182,9 @@ in
       trim.enable = lib.mkDefault false; # disable for HDDs, can be enabled for SSD pools
     };
 
-    # hook into zfs scrub service to export metrics after completion
-    systemd.services.zfs-scrub.serviceConfig.ExecStartPost = lib.mkAfter "${zfsScrubExporter}";
+    # zfs-scrub is Type=simple around `zpool scrub -w`, so ExecStartPost would
+    # fire at scrub start and export the previous run; stop-post fires on completion
+    systemd.services.zfs-scrub.serviceConfig.ExecStopPost = lib.mkAfter "${zfsScrubExporter}";
 
     # quotas live in pool metadata, not in the nix store, so reassert them at
     # boot rather than assuming whatever the pool was last set to by hand

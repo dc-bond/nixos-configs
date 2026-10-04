@@ -566,6 +566,7 @@ let
     import urllib.error
     import os
     import re
+    import sys
     from datetime import datetime
 
     PROMETHEUS_URL = "http://127.0.0.1:9090"
@@ -584,8 +585,12 @@ let
         SCRUB_NEVER_RUN: "Never Run"
     }
 
+    # set when any query fails, so an unreachable prometheus is not reported as "no pools"
+    prometheus_failed = False
+
     def query_prometheus(query):
         """query prometheus and return results"""
+        global prometheus_failed
         url = f"{PROMETHEUS_URL}/api/v1/query?query={urllib.parse.quote(query)}"
         try:
             with urllib.request.urlopen(url, timeout=10) as response:
@@ -594,6 +599,7 @@ let
                     return data.get("data", {}).get("result", [])
         except Exception as e:
             print(f"error querying prometheus: {e}")
+        prometheus_failed = True
         return []
 
     def get_zfs_data():
@@ -780,6 +786,9 @@ let
 
     if __name__ == "__main__":
         report = generate_report()
+        if prometheus_failed:
+            print("prometheus query failed, not sending report")
+            sys.exit(1)
         print(report)
 
         if send_webhook(report):
@@ -1312,6 +1321,9 @@ in
           Type = "oneshot";
           ExecStart = "${pkgs.python3}/bin/python3 ${zfsHealthScript}";
           EnvironmentFile = config.sops.templates."zfs-health-env".path;
+          # a boot-time catch-up run can beat prometheus to its listen socket
+          Restart = "on-failure";
+          RestartSec = "30s";
           DynamicUser = true;
           NoNewPrivileges = true;
           PrivateTmp = true;
