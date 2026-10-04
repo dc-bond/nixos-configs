@@ -31,6 +31,30 @@ let
     ++ lib.optional (defaultExitNodeIp != null)
         "--exit-node=${defaultExitNodeIp}";
 
+  # the default exit node and aspen's lan subnet route are only used off the
+  # home lan; at home both are overhead, and a hung aspen takes down whatever
+  # is routed through it
+  autoExitNode = isClient && defaultExitNodeIp != null;
+  homeGatewayMac = lib.toLower configVars.devices.unifiUsg.mac;
+
+  # arping instead of the neighbour table: with an exit node active, ip traffic
+  # to the gateway is routed into tailscale0 and its neighbour entry goes stale
+  tailscaleExitNodeAuto = pkgs.writeShellScript "tailscaleExitNodeAuto" ''
+    PATH=${lib.makeBinPath [ pkgs.iproute2 pkgs.iputils pkgs.gawk pkgs.gnugrep pkgs.coreutils pkgs.tailscale ]}
+    read -r gw dev < <(ip -4 route show default table main | awk '{for (i = 1; i < NF; i++) { if ($i == "via") g = $(i+1); if ($i == "dev") d = $(i+1) } print g, d; exit}')
+    mac=""
+    if [ -n "$gw" ] && [ -n "$dev" ]; then
+      mac=$(arping -c 1 -w 2 -I "$dev" "$gw" 2>/dev/null | grep -oiE '([0-9a-f]{2}:){5}[0-9a-f]{2}' | head -n 1 | tr 'A-F' 'a-f')
+    fi
+    if [ "$mac" = "${homeGatewayMac}" ]; then
+      echo "home gateway on $dev, clearing exit node and subnet routes"
+      tailscale set --exit-node= --accept-routes=false
+    else
+      echo "not on home lan (gateway ''${gw:-none} mac ''${mac:-none}), using exit node ${defaultExitNodeIp} and subnet routes"
+      tailscale set --exit-node=${defaultExitNodeIp} --accept-routes=true
+    fi
+  '';
+
   # first-time auth script - uses auth key only when needed, includes default exit node from config
   tailscaleUp = pkgs.writeShellScript "tailscaleUp" ''
     echo "Connecting to Tailscale with all default flags..."
@@ -43,6 +67,7 @@ let
         --auth-key="$(cat ${config.sops.secrets."${config.networking.hostName}TailscaleAuthKey".path})" \
         ${lib.concatStringsSep " " fullUpFlags}
     fi
+    ${lib.optionalString autoExitNode "${pkgs.systemd}/bin/systemctl restart tailscale-exit-node-auto.service"}
   '';
 
   # manual reconnect script - for use after 'tailscale down', connects without exit node
@@ -96,6 +121,7 @@ in
   sops.secrets."${config.networking.hostName}TailscaleAuthKey" = {}; # authKeys created in tailscale console are one-time use only; manually run 'tup' on fresh install to connect; authKey in sops then becomes deprecated
 
   networking = {
+    enableIPv6 = lib.mkIf autoExitNode false; # exit nodes advertise ::/0 but have no ipv6 uplink, so v6 through them blackholes
     firewall.trustedInterfaces = [ "tailscale0" ]; # allow all ports open on tailscale interface
     nat = lib.mkIf (tsConfig.advertiseRoutes != null) { # allow clients to access advertised subnets without needing to use the subnet-advertising host as an exit-node
       enable = true;
@@ -105,6 +131,16 @@ in
   };
 
   services = {
+    networkd-dispatcher = lib.mkIf autoExitNode {
+      enable = true;
+      rules.tailscale-exit-node-auto = {
+        onState = [ "routable" "no-carrier" "off" ];
+        script = ''
+          #!${pkgs.runtimeShell}
+          ${pkgs.systemd}/bin/systemctl restart --no-block tailscale-exit-node-auto.service
+        '';
+      };
+    };
     borgbackup.jobs."${config.networking.hostName}".paths = lib.mkAfter recoveryPlan.restoreItems;
     tailscale = {
       enable = true;
@@ -134,6 +170,17 @@ in
     in
       lib.foldl' (acc: name: acc // mkExitNodeAlias name exitNodes.${name}) {} (lib.attrNames exitNodes)
   );
+
+  systemd.services.tailscale-exit-node-auto = lib.mkIf autoExitNode {
+    description = "Use the default tailscale exit node only off the home LAN";
+    after = [ "tailscaled.service" ];
+    requires = [ "tailscaled.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = tailscaleExitNodeAuto;
+    };
+  };
 
   # optimizations for subnet routers and exit nodes
   # https://tailscale.com/kb/1320/performance-best-practices#linux-optimizations-for-subnet-routers-and-exit-nodes

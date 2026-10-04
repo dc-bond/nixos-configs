@@ -238,6 +238,7 @@
     };
     unifiUsg = {
       ipv4 = "192.168.1.1";
+      mac = "18:e8:29:44:da:64"; # lan-side; tailscale clients match it to detect the home network
       tailscaleIp = null;
     };
     unifiSwitch8 = {
