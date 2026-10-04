@@ -282,6 +282,14 @@
 
   systemd.services.zfs-mount.enable = false; # disable zfs auto-mount service when using legacy systemd-managed mountpoints
 
+  # silent hard hangs leave no log and need a power cycle; the sp5100_tco
+  # hardware watchdog reboots the host when pid 1 stops petting it
+  systemd.settings.Manager.RuntimeWatchdogSec = "30s";
+  boot.kernel.sysctl = {
+    "kernel.panic" = 10; # reboot 10s after a panic instead of sitting on it
+    "kernel.softlockup_panic" = 1;
+  };
+
   backups = {
     startTime = "*-*-* 02:20:00";
     borgDir = "${config.bulkStorage.path}/borgbackup";
