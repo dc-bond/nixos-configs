@@ -61,7 +61,9 @@ let
   '';
 
   # docker-${app2}.service is Type=simple, so systemd marks it started when `docker run` forks, not
-  # when unbound answers - block until it actually resolves
+  # when unbound answers - block until it answers. dig exits 0 on SERVFAIL, so this passes with the
+  # WAN still down; deliberately, since pihole Requires= this unit and must still start and serve
+  # local records. pihole-init waits for real resolution before running gravity
   waitForUnbound = pkgs.writeShellScript "wait-for-${app2}" ''
     deadline=$(( SECONDS + 120 ))
     until ${pkgs.dnsutils}/bin/dig +short +timeout=2 +tries=1 @${unboundIp} cloudflare.com >/dev/null 2>&1; do
@@ -71,7 +73,7 @@ let
       fi
       sleep 2
     done
-    echo "unbound at ${unboundIp} is resolving"
+    echo "unbound at ${unboundIp} is answering"
   '';
 
   # gravity lives only in the container writable layer, so an empty blocklist is indistinguishable
@@ -248,7 +250,7 @@ let
     # use the image's bundled sqlite3 - `apk add` would need working dns in a path that only runs when dns is suspect
     sql() { docker exec ${app} pihole-FTL sqlite3 /etc/pihole/gravity.db "$@"; }
 
-    echo "Verifying unbound is resolving before configuring Pi-hole..."
+    echo "Verifying unbound is answering before configuring Pi-hole..."
     ${waitForUnbound}
 
     # pihole's healthcheck has StartPeriod=0 and Retries=3, so `unhealthy` is expected before FTL is
@@ -268,11 +270,35 @@ let
       fi
       sleep 5
     done
-    
+
+    # unbound answers SERVFAIL while the WAN is down (aspen's dhcp lease can lag boot by minutes) and
+    # backs off its upstreams for minutes after it returns. probe the exact lookup gravity.sh gates
+    # on, through the container's own resolver path, so gravity never runs against a dead upstream
+    echo "Waiting for upstream DNS resolution inside the container..."
+    deadline=$(( SECONDS + 300 ))
+    until docker exec ${app} timeout 4 getent hosts raw.githubusercontent.com >/dev/null 2>&1; do
+      if [ "$SECONDS" -ge "$deadline" ]; then
+        echo "ERROR: container cannot resolve raw.githubusercontent.com after 300s"
+        exit 1
+      fi
+      sleep 5
+    done
+    echo "Upstream DNS is resolving"
+
     echo "Temporarily disabling Pi-hole to avoid database locks..."
     docker exec ${app} pihole disable
-    sleep 5 
-    
+    trap 'docker exec ${app} pihole enable >/dev/null 2>&1 || true' EXIT # a failed run must not leave blocking off
+    sleep 5
+
+    # the image's startup gravity run gives up without dns, leaving no gravity.db. sql against a
+    # missing file creates it empty, and gravity.sh only builds the schema when the file doesn't
+    # exist, so an empty one blocks every later run - remove it and build the schema first
+    if ! sql "SELECT 1 FROM gravity LIMIT 1;" >/dev/null 2>&1; then
+      echo "gravity.db missing or uninitialised; creating it..."
+      docker exec ${app} rm -f /etc/pihole/gravity.db
+      docker exec ${app} pihole -g
+    fi
+
     echo "Clearing existing database entries for declarative state..."
     # gravity/antigravity reference adlist(id) without ON DELETE CASCADE, so they must be cleared
     # first; the *_by_group tables cascade. pihole -g repopulates gravity further below.
