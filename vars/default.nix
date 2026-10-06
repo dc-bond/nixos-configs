@@ -39,7 +39,7 @@
         disk0 = "/dev/disk/by-id/nvme-Samsung_SSD_960_EVO_250GB_S3ESNX0J831623T"; # 256GB NVMe SSD (OS disk)
         disk1 = "/dev/disk/by-id/ata-WDC_WD122KRYZ-01CDAB0_B00874SD"; # 12TB HDD (ZFS mirror - disk 1)
         disk2 = "/dev/disk/by-id/ata-WDC_WD122KRYZ-01CDAB0_B008428D"; # 12TB HDD (ZFS mirror - disk 2)
-        disk3 = "/dev/disk/by-id/ata-WDC_WD40EFRX-68N32N0_WD-WCC7K4RU947F"; # 4TB HDD
+        disk3 = null;
       };
     };
 

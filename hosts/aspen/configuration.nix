@@ -17,9 +17,9 @@
   };
 
   # disko disk formatting occurs once on first deployment
-  # data drives (disk1, disk2, disk3) are commented out to prevent accidental reformatting during OS reinstalls
+  # data drives (disk1, disk2) are commented out to prevent accidental reformatting during OS reinstalls
   # commented-out configs below document how drives were originally provisioned by disko
-  # after initial provisioning, drives are managed via fileSystems + services.zfsExtended (zfs) or fileSystems only (ext4)
+  # after initial provisioning, drives are managed via fileSystems + services.zfsExtended
   disko.devices = {
     disk = {
 
@@ -92,24 +92,6 @@
       #         content = {
       #           type = "zfs";
       #           pool = "storage";
-      #         };
-      #       };
-      #     };
-      #   };
-      # };
-
-      # disk3 = {
-      #   type = "disk";
-      #   device = configVars.hosts.${config.networking.hostName}.hardware.disk3;
-      #   content = {
-      #     type = "gpt";
-      #     partitions = {
-      #       primary = {
-      #         size = "100%";
-      #         content = {
-      #           type = "filesystem";
-      #           format = "ext4";
-      #           mountpoint = "/storage-ext4";
       #         };
       #       };
       #     };
@@ -238,13 +220,6 @@
   bulkStorage.path = "/storage-zfs";
 
   fileSystems = {
-
-    # single 4TB SATA HDD
-    "/storage-ext4" = {
-      device = "/dev/disk/by-uuid/2dbedc67-9a6b-477f-a3b4-75116994d1cb"; # western digital 4TB SATA HDD (ata-WDC_WD40EFRX-68N32N0_WD-WCC7K4RU947F)
-      fsType = "ext4";
-      options = [ "defaults" "nofail" ];
-    };
 
     # zfs pool root dataset comprised of two 12TB SATA HDDs
     "/storage-zfs" = {
