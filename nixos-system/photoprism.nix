@@ -10,6 +10,7 @@
 let
 
   app = "photoprism";
+  cachePath = "${config.bulkStorage.path}/cache/${app}";
   recoveryPlan = {
     restoreItems = [
       "/var/lib/private/${app}"
@@ -50,7 +51,12 @@ in
       # Ensure the ZFS-backed originals path is mounted before starting.
       # Without this, photoprism races against the ZFS mount on boot (e.g. after
       # a power outage) and exhausts its restart budget before the dataset appears.
-      RequiresMountsFor = [ config.services.photoprism.originalsPath ];
+      RequiresMountsFor = [ config.services.photoprism.originalsPath cachePath ];
+    };
+    serviceConfig = {
+      ReadWritePaths = [ cachePath ];
+      # the DynamicUser uid only resolves while the unit runs, so tmpfiles cannot own the dataset root
+      ExecStartPre = lib.mkBefore [ "+${pkgs.coreutils}/bin/chown ${app}:${app} ${cachePath}" ];
     };
   };
 
@@ -102,12 +108,13 @@ in
         PHOTOPRISM_DISABLE_CLASSIFICATION = "true";                                             # disables image classification (requires TensorFlow)
         PHOTOPRISM_DISABLE_RAW = "false";                                                       # disables indexing and conversion of RAW files
         PHOTOPRISM_RAW_PRESETS = "false";                                                       # enables applying user presets when converting RAW files (reduces performance)
-        PHOTOPRISM_JPEG_QUALITY = "95";                                                         # a higher value increases the quality and file size of JPEG images and thumbnails (25-100)
+        PHOTOPRISM_JPEG_QUALITY = "90";                                                         # a higher value increases the quality and file size of JPEG images and thumbnails (25-100)
         #PHOTOPRISM_JPEG_SIZE = "2560";                                                         # size of JPEG when converting from RAW
         #PHOTOPRISM_PNG_SIZE = "2560";                                                          # size of PNG when converting from RAW
-        PHOTOPRISM_THUMB_UNCACHED = "true";                                                     # dynamically generates thumbs while scrolling through library
-        PHOTOPRISM_THUMB_SIZE_UNCACHED = "2560";
-        #PHOTOPRISM_THUMB_SIZE = "2560";                                                        # used when THUMB_UNCACHED is set to false; pre-generates thumbs at this pixel density
+        PHOTOPRISM_CACHE_PATH = cachePath;                                                      # thumbnail cache grows with every photo opened, so it lives on the zfs pool rather than the nvme root
+        PHOTOPRISM_THUMB_SIZE = "1920";                                                         # largest thumbnail pre-generated at index time; covers the library grid
+        PHOTOPRISM_THUMB_UNCACHED = "true";                                                     # renders larger sizes on first view in the lightbox/slideshow, then caches them
+        PHOTOPRISM_THUMB_SIZE_UNCACHED = "7680";                                                # lightbox picks the size matching the screen, up to full resolution
         PHOTOPRISM_THUMB_FILTER = "blackman";
         PHOTOPRISM_THUMB_COLOR = "srgb";
         PHOTOPRISM_THUMB_LIBRARY = "vips";
@@ -139,7 +146,6 @@ in
 
     borgbackup.jobs."${config.networking.hostName}" = {
       paths = lib.mkAfter recoveryPlan.restoreItems;
-      exclude = [ "/var/lib/private/${app}/cache" ]; # exclude cache which is regenerated dynamically
     };
     
     traefik.dynamicConfigOptions.http = {

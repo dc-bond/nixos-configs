@@ -204,6 +204,22 @@
     #         };
     #       };
     #
+    #       "root/cache" = { # organizational parent dataset for regenerable application caches, not mounted
+    #         type = "zfs_fs";
+    #         options = {
+    #           mountpoint = "none";
+    #         };
+    #       };
+    #
+    #       "root/cache/photoprism" = {
+    #         type = "zfs_fs";
+    #         mountpoint = "/storage-zfs/cache/photoprism";
+    #         options = {
+    #           mountpoint = "legacy";       # systemd manages mounting via fileSystems
+    #           compression = "off";         # thumbnails are already JPEG compressed
+    #         };
+    #       };
+    #
     #       "root/reserved" = { # theoretically prevent fragmentation by proactively setting aside a chunk of space, then delete if approaching capacity to free up that space
     #         type = "zfs_fs";
     #         options = {
@@ -258,6 +274,11 @@
       fsType = "zfs";
       options = [ "nofail" ];
     };
+    "/storage-zfs/cache/photoprism" = {
+      device = "storage/root/cache/photoprism";
+      fsType = "zfs";
+      options = [ "nofail" ];
+    };
 
     # games: mounted directly from ZFS — no impermanence binding needed
     # dataset created imperatively: see commented-out disko config above for provenance
@@ -277,6 +298,7 @@
       # the borg repo; ~1.3T projected across five cameras. dataset name rather
       # than a bulkStorage path because these datasets are mountpoint=legacy
       "storage/root/media/security-cameras" = "2T";
+      "storage/root/cache/photoprism" = "200G"; # photoprism never evicts on-demand thumbnails
     };
   };
 
