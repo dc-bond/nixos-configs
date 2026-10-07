@@ -18,7 +18,6 @@ let
   # status entry. Match on DNSName's first label (unique per tailnet node) — not
   # HostName, since iOS devices all report HostName="localhost".
   tailscaleHosts = [
-    { label = "cypress";         match = "cypress"; }
     { label = "thinkpad";        match = "thinkpad"; }
     { label = "kauri";           match = "kauri"; }
     { label = "juniper";         match = "juniper"; }

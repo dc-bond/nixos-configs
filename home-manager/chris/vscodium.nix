@@ -81,9 +81,6 @@
           "configFile" = "/home/chris/.ssh/config";
           "autoForwardPorts" = false;
           "autoForwardPortsSource" = "hybrid";
-          "serverInstallPath" = {
-            "cypress" = "~/.vscodium-server";
-          };
         };
       };
     };
