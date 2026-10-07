@@ -55,8 +55,9 @@ in
     };
     serviceConfig = {
       ReadWritePaths = [ cachePath ];
-      # the DynamicUser uid only resolves while the unit runs, so tmpfiles cannot own the dataset root
-      ExecStartPre = lib.mkBefore [ "+${pkgs.coreutils}/bin/chown ${app}:${app} ${cachePath}" ];
+      # the DynamicUser uid only resolves while the unit runs, so tmpfiles cannot own the dataset root;
+      # "-" because zfs refuses even a chown once the dataset is at its quota, which would block startup
+      ExecStartPre = lib.mkBefore [ "-+${pkgs.coreutils}/bin/chown ${app}:${app} ${cachePath}" ];
     };
   };
 
