@@ -273,7 +273,7 @@
       # the borg repo; ~1.3T projected across five cameras. dataset name rather
       # than a bulkStorage path because these datasets are mountpoint=legacy
       "storage/root/media/security-cameras" = "2T";
-      "storage/root/cache/photoprism" = "200G"; # photoprism never evicts on-demand thumbnails
+      "storage/root/cache/photoprism" = "500G"; # photoprism never evicts on-demand thumbnails
     };
   };
 
