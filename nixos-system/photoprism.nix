@@ -115,6 +115,7 @@ in
         PHOTOPRISM_THUMB_SIZE = "1920";                                                         # largest thumbnail pre-generated at index time; covers the library grid
         PHOTOPRISM_THUMB_UNCACHED = "true";                                                     # renders larger sizes on first view in the lightbox/slideshow, then caches them
         PHOTOPRISM_THUMB_SIZE_UNCACHED = "7680";                                                # lightbox picks the size matching the screen, up to full resolution
+                                                                                                # `photoprism thumbs` ignores THUMB_SIZE and renders every size up to this limit
         PHOTOPRISM_THUMB_FILTER = "blackman";
         PHOTOPRISM_THUMB_COLOR = "srgb";
         PHOTOPRISM_THUMB_LIBRARY = "vips";
