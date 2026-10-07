@@ -10,7 +10,7 @@ This is a production NixOS configuration managing a multi-host homelab and VPS i
 
 ## IMPORTANT: Command Execution Context
 
-**Claude runs on workstations (cypress or thinkpad)** but has Tailscale SSH with `sudo` to every
+**Claude runs on the workstation (thinkpad)** but has Tailscale SSH with `sudo` to every
 other host. Use it. Don't ask the user to paste output, or to run a command, that Claude can run
 itself with `ssh <host> '<command>'`.
 
@@ -165,12 +165,11 @@ Conventions and exceptions:
   - **Android**: Forget network and reconnect, or toggle airplane mode
 - Check current DNS config: `resolvectl status` (Linux) or Wi-Fi settings (mobile)
 - With Tailscale ON, `tailscale0` holds the `~.` routing domain, so resolved sends every query to 100.100.100.100 and the DHCP servers on the LAN link go unused. The forwarder reaches both piholes by tailnet IP, so this path does not depend on any exit node
-- A client accepting aspen's 192.168.1.0/24 subnet route sends LAN traffic through aspen even when on the LAN (tailscale's table 52 outranks main). Clients with a default exit node drop the route at home (see Tailscale Integration); cypress still accepts it, so with aspen down it loses other LAN hosts but keeps internet and tailnet DNS
+- A client accepting aspen's 192.168.1.0/24 subnet route sends LAN traffic through aspen even when on the LAN (tailscale's table 52 outranks main). Clients with a default exit node drop the route at home (see Tailscale Integration)
 
 **Tailscale Integration**
 - Exit nodes: aspen, juniper; only aspen also advertises the LAN route (192.168.1.0/24)
 - Clients with a default exit node: thinkpad, kauri (aspen), applied only off the home LAN. `tailscale-exit-node-auto` (fired by networkd-dispatcher) arpings the default gateway; when its MAC matches `configVars.devices.unifiUsg.mac` it clears the exit node and sets `--accept-routes=false`, so LAN traffic stays on the LAN instead of going through aspen's 192.168.1.0/24 subnet route. Off the home LAN it sets both back. These clients also run with `networking.enableIPv6 = false`, because aspen advertises `::/0` but has no IPv6 uplink
-- Clients without exit node: cypress (--ssh --accept-routes only, no --exit-node configured)
 - Configuration per-host in `configVars.hosts.${hostname}.networking.tailscale`
 - Module: `nixos-system/tailscale.nix`
 
@@ -246,8 +245,7 @@ what makes targeted reads acceptable — it does not make bulk reads acceptable.
 
 - **aspen**: Homelab server (headless, 192.168.1.2), monitoring hub, exit node, build server for other hosts, runs 30+ services
 - **juniper**: VPS (headless, 178.156.133.218), public services, secondary tailnet DNS, exit node
-- **cypress**: Desktop (Hyprland, unencrypted), primary workstation
-- **thinkpad**: ThinkPad laptop (Hyprland, encrypted), configured to match cypress
+- **thinkpad**: ThinkPad laptop (Hyprland, encrypted), primary workstation
 - **kauri**: Family laptop (Labwc, encrypted), secondary user
 
 ## Key Services

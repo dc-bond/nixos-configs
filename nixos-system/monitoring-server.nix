@@ -1017,7 +1017,7 @@ let
       # each host's cloudBackup OnSuccess writes borgbackup_last_success_timestamp_seconds via
       # node_exporter textfile collector; if the metric is stale or absent, we alert.
       #
-      # workstations (cypress, thinkpad, kauri) are intentionally excluded: they still emit the
+      # workstations (thinkpad, kauri) are intentionally excluded: they still emit the
       # metric so we can see "last backup" in grafana, but a workstation being off or asleep at
       # its backup time is expected behavior, not an incident. borgbackup timers on workstations
       # are non-persistent (opportunistic - if awake at 02:40-02:50, back up; otherwise skip until tomorrow).
@@ -1419,10 +1419,6 @@ in
               labels.host = "aspen";
             }
             {
-              targets = [ "${configVars.hosts.cypress.networking.tailscaleIp}:9100" ];
-              labels.host = "cypress";
-            }
-            {
               targets = [ "${configVars.hosts.thinkpad.networking.tailscaleIp}:9100" ];
               labels.host = "thinkpad";
             }
@@ -1446,10 +1442,6 @@ in
             {
               targets = [ "${configVars.hosts.aspen.networking.tailscaleIp}:9633" ];
               labels.host = "aspen";
-            }
-            {
-              targets = [ "${configVars.hosts.cypress.networking.tailscaleIp}:9633" ];
-              labels.host = "cypress";
             }
             {
               targets = [ "${configVars.hosts.thinkpad.networking.tailscaleIp}:9633" ];

@@ -43,11 +43,6 @@
         User = config.home.username;
         Port = 22;
       };
-      "cypress-tailscale" = {
-        HostName = configVars.hosts.cypress.networking.tailscaleIp;
-        User = config.home.username;
-        Port = 22;
-      };
       "thinkpad-tailscale" = {
         HostName = configVars.hosts.thinkpad.networking.tailscaleIp;
         User = config.home.username;

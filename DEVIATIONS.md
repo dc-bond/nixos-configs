@@ -34,7 +34,7 @@ pinned to a specific non-channel version.
 `claude-code` is pinned to unstable so the CLI and the VSCodium extension stay
 on matching versions:
 
-- `home-manager/chris/claude-code.nix` (thinkpad + cypress),
+- `home-manager/chris/claude-code.nix` (thinkpad),
   `home-manager/danielle/claude-code.nix` (kauri) —
   `programs.claude-code.package = pkgs.unstable.claude-code` (CLI, declarative module)
 - `home-manager/chris/vscodium.nix`, `home-manager/danielle/vscodium.nix` —

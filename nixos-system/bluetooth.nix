@@ -13,7 +13,7 @@
         FastConnectable = true; # faster reconnection for paired devices (uses more power)
         # NOTE: LL Privacy (KernelExperimental LE address resolution) was REMOVED 2026-05-31.
         # On this Intel adapter it stalled the post-disconnect passive scan, so BLE reconnects
-        # (esp. the MX Anywhere 3S) took longer the more uptime cypress had (instant after reboot,
+        # (esp. the MX Anywhere 3S) took longer the more uptime the host had (instant after reboot,
         # ~9-15s after days). btmon proved the delay was entirely the scan gap before the mouse's
         # advertisement was heard; once heard, connect+encrypt+HID took ~120ms. It resets on reboot
         # because the stall is controller-internal state that accumulates over uptime.

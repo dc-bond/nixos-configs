@@ -12,7 +12,7 @@
 
   programs.zsh = {
     initContent =
-    (lib.optionalString (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) ''
+    (lib.optionalString (osConfig.networking.hostName == "thinkpad") ''
       wolftmp() {
         echo "switching to juniper exit node..."
         tupjuniper
@@ -72,7 +72,7 @@
         install -m 644 ${pkgs.writeText "nixos-top-CLAUDE.md" ''
           # CLAUDE.md
 
-          `~/nixos/` is the directory Claude is always invoked from on cypress/thinkpad.
+          `~/nixos/` is the directory Claude is always invoked from on thinkpad.
           It is not itself a repo — it holds two sibling git checkouts that are cloned
           fresh each boot by the `clone-configs` shell function (impermanence host):
 
@@ -87,7 +87,7 @@
 
           ## Tooling
 
-          Installed host-wide on cypress and thinkpad, beyond coreutils: `python3` (bundled with
+          Installed host-wide on thinkpad, beyond coreutils: `python3` (bundled with
           `requests`, `pyyaml`, `openpyxl`), `jq`, `yq-go`, `sqlite`, `ripgrep`, `lsof`,
           `gh`, `pandoc`, `typst`, `poppler-utils`, `qpdf`, `ghostscript`, `imagemagick`
           and `tesseract` — see
@@ -130,7 +130,7 @@
       }
     '');
     shellAliases = {
-    } // lib.optionalAttrs (lib.elem osConfig.networking.hostName ["cypress" "thinkpad"]) {
+    } // lib.optionalAttrs (osConfig.networking.hostName == "thinkpad") {
       ledger = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/bond-ledger/ && nix develop --command codium . && cd ~";
       finplannerdev = "cd /home/chris/nextcloud-client/Bond\\ Family/Financial/finplanner/ && nix develop";
       chrisworkoutdev = "cd /home/chris/nextcloud-client/Personal/misc/chris-workouts/ && nix develop";

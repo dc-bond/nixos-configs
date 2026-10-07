@@ -111,40 +111,6 @@
       };
     };
 
-    cypress = {
-      system = "x86_64-linux";
-      users = [ "chris" ];
-      bootLoader = "systemd-boot";
-      windowManager = "hyprland";
-      usesImpermanence = true;
-      networking = {
-        sshPort = null; # only use tailscale ssh
-        sshPublicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAzRulWkTODGo7qfcwMt8jP3h9kwApc7aEoFiwTQstCL";
-        useResolved = true;
-        ethernetInterface = "enp1s0";
-        wifiInterface = "wlan0";
-        dockInterface = null;
-        ipv4 = "192.168.1.89";
-        tailscaleIp = "100.118.203.123";
-        tailscale = {
-          role = "client";
-          advertiseRoutes = null;
-          defaultExitNode = null;
-        };
-      };
-      hardware = {
-        diskEncryption = false;
-        enableSmartMonitoring = true;
-        hasBattery = false;
-        hasBluetooth = true;
-        hasBacklight = false;
-        disk0 = "/dev/disk/by-id/ata-512GB_SSD_MP32B12203488"; # 512GB SATA SSD (OS disk)
-        disk1 = null;
-        disk2 = null;
-        disk3 = null;
-      };
-    };
-
     juniper = {
       system = "x86_64-linux";
       users = [ "chris" ];

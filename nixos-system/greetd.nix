@@ -19,7 +19,6 @@ let
     # launched without it. it resolves Hyprland from PATH, so the security.wrappers
     # copy carrying cap_sys_nice is still what gets run
     thinkpad = "start-hyprland";
-    cypress = "start-hyprland";
     alder = "labwc"; # deprecated host, not deployed
     kauri = "labwc";
   };
