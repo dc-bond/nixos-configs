@@ -243,8 +243,8 @@ what makes targeted reads acceptable — it does not make bulk reads acceptable.
 
 ## Hosts Overview
 
-- **aspen**: Homelab server (headless, 192.168.1.2), monitoring hub, exit node, build server for other hosts, runs 30+ services
-- **juniper**: VPS (headless, 178.156.133.218), public services, secondary tailnet DNS, exit node
+- **aspen**: Homelab server (headless, 192.168.1.2), exit node, build server for other hosts, runs 30+ services
+- **juniper**: VPS (headless, 178.156.133.218), monitoring hub (Prometheus, Grafana, Alertmanager), public services, secondary tailnet DNS, exit node
 - **thinkpad**: ThinkPad laptop (Hyprland, encrypted), primary workstation
 - **kauri**: Family laptop (Labwc, encrypted), secondary user
 
@@ -254,7 +254,7 @@ what makes targeted reads acceptable — it does not make bulk reads acceptable.
 - **DNS**: Pi-hole + Unbound (ad blocking + recursive DNS)
 - **Auth**: Authelia (SSO), LLDAP (LDAP directory)
 - **Storage**: Nextcloud, Photoprism
-- **Monitoring**: Prometheus, Grafana, Alertmanager (Uptime Kuma retired — deprecated to `nixos-configs-private/deprecated/`; backup dead-man's-switch now handled by node_exporter textfile collector + prometheus `backupStale` alert)
+- **Monitoring**: Prometheus, Grafana, Alertmanager on juniper (Uptime Kuma retired — deprecated to `nixos-configs-private/deprecated/`; backup dead-man's-switch now handled by node_exporter textfile collector + prometheus `backupStale` alert)
 - **Home Automation**: Home Assistant, Frigate, Zwavejs, Zigbee2MQTT (SLZB-06MG24U coordinator)
 - **Media**: Jellyfin, Sonarr, Radarr, Prowlarr, SABnzbd
 - **Productivity**: Actual Budget, Fava, RecipeSage, N8N, LibreChat

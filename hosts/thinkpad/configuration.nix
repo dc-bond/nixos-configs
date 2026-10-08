@@ -83,6 +83,8 @@
 
   services.logind.settings.Login.HandleLidSwitch = "ignore"; # disable suspend on laptop lid close
 
+  boot.loader.systemd-boot.memtest86.enable = true; # memtest86+ entry in the boot menu
+
   # original system state version - defines the first version of NixOS installed to maintain compatibility with application data (e.g. databases) created on older versions that can't automatically update their data when their package is updated
   system.stateVersion = "26.05";
 
