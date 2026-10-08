@@ -118,6 +118,7 @@
       "nixos-system/zram.nix"
       "nixos-system/greetd.nix"
       "nixos-system/ddcutil.nix"
+      "nixos-system/logitech.nix"
       "nixos-system/hyprland.nix"
       "scripts/deploy.nix"
       "scripts/network-test.nix"
