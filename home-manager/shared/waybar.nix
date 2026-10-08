@@ -366,6 +366,10 @@ in
       };
 
       "battery" = {
+        # unpinned, the module also tracks bluetooth peripherals' hidpp_battery_N
+        # entries and aborts waybar when one vanishes on disconnect
+        "bat" = "BAT0";
+        "adapter" = "AC";
         "interval" = 30;
         "states" = {
           "good" = 90;
