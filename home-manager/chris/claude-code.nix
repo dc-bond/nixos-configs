@@ -45,7 +45,6 @@ in
         defaultMode = "auto";
       };
       enabledMcpjsonServers = lib.attrNames mcpServers; # pre-approve every declared server in ~/nixos/.mcp.json (see zsh.nix clone-configs)
-      effortLevel = "high";
       theme = "dark";
       autoMode.environment = [
         "$defaults"
@@ -60,6 +59,7 @@ in
       ];
       tui = "fullscreen";
       model = "opus";
+      modelSettings."claude-opus-5-5".effortLevel = "high"; # per-model key required: a top-level effortLevel in user settings is ignored for models from opus 5.5 on; keyed by exact id, so it won't follow the opus alias to a newer model
     };
   };
 
