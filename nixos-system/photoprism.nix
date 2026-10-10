@@ -54,6 +54,9 @@ in
       RequiresMountsFor = [ config.services.photoprism.originalsPath cachePath ];
     };
     serviceConfig = {
+      # the module's list renders the unset databasePasswordFile as an empty LoadCredential=,
+      # which systemd reads as a reset that drops the admin password credential
+      LoadCredential = lib.mkForce [ "PHOTOPRISM_ADMIN_PASSWORD_FILE:${config.sops.secrets.photoprismAdminPasswd.path}" ];
       ReadWritePaths = [ cachePath ];
       # the DynamicUser uid only resolves while the unit runs, so tmpfiles cannot own the dataset root;
       # "-" because zfs refuses even a chown once the dataset is at its quota, which would block startup
@@ -88,11 +91,11 @@ in
       enable = true;
       address = "127.0.0.1";
       originalsPath = "${config.bulkStorage.path}/media/family-media";
+      importPath = "/var/lib/photoprism/import"; # absolute: the module also puts it in ReadWritePaths
       passwordFile = "${config.sops.secrets.photoprismAdminPasswd.path}";
       settings = {
         PHOTOPRISM_AUTH_MODE = "public";                                                        # authentication mode (public, password)
         PHOTOPRISM_SITE_URL = "https://photos.${configVars.domain2}/";                          # public server URL incl http:// or https:// and /path, :port is optional
-        PHOTOPRISM_IMPORT_PATH = "/var/lib/photoprism/import";                                  # absolute path for systemd ReadWritePaths hardening
         PHOTOPRISM_ORIGINALS_LIMIT = "50000";                                                   # file size limit for originals in MB (increase for high-res video)
         PHOTOPRISM_HTTP_COMPRESSION = "gzip";                                                   # improves transfer speed and bandwidth utilization (none or gzip)
         PHOTOPRISM_LOG_LEVEL = "info";                                                          # log level: trace, debug, info, warning, error, fatal, or panic
