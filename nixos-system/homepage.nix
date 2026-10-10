@@ -142,6 +142,13 @@ in
             };
           }
           {
+            "Foxhurst Property" = {
+              href = "https://foxhurst-property.${configVars.domain2}/";
+              description = "Property Flora Map and Care Calendar";
+              ping = "https://foxhurst-property.${configVars.domain2}";
+            };
+          }
+          {
             "Home Assistant" = {
               href = "https://home-assistant.${configVars.domain2}/";
               description = "Smart Home Hub";

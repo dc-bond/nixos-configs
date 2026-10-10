@@ -1526,6 +1526,7 @@ in
                 "https://traefik-aspen.${configVars.domain2}"
                 "https://unifi.${configVars.domain2}"
                 "https://wardrobe.${configVars.domain2}"
+                "https://foxhurst-property.${configVars.domain2}"
                 "https://zwavejs.${configVars.domain2}"
                 # juniper services - domain1
                 "https://matrix.${configVars.domain1}"
