@@ -441,17 +441,17 @@
       };
     };
 
-    #null = {
-    #  subnet = "172.21.20.0/25";
-    #  containers = {
-    #    null = { ipv4 = "172.21.20.2"; };
-    #  };
-    #};
+    foxhurst-property = {
+      subnet = "172.21.20.0/25";
+      containers = {
+        foxhurst-property = { ipv4 = "172.21.20.2"; };
+      };
+    };
 
     #null = {
-    #  subnet = "172.21.20.0/25";
+    #  subnet = "172.21.21.0/25";
     #  containers = {
-    #    null = { ipv4 = "172.21.20.2"; };
+    #    null = { ipv4 = "172.21.21.2"; };
     #  };
     #};
 
