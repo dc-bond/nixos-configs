@@ -228,6 +228,7 @@ let
     "assets.adobedtm.com" # verizon wireless
     "geo.ddc.paypal.com" # paypal
     "fc.yahoo.com" # beanprice - yahoo consent cookie; blocked it fails as an SSL error
+    "url9217.fcasd.edu" # fcasd school email links - sendgrid click tracking, CNAME-blocked via sendgrid.net
   ];
 
   piholeBlockedDomains = [
