@@ -34,7 +34,8 @@ in
       # nixbld accounts at 30001+ show up alongside real users; the bounds below
       # are login.defs' own UID_MIN/UID_MAX.
       # no --remember: the menu auto-selects a host's only user, and alongside
-      # --user-menu it sends a second CreateSession that greetd rejects (tuigreet#216)
+      # --user-menu it sends a second CreateSession that greetd rejects (tuigreet#216).
+      # --remember-user-session exits at startup without --remember
       default_session.command = ''
         ${pkgs.tuigreet}/bin/tuigreet \
           --time \
@@ -45,7 +46,6 @@ in
           --user-menu \
           --user-menu-min-uid 1000 \
           --user-menu-max-uid 29999 \
-          --remember-user-session \
           --sessions ${customSessions}/share/wayland-sessions:/run/current-system/sw/share/wayland-sessions \
           --xsessions /dev/null \
           --cmd ${defaultCmd}
