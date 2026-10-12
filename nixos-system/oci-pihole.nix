@@ -249,8 +249,9 @@ let
 
     CURRENT_TIME=$(date +%s)
 
-    # use the image's bundled sqlite3 - `apk add` would need working dns in a path that only runs when dns is suspect
-    sql() { docker exec ${app} pihole-FTL sqlite3 /etc/pihole/gravity.db "$@"; }
+    # use the image's bundled sqlite3 - `apk add` would need working dns in a path that only runs when dns is suspect.
+    # a live FTL still reads gravity.db while disabled, so wait out its locks rather than failing on SQLITE_BUSY
+    sql() { docker exec ${app} pihole-FTL sqlite3 -cmd ".timeout 10000" /etc/pihole/gravity.db "$@"; }
 
     echo "Verifying unbound is answering before configuring Pi-hole..."
     ${waitForUnbound}
