@@ -13,7 +13,7 @@
   fileSystems."/" = {
     device = "none";
     fsType = "tmpfs";
-    options = [ "defaults" "size=2G" "mode=755" ];
+    options = [ "defaults" "size=6G" "mode=755" ];
   };
 
   fileSystems."/persist".neededForBoot = true;
@@ -43,7 +43,7 @@
       "/var/lib/tailscale"  # tailscale node identity at /var/lib/tailscale/tailscaled.state after first tailnet connection using one-time authKey
       "/var/lib/prometheus/node-exporter-text-files"  # persist btrfs scrub metrics between weekly scrubs
       "/var/lib/private/alloy" # alloy log-shipper positions (DynamicUser service)
-      "/var/log/journal" # journald storage is "persistent" (foundation.nix); without this bind mount it lands on the tmpfs root, so logs are lost on reboot AND SystemMaxUse=2G is charged against 7.4 GiB of RAM
+      "/var/log/journal" # journald storage is "persistent" (foundation.nix); without this bind mount it lands on the tmpfs root, so logs are lost on reboot AND SystemMaxUse=2G is charged against RAM
     ];
 
     # user-level persistence
