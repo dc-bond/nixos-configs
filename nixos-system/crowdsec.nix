@@ -104,11 +104,7 @@ in
 
   # fix boot timing issues
   systemd.services = {
-    # ensure crowdsec waits for network before downloading hub index
-    # piggyback on tailscaled which already has proper network ordering
     crowdsec = {
-      after = [ "tailscaled.service" ];
-      wants = [ "tailscaled.service" ];
       # workaround for https://github.com/crowdsecurity/crowdsec/issues/3632
       # cscli expects these credential files to exist before running registration
       preStart = ''

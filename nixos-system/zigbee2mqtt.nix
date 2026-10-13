@@ -356,8 +356,9 @@ in
   };
 
   systemd.services.${app} = {
-    after = [ "mosquitto.service" ];
-    wants = [ "mosquitto.service" ];
+    # the coordinator is reached over tcp on the lan
+    after = [ "mosquitto.service" "network-online.target" ];
+    wants = [ "mosquitto.service" "network-online.target" ];
     # install rather than cp so it can replace the existing 0400 file, which the
     # owner cannot otherwise open for writing
     preStart = lib.mkAfter ''
