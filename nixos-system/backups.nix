@@ -69,12 +69,16 @@ let
     mv "$TMP" "$DIR/borgbackup.prom"
   '';
 
+  # $1 is the failed unit, passed in as the instance name of backupFailure*@<unit>.service
   backupFailureWebhookScript = pkgs.writeShellScriptBin "backupFailureWebhook" ''
     #!/bin/bash
-    EXIT_CODE=$(systemctl show cloudBackup.service --property=ExecMainStatus --value)
+    UNIT="$1"
+    RESULT=$(systemctl show "$UNIT" --property=Result --value)
+    EXIT_CODE=$(systemctl show "$UNIT" --property=ExecMainStatus --value)
     TIMESTAMP="$(date "+%Y-%m-%d %H:%M:%S")"
     ${pkgs.curl}/bin/curl \
       -d "Backup FAILED - ${config.networking.hostName}
+      Unit: $UNIT ($RESULT)
       Time: $TIMESTAMP
       Exit Code: $EXIT_CODE" \
       https://ntfy.${configVars.domain2}/homelab-alerts
@@ -83,7 +87,9 @@ let
   backupFailureEmailScript = pkgs.writeShellScriptBin "backupFailureEmail" ''
     #!/bin/bash
 
-    EXIT_CODE=$(systemctl show cloudBackup.service --property=ExecMainStatus --value)
+    UNIT="$1"
+    RESULT=$(systemctl show "$UNIT" --property=Result --value)
+    EXIT_CODE=$(systemctl show "$UNIT" --property=ExecMainStatus --value)
 
     {
       echo "Subject: Nightly Backup FAILED - ${config.networking.hostName}"
@@ -99,10 +105,11 @@ let
       echo "- Network/Backblaze connectivity problems"
       echo "- Service configuration issues"
       echo ""
+      echo "Failed unit: $UNIT ($RESULT)"
       echo "Exit code: $EXIT_CODE"
       echo "Time: $(date "+%Y-%m-%d %H:%M:%S")"
       echo ""
-      echo "Check logs: jlogs cloudBackup"
+      echo "Check logs: journalctl -u $UNIT"
       echo ""
       echo "IMMEDIATE ACTION REQUIRED!"
     } | ${pkgs.msmtp}/bin/msmtp \
@@ -1175,10 +1182,16 @@ in
           echo "spinning down services and starting sql database dumps"
           ${lib.concatStringsSep "\n" config.backups.serviceHooks.preHook}
         '';
+        # postHook runs in the job's EXIT trap under set -e: each entry gets its own subshell so a
+        # failure (or an entry's own `|| exit 1`) cannot skip the entries after it, and the job
+        # still fails once all have run. set -e does not apply inside those subshells, so an entry
+        # of several commands must chain them with &&
         postHook = lib.mkDefault ''
           set -x
           echo "spinning up services"
-          ${lib.concatStringsSep "\n" config.backups.serviceHooks.postHook}
+          postHookFailed=0
+          ${lib.concatMapStringsSep "\n" (entry: "( ${entry} ) || postHookFailed=1") config.backups.serviceHooks.postHook}
+          [ "$postHookFailed" -eq 0 ] || exit 1
         '';
         paths = config.backups.standaloneData;
         exclude = lib.mkDefault config.backups.exclude;
@@ -1200,7 +1213,7 @@ in
           wantedBy = lib.mkForce []; # do not automatically start service on system rebuild/reboot
           unitConfig = {
             OnSuccess = "cloudBackup.service";
-            OnFailure = "backupFailureEmail.service backupFailureWebhook.service";
+            OnFailure = "backupFailureEmail@%n.service backupFailureWebhook@%n.service";
           };
         };
 
@@ -1216,7 +1229,7 @@ in
           };
           unitConfig = {
             OnSuccess = "backupSuccess.service";
-            OnFailure = "backupFailureEmail.service backupFailureWebhook.service";
+            OnFailure = "backupFailureEmail@%n.service backupFailureWebhook@%n.service";
           };
         };
 
@@ -1232,21 +1245,22 @@ in
           };
         };
 
-        "backupFailureEmail" = {
-          description = "send backup failure notification";
+        # templates: the instance name is the failed unit (OnFailure = "...@%n.service")
+        "backupFailureEmail@" = {
+          description = "send backup failure notification for %i";
           wantedBy = lib.mkForce [];
           serviceConfig = {
             Type = "oneshot";
-            ExecStart = "${backupFailureEmailScript}/bin/backupFailureEmail";
+            ExecStart = "${backupFailureEmailScript}/bin/backupFailureEmail %i";
           };
         };
 
-        "backupFailureWebhook" = {
-          description = "send backup failure webhook notification to ntfy";
+        "backupFailureWebhook@" = {
+          description = "send backup failure webhook notification to ntfy for %i";
           wantedBy = lib.mkForce [];
           serviceConfig = {
             Type = "oneshot";
-            ExecStart = "${backupFailureWebhookScript}/bin/backupFailureWebhook";
+            ExecStart = "${backupFailureWebhookScript}/bin/backupFailureWebhook %i";
           };
         };
         
