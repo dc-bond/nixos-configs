@@ -448,10 +448,17 @@
       };
     };
 
+    lake-road-property = {
+      subnet = "172.21.21.0/25";
+      containers = {
+        lake-road-property = { ipv4 = "172.21.21.2"; };
+      };
+    };
+
     #null = {
-    #  subnet = "172.21.21.0/25";
+    #  subnet = "172.21.22.0/25";
     #  containers = {
-    #    null = { ipv4 = "172.21.21.2"; };
+    #    null = { ipv4 = "172.21.22.2"; };
     #  };
     #};
 
