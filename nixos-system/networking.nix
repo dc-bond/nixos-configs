@@ -53,13 +53,20 @@ in
 
   systemd.network = {
     enable = true;
-    wait-online.enable = false; # disables network-online.target; can block boot entirely if no network connections exist at boot
-    #wait-online = {
-    #  enable = true;
-    #  anyInterface = true;  # only wait for any one interface, not all
-    #  timeout = 0;  # no timeout - wait indefinitely for at least one interface
-    #  ignoredInterfaces = [ "tailscale0" ];  # don't wait for tailscale interface
-    #};
+    # network-online.target is passive: wait-online runs only on hosts where some unit wants the
+    # target (the servers), and boot carries on after the timeout since nothing Requires= it.
+    # --interface overrides the links' RequiredForOnline, so the .network files stay untouched -
+    # changing one makes networkd reconfigure that link on switch. aspen's lease has lagged boot ~4m
+    wait-online = {
+      enable = true;
+      anyInterface = true;
+      timeout = 300;
+      extraArgs = map (i: "--interface=${i}:routable") (lib.filter (i: i != null) [
+        hostData.networking.ethernetInterface
+        hostData.networking.dockInterface
+        hostData.networking.wifiInterface
+      ]);
+    };
     networks = {
       "05-loopback" = {
         matchConfig.Name = "lo";
