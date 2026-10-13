@@ -149,6 +149,13 @@ in
             };
           }
           {
+            "Lake Road Property" = {
+              href = "https://lake-road-property.${configVars.domain2}/";
+              description = "Property Flora Map and Care Calendar";
+              ping = "https://lake-road-property.${configVars.domain2}";
+            };
+          }
+          {
             "Home Assistant" = {
               href = "https://home-assistant.${configVars.domain2}/";
               description = "Smart Home Hub";

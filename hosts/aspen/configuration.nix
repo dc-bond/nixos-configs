@@ -303,6 +303,7 @@
     inputs.private.nixosModules.oci-communitycluster2026
     inputs.private.nixosModules.oci-wardrobe
     inputs.private.nixosModules.oci-foxhurst-property
+    inputs.private.nixosModules.oci-lake-road-property
     (map configLib.relativeToRoot [
       "hosts/aspen/hardware-configuration.nix"
       "hosts/aspen/impermanence.nix"

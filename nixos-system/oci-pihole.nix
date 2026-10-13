@@ -186,6 +186,7 @@ let
     "address=/vikunja.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/wardrobe.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/foxhurst-property.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
+    "address=/lake-road-property.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/zigbee2mqtt.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     "address=/zwavejs.${configVars.domain2}/${configVars.hosts.aspen.networking.ipv4}"
     # juniper services
