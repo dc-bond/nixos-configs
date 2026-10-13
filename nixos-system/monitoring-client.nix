@@ -228,11 +228,13 @@ in
       };
     };
 
-    # wait for tailscale interface to have IP assigned before starting monitoring services
+    # wait for tailscale interface to have IP assigned before starting monitoring services.
+    # after network-online: on a slow-lease boot tailscaled assigns the ip only once the lan
+    # is up, which can be minutes after boot and outlasts the 30s window below
     tailscale-ready = {
       description = "Wait for Tailscale interface to have IP assigned";
-      after = [ "tailscaled.service" ];
-      wants = [ "tailscaled.service" ];
+      after = [ "tailscaled.service" "network-online.target" ];
+      wants = [ "tailscaled.service" "network-online.target" ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         Type = "oneshot";

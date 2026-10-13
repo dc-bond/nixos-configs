@@ -1229,11 +1229,12 @@ in
           ExecStartPost = "${btrfsScrubExporter}";
         };
       };
-      # loki binds the tailscale address, so the interface must carry its ip first
+      # loki binds the tailscale address, so the interface must carry its ip first. after
+      # network-online: on a slow-lease boot tailscaled assigns the ip only once the network is up
       tailscale-ready = {
         description = "Wait for Tailscale interface to have IP assigned";
-        after = [ "tailscaled.service" ];
-        wants = [ "tailscaled.service" ];
+        after = [ "tailscaled.service" "network-online.target" ];
+        wants = [ "tailscaled.service" "network-online.target" ];
         wantedBy = [ "multi-user.target" ];
         serviceConfig = {
           Type = "oneshot";
@@ -1649,6 +1650,9 @@ in
         enable = true;
         port = 9093;
         listenAddress = "127.0.0.1";
+        # single instance: no HA gossip listener on *:9094, which otherwise fails at boot until a
+        # private address (the tailscale ip) exists to advertise
+        extraFlags = [ "--cluster.listen-address=" ];
         webExternalUrl = "https://${app3}.${configVars.domain2}";
         configuration = {
           global = {
