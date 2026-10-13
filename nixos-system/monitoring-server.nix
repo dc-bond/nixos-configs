@@ -567,7 +567,7 @@ let
     import os
     import re
     import sys
-    from datetime import datetime
+    from datetime import datetime, timedelta
 
     PROMETHEUS_URL = "http://127.0.0.1:9090"
     WEBHOOK_URL = os.environ.get("WEBHOOK_URL", "")
@@ -577,6 +577,11 @@ let
     SCRUB_SUCCESS = 1
     SCRUB_RUNNING = 2
     SCRUB_NEVER_RUN = 3
+
+    # aspen's services.zfsExtended.scrubInterval ("Mon 03:00"); its metrics update only when a
+    # scrub completes, so a completion older than the latest scheduled start is last week's run
+    SCRUB_WEEKDAY = 0
+    SCRUB_HOUR = 3
 
     STATUS_MAP = {
         SCRUB_FAILED: "Failed",
@@ -670,6 +675,14 @@ let
             return f"{tb:.2f} TiB"
         return f"{gb:.2f} GiB"
 
+    def latest_scrub_start(now):
+        """most recent scheduled scrub start at or before now"""
+        start = (now - timedelta(days=(now.weekday() - SCRUB_WEEKDAY) % 7)).replace(
+            hour=SCRUB_HOUR, minute=0, second=0, microsecond=0)
+        if start > now:
+            start -= timedelta(days=7)
+        return start
+
     def generate_report():
         """generate comprehensive zfs scrub health report"""
         scrubs = get_zfs_data()
@@ -677,7 +690,13 @@ let
         if not scrubs:
             return "no zfs pools found in monitoring system"
 
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        now = datetime.now()
+        timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+        scrub_start = latest_scrub_start(now)
+        for scrub in scrubs.values():
+            last_run_timestamp = scrub.get("last_run")
+            scrub["stale"] = scrub["status_code"] == SCRUB_SUCCESS and (
+                last_run_timestamp is None or last_run_timestamp < scrub_start.timestamp())
 
         # header
         report = f"**Weekly ZFS Scrub Report**\\n\\n"
@@ -688,6 +707,7 @@ let
         scrub_failed = []
         scrub_errors = []
         scrub_ok = []
+        scrub_stale = []
 
         for key, scrub in scrubs.items():
             status_code = scrub["status_code"]
@@ -699,6 +719,8 @@ let
                 scrub_failed.append(key)
             elif status_code == SCRUB_SUCCESS:
                 scrub_ok.append(key)
+            if scrub["stale"]:
+                scrub_stale.append(key)
 
         # summary
         if scrub_errors:
@@ -710,6 +732,12 @@ let
         if scrub_failed:
             report += f"**WARNING**: {len(scrub_failed)} pool(s) with failed scrubs\\n"
             for item in scrub_failed:
+                report += f"   • {item}\\n"
+            report += "\\n"
+
+        if scrub_stale:
+            report += f"**WARNING**: {len(scrub_stale)} pool(s) with no scrub completed since {scrub_start.strftime('%Y-%m-%d %H:%M')} - figures below are from the previous run\\n"
+            for item in scrub_stale:
                 report += f"   • {item}\\n"
             report += "\\n"
 
@@ -752,7 +780,8 @@ let
             if last_run_timestamp:
                 last_run = datetime.fromtimestamp(last_run_timestamp).strftime("%Y-%m-%d %H:%M:%S")
                 days_ago = (datetime.now().timestamp() - last_run_timestamp) / 86400
-                report += f"Last Run: {last_run} ({days_ago:.1f} days ago)\\n"
+                stale = " - STALE, previous run" if scrub["stale"] else ""
+                report += f"Last Run: {last_run} ({days_ago:.1f} days ago){stale}\\n"
 
             report += "\\n"
 
@@ -1365,7 +1394,7 @@ in
         description = "Weekly ZFS Scrub Health Report Timer";
         wantedBy = [ "timers.target" ];
         timerConfig = {
-          OnCalendar = "Mon 09:00:00";  # aspen's scrub starts Mon 03:00 and takes ~3h45m; its metrics update only on completion
+          OnCalendar = "Mon 09:00:00";  # aspen's scrub starts Mon 03:00 and takes ~4h45m; a run still going at report time is flagged stale
           Persistent = true;  # run on next boot if missed
           RandomizedDelaySec = "5m";  # randomize within 5 minutes to avoid load spikes
         };
