@@ -453,7 +453,7 @@ in {
         };
         # reuse the existing failure notification path so verify failures
         # page the same way backup failures do
-        unitConfig.OnFailure = "backupFailureEmail.service backupFailureWebhook.service";
+        unitConfig.OnFailure = "backupFailureEmail@%n.service backupFailureWebhook@%n.service";
       }) cfg.probes
       // {
         "verifyBackupNext" = {
