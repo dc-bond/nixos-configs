@@ -939,13 +939,13 @@ let
 
           # grouped by device: impermanence bind mounts report one filesystem under every mountpoint
           - alert: diskSpaceLow
-            expr: min by (host, instance, device, fstype) (node_filesystem_avail_bytes{fstype=~"ext4|btrfs|xfs"} / node_filesystem_size_bytes{fstype=~"ext4|btrfs|xfs"}) * 100 < 10
+            expr: min by (host, instance, device, fstype) (node_filesystem_avail_bytes{fstype=~"ext4|btrfs|xfs|zfs"} / node_filesystem_size_bytes{fstype=~"ext4|btrfs|xfs|zfs"}) * 100 < 10
             for: 5m
             labels:
               severity: warning
 
           - alert: diskSpaceCritical
-            expr: min by (host, instance, device, fstype) (node_filesystem_avail_bytes{fstype=~"ext4|btrfs|xfs"} / node_filesystem_size_bytes{fstype=~"ext4|btrfs|xfs"}) * 100 < 5
+            expr: min by (host, instance, device, fstype) (node_filesystem_avail_bytes{fstype=~"ext4|btrfs|xfs|zfs"} / node_filesystem_size_bytes{fstype=~"ext4|btrfs|xfs|zfs"}) * 100 < 5
             for: 2m
             labels:
               severity: critical
@@ -1741,12 +1741,11 @@ in
           # the client hosts push here over the tailnet; 3030 is not in
           # allowedTCPPorts, so only the trusted tailscale0 interface reaches it
           http_listen_address = hostData.networking.tailscaleIp;
+          grpc_listen_address = "127.0.0.1";
         };
         common = {
-          ring = {
-            instance_addr = "127.0.0.1";
-            kvstore.store = "inmemory";
-          };
+          instance_addr = "127.0.0.1"; # the address loki's own components dial for grpc, so it must match grpc_listen_address
+          ring.kvstore.store = "inmemory";
           replication_factor = 1;
           path_prefix = "/var/lib/loki";
         };
