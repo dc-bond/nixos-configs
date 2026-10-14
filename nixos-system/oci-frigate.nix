@@ -35,6 +35,10 @@ in
     systemPackages = with pkgs; [ ffmpeg-full ];
     etc."${app}.yml" = {
       text = ''
+        # config format version, as frigate's migrator stamps it. the migrator checks for a writable file before
+        # reading this, so the :ro mount logs "Config file is read-only, unable to migrate" on every start - expected
+        version: 0.18-0
+
         logger:
           default: info
         
@@ -127,7 +131,7 @@ in
         ffmpeg: # global ffmpeg configuration for all cameras
           hwaccel_args: preset-nvidia-h264 # adds nvidia gpu hardware acceleration
           output_args: 
-            record: preset-record-generic-audio-copy # adds audio to record streams
+            record: preset-record-generic-audio-aac # adds audio to record streams, encoded to aac - the go2rtc restream carries the camera's own audio codec
         
         birdseye: # global birdseye configuration for all cameras
           enabled: false # no cameras enabled during move (2026-07) — re-enable on reconnect
@@ -144,9 +148,10 @@ in
         
         record: # global record configuration for all cameras
           enabled: true
-          retain: # retain all clips containing any kind of motion for 3 days
-            days: 3 
-            mode: motion
+          continuous: # no recording retained without motion
+            days: 0
+          motion: # retain all clips containing any kind of motion for 3 days
+            days: 3
           alerts: # retain all clips containing any kind of alert for 30 days 
             retain:
               days: 30
@@ -165,8 +170,7 @@ in
             device: pci
         
         snapshots: # global snapshot configuration for all cameras, requires object detection turned on
-          enabled: true
-          clean_copy: true
+          enabled: true # only a clean webp is written to disk; the options below apply when the api renders a snapshot
           timestamp: true
           bounding_box: true
           crop: false
@@ -184,7 +188,7 @@ in
   virtualisation.oci-containers.containers = {
 
     "${app}" = {
-      image = "ghcr.io/blakeblackshear/${app}:0.15.2"; # https://github.com/blakeblackshear/frigate/releases
+      image = "ghcr.io/blakeblackshear/${app}:0.18.1"; # https://github.com/blakeblackshear/frigate/releases
       autoStart = true;
       environmentFiles = [ 
         config.sops.templates."${app}-env".path 
