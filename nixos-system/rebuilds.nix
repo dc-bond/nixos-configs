@@ -8,15 +8,8 @@
 
 {
   
-  # deploy the private SSH key for root
-  sops.secrets.builderSshKey = {
-    mode = "0600";
-    owner = "root";
-    group = "root";
-    path = "/root/.ssh/id_builder";
-  };
-  
   # configure distributed builds to use aspen, note "trusted-users" setting in foundation.nix imported into aspen
+  # no ssh key: port 22 on aspen's tailscale ip is tailscale ssh, which authorizes root on this host by tailnet acl
   nix = {
     distributedBuilds = true;
     buildMachines = [{
@@ -27,16 +20,15 @@
       speedFactor = 2; # prefer aspen over local (higher = more preferred)
       supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
       sshUser = "chris";
-      sshKey = "/root/.ssh/id_builder";
     }];
     extraOptions = ''
       builders-use-substitutes = true
     '';
-    settings.connect-timeout = 5;
+    settings.connect-timeout = 5; # binary cache substituters only; the builder connection uses ConnectTimeout from sshd.nix
   };
   
   # rb() - unified rebuild function
-  # builds use aspen as distributed build host by default (auto-fallback to local after 5s)
+  # builds use aspen as distributed build host by default (falls back to local if aspen is unreachable)
   # force-local option explicitly disables distributed builds
   programs.zsh.interactiveShellInit = ''
     rb() {
@@ -182,11 +174,11 @@
 #    │  ├─ boot: Activate on next reboot
 #    │  └─ build: Build the closure only and exit; no SSH, so it works for offline hosts
 #    ├─ Prompts for build strategy:
-#    │  ├─ distributed (aspen): Use aspen for builds (auto-fallback to local after 5s)
+#    │  ├─ distributed (aspen): Use aspen for builds (falls back to local if aspen is unreachable)
 #    │  └─ force-local: Build on this machine only (for when aspen is down/broken)
 #    ├─ For remote targets, tests SSH connectivity:
-#    │  ├─ Try: ssh <hostname>-tailscale (port 22)
-#    │  └─ Fallback: ssh <hostname> (custom port from configVars)
+#    │  ├─ Try: ssh <hostname>-tailscale (tailscale ssh, port 22)
+#    │  └─ Fallback: ssh <hostname> (openssh on the custom port from configVars; only hosts with sshPort set)
 #    └─ Calls: nixos-rebuild <activation> --target-host <ssh-target> [--option builders ""]
 
 # 2. NIXOS-REBUILD + BUILD PHASE (runs on workstation as root)
@@ -197,9 +189,9 @@
 #    └─ NIX-DAEMON DISTRIBUTED BUILD (orchestrated by workstation):
 #       ├─ Sees: distributedBuilds = true
 #       ├─ For each derivation to build:
-#       │  ├─ Attempts: ssh chris@<aspen-tailscale-ip> (using /root/.ssh/id_builder)
+#       │  ├─ Attempts: ssh chris@<aspen-tailscale-ip> (tailscale ssh, no key)
 #       │  ├─ If SUCCESS → Compilation executes on aspen
-#       │  ├─ If FAIL (timeout 5s) → Compilation executes on workstation as fallback
+#       │  ├─ If FAIL (ssh ConnectTimeout 10s) → Compilation executes on workstation as fallback
 #       │  └─ Returns: completed derivation to workstation
 #       └─ Result: Full closure assembled on workstation, ready for deployment
 #
@@ -213,13 +205,13 @@
 # ═══════════════════════════════════════════════════════════════════════════════
 #
 # Connection A: nix-daemon → aspen (for building)
-#   - Uses: /root/.ssh/id_builder
+#   - Uses: tailscale ssh, authorized by tailnet acl (no ssh key)
 #   - Target: aspen tailscale IP only
 #   - Purpose: Offload compilation work
 #   - Failure mode: Build locally instead (graceful degradation)
 #
 # Connection B: nixos-rebuild → target host (for copying/activating)
-#   - Uses: chris's yubikey via gpg-agent (from rb() function context)
+#   - Uses: tailscale ssh (tailnet acl), or openssh with chris's yubikey via gpg-agent on fallback
 #   - Target: tailscale OR regular SSH (rb() tests and chooses)
 #   - Purpose: Deploy built configuration
 #   - Failure mode: rb() handles fallback to regular SSH

@@ -33,11 +33,6 @@
         User = config.home.username;
         Port = 22;
       };
-      "juniper" = {
-        HostName = configVars.hosts.juniper.networking.ipv4;
-        User = config.home.username;
-        Port = 28764;
-      };
       "juniper-tailscale" = {
         HostName = configVars.hosts.juniper.networking.tailscaleIp;
         User = config.home.username;
