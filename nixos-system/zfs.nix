@@ -108,6 +108,13 @@ in
       example = { "storage/root/media/security-cameras" = "2T"; };
     };
 
+    poolCompatibility = lib.mkOption {
+      type = lib.types.attrsOf lib.types.str;
+      default = {};
+      description = "Feature-set compatibility to pin per pool, from zfs's compatibility.d";
+      example = { storage = "openzfs-2.3-linux"; };
+    };
+
     snapshotRetention = {
       frequent = lib.mkOption {
         type = lib.types.int;
@@ -200,6 +207,20 @@ in
       script = lib.concatStringsSep "\n" (lib.mapAttrsToList
         (dataset: quota: "${pkgs.zfs}/bin/zfs set quota=${quota} ${dataset}")
         cfg.datasetQuotas);
+    };
+
+    systemd.services.zfs-pool-compatibility = lib.mkIf (cfg.poolCompatibility != {}) {
+      description = "Apply declared ZFS pool compatibility";
+      after = [ "zfs-import.target" ];
+      requires = [ "zfs-import.target" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
+      script = lib.concatStringsSep "\n" (lib.mapAttrsToList
+        (pool: compat: "${pkgs.zfs}/bin/zpool set compatibility=${compat} ${pool}")
+        cfg.poolCompatibility);
     };
 
   };

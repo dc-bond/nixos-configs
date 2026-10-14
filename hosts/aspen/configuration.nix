@@ -275,6 +275,7 @@
       "storage/root/media/security-cameras" = "2T";
       "storage/root/cache/photoprism" = "1T"; # photoprism never evicts on-demand thumbnails
     };
+    poolCompatibility.storage = "openzfs-2.3-linux"; # newer features add nothing here; pinning silences zpool status's upgrade notice
   };
 
   systemd.services.zfs-mount.enable = false; # disable zfs auto-mount service when using legacy systemd-managed mountpoints
