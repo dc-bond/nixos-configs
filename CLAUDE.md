@@ -174,9 +174,8 @@ Conventions and exceptions:
 - Module: `nixos-system/tailscale.nix`
 
 **SSH Access**
-- Servers (aspen, juniper): Custom SSH ports defined in configVars
-- juniper's public SSH port is deliberately closed at the Hetzner Cloud Firewall: reach it via Tailscale SSH (`ssh juniper-tailscale`; plain `ssh juniper` resolves to the public IP and times out), or the Hetzner web console as fallback
-- Workstations/laptops: Tailscale SSH only (`sshPort = null`)
+- aspen: OpenSSH on a custom port defined in configVars, alongside Tailscale SSH
+- juniper, workstations/laptops: Tailscale SSH only (`sshPort = null`); juniper's fallback is the Hetzner web console
 - Public keys stored in `configVars.hosts.${hostname}.networking.sshPublicKey`
 
 ### Storage and Backups

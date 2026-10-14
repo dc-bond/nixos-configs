@@ -51,7 +51,9 @@ in
         collections = [
           # reads from syslog acquisition
           "crowdsecurity/linux" # linux system protection
+        ] ++ lib.optionals config.services.openssh.enable [
           "crowdsecurity/sshd" # ssh brute-force protection
+        ] ++ [
           # reads from traefik acquisition
           "crowdsecurity/traefik" # traefik reverse proxy protection
           "crowdsecurity/base-http-scenarios" # generic http attacks
@@ -59,7 +61,7 @@ in
         ];
       };
       localConfig = {
-        acquisitions = [
+        acquisitions = lib.optionals config.services.openssh.enable [
           {
             source = "journalctl";
             journalctl_filter = [ "_SYSTEMD_UNIT=sshd.service" ];
@@ -68,6 +70,7 @@ in
               program = "sshd";
             };
           }
+        ] ++ [
           {
             filenames = [ "/var/log/traefik/access.log" ];
             labels.type = "traefik";
