@@ -73,11 +73,6 @@
       };
     };
 
-    # uinput node permissions for sunshine input injection back to client
-    udev.extraRules = ''
-      KERNEL=="uinput", GROUP="input", MODE="0660", OPTIONS+="static_node=uinput"
-    '';
-
     # aspen has no physical audio hardware, sunshine loads its own null-sink at stream start
     pipewire = {
       enable = true;
@@ -99,7 +94,7 @@
     };
   };
 
-  users.users.chris.extraGroups = [ "input" ];
+  users.users.chris.extraGroups = [ "uinput" ]; # /dev/uinput group set by hardware.uinput, which the sunshine module enables; needed for input injection
   security.rtkit.enable = true; # realtime scheduling priority for pipewire
 
   # no firewall rules needed, tailscale0 is trusted via tailscale.nix and sunshine is only reached over tailscale
