@@ -98,6 +98,8 @@ in
         "mail.close_message_window.on_delete" = true;
         "calendar.item.promptDelete" = false;
         "mail.shell.checkDefaultClient" = false;
+        # auto-compact once reclaimable space across all folders exceeds this
+        "mail.purge_threshold_mb" = 200;
         # compose
         "mail.collect_email_address_outgoing" = false; # never auto-fill Collected Addresses
         "mail.compose.autosaveinterval" = 2;
@@ -118,11 +120,15 @@ in
     # `id_` prefix or the overrides land on dead pref names TB never reads.
     #
     # openpgp posture is not repeated here: the hm module already writes
-    # is_gnupg_key_id, openpgp_key_id, attachPgpKey=false, autoEncryptDrafts=true,
-    # protectSubject=true, e2etechpref=0, encryptionpolicy=0, sign_mail=false
-    # from `identity.gpg.key` + signByDefault in email.nix. autocrypt headers
-    # advertise the pubkey to PGP-aware correspondents without visible noise.
+    # is_gnupg_key_id, openpgp_key_id, attachPgpKey=false, protectSubject=true,
+    # e2etechpref=0, encryptionpolicy=0, sign_mail=false from `identity.gpg.key`
+    # + signByDefault in email.nix. autocrypt headers advertise the pubkey to
+    # PGP-aware correspondents without visible noise.
     perIdentitySettings = id: {
+      # hm forces this true. drafts would encrypt to the yubikey's touch-policy
+      # decryption subkey, and a reopen without a timely touch silently loads
+      # headers only, so the body looks lost.
+      "mail.identity.id_${id}.autoEncryptDrafts" = false;
       "mail.identity.id_${id}.htmlSigFormat" = true;
       "mail.identity.id_${id}.htmlSigText" = htmlSignature;
       "mail.identity.id_${id}.sig_bottom" = false;
