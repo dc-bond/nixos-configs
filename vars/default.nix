@@ -202,9 +202,9 @@
       ipv4 = "192.168.1.242";
       tailscaleIp = null;
     };
-    unifiUsg = {
+    unifiGateway = {
       ipv4 = "192.168.1.1";
-      mac = "18:e8:29:44:da:64"; # lan-side; tailscale clients match it to detect the home network
+      mac = "0e:ea:14:63:de:96"; # uxg max lan-side mac, not the label mac; tailscale clients match it to detect the home network
       tailscaleIp = null;
     };
     unifiSwitch8 = {

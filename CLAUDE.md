@@ -169,7 +169,7 @@ Conventions and exceptions:
 
 **Tailscale Integration**
 - Exit nodes: aspen, juniper; only aspen also advertises the LAN route (192.168.1.0/24)
-- Clients with a default exit node: thinkpad, kauri (aspen), applied only off the home LAN. `tailscale-exit-node-auto` (fired by networkd-dispatcher) arpings the default gateway; when its MAC matches `configVars.devices.unifiUsg.mac` it clears the exit node and sets `--accept-routes=false`, so LAN traffic stays on the LAN instead of going through aspen's 192.168.1.0/24 subnet route. Off the home LAN it sets both back. These clients also run with `networking.enableIPv6 = false`, because aspen advertises `::/0` but has no IPv6 uplink
+- Clients with a default exit node: thinkpad, kauri (aspen), applied only off the home LAN. `tailscale-exit-node-auto` (fired by networkd-dispatcher) arpings the default gateway; when its MAC matches `configVars.devices.unifiGateway.mac` it clears the exit node and sets `--accept-routes=false`, so LAN traffic stays on the LAN instead of going through aspen's 192.168.1.0/24 subnet route. Off the home LAN it sets both back. These clients also run with `networking.enableIPv6 = false`, because aspen advertises `::/0` but has no IPv6 uplink
 - Configuration per-host in `configVars.hosts.${hostname}.networking.tailscale`
 - Module: `nixos-system/tailscale.nix`
 

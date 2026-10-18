@@ -35,7 +35,7 @@ let
   # home lan; at home both are overhead, and a hung aspen takes down whatever
   # is routed through it
   autoExitNode = isClient && defaultExitNodeIp != null;
-  homeGatewayMac = lib.toLower configVars.devices.unifiUsg.mac;
+  homeGatewayMac = lib.toLower configVars.devices.unifiGateway.mac;
 
   # arping instead of the neighbour table: with an exit node active, ip traffic
   # to the gateway is routed into tailscale0 and its neighbour entry goes stale

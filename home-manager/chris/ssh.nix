@@ -73,8 +73,8 @@
           host.port = 5900;
         }];
       };
-      "unifi-usg" = {
-        HostName = configVars.devices.unifiUsg.ipv4;
+      "unifi-gateway" = {
+        HostName = configVars.devices.unifiGateway.ipv4;
         User = "dcbond";
         Port = 22;
       };
