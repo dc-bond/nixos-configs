@@ -220,7 +220,7 @@
       tailscaleIp = null;
     };
     unifiUapLivingRoom = {
-      ipv4 = "192.168.1.6";
+      ipv4 = "192.168.1.248"; # static on the device
       tailscaleIp = null;
     };
     frontCamera = {
