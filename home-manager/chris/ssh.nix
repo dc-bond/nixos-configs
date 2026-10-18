@@ -78,8 +78,8 @@
         User = "dcbond";
         Port = 22;
       };
-      "unifi-uap-livingroom" = {
-        HostName = configVars.devices.unifiUapLivingRoom.ipv4;
+      "unifi-uap-acpro" = {
+        HostName = configVars.devices.unifiUapAcPro.ipv4;
         User = "dcbond";
         Port = 22;
       };

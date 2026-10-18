@@ -219,7 +219,7 @@
       ipv4 = "192.168.1.191";
       tailscaleIp = null;
     };
-    unifiUapLivingRoom = {
+    unifiUapAcPro = {
       ipv4 = "192.168.1.248"; # static on the device
       tailscaleIp = null;
     };
