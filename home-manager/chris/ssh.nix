@@ -78,13 +78,18 @@
         User = "dcbond";
         Port = 22;
       };
-      "unifi-uap-acpro" = {
-        HostName = configVars.devices.unifiUapAcPro.ipv4;
+      "unifi-ap-acmesh" = {
+        HostName = configVars.devices.unifiApAcMesh.ipv4;
         User = "dcbond";
         Port = 22;
       };
-      "unifi-uap-garage" = {
-        HostName = configVars.devices.unifiUapGarage.ipv4;
+      "unifi-ap-acpro" = {
+        HostName = configVars.devices.unifiApAcPro.ipv4;
+        User = "dcbond";
+        Port = 22;
+      };
+      "unifi-ap-u7pro" = {
+        HostName = configVars.devices.unifiApU7Pro.ipv4;
         User = "dcbond";
         Port = 22;
       };
@@ -95,6 +100,11 @@
       };
       "unifi-switch8-lite" = {
         HostName = configVars.devices.unifiSwitch8Lite.ipv4;
+        User = "dcbond";
+        Port = 22;
+      };
+      "unifi-switch-pro24" = {
+        HostName = configVars.devices.unifiSwitchPro24.ipv4;
         User = "dcbond";
         Port = 22;
       };

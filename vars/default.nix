@@ -215,12 +215,20 @@
       ipv4 = "192.168.1.151";
       tailscaleIp = null;
     };
-    unifiUapGarage = {
-      ipv4 = "192.168.1.191";
+    unifiSwitchPro24 = { # USW-Pro-24-PoE
+      ipv4 = "192.168.1.212"; # set static on the device at adoption
       tailscaleIp = null;
     };
-    unifiUapAcPro = {
+    unifiApAcMesh = { # UAP-AC-Mesh
+      ipv4 = "192.168.1.191"; # set static on the device when it is back in service
+      tailscaleIp = null;
+    };
+    unifiApAcPro = { # UAP-AC-Pro
       ipv4 = "192.168.1.248"; # static on the device
+      tailscaleIp = null;
+    };
+    unifiApU7Pro = { # U7 Pro
+      ipv4 = "192.168.1.7"; # set static on the device at adoption
       tailscaleIp = null;
     };
     frontCamera = {
