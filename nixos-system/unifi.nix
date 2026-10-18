@@ -36,12 +36,49 @@ let
     serviceName = app;
     recoveryPlan = recoveryPlan;
   };
+  # one call against the classic api as a local site admin; standalone 10.6 has
+  # no api keys, so it is a session login (cookie + csrf header) per call.
+  # loopback, so traefik and lan re-addressing don't affect it. root-only, as
+  # it reads the password secret: sudo unifi-api GET /api/s/default/stat/device
+  apiUser = "claude";
+  unifiApi = pkgs.writeShellApplication {
+    name = "unifi-api";
+    runtimeInputs = with pkgs; [ curl jq gawk coreutils ];
+    excludeShellChecks = [ "SC2016" ]; # single-quoted jq and awk programs
+    text = ''
+      if [ $# -lt 2 ]; then
+        echo "usage: unifi-api METHOD PATH [JSON]" >&2
+        exit 2
+      fi
+      method=$1
+      path=$2
+      body=''${3:-}
+      base=https://127.0.0.1:8443
+      jar=$(mktemp)
+      csrf() { awk '$6 == "csrf_token" { print $7 }' "$jar"; }
+      logout() {
+        curl -sk -b "$jar" -H "X-Csrf-Token: $(csrf)" -X POST "$base/api/logout" >/dev/null || true
+        rm -f "$jar"
+      }
+      trap logout EXIT
+      jq -n --arg u ${apiUser} --rawfile p ${config.sops.secrets.unifiApiPassword.path} \
+        '{username: $u, password: ($p | rtrimstr("\n"))}' \
+        | curl -sk --fail -c "$jar" -H 'Content-Type: application/json' -d @- "$base/api/login" >/dev/null
+      args=(-sk --fail-with-body -b "$jar" -c "$jar" -X "$method" -H "X-Csrf-Token: $(csrf)")
+      if [ -n "$body" ]; then
+        args+=(-H 'Content-Type: application/json' -d "$body")
+      fi
+      curl "''${args[@]}" "$base$path"
+    '';
+  };
 
 in
 
 {
 
-  environment.systemPackages = with pkgs; [ recoverScript ];
+  environment.systemPackages = with pkgs; [ recoverScript unifiApi ];
+
+  sops.secrets.unifiApiPassword = {}; # password of the ${apiUser} local site admin; root-only, the default
 
   backups.serviceHooks = {
     preHook = lib.mkAfter [ "systemctl stop ${app}.service || exit 1" ]; # fail fast, never cold-copy a live mongod
