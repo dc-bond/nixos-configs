@@ -56,6 +56,11 @@ controller has no API keys.
 - aspen's login shell is zsh, which doesn't word-split `$var`; run multi-step API work as
   `ssh aspen bash -s <<'EOF' … EOF`, and refuse a write unless the new array is valid JSON of
   the expected length.
+- A change that can drop Wi-Fi (SSIDs, AP radios, client kicks) can also drop thinkpad and with it
+  Claude's SSH session. Run it as a job on aspen so it finishes regardless, then read its log:
+  `sudo systemd-run --unit=<name> --collect --setenv=PATH=/run/wrappers/bin:/run/current-system/sw/bin
+  --property=StandardOutput=file:/tmp/<name>.log bash /tmp/<name>.sh`. Without the `PATH` setting,
+  the transient unit finds no commands at all.
 - **Risk gate.** Before each change, state its risk tier and why. No/low risk (names, labels,
   ports with nothing attached, anything trivially reverted from the UI) goes ahead directly.
   Moderate or higher is discussed with chris first, and always includes anything that could cut
