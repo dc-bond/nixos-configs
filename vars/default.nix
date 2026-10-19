@@ -207,16 +207,12 @@
       mac = "0e:ea:14:63:de:96"; # uxg max lan-side mac, not the label mac; tailscale clients match it to detect the home network
       tailscaleIp = null;
     };
-    unifiSwitch8 = {
-      ipv4 = "192.168.1.213";
-      tailscaleIp = null;
-    };
     unifiSwitch8Lite = {
       ipv4 = "192.168.1.151";
       tailscaleIp = null;
     };
     unifiSwitchPro24 = { # USW-Pro-24-PoE
-      ipv4 = "192.168.1.212"; # set static on the device at adoption
+      ipv4 = "192.168.1.212"; # static on the device
       tailscaleIp = null;
     };
     unifiApAcMesh = { # UAP-AC-Mesh
@@ -228,7 +224,7 @@
       tailscaleIp = null;
     };
     unifiApU7Pro = { # U7 Pro
-      ipv4 = "192.168.1.7"; # set static on the device at adoption
+      ipv4 = "192.168.1.7"; # static on the device
       tailscaleIp = null;
     };
     frontCamera = {

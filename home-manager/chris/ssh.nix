@@ -93,11 +93,6 @@
         User = "dcbond";
         Port = 22;
       };
-      "unifi-switch8" = {
-        HostName = configVars.devices.unifiSwitch8.ipv4;
-        User = "dcbond";
-        Port = 22;
-      };
       "unifi-switch8-lite" = {
         HostName = configVars.devices.unifiSwitch8Lite.ipv4;
         User = "dcbond";
