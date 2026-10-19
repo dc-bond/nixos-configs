@@ -280,10 +280,6 @@
       ipv4 = "192.168.1.245";
       tailscaleIp = null;
     };
-    danielleSurfacePro = {
-      ipv4 = "192.168.1.19";
-      tailscaleIp = null;
-    };
     chrisKindle = {
       ipv4 = "192.168.1.91";
       tailscaleIp = null;
