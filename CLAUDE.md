@@ -53,6 +53,9 @@ controller has no API keys.
   fields such as `port_overrides` whole, so read, modify, then write back the full array.
 - Verify every write with a GET and against the mongo record (127.0.0.1:27117, db `ace`,
   read-only), not the API's `rc: ok` alone.
+- aspen's login shell is zsh, which doesn't word-split `$var`; run multi-step API work as
+  `ssh aspen bash -s <<'EOF' … EOF`, and refuse a write unless the new array is valid JSON of
+  the expected length.
 - **Risk gate.** Before each change, state its risk tier and why. No/low risk (names, labels,
   ports with nothing attached, anything trivially reverted from the UI) goes ahead directly.
   Moderate or higher is discussed with chris first, and always includes anything that could cut
