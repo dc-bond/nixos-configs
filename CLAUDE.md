@@ -39,6 +39,29 @@ back in, or does it destroy something".
 
 The same rule applies to all three hosts; juniper being a public VPS does not make it stricter.
 
+### UniFi controller API
+
+Claude changes UniFi settings through the controller's classic API on aspen:
+`ssh aspen 'sudo unifi-api METHOD PATH [JSON]'` (from `nixos-system/unifi.nix`), e.g.
+`sudo unifi-api GET /api/s/default/stat/device`. It logs in as the local site admin `claude`
+(not a super admin; password in sops `unifiApiPassword`, root-only on aspen) over loopback
+`127.0.0.1:8443`, so Traefik and LAN re-addressing don't affect it. The standalone 10.6
+controller has no API keys.
+
+- Config objects live in the REST collections (`rest/device/<_id>`, `rest/networkconf`,
+  `rest/wlanconf`, `rest/portforward`, `rest/setting/<key>/<_id>`, …). A PUT replaces array
+  fields such as `port_overrides` whole, so read, modify, then write back the full array.
+- Verify every write with a GET and against the mongo record (127.0.0.1:27117, db `ace`,
+  read-only), not the API's `rc: ok` alone.
+- **Risk gate.** Before each change, state its risk tier and why. No/low risk (names, labels,
+  ports with nothing attached, anything trivially reverted from the UI) goes ahead directly.
+  Moderate or higher is discussed with chris first, and always includes anything that could cut
+  access or break homelab networking: uplink or aspen ports, device management IPs and the
+  inform host, Opticon-Home DHCP/DNS/subnet, firewall policies, the gateway WAN, device SSH
+  auth, adopt/forget/reset, firmware upgrades, and features that can disable a port with no
+  remote way back.
+- One change at a time; chris usually watches each one land in the UI.
+
 
 ## High-Level Architecture
 
