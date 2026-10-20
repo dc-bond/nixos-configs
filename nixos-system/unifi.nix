@@ -27,6 +27,7 @@ let
     };
   });
   lanInterface = configVars.hosts."${config.networking.hostName}".networking.ethernetInterface;
+  syslogPort = 1514;
   recoveryPlan = {
     restoreItems = [ stateDir ];
     stopServices = [ "${app}" ];
@@ -98,8 +99,40 @@ in
     allowedUDPPorts = [
       3478 # stun
       10001 # ap discovery
+      syslogPort # device syslog, to alloy
     ];
   };
+
+  # the controller's activity logging (rsyslogd setting) points every device at
+  # this listener; they all send rfc3164. host is the device name with spaces
+  # stripped. requires monitoring-client.nix, which defines loki.write.default
+  environment.etc."alloy/config.alloy".text = lib.mkAfter ''
+
+    loki.relabel "unifi" {
+      forward_to = []
+
+      rule {
+        source_labels = ["__syslog_message_hostname"]
+        target_label  = "host"
+      }
+
+      rule {
+        source_labels = ["__syslog_message_severity"]
+        target_label  = "severity"
+      }
+    }
+
+    loki.source.syslog "unifi" {
+      listener {
+        address       = "0.0.0.0:${toString syslogPort}"
+        protocol      = "udp"
+        syslog_format = "rfc3164"
+        labels        = { job = "unifi" }
+      }
+      forward_to    = [loki.write.default.receiver]
+      relabel_rules = loki.relabel.unifi.rules
+    }
+  '';
 
   services = {
 
