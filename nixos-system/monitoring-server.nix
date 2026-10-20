@@ -1107,6 +1107,28 @@ let
               severity: warning
             annotations:
               summary: "{{ $value }} Pi-hole adlist(s) on {{ $labels.host }} failed to download - check `pihole -g` output"
+
+
+      - name: network_device_alerts
+        interval: 30s
+        rules:
+
+          # unifi_device_reachable comes from aspen's ping exporter (unifi.nix)
+          - alert: unifiDeviceUnreachable
+            expr: unifi_device_reachable == 0
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "{{ $labels.device }} ({{ $labels.ip }}) is not answering ping from aspen"
+
+          - alert: unifiDeviceMetricAbsent
+            expr: absent(unifi_device_reachable{host="aspen"})
+            for: 15m
+            labels:
+              severity: critical
+            annotations:
+              summary: "UniFi device reachability metric absent - check `systemctl status unifi-device-exporter` on aspen"
   '';
 
   # status and method are promoted to labels; path and client_ip go to structured

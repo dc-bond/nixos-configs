@@ -28,6 +28,33 @@ let
   });
   lanInterface = configVars.hosts."${config.networking.hostName}".networking.ethernetInterface;
   syslogPort = 1514;
+  # pinged every minute for the unifiDeviceUnreachable alert (monitoring-server.nix);
+  # an unplugged device joins once it is back in service
+  monitoredDevices = with configVars.devices; {
+    "Gateway UXG Max" = unifiGateway.ipv4;
+    "Switch Pro 24 400W" = unifiSwitchPro24.ipv4;
+    "AP U7 Pro Wifi 7" = unifiApU7Pro.ipv4;
+    "AP AC Pro Wifi 5" = unifiApAcPro.ipv4;
+  };
+  deviceExporter = pkgs.writeShellScript "unifi-device-exporter.sh" ''
+    set -euo pipefail
+
+    TEXTFILE_DIR="/var/lib/prometheus/node-exporter-text-files"
+    METRICS_FILE="$TEXTFILE_DIR/unifi_devices.prom.$$"
+    FINAL_FILE="$TEXTFILE_DIR/unifi_devices.prom"
+
+    reachable() { ${pkgs.iputils}/bin/ping -c 3 -W 2 -q "$1" >/dev/null 2>&1 && echo 1 || echo 0; }
+
+    {
+      echo "# HELP unifi_device_reachable 1 if the unifi device answered ping from aspen"
+      echo "# TYPE unifi_device_reachable gauge"
+    ${lib.concatStrings (lib.mapAttrsToList (name: ip: ''
+      echo "unifi_device_reachable{device=\"${name}\",ip=\"${ip}\"} $(reachable ${ip})"
+    '') monitoredDevices)}
+    } > "$METRICS_FILE"
+
+    mv "$METRICS_FILE" "$FINAL_FILE"
+  '';
   recoveryPlan = {
     restoreItems = [ stateDir ];
     stopServices = [ "${app}" ];
@@ -133,6 +160,24 @@ in
       relabel_rules = loki.relabel.unifi.rules
     }
   '';
+
+  systemd = {
+    services.unifi-device-exporter = {
+      description = "Export UniFi device reachability for node_exporter";
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = "${deviceExporter}";
+      };
+    };
+    timers.unifi-device-exporter = {
+      description = "UniFi Device Reachability Export Timer";
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "2m";
+        OnUnitActiveSec = "1m";
+      };
+    };
+  };
 
   services = {
 
