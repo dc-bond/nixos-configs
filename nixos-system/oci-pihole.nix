@@ -50,14 +50,14 @@ let
     
   in hostEntries ++ deviceEntries ++ containerEntries;
   
-  # custom unbound forward-first config - tries recursive resolution first, falls back to Quad9 DNS-over-TLS on failure
+  # forward-first: every query goes to quad9, then cloudflare, over dns-over-tls; unbound recurses itself only when they servfail
   unboundForwardConfig = pkgs.writeText "forward-records.conf" ''
     forward-zone:
         name: "."
         forward-first: yes
         forward-tls-upstream: yes
         forward-addr: 9.9.9.9@853#dns.quad9.net
-        forward-addr: 149.112.112.112@853#dns.quad9.net
+        forward-addr: 1.1.1.1@853#cloudflare-dns.com
   '';
 
   # docker-${app2}.service is Type=simple, so systemd marks it started when `docker run` forks, not

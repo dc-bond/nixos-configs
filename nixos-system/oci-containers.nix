@@ -20,10 +20,10 @@ in
       storageDriver = "overlay2"; # current docker recommendation, does not create nested btrfs subvolumes
       daemon.settings = {
         log-driver = "journald"; # log rotation/retention handled by journald config in foundation.nix
-        dns = [ 
-          "1.1.1.1" 
-          "9.9.9.9" 
-        ]; # use public dns for container pulls (skirt circular dependency on pihole/unbound)
+        dns = [
+          "9.9.9.9"
+          "1.1.1.1"
+        ]; # default resolv.conf for containers, public so they skirt the circular dependency on pihole/unbound; image pulls use the host resolver
       };
       #listenOptions = lib.mkIf (hostData.networking.tailscaleIp != null) [
       #  "/var/run/docker.sock"

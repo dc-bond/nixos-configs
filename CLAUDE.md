@@ -164,7 +164,10 @@ Conventions and exceptions:
 - **DHCP Configuration Required**: UniFi DHCP must advertise all 3 DNS servers:
   - Primary: 192.168.1.2 (aspen pihole)
   - Secondary: 9.9.9.9 (Quad9)
-  - Tertiary: 149.112.112.112 (Quad9)
+  - Tertiary: 1.1.1.1 (Cloudflare)
+  - The same order (own Pi-hole, Quad9, Cloudflare) is used everywhere a resolver list is set: aspen/juniper
+    `resolv.conf`, unbound's DoT forwarders, the gateway's WAN DNS, docker's daemon DNS and resolved's
+    FallbackDNS (minus the Pi-hole). Traefik's ACME propagation checks use Cloudflare on purpose (the zones are there)
 - **Failover on LAN (Tailscale OFF)**:
   - When aspen goes down: First query may take ~5s timeout before failing over to 1.1.1.1, but systemd-resolved can also detect aspen as unreachable proactively (observed: no timeout after ~30s of aspen being offline)
   - Subsequent queries: Instant - systemd-resolved learns and switches Current DNS Server

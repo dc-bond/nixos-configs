@@ -17,21 +17,24 @@ in
 
   services.resolved = {
     enable = hostData.networking.useResolved;
-    settings.Resolve.LLMNR = "false";
+    settings.Resolve = {
+      LLMNR = "false";
+      FallbackDNS = [ "9.9.9.9" "1.1.1.1" ]; # only used when no link has dns; homelab order is pihole, quad9, cloudflare
+    };
   };
 
-  environment.etc."resolv.conf" = lib.mkIf (!hostData.networking.useResolved) { # if not using systemd-resolved, than manually create resolv.conf, use Quad9 (9.9.9.9 and 149.112.112.112) for upstream fallback DNS
+  environment.etc."resolv.conf" = lib.mkIf (!hostData.networking.useResolved) { # if not using systemd-resolved, write resolv.conf by hand: own pihole, then quad9, then cloudflare
     text =
       if config.networking.hostName == "juniper" # juniper's pihole listens on tailscale interface only, aspen's pihole listens on all interfaces because behind NAT
       then ''
         nameserver ${hostData.networking.tailscaleIp}
         nameserver 9.9.9.9
-        nameserver 149.112.112.112
+        nameserver 1.1.1.1
       ''
       else ''
         nameserver 127.0.0.1
         nameserver 9.9.9.9
-        nameserver 149.112.112.112
+        nameserver 1.1.1.1
       '';
   };
 
