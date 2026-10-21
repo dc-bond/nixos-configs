@@ -47,13 +47,6 @@ in
 
   networking.wireguard.enable = true;
 
-  # bubuntux/nordlynx uses iptables-legacy inside the container, which requires
-  # the ip_tables kernel module. NixOS defaults to nftables-only, so ip_tables
-  # is not loaded automatically — without it the container's iptables calls fail
-  # with "Table does not exist" and WireGuard never connects.
-  # NOTE: this line can be removed when migrating to gluetun (uses nftables natively).
-  boot.kernelModules = [ "ip_tables" ];
-
   environment.systemPackages = with pkgs; [ recoverScript ];
 
   backups.serviceHooks = {
@@ -69,25 +62,21 @@ in
       vpnPrivateKey = {};
     };
     templates = {
-      # ACTIVE: nordlynx env file
       "${app1}-env" = {
+        # FIREWALL_OUTBOUND_SUBNETS: the home lan, reachable outside the tunnel.
+        # FIREWALL_INPUT_PORTS: the apps' ports, which traefik reaches on the docker bridge
         content = ''
           TZ=America/New_York
-          PRIVATE_KEY=${config.sops.placeholder.vpnPrivateKey}
-          NET_LOCAL=192.168.1.0/24,192.168.148.0/24
+          VPN_SERVICE_PROVIDER=nordvpn
+          VPN_TYPE=wireguard
+          WIREGUARD_PRIVATE_KEY=${config.sops.placeholder.vpnPrivateKey}
+          SERVER_COUNTRIES=United States
+          FIREWALL_OUTBOUND_SUBNETS=192.168.1.0/24,192.168.148.0/24
+          FIREWALL_INPUT_PORTS=8080,8989,7878,9696,5055,8096
+          DNS_UPSTREAM_RESOLVERS=quad9,cloudflare
         '';
         restartUnits = [ "docker-${app1}.service" ]; # the unit only references the rendered path, so a content change alone doesn't restart it; restarting it restarts every container sharing its netns
       };
-
-      # GLUETUN MIGRATION: replace template above with this (same vpnPrivateKey SOPS secret, different env var names)
-      # "${app1}-gluetun-env".content = ''
-      #   TZ=America/New_York
-      #   VPN_SERVICE_PROVIDER=nordvpn
-      #   VPN_TYPE=wireguard
-      #   WIREGUARD_PRIVATE_KEY=${config.sops.placeholder.vpnPrivateKey}
-      #   FIREWALL_OUTBOUND_SUBNETS=192.168.1.0/24  # equivalent to nordlynx NET_LOCAL - bypasses VPN kill-switch for LAN
-      #   SERVER_COUNTRIES=United States             # server selection - adjust country/region as needed
-      # '';
     };
   };
 
@@ -105,23 +94,9 @@ in
 
   virtualisation.oci-containers.containers = {
 
-    # =========================================================================
-    # VPN CONTAINER — two options below, one active at a time
-    #
-    # OPTION A (ACTIVE): bubuntux/nordlynx — ARCHIVED upstream Nov 2025.
-    #   Requires boot.kernelModules = [ "ip_tables" ] on the host because
-    #   it uses iptables-legacy internally. Uses "${app1}-env" SOPS template.
-    #
-    # OPTION B (COMMENTED): qmcgaw/gluetun — actively maintained replacement.
-    #   Uses nftables natively; no ip_tables kernel module needed.
-    #   Only needs NET_ADMIN (not --privileged). Uses "${app1}-gluetun-env" SOPS template.
-    #   All dependent containers (${app2}–${app7}) are unchanged — they already
-    #   use --network=container:${app1} and dependsOn = ["${app1}"].
-    # =========================================================================
-
-    # OPTION A — nordlynx (active)
+    # gluetun's firewall is up before the tunnel and stays closed while it is down
     "${app1}" = {
-      image = "docker.io/bubuntux/nordlynx:2025-01-01"; # https://hub.docker.com/r/bubuntux/nordlynx/tags
+      image = "docker.io/qmcgaw/gluetun:v3.41.3"; # https://github.com/qdm12/gluetun/releases
       autoStart = true;
       log-driver = "journald";
       environmentFiles = [ config.sops.templates."${app1}-env".path ];
@@ -129,10 +104,9 @@ in
         "--network=${app}"
         "--ip=${configVars.ociServices.${app}.containers.${app1}.ipv4}"
         "--sysctl=net.ipv6.conf.all.disable_ipv6=1"
+        "--sysctl=net.ipv4.conf.all.src_valid_mark=1"
         "--cap-add=NET_ADMIN"
-        "--privileged"
-        "--tty=true"
-        "--stop-signal=SIGINT"
+        "--device=/dev/net/tun"
       ];
       #labels = { # this shit broke with 25.11
       #  "traefik.enable" = "true";
@@ -181,23 +155,6 @@ in
       #  "traefik.http.services.${app7}.loadbalancer.server.url" = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:8096";
       #};
     };
-
-    # OPTION B — gluetun (commented; to migrate: uncomment this block, comment out OPTION A above,
-    #             swap to "${app1}-gluetun-env" SOPS template, remove boot.kernelModules = [ "ip_tables" ])
-    # "${app1}" = {
-    #   image = "docker.io/qmcgaw/gluetun:v3.41.1"; # https://hub.docker.com/r/qmcgaw/gluetun/tags
-    #   autoStart = true;
-    #   log-driver = "journald";
-    #   environmentFiles = [ config.sops.templates."${app1}-gluetun-env".path ];
-    #   extraOptions = [
-    #     "--network=${app}"
-    #     "--ip=${configVars.ociServices.${app}.containers.${app1}.ipv4}"
-    #     "--sysctl=net.ipv6.conf.all.disable_ipv6=1"
-    #     "--sysctl=net.ipv4.conf.all.src_valid_mark=1"  # required for WireGuard routing table rules
-    #     "--cap-add=NET_ADMIN"                           # only cap needed; --privileged not required
-    #     "--device=/dev/net/tun"                         # required for VPN tunnel creation
-    #   ];
-    # };
 
     "${app2}" = {
       image = "lscr.io/linuxserver/${app2}:4.4.1-ls202"; # https://github.com/linuxserver/docker-sabnzbd/releases
