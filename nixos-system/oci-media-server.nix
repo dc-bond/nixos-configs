@@ -108,52 +108,6 @@ in
         "--cap-add=NET_ADMIN"
         "--device=/dev/net/tun"
       ];
-      #labels = { # this shit broke with 25.11
-      #  "traefik.enable" = "true";
-      #  "traefik.docker.network" = "${app}";
-      #  "traefik.http.routers.${app2}.service" = "${app2}";
-      #  "traefik.http.routers.${app2}.entrypoints" = "websecure";
-      #  "traefik.http.routers.${app2}.rule" = "Host(`${app2}.${configVars.domain2}`)";
-      #  "traefik.http.routers.${app2}.tls" = "true";
-      #  "traefik.http.routers.${app2}.tls.options" = "tls-13@file";
-      #  "traefik.http.routers.${app2}.middlewares" = "trusted-allow@file,secure-headers@file";
-      #  "traefik.http.services.${app2}.loadbalancer.server.url" = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:8080";
-      #  "traefik.http.routers.${app3}.service" = "${app3}";
-      #  "traefik.http.routers.${app3}.entrypoints" = "websecure";
-      #  "traefik.http.routers.${app3}.rule" = "Host(`${app3}.${configVars.domain2}`)";
-      #  "traefik.http.routers.${app3}.tls" = "true";
-      #  "traefik.http.routers.${app3}.tls.options" = "tls-13@file";
-      #  "traefik.http.routers.${app3}.middlewares" = "trusted-allow@file,secure-headers@file";
-      #  "traefik.http.services.${app3}.loadbalancer.server.url" = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:8989";
-      #  "traefik.http.routers.${app4}.service" = "${app4}";
-      #  "traefik.http.routers.${app4}.entrypoints" = "websecure";
-      #  "traefik.http.routers.${app4}.rule" = "Host(`${app4}.${configVars.domain2}`)";
-      #  "traefik.http.routers.${app4}.tls" = "true";
-      #  "traefik.http.routers.${app4}.tls.options" = "tls-13@file";
-      #  "traefik.http.routers.${app4}.middlewares" = "trusted-allow@file,secure-headers@file";
-      #  "traefik.http.services.${app4}.loadbalancer.server.url" = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:7878";
-      #  "traefik.http.routers.${app5}.service" = "${app5}";
-      #  "traefik.http.routers.${app5}.entrypoints" = "websecure";
-      #  "traefik.http.routers.${app5}.rule" = "Host(`${app5}.${configVars.domain2}`)";
-      #  "traefik.http.routers.${app5}.tls" = "true";
-      #  "traefik.http.routers.${app5}.tls.options" = "tls-13@file";
-      #  "traefik.http.routers.${app5}.middlewares" = "trusted-allow@file,secure-headers@file";
-      #  "traefik.http.services.${app5}.loadbalancer.server.url" = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:9696";
-      #  "traefik.http.routers.${app6}.service" = "${app6}";
-      #  "traefik.http.routers.${app6}.entrypoints" = "websecure";
-      #  "traefik.http.routers.${app6}.rule" = "Host(`${app6}.${configVars.domain2}`)";
-      #  "traefik.http.routers.${app6}.tls" = "true";
-      #  "traefik.http.routers.${app6}.tls.options" = "tls-13@file";
-      #  "traefik.http.routers.${app6}.middlewares" = "trusted-allow@file,secure-headers@file";
-      #  "traefik.http.services.${app6}.loadbalancer.server.url" = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:5055";
-      #  "traefik.http.routers.${app7}.service" = "${app7}";
-      #  "traefik.http.routers.${app7}.entrypoints" = "websecure";
-      #  "traefik.http.routers.${app7}.rule" = "Host(`${app7}.${configVars.domain2}`)";
-      #  "traefik.http.routers.${app7}.tls" = "true";
-      #  "traefik.http.routers.${app7}.tls.options" = "tls-13@file";
-      #  "traefik.http.routers.${app7}.middlewares" = "jellyfin-trusted-allow@file,secure-headers@file";
-      #  "traefik.http.services.${app7}.loadbalancer.server.url" = "http://${configVars.ociServices.${app}.containers.${app1}.ipv4}:8096";
-      #};
     };
 
     "${app2}" = {
