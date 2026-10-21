@@ -70,11 +70,14 @@ in
     };
     templates = {
       # ACTIVE: nordlynx env file
-      "${app1}-env".content = ''
-        TZ=America/New_York
-        PRIVATE_KEY=${config.sops.placeholder.vpnPrivateKey}
-        NET_LOCAL=192.168.1.0/24,192.168.148.0/24
-      '';
+      "${app1}-env" = {
+        content = ''
+          TZ=America/New_York
+          PRIVATE_KEY=${config.sops.placeholder.vpnPrivateKey}
+          NET_LOCAL=192.168.1.0/24,192.168.148.0/24
+        '';
+        restartUnits = [ "docker-${app1}.service" ]; # the unit only references the rendered path, so a content change alone doesn't restart it; restarting it restarts every container sharing its netns
+      };
 
       # GLUETUN MIGRATION: replace template above with this (same vpnPrivateKey SOPS secret, different env var names)
       # "${app1}-gluetun-env".content = ''
