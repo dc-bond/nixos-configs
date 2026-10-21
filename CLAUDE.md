@@ -301,7 +301,9 @@ what makes targeted reads acceptable — it does not make bulk reads acceptable.
 4. **Document dependencies** - Add comments for module dependencies
 6. **Secrets via SOPS only** - Never commit plaintext secrets
 7. **Integrate with backups** - Add important paths to borgbackup jobs
-8. **Traefik labels** - OCI services need proper labels for reverse proxy routing
+8. **Traefik routing is file-provider only** - every service, OCI or native, gets its router and `loadBalancer` service in
+   `services.traefik.dynamicConfigOptions`; Traefik has no docker provider and no docker socket access, so container labels do
+   nothing. File routers outlive a stopped backend, which is what lets the `maintenance-page` middleware answer its 502s
 9. **Check private modules** - Some features may be in the private config repo
 10. **Working directory** - Main config is in `nixos-configs/` subdirectory
 11. **Commit messages** - Plain concise subject line, lowercase imperative. Do **not** append `Co-Authored-By: Claude ...` trailers.

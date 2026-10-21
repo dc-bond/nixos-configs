@@ -204,8 +204,6 @@ in
     };
   }; 
 
-  users.users.${app}.extraGroups = [ "docker" ]; # add traefik to docker group to enable docker socket access
-
   services = {
 
     ${app} = {
@@ -297,13 +295,6 @@ in
             certificatesDuration = 180;
             storage = "/var/lib/${app}/acme.json"; # where acme certificates live
             caServer = "https://acme-v02.api.letsencrypt.org/directory";
-          };
-        };
-        providers = {
-          docker = {
-            endpoint = "unix:///var/run/docker.sock";
-            exposedByDefault = false;
-            allowEmptyServices = true;
           };
         };
       };
