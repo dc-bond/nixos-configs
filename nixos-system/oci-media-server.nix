@@ -73,7 +73,7 @@ in
       "${app1}-env".content = ''
         TZ=America/New_York
         PRIVATE_KEY=${config.sops.placeholder.vpnPrivateKey}
-        NET_LOCAL=192.168.1.0/24
+        NET_LOCAL=192.168.1.0/24,192.168.148.0/24
       '';
 
       # GLUETUN MIGRATION: replace template above with this (same vpnPrivateKey SOPS secret, different env var names)
@@ -90,6 +90,7 @@ in
 
   services.traefik.dynamicConfigOptions.http.middlewares.jellyfin-trusted-allow.ipAllowList.sourceRange = [
     "192.168.1.0/24" # home LAN (includes the rokus)
+    "192.168.148.0/24" # home LAN after the unifi-tuning phase 10 re-ip
     "${configVars.hosts.aspen.networking.tailscaleIp}" # server - for blackbox monitoring
     "${configVars.hosts.juniper.networking.tailscaleIp}" # server - for blackbox monitoring
     "${configVars.hosts.thinkpad.networking.tailscaleIp}"

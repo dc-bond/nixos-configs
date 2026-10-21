@@ -84,7 +84,7 @@ in
               reason = "trusted internal networks";
               cidr = [
                 "100.64.0.0/10" # tailscale vpn range
-              ] ++ lib.optional (config.networking.hostName == "aspen") "192.168.1.0/24"; # home lan - trust internal traffic hitting aspen directly (not via cloudflare)
+              ] ++ lib.optionals (config.networking.hostName == "aspen") [ "192.168.1.0/24" "192.168.148.0/24" ]; # home lan, old and new range - trust internal traffic hitting aspen directly (not via cloudflare)
               #ip = [
               #  "" # don't want to expose home wan here so using imperative approach below
               #];

@@ -16,6 +16,10 @@
     hostId = "a2d3cb8e"; # must remain constant across reinstalls for zfs pool auto-import
   };
 
+  # second address in the new home range while UNIFI-TUNING.md phase 10 moves the lan off
+  # 192.168.1.0/24; aspen answers on both until the dhcp reservation hands out the new one
+  systemd.network.networks."10-ethernet-builtin".address = [ "192.168.148.2/24" ];
+
   # disko disk formatting occurs once on first deployment
   # data drives (disk1, disk2) are commented out to prevent accidental reformatting during OS reinstalls
   # commented-out configs below document how drives were originally provisioned by disko

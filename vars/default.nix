@@ -26,6 +26,7 @@
           role = "exit-node";
           advertiseRoutes = [
             "192.168.1.0/24"
+            "192.168.148.0/24" # new home range during the unifi-tuning phase 10 re-ip
           ];
           defaultExitNode = null;
         };
