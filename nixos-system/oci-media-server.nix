@@ -25,6 +25,28 @@ let
     done
   '';
   hostData = configVars.hosts.${config.networking.hostName};
+  # 1 when the vpn netns egresses and its public ip differs from aspen's own, 0 otherwise.
+  # gluetun fails closed, so a dead tunnel reads as no egress rather than a leak
+  vpnEgressExporter = pkgs.writeShellScript "${app1}-egress-exporter.sh" ''
+    set -uo pipefail
+
+    TEXTFILE_DIR="/var/lib/prometheus/node-exporter-text-files"
+    METRICS_FILE="$TEXTFILE_DIR/media_vpn.prom.$$"
+    FINAL_FILE="$TEXTFILE_DIR/media_vpn.prom"
+
+    wan=$(${pkgs.curl}/bin/curl -s -m 10 https://ifconfig.me/ip || true)
+    vpn=$(${pkgs.docker}/bin/docker exec ${app1} wget -qO- -T 10 https://ifconfig.me/ip 2>/dev/null || true)
+    up=0
+    if [ -n "$vpn" ] && [ "$vpn" != "$wan" ]; then up=1; fi
+
+    {
+      echo "# HELP media_vpn_tunnel_up 1 if the media-server vpn netns egresses through the tunnel"
+      echo "# TYPE media_vpn_tunnel_up gauge"
+      echo "media_vpn_tunnel_up $up"
+    } > "$METRICS_FILE"
+
+    mv "$METRICS_FILE" "$FINAL_FILE"
+  '';
   recoveryPlan = {
     restoreItems = [
       "/var/lib/docker/volumes/${app2}"
@@ -63,8 +85,8 @@ in
     };
     templates = {
       "${app1}-env" = {
-        # FIREWALL_OUTBOUND_SUBNETS: the home lan, reachable outside the tunnel.
-        # FIREWALL_INPUT_PORTS: the apps' ports, which traefik reaches on the docker bridge
+        # FIREWALL_OUTBOUND_SUBNETS: the home lan, reachable outside the tunnel. traefik
+        # reaches the apps without an input-port rule: gluetun accepts anything to its docker subnet
         content = ''
           TZ=America/New_York
           VPN_SERVICE_PROVIDER=nordvpn
@@ -72,7 +94,6 @@ in
           WIREGUARD_PRIVATE_KEY=${config.sops.placeholder.vpnPrivateKey}
           SERVER_COUNTRIES=United States
           FIREWALL_OUTBOUND_SUBNETS=192.168.1.0/24,192.168.148.0/24
-          FIREWALL_INPUT_PORTS=8080,8989,7878,9696,5055,8096
           DNS_UPSTREAM_RESOLVERS=quad9,cloudflare
         '';
         restartUnits = [ "docker-${app1}.service" ]; # the unit only references the rendered path, so a content change alone doesn't restart it; restarting it restarts every container sharing its netns
@@ -439,6 +460,22 @@ in
         wantedBy = ["docker-${app}-root.target"];
       };
 
+      "${app1}-egress-exporter" = {
+        description = "Export media-server VPN egress state for node_exporter";
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${vpnEgressExporter}";
+        };
+      };
+
+    };
+    timers."${app1}-egress-exporter" = {
+      description = "Media-server VPN Egress Export Timer";
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "5m";
+        OnUnitActiveSec = "5m";
+      };
     };
     targets."docker-${app}-root" = {
       unitConfig = {

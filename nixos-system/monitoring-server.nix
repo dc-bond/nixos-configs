@@ -1129,6 +1129,28 @@ let
               severity: critical
             annotations:
               summary: "UniFi device reachability metric absent - check `systemctl status unifi-device-exporter` on aspen"
+
+      - name: media_vpn_alerts
+        interval: 30s
+        rules:
+
+          # media_vpn_tunnel_up comes from aspen's egress exporter (oci-media-server.nix), every 5m;
+          # the nightly backup stops the stack for about a minute, well inside the for
+          - alert: mediaVpnTunnelDown
+            expr: media_vpn_tunnel_up == 0
+            for: 15m
+            labels:
+              severity: warning
+            annotations:
+              summary: "media-server VPN on aspen has no tunnel egress - downloads are stalled; check `docker logs media-server-vpn`"
+
+          - alert: mediaVpnMetricAbsent
+            expr: absent(media_vpn_tunnel_up{host="aspen"})
+            for: 30m
+            labels:
+              severity: warning
+            annotations:
+              summary: "media-server VPN egress metric absent - check `systemctl status media-server-vpn-egress-exporter` on aspen"
   '';
 
   # status and method are promoted to labels; path and client_ip go to structured
