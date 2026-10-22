@@ -26,6 +26,11 @@ let
       hash = "sha256-tBG+F8Me8kl2ftkZdNh24AfJGv1fReFTQFfSR+ranw0=";
     };
   });
+  # the deb's bundled libubnt_webrtc_jni.so links libstdc++ and libgcc_s, which the
+  # stdenvNoCC build does not provide, so auto-patchelf fails on current nixos-unstable
+  unifiPackage = pkgs.unstable.unifi.overrideAttrs (old: {
+    buildInputs = old.buildInputs ++ [ pkgs.unstable.stdenv.cc.cc.lib ];
+  });
   lanInterface = configVars.hosts."${config.networking.hostName}".networking.ethernetInterface;
   syslogPort = 1514;
   # pinged every minute for the unifiDeviceUnreachable alert (monitoring-server.nix);
@@ -183,7 +188,7 @@ in
 
     "${app}" = {
       enable = true;
-      unifiPackage = pkgs.unstable.unifi; # 26.05 ships 10.2.105, older than the running 10.6.x; unifi does not support controller downgrades, see DEVIATIONS.md
+      inherit unifiPackage; # unstable: 26.05 ships 10.2.105, older than the running 10.6.x; unifi does not support controller downgrades, see DEVIATIONS.md
       mongodbPackage = mongodbPrebuilt;
       initialJavaHeapSize = 1024;
       maximumJavaHeapSize = 2048;
