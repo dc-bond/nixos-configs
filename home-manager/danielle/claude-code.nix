@@ -35,6 +35,10 @@
       model = "sonnet";
       theme = "dark";
       tui = "fullscreen";
+      attribution = { # empty strings suppress the co-authored-by commit trailer and the pr footer
+        commit = "";
+        pr = "";
+      };
     };
   };
 
