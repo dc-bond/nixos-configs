@@ -46,6 +46,10 @@ in
       };
       enabledMcpjsonServers = lib.attrNames mcpServers; # pre-approve every declared server in ~/nixos/.mcp.json (see zsh.nix clone-configs)
       theme = "dark";
+      attribution = { # empty strings suppress the co-authored-by commit trailer and the pr footer
+        commit = "";
+        pr = "";
+      };
       autoMode.environment = [
         "$defaults"
         "Organization: chris's personal homelab and household — a single operator (chris, chris@dcbond.com); no company, team, or shared tenancy. Claude runs only on his own workstation, thinkpad."
