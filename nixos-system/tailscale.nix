@@ -171,6 +171,11 @@ in
       lib.foldl' (acc: name: acc // mkExitNodeAlias name exitNodes.${name}) {} (lib.attrNames exitNodes)
   );
 
+  # a restart mid-switch drops a rebuild's tailscale ssh session; switch-to-configuration then
+  # dies on the broken pipe with units stopped and never restarted. a changed tailscaled
+  # takes effect on the next reboot instead
+  systemd.services.tailscaled.restartIfChanged = false;
+
   systemd.services.tailscale-exit-node-auto = lib.mkIf autoExitNode {
     description = "Use the default tailscale exit node only off the home LAN";
     after = [ "tailscaled.service" ];
