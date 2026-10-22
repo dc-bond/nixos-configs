@@ -211,7 +211,7 @@
         "lastModified": 1792663032,
         "narHash": "sha256-chvt+Iuz9CQsZIhrIhhg2OJr/xRr+RunRhsEM9HhHn4=",
         "ref": "refs/heads/main",
-        "rev": "ad18a0cea3b417ca1edde6e4498f038e85c21bc9",
+        "rev": "db0cedaacc6dcaa7a1acdc3c2b4d0e3d5a3bf715",
         "revCount": 392,
         "type": "git",
         "url": "ssh://git@github.com/dc-bond/nixos-configs-private"
