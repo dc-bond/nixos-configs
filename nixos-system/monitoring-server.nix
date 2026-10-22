@@ -1497,10 +1497,6 @@ in
               labels.host = "thinkpad";
             }
             {
-              targets = [ "${configVars.hosts.alder.networking.tailscaleIp}:9100" ]; # alder deprecated, not deployed
-              labels.host = "alder";
-            }
-            {
               targets = [ "${configVars.hosts.kauri.networking.tailscaleIp}:9100" ];
               labels.host = "kauri";
             }
@@ -1520,10 +1516,6 @@ in
             {
               targets = [ "${configVars.hosts.thinkpad.networking.tailscaleIp}:9633" ];
               labels.host = "thinkpad";
-            }
-            {
-              targets = [ "${configVars.hosts.alder.networking.tailscaleIp}:9633" ]; # alder deprecated, not deployed
-              labels.host = "alder";
             }
             {
               targets = [ "${configVars.hosts.kauri.networking.tailscaleIp}:9633" ];
@@ -1547,10 +1539,6 @@ in
         {
           job_name = "crowdsec";
           static_configs = [
-            {
-              targets = [ "${configVars.hosts.aspen.networking.tailscaleIp}:6060" ];
-              labels.host = "aspen";
-            }
             {
               targets = [ "127.0.0.1:6060" ];
               labels.host = config.networking.hostName;

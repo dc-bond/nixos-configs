@@ -217,7 +217,6 @@ let
     "https://v.firebog.net/hosts/RPiList-Phishing.txt"
     "https://raw.githubusercontent.com/Spam404/lists/master/main-blacklist.txt"
     "https://raw.githubusercontent.com/AssoEchap/stalkerware-indicators/master/generated/hosts"
-    "https://urlhaus.abuse.ch/downloads/hostfile/"
     "https://v.firebog.net/hosts/Easyprivacy.txt"
     "https://v.firebog.net/hosts/Easylist.txt"
     "https://v.firebog.net/hosts/static/w3kbl.txt"

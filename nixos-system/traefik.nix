@@ -243,7 +243,10 @@ in
           addServicesLabels = true;
         };
         entryPoints = {
-          metrics.address = "127.0.0.1:8082/tcp";
+          # the prometheus host scrapes itself over loopback; others are scraped over tailscale0.
+          # not bound to the tailscale ip, which can arrive after traefik starts at boot - the
+          # firewall leaves 8082 reachable only on the trusted tailscale0 and lo
+          metrics.address = "${if config.services.prometheus.enable then "127.0.0.1" else "0.0.0.0"}:8082/tcp";
           web = {
             address = "0.0.0.0:80/tcp";
             http.redirections.entrypoint = {
