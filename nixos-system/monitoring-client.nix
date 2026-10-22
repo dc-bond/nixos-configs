@@ -230,7 +230,7 @@ in
 
     # wait for tailscale interface to have IP assigned before starting monitoring services.
     # after network-online: on a slow-lease boot tailscaled assigns the ip only once the lan
-    # is up, which can be minutes after boot and outlasts the 30s window below
+    # is up, which can be minutes after boot. aspen has taken 45s from tailscaled start
     tailscale-ready = {
       description = "Wait for Tailscale interface to have IP assigned";
       after = [ "tailscaled.service" "network-online.target" ];
@@ -242,8 +242,7 @@ in
         ExecStart = pkgs.writeShellScript "wait-for-tailscale-ip" ''
           set -euo pipefail
 
-          # wait up to 30 seconds for tailscale interface to have IP assigned
-          for i in {1..30}; do
+          for i in {1..120}; do
             if ${pkgs.iproute2}/bin/ip -4 addr show tailscale0 2>/dev/null | ${pkgs.gnugrep}/bin/grep -q "inet ${hostData.networking.tailscaleIp}"; then
               echo "Tailscale IP ${hostData.networking.tailscaleIp} is assigned"
               exit 0
@@ -266,9 +265,15 @@ in
       after = [ "tailscale-ready.service" ];
       wants = [ "tailscale-ready.service" ];
     };
+    # tailscale-ready is only wanted, so a wait that times out still starts these; the
+    # exporters already restart on failure through their module, cadvisor's module sets none
     cadvisor = lib.mkIf (config.virtualisation.oci-containers.containers != {}) {
       after = [ "tailscale-ready.service" ];
       wants = [ "tailscale-ready.service" ];
+      serviceConfig = {
+        Restart = "on-failure";
+        RestartSec = "5s";
+      };
     };
   };
 

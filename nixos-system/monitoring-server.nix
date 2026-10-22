@@ -1286,7 +1286,7 @@ in
           ExecStart = pkgs.writeShellScript "wait-for-tailscale-ip" ''
             set -euo pipefail
 
-            for i in {1..30}; do
+            for i in {1..120}; do
               if ${pkgs.iproute2}/bin/ip -4 addr show tailscale0 2>/dev/null | ${pkgs.gnugrep}/bin/grep -q "inet ${hostData.networking.tailscaleIp}"; then
                 echo "Tailscale IP ${hostData.networking.tailscaleIp} is assigned"
                 exit 0
