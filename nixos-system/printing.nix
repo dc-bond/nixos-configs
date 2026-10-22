@@ -18,7 +18,7 @@
       {
         name = "Canon-MF741C743C"; # must manually set color mode to black & white?
         location = "3rd Floor";
-        deviceUri = "socket://192.168.1.245";
+        deviceUri = "socket://192.168.148.245";
         model = "CNRCUPSMF741CZK.ppd";
         ppdOptions = {
           PageSize = "Letter";

@@ -68,6 +68,8 @@ controller has no API keys.
   inform host, Opticon-Home DHCP/DNS/subnet, firewall policies, the gateway WAN, device SSH
   auth, adopt/forget/reset, firmware upgrades, and features that can disable a port with no
   remote way back.
+- Changing a network's `ip_subnet` clears every reservation in it (`use_fixedip` false, `fixed_ip` empty), with no
+  error. Snapshot the reservations (mac, `fixed_ip`) first and re-apply them right after, with `network_id` set.
 - One change at a time; chris usually watches each one land in the UI.
 
 
@@ -152,7 +154,7 @@ Conventions and exceptions:
 ### Networking Architecture
 
 **DNS: High-Availability Dual Pi-hole Setup**
-- **aspen** (192.168.1.2): LAN DNS server (~90% uptime)
+- **aspen** (192.168.148.2): LAN DNS server (~90% uptime)
 - **juniper** (VPS): Public DNS server (~99% uptime)
 - Both run identical Pi-hole + Unbound configurations declared in `oci-pihole.nix`
 - Tailscale clients resolve through the tailnet's global nameservers: aspen (100.118.61.37) first, juniper (100.70.221.14) second; MagicDNS is disabled tailnet-wide
@@ -162,7 +164,7 @@ Conventions and exceptions:
 
 *NixOS Hosts with systemd-resolved:*
 - **DHCP Configuration Required**: UniFi DHCP must advertise all 3 DNS servers:
-  - Primary: 192.168.1.2 (aspen pihole)
+  - Primary: 192.168.148.2 (aspen pihole)
   - Secondary: 9.9.9.9 (Quad9)
   - Tertiary: 1.1.1.1 (Cloudflare)
   - The same order (own Pi-hole, Quad9, Cloudflare) is used everywhere a resolver list is set: aspen/juniper
@@ -199,11 +201,11 @@ Conventions and exceptions:
   - **Android**: Forget network and reconnect, or toggle airplane mode
 - Check current DNS config: `resolvectl status` (Linux) or Wi-Fi settings (mobile)
 - With Tailscale ON, `tailscale0` holds the `~.` routing domain, so resolved sends every query to 100.100.100.100 and the DHCP servers on the LAN link go unused. The forwarder reaches both piholes by tailnet IP, so this path does not depend on any exit node
-- A client accepting aspen's 192.168.1.0/24 subnet route sends LAN traffic through aspen even when on the LAN (tailscale's table 52 outranks main). Clients with a default exit node drop the route at home (see Tailscale Integration)
+- A client accepting aspen's 192.168.148.0/24 subnet route sends LAN traffic through aspen even when on the LAN (tailscale's table 52 outranks main). Clients with a default exit node drop the route at home (see Tailscale Integration)
 
 **Tailscale Integration**
-- Exit nodes: aspen, juniper; only aspen also advertises the LAN route (192.168.1.0/24)
-- Clients with a default exit node: thinkpad, kauri (aspen), applied only off the home LAN. `tailscale-exit-node-auto` (fired by networkd-dispatcher) arpings the default gateway; when its MAC matches `configVars.devices.unifiGateway.mac` it clears the exit node and sets `--accept-routes=false`, so LAN traffic stays on the LAN instead of going through aspen's 192.168.1.0/24 subnet route. Off the home LAN it sets both back. These clients also run with `networking.enableIPv6 = false`, because aspen advertises `::/0` but has no IPv6 uplink
+- Exit nodes: aspen, juniper; only aspen also advertises the LAN route (192.168.148.0/24)
+- Clients with a default exit node: thinkpad, kauri (aspen), applied only off the home LAN. `tailscale-exit-node-auto` (fired by networkd-dispatcher) arpings the default gateway; when its MAC matches `configVars.devices.unifiGateway.mac` it clears the exit node and sets `--accept-routes=false`, so LAN traffic stays on the LAN instead of going through aspen's 192.168.148.0/24 subnet route. Off the home LAN it sets both back. These clients also run with `networking.enableIPv6 = false`, because aspen advertises `::/0` but has no IPv6 uplink
 - Configuration per-host in `configVars.hosts.${hostname}.networking.tailscale`
 - Module: `nixos-system/tailscale.nix`
 
@@ -276,7 +278,7 @@ what makes targeted reads acceptable — it does not make bulk reads acceptable.
 
 ## Hosts Overview
 
-- **aspen**: Homelab server (headless, 192.168.1.2), exit node, build server for other hosts, runs 30+ services
+- **aspen**: Homelab server (headless, 192.168.148.2), exit node, build server for other hosts, runs 30+ services
 - **juniper**: VPS (headless, 178.156.133.218), monitoring hub (Prometheus, Grafana, Alertmanager), public services, secondary tailnet DNS, exit node
 - **thinkpad**: ThinkPad laptop (Hyprland, encrypted), primary workstation
 - **kauri**: Family laptop (Labwc, encrypted), secondary user

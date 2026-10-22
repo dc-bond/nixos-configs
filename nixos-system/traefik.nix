@@ -351,8 +351,7 @@ in
             trusted-allow = {
               ipAllowList = {
                 sourceRange = [
-                  "192.168.1.0/24" # home LAN
-                  "192.168.148.0/24" # home LAN after the unifi-tuning phase 10 re-ip
+                  "192.168.148.0/24" # home LAN
                   "${configVars.hosts.aspen.networking.tailscaleIp}" # server - for blackbox monitoring
                   "${configVars.hosts.juniper.networking.tailscaleIp}" # server - for blackbox monitoring
                   "${configVars.hosts.thinkpad.networking.tailscaleIp}"

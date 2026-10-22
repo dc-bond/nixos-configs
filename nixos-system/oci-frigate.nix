@@ -59,20 +59,20 @@ in
         go2rtc:
           streams:
             front:
-              - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.1.132:554/s0
+              - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.148.132:554/s0
             front-detect:
-              - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.1.132:554/s2
+              - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.148.132:554/s2
             garage:
-              - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.1.131:554/s0
+              - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.148.131:554/s0
             garage-detect:
-              - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.1.131:554/s2
+              - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.148.131:554/s2
             gym:
-              - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.1.30:554/s0
+              - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.148.30:554/s0
             gym-detect:
-              - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.1.30:554/s2
+              - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.148.30:554/s2
           webrtc:
             candidates:
-              - 192.168.1.2:8555
+              - 192.168.148.2:8555
               - stun:8555
         
         cameras:
@@ -135,7 +135,7 @@ in
         
         birdseye: # global birdseye configuration for all cameras
           enabled: false # no cameras enabled during move (2026-07) — re-enable on reconnect
-          restream: true # restream to http://192.168.1.2:8554/birdseye?
+          restream: true # restream to http://192.168.148.2:8554/birdseye?
           mode: continuous
         
         motion: # global motion configuration for all cameras

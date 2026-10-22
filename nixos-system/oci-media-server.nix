@@ -93,7 +93,7 @@ in
           VPN_TYPE=wireguard
           WIREGUARD_PRIVATE_KEY=${config.sops.placeholder.vpnPrivateKey}
           SERVER_COUNTRIES=United States
-          FIREWALL_OUTBOUND_SUBNETS=192.168.1.0/24,192.168.148.0/24
+          FIREWALL_OUTBOUND_SUBNETS=192.168.148.0/24
           DNS_UPSTREAM_RESOLVERS=quad9,cloudflare
         '';
         restartUnits = [ "docker-${app1}.service" ]; # the unit only references the rendered path, so a content change alone doesn't restart it; restarting it restarts every container sharing its netns
@@ -102,8 +102,7 @@ in
   };
 
   services.traefik.dynamicConfigOptions.http.middlewares.jellyfin-trusted-allow.ipAllowList.sourceRange = [
-    "192.168.1.0/24" # home LAN (includes the rokus)
-    "192.168.148.0/24" # home LAN after the unifi-tuning phase 10 re-ip
+    "192.168.148.0/24" # home LAN (includes the rokus)
     "${configVars.hosts.aspen.networking.tailscaleIp}" # server - for blackbox monitoring
     "${configVars.hosts.juniper.networking.tailscaleIp}" # server - for blackbox monitoring
     "${configVars.hosts.thinkpad.networking.tailscaleIp}"

@@ -20,13 +20,12 @@
         ethernetInterface = "enp4s0";
         wifiInterface = null;
         dockInterface = null;
-        ipv4 = "192.168.1.2";
+        ipv4 = "192.168.148.2";
         tailscaleIp = "100.118.61.37";
         tailscale = {
           role = "exit-node";
           advertiseRoutes = [
-            "192.168.1.0/24"
-            "192.168.148.0/24" # new home range during the unifi-tuning phase 10 re-ip
+            "192.168.148.0/24"
           ];
           defaultExitNode = null;
         };
@@ -57,7 +56,7 @@
         ethernetInterface = "enp0s31f6";
         wifiInterface = "wlan0";
         dockInterface = "enp0s20f0u2u1u2";
-        ipv4 = "192.168.1.62";
+        ipv4 = "192.168.148.62";
         tailscaleIp = "100.78.11.115";
         tailscale = {
           role = "client";
@@ -91,7 +90,7 @@
         ethernetInterface = "enp0s31f6";
         wifiInterface = "wlan0";
         dockInterface = "enp0s20f0u4u1i5";
-        ipv4 = "192.168.1.164";
+        ipv4 = "192.168.148.164";
         tailscaleIp = "100.88.226.2";
         tailscale = {
           role = "client";
@@ -184,75 +183,75 @@
   
   devices = {
     chrisIphone15 = {
-      ipv4 = "192.168.1.216";
+      ipv4 = "192.168.148.216";
       tailscaleIp = "100.123.43.13";
     };
     danielleIphone17 = {
-      ipv4 = "192.168.1.241";
+      ipv4 = "192.168.148.241";
       tailscaleIp = "100.116.223.73";
     };
     sydneyIpadA16 = {
-      ipv4 = "192.168.1.249";
+      ipv4 = "192.168.148.249";
       tailscaleIp = "100.92.77.28";
     };
     roku45tv = {
-      ipv4 = "192.168.1.239";
+      ipv4 = "192.168.148.239";
       tailscaleIp = null;
     };
     roku65tv = {
-      ipv4 = "192.168.1.242";
+      ipv4 = "192.168.148.242";
       tailscaleIp = null;
     };
     unifiGateway = {
-      ipv4 = "192.168.1.1";
+      ipv4 = "192.168.148.1";
       mac = "0e:ea:14:63:de:96"; # uxg max lan-side mac, not the label mac; tailscale clients match it to detect the home network
       tailscaleIp = null;
     };
     unifiSwitch8Lite = {
-      ipv4 = "192.168.1.151";
+      ipv4 = "192.168.148.11"; # set static on the device when it is in service
       tailscaleIp = null;
     };
     unifiSwitchPro24 = { # USW-Pro-24-PoE
-      ipv4 = "192.168.1.212"; # static on the device
+      ipv4 = "192.168.148.10"; # static on the device
       tailscaleIp = null;
     };
     unifiApAcMesh = { # UAP-AC-Mesh
-      ipv4 = "192.168.1.191"; # set static on the device when it is back in service
+      ipv4 = "192.168.148.22"; # set static on the device when it is back in service
       tailscaleIp = null;
     };
     unifiApAcPro = { # UAP-AC-Pro
-      ipv4 = "192.168.1.248"; # static on the device
+      ipv4 = "192.168.148.21"; # static on the device
       tailscaleIp = null;
     };
     unifiApU7Pro = { # U7 Pro
-      ipv4 = "192.168.1.7"; # static on the device
+      ipv4 = "192.168.148.20"; # static on the device
       tailscaleIp = null;
     };
     frontCamera = {
-      ipv4 = "192.168.1.132";
+      ipv4 = "192.168.148.132";
       tailscaleIp = null;
     };
     garageCamera = {
-      ipv4 = "192.168.1.131";
+      ipv4 = "192.168.148.131";
       tailscaleIp = null;
     };
     gymCamera = {
-      ipv4 = "192.168.1.30";
+      ipv4 = "192.168.148.30";
       tailscaleIp = null;
     };
     # AirGradient monitors, static leases reserved in Unifi. Named for where
     # they sit, not for the model - entity ids in HA derive from the device name
     # set in the UI config flow, so these names and sensor.<name>_* must agree.
     basementAirMonitor = { # I-9PSL
-      ipv4 = "192.168.1.247";
+      ipv4 = "192.168.148.247";
       tailscaleIp = null;
     };
     kitchenAirMonitor = { # I-9PSL
-      ipv4 = "192.168.1.215";
+      ipv4 = "192.168.148.215";
       tailscaleIp = null;
     };
     outdoorAirMonitor = { # O-1PST
-      ipv4 = "192.168.1.246";
+      ipv4 = "192.168.148.246";
       tailscaleIp = null;
     };
     # Rainforest EAGLE 3 smart meter gateway, static lease reserved in Unifi.
@@ -262,14 +261,14 @@
     # Zigbee radio binds to the utility meter's SEP network, not to zigbee2mqtt;
     # HA reads it over the EAGLE-200 local API instead (rainforest_eagle).
     eagle3 = {
-      ipv4 = "192.168.1.211";
+      ipv4 = "192.168.148.211";
       tailscaleIp = null;
     };
     # SMLIGHT SLZB-06MG24U POE Zigbee coordinator, reachable at :6638 over TCP
     # (SLZB-OS "Zigbee2MQTT (TCP)" mode). Static DHCP lease reserved in Unifi.
     # EFR32MG24 radio -> zigbee2mqtt must use the 'ember' adapter, not 'zstack'.
     slzb06 = {
-      ipv4 = "192.168.1.210";
+      ipv4 = "192.168.148.210";
       tailscaleIp = null;
     };
     # tesla, joins Opticon-Home once the new garage has wifi coverage
@@ -278,15 +277,15 @@
       tailscaleIp = null;
     };
     canonPrinter3rdFloor = {
-      ipv4 = "192.168.1.245";
+      ipv4 = "192.168.148.245";
       tailscaleIp = null;
     };
     chrisKindle = {
-      ipv4 = "192.168.1.91";
+      ipv4 = "192.168.148.91";
       tailscaleIp = null;
     };
     danielleWorkLaptopWifi = {
-      ipv4 = "192.168.1.154";
+      ipv4 = "192.168.148.154";
       tailscaleIp = null;
     };
   };
