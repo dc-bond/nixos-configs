@@ -109,6 +109,13 @@ in
 
 {
 
+  # 10.6 is the last standalone network application and the controller can't be downgraded;
+  # leaving it means migrating to unifi os server (roadmap), not a flake update
+  assertions = [{
+    assertion = lib.versions.majorMinor config.services.unifi.unifiPackage.version == "10.6";
+    message = "unifi ${config.services.unifi.unifiPackage.version} is not 10.6; the standalone controller stays on 10.6";
+  }];
+
   environment.systemPackages = with pkgs; [ recoverScript unifiApi ];
 
   sops.secrets.unifiApiPassword = {}; # password of the ${apiUser} local site admin; root-only, the default
