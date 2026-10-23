@@ -41,11 +41,17 @@ let
   # to the gateway is routed into tailscale0 and its neighbour entry goes stale
   tailscaleExitNodeAuto = pkgs.writeShellScript "tailscaleExitNodeAuto" ''
     PATH=${lib.makeBinPath [ pkgs.iproute2 pkgs.iputils pkgs.gawk pkgs.gnugrep pkgs.coreutils pkgs.tailscale ]}
-    read -r gw dev < <(ip -4 route show default table main | awk '{for (i = 1; i < NF; i++) { if ($i == "via") g = $(i+1); if ($i == "dev") d = $(i+1) } print g, d; exit}')
-    mac=""
-    if [ -n "$gw" ] && [ -n "$dev" ]; then
-      mac=$(arping -c 1 -w 2 -I "$dev" "$gw" 2>/dev/null | grep -oiE '([0-9a-f]{2}:){5}[0-9a-f]{2}' | head -n 1 | tr 'A-F' 'a-f')
-    fi
+    # retried while there is no route or arp reply: a wifi reconnect fires this before the
+    # gateway answers, and a single miss would leave the exit node on at home
+    for _ in 1 2 3 4 5; do
+      gw=""; dev=""; mac=""
+      read -r gw dev < <(ip -4 route show default table main | awk '{for (i = 1; i < NF; i++) { if ($i == "via") g = $(i+1); if ($i == "dev") d = $(i+1) } print g, d; exit}')
+      if [ -n "$gw" ] && [ -n "$dev" ]; then
+        mac=$(arping -c 1 -w 2 -I "$dev" "$gw" 2>/dev/null | grep -oiE '([0-9a-f]{2}:){5}[0-9a-f]{2}' | head -n 1 | tr 'A-F' 'a-f')
+      fi
+      [ -n "$mac" ] && break
+      sleep 3
+    done
     if [ "$mac" = "${homeGatewayMac}" ]; then
       echo "home gateway on $dev, clearing exit node and subnet routes"
       tailscale set --exit-node= --accept-routes=false
